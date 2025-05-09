@@ -14,9 +14,10 @@ interface FoodItem {
 interface FoodCardProps {
   food: FoodItem;
   onAddToCart: (food: FoodItem) => void;
+  onViewDetails?: () => void;
 }
 
-const FoodCard = ({ food, onAddToCart }: FoodCardProps) => {
+const FoodCard = ({ food, onAddToCart, onViewDetails }: FoodCardProps) => {
   const [isFavorite, setIsFavorite] = useState(false);
 
   return (
@@ -29,7 +30,10 @@ const FoodCard = ({ food, onAddToCart }: FoodCardProps) => {
           className={`h-5 w-5 ${isFavorite ? "fill-current text-red-500" : ""}`}
         />
       </button>
-      <div className="p-4">
+      <div 
+        className="p-4 cursor-pointer" 
+        onClick={onViewDetails}
+      >
         <img
           src={food.image}
           alt={food.name}
@@ -53,7 +57,10 @@ const FoodCard = ({ food, onAddToCart }: FoodCardProps) => {
           <span className="font-bold">${food.price.toFixed(2)}</span>
           <button
             className="bg-green-500 text-white p-2 rounded-full"
-            onClick={() => onAddToCart(food)}
+            onClick={(e) => {
+              e.stopPropagation();
+              onAddToCart(food);
+            }}
           >
             <Plus className="h-5 w-5" />
           </button>

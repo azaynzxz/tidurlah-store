@@ -2,6 +2,7 @@
 import { useState, useEffect } from "react";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 // Product Data
 const products = {
@@ -10,6 +11,11 @@ const products = {
       id: 1,
       name: "Basic ID Card Lanyard",
       image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Standard ID card lanyard with clip attachment, perfect for everyday use.",
       price: 25000,
       discountPrice: null,
       category: "ID Card Lanyard"
@@ -18,6 +24,11 @@ const products = {
       id: 2,
       name: "Premium ID Card Lanyard",
       image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "High quality lanyard with custom printing options and durable materials.",
       price: 35000,
       discountPrice: 30000,
       category: "ID Card Lanyard"
@@ -26,6 +37,11 @@ const products = {
       id: 3,
       name: "Custom Print Lanyard",
       image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Fully customizable lanyard with your logo or design printed on both sides.",
       price: 40000,
       discountPrice: null,
       category: "ID Card Lanyard"
@@ -36,6 +52,11 @@ const products = {
       id: 4,
       name: "T-Shirt with Logo",
       image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Premium cotton t-shirt with embroidered logo, available in multiple sizes.",
       price: 120000,
       discountPrice: 99000,
       category: "Merch"
@@ -44,6 +65,11 @@ const products = {
       id: 5,
       name: "Coffee Mug",
       image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Ceramic mug with printed design, microwave and dishwasher safe.",
       price: 45000,
       discountPrice: null,
       category: "Merch"
@@ -52,6 +78,11 @@ const products = {
       id: 6,
       name: "Notebook Set",
       image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Set of 3 notebooks with different paper types and custom cover designs.",
       price: 50000,
       discountPrice: 40000,
       category: "Merch"
@@ -62,6 +93,11 @@ const products = {
       id: 7,
       name: "Roll Up Banner",
       image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Portable roll-up banner with stand, perfect for events and trade shows.",
       price: 250000,
       discountPrice: 220000,
       category: "Media Promosi"
@@ -70,6 +106,11 @@ const products = {
       id: 8,
       name: "Flyer Design (100pcs)",
       image: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Custom flyer designs printed on high-quality paper, pack of 100 pieces.",
       price: 150000,
       discountPrice: null,
       category: "Media Promosi"
@@ -78,6 +119,11 @@ const products = {
       id: 9,
       name: "Backdrop Banner",
       image: "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80",
+        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&q=80"
+      ],
+      description: "Large format backdrop banner for events, exhibitions and photo opportunities.",
       price: 350000,
       discountPrice: 300000,
       category: "Media Promosi"
@@ -90,12 +136,28 @@ const Index = () => {
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<any>(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [invoiceNumber, setInvoiceNumber] = useState("");
   
   // Form state
   const [customerName, setCustomerName] = useState("");
   const [instansi, setInstansi] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [promoCode, setPromoCode] = useState("");
+  const [isShipping, setIsShipping] = useState(false);
+  const [address, setAddress] = useState("");
+
+  // Generate invoice number when component mounts
+  useEffect(() => {
+    const date = new Date();
+    const year = date.getFullYear().toString().slice(2);
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+    
+    setInvoiceNumber(`INV-${year}${month}${day}-${random}`);
+  }, []);
 
   // Add to cart function
   const addToCart = (product: any) => {
@@ -135,10 +197,36 @@ const Index = () => {
     }, 0);
   };
 
+  // Open product details modal
+  const openProductDetails = (product: any) => {
+    setSelectedProduct(product);
+    setCurrentImageIndex(0);
+  };
+
+  // Navigate through product images
+  const nextImage = () => {
+    if (selectedProduct) {
+      const totalImages = [selectedProduct.image, ...selectedProduct.additionalImages].length;
+      setCurrentImageIndex((currentImageIndex + 1) % totalImages);
+    }
+  };
+
+  const prevImage = () => {
+    if (selectedProduct) {
+      const totalImages = [selectedProduct.image, ...selectedProduct.additionalImages].length;
+      setCurrentImageIndex((currentImageIndex - 1 + totalImages) % totalImages);
+    }
+  };
+
   // Handle WhatsApp redirect
   const handleWhatsAppRedirect = () => {
     if (!customerName || !phoneNumber) {
       alert("Please fill in your name and phone number.");
+      return;
+    }
+
+    if (isShipping && !address) {
+      alert("Please provide your delivery address.");
       return;
     }
 
@@ -147,11 +235,13 @@ const Index = () => {
     ).join('\n');
 
     const message = `
+*Invoice: ${invoiceNumber}*
 *Order Details*
 Name: ${customerName}
 Institution: ${instansi}
 Phone: ${phoneNumber}
 ${promoCode ? `Promo Code: ${promoCode}` : ''}
+${isShipping ? `Shipping Address: ${address}` : 'Pickup: Yes (No shipping required)'}
 
 *Products:*
 ${productList}
@@ -160,7 +250,7 @@ ${productList}
     `;
 
     const encodedMessage = encodeURIComponent(message);
-    window.open(`https://wa.me/625172157808?text=${encodedMessage}`, '_blank');
+    window.open(`https://wa.me/6283143790990?text=${encodedMessage}`, '_blank');
   };
 
   return (
@@ -203,11 +293,19 @@ ${productList}
                   <div className="grid grid-cols-2 gap-4">
                     {products[category as keyof typeof products].map(product => (
                       <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm">
-                        <img 
-                          src={product.image} 
-                          alt={product.name}
-                          className="w-full h-32 object-cover"
-                        />
+                        <div 
+                          className="relative cursor-pointer"
+                          onClick={() => openProductDetails(product)}
+                        >
+                          <img 
+                            src={product.image} 
+                            alt={product.name}
+                            className="w-full h-32 object-cover"
+                          />
+                          <div className="absolute bottom-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-tl-md">
+                            View details
+                          </div>
+                        </div>
                         <div className="p-3">
                           <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
                           <div className="mt-2">
@@ -227,7 +325,10 @@ ${productList}
                             )}
                           </div>
                           <button
-                            onClick={() => addToCart(product)}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              addToCart(product);
+                            }}
                             className="mt-2 w-full bg-[#FF5E01] text-white rounded-full py-1 px-3 text-sm flex items-center justify-center"
                           >
                             <ShoppingBag className="h-4 w-4 mr-1" /> Add to cart
@@ -262,6 +363,7 @@ ${productList}
             </button>
             
             <h2 className="text-xl font-bold mb-4">Order Information</h2>
+            <p className="text-sm text-gray-600 mb-4">Invoice: {invoiceNumber}</p>
             
             <div className="space-y-4 mb-6">
               <div>
@@ -298,6 +400,31 @@ ${productList}
                   required
                 />
               </div>
+
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="shippingOption"
+                  checked={isShipping}
+                  onChange={() => setIsShipping(!isShipping)}
+                  className="mr-2"
+                />
+                <label htmlFor="shippingOption" className="text-sm">Need shipping? (If unchecked, pickup only)</label>
+              </div>
+              
+              {isShipping && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Shipping Address</label>
+                  <textarea
+                    className="w-full rounded-lg border border-gray-300 p-2"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Enter your complete shipping address"
+                    rows={3}
+                    required
+                  />
+                </div>
+              )}
             </div>
             
             <div className="border-t border-b py-4 my-4">
@@ -361,10 +488,14 @@ ${productList}
             
             <button
               onClick={handleWhatsAppRedirect}
-              className="w-full bg-[#FF5E01] text-white rounded-full py-3 font-medium shadow-md"
+              className="w-full bg-[#FF5E01] text-white rounded-full py-3 font-medium shadow-md mb-4"
             >
               Order via WhatsApp
             </button>
+            
+            <p className="text-center text-sm text-gray-500 italic">
+              Pesanan kamu akan kami alihkan ke admin whatsapp
+            </p>
           </div>
         )}
 
@@ -449,6 +580,88 @@ ${productList}
             </div>
           </div>
         )}
+
+        {/* Product Details Modal */}
+        <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>{selectedProduct?.name}</DialogTitle>
+            </DialogHeader>
+            
+            {selectedProduct && (
+              <div className="mt-2">
+                <div className="relative">
+                  <img 
+                    src={
+                      currentImageIndex === 0 
+                        ? selectedProduct.image 
+                        : selectedProduct.additionalImages[currentImageIndex - 1]
+                    } 
+                    alt={selectedProduct.name}
+                    className="w-full h-64 object-cover rounded-md"
+                  />
+                  
+                  {([selectedProduct.image, ...selectedProduct.additionalImages].length > 1) && (
+                    <>
+                      <button 
+                        onClick={prevImage}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
+                      >
+                        ←
+                      </button>
+                      <button 
+                        onClick={nextImage}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
+                      >
+                        →
+                      </button>
+                      
+                      <div className="flex justify-center mt-2 gap-1">
+                        {[selectedProduct.image, ...selectedProduct.additionalImages].map((_, index) => (
+                          <div 
+                            key={index}
+                            className={`w-2 h-2 rounded-full ${index === currentImageIndex ? 'bg-[#FF5E01]' : 'bg-gray-300'}`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+                
+                <div className="mt-4">
+                  <p className="text-gray-600 text-sm mb-4">{selectedProduct.description}</p>
+                  
+                  <div className="flex justify-between items-center">
+                    {selectedProduct.discountPrice !== null ? (
+                      <div>
+                        <span className="line-through text-gray-500">
+                          Rp {selectedProduct.price.toLocaleString('id-ID')}
+                        </span>
+                        <span className="text-[#FF5E01] font-bold ml-2">
+                          Rp {selectedProduct.discountPrice.toLocaleString('id-ID')}
+                        </span>
+                      </div>
+                    ) : (
+                      <span className="font-bold">
+                        Rp {selectedProduct.price.toLocaleString('id-ID')}
+                      </span>
+                    )}
+                    
+                    <button
+                      onClick={() => {
+                        addToCart(selectedProduct);
+                        setSelectedProduct(null);
+                      }}
+                      className="bg-[#FF5E01] text-white px-4 py-2 rounded-full text-sm"
+                    >
+                      Add to Cart
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
