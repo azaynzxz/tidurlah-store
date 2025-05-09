@@ -1,8 +1,8 @@
-
 import { useState, useEffect } from "react";
 import { ShoppingCart, ShoppingBag } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import BannerCarousel from "@/components/BannerCarousel";
 
 // Product Data
 const products = {
@@ -275,6 +275,9 @@ ${productList}
         {!showOrderForm ? (
           /* Product Listing */
           <div className="p-4">
+            {/* Add Banner Carousel above tabs */}
+            <BannerCarousel />
+            
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full mb-4 bg-gray-100">
                 {Object.keys(products).map(category => (
