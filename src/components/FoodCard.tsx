@@ -1,6 +1,6 @@
 
 import { useState } from "react";
-import { Heart, Plus } from "lucide-react";
+import { Heart, Plus, Trash2 } from "lucide-react";
 
 interface PriceThreshold {
   minQuantity: number;
@@ -63,6 +63,20 @@ const FoodCard = ({ food, onAddToCart, onViewDetails }: FoodCardProps) => {
               <span className="ml-1">{food.rating}</span>
             </div>
           </div>
+          
+          {food.priceThresholds && food.priceThresholds.length > 0 && (
+            <div className="flex flex-wrap gap-1 mt-2 overflow-hidden" style={{ maxHeight: "60px" }}>
+              {food.priceThresholds.map((threshold, idx) => (
+                <div 
+                  key={idx} 
+                  className="px-2 py-1 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-xs font-medium"
+                >
+                  {threshold.minQuantity}
+                  {idx < food.priceThresholds!.length - 1 ? '-' + (food.priceThresholds![idx + 1].minQuantity - 1) : '+'} pcs: Rp {threshold.price.toLocaleString('id-ID')}
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
       <div className="mt-auto p-4 pt-0">

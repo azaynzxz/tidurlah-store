@@ -1,10 +1,18 @@
+
 import { useState, useEffect } from "react";
-import { ShoppingCart, ShoppingBag, Check, Search } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Check, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
 import SearchBar from "@/components/SearchBar";
 import { toast } from "sonner";
+
+// Valid promo codes with their discount percentage
+const validPromoCodes = {
+  "DISCOUNT10": 10,
+  "SAVE15": 15,
+  "PROMO20": 20
+};
 
 // Product Data with Price Thresholds
 const products = {
@@ -216,6 +224,9 @@ const Index = () => {
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState<any>(products);
   const [searchTerm, setSearchTerm] = useState("");
+  const [activeCategory, setActiveCategory] = useState("");
+  const [promoCodeError, setPromoCodeError] = useState("");
+  const [promoDiscount, setPromoDiscount] = useState(0);
   
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -242,11 +253,13 @@ const Index = () => {
     
     if (!term.trim()) {
       setFilteredProducts(products);
+      setActiveCategory("");
       return;
     }
     
     const loweredTerm = term.toLowerCase();
     const filtered: any = {};
+    let foundInCategory = "";
     
     Object.entries(products).forEach(([category, categoryProducts]) => {
       const matchedProducts = (categoryProducts as any[]).filter(product => 
@@ -256,10 +269,36 @@ const Index = () => {
       
       if (matchedProducts.length > 0) {
         filtered[category] = matchedProducts;
+        if (!foundInCategory) foundInCategory = category;
       }
     });
     
     setFilteredProducts(filtered);
+    
+    // Auto-select the first category with results
+    if (foundInCategory) {
+      setActiveTab(foundInCategory);
+      setActiveCategory(foundInCategory);
+    }
+  };
+
+  // Validate and apply promo code
+  const handlePromoCodeChange = (code: string) => {
+    setPromoCode(code);
+    setPromoCodeError("");
+    
+    if (!code) {
+      setPromoDiscount(0);
+      return;
+    }
+    
+    if (validPromoCodes[code as keyof typeof validPromoCodes]) {
+      setPromoDiscount(validPromoCodes[code as keyof typeof validPromoCodes]);
+      toast.success(`Promo code ${code} applied! ${validPromoCodes[code as keyof typeof validPromoCodes]}% discount`);
+    } else if (code) {
+      setPromoDiscount(0);
+      setPromoCodeError("Invalid promo code");
+    }
   };
 
   // Calculate appropriate price based on quantity and thresholds
@@ -347,11 +386,20 @@ const Index = () => {
     }
   };
 
-  // Calculate total price
+  // Delete item completely from cart
+  const deleteFromCart = (id: number) => {
+    setCartItems(cartItems.filter(item => item.id !== id));
+  };
+
+  // Calculate total price with promo discount
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => {
+    const subtotal = cartItems.reduce((total, item) => {
       return total + (item.appliedPrice * item.quantity);
     }, 0);
+    
+    return promoDiscount > 0 
+      ? subtotal * (1 - promoDiscount / 100) 
+      : subtotal;
   };
 
   // Calculate total savings
@@ -404,6 +452,9 @@ const Index = () => {
       const totalSavings = calculateTotalSavings();
       const savingsMessage = totalSavings > 0 ? 
         `\n*You saved: Rp ${totalSavings.toLocaleString('id-ID')}*` : '';
+        
+      const promoMessage = promoDiscount > 0 ?
+        `\n*Promo discount: ${promoDiscount}%*` : '';
 
       const message = `
 *Invoice: ${invoiceNumber}*
@@ -411,7 +462,7 @@ const Index = () => {
 Name: ${customerName}
 Institution: ${instansi}
 Phone: ${phoneNumber}
-${promoCode ? `Promo Code: ${promoCode}` : ''}
+${promoCode ? `Promo Code: ${promoCode}${promoMessage}` : ''}
 ${isShipping ? `Shipping Address: ${address}` : 'Pickup: Yes (No shipping required)'}
 
 *Products:*
@@ -448,11 +499,11 @@ ${productList}
         {!showOrderForm ? (
           /* Product Listing */
           <div className="p-4">
-            {/* Add Banner Carousel above tabs */}
-            <BannerCarousel />
-            
-            {/* Add Search Bar */}
+            {/* Search Bar above banner */}
             <SearchBar onSearch={handleSearch} />
+            
+            {/* Banner Carousel */}
+            <BannerCarousel />
             
             <Tabs value={activeTab} onValueChange={setActiveTab}>
               <TabsList className="w-full mb-4 bg-gray-100">
@@ -490,14 +541,21 @@ ${productList}
                         <div className="p-3 flex flex-col flex-grow">
                           <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
                           {product.priceThresholds && (
-                            <div className="mt-1 text-xs text-gray-500">
-                              {product.priceThresholds.map((threshold: any, idx: number) => (
-                                <div key={idx}>
-                                  {idx === 0 ? 'From ' : ''}
+                            <div className="flex flex-wrap gap-1 mt-2">
+                              {product.priceThresholds.slice(0, 2).map((threshold: any, idx: number) => (
+                                <div 
+                                  key={idx}
+                                  className="px-2 py-1 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-xs font-medium"
+                                >
                                   {threshold.minQuantity}
                                   {idx < product.priceThresholds.length - 1 ? '-' + (product.priceThresholds[idx + 1].minQuantity - 1) : '+'} pcs: Rp {threshold.price.toLocaleString('id-ID')}
                                 </div>
                               ))}
+                              {product.priceThresholds.length > 2 && (
+                                <div className="text-xs text-gray-500 mt-1">
+                                  +{product.priceThresholds.length - 2} more pricing options
+                                </div>
+                              )}
                             </div>
                           )}
                           <div className="mt-auto pt-2">
@@ -632,7 +690,15 @@ ${productList}
                     className="w-16 h-16 object-cover rounded"
                   />
                   <div className="ml-3 flex-1">
-                    <h4 className="font-medium">{item.name}</h4>
+                    <div className="flex justify-between">
+                      <h4 className="font-medium">{item.name}</h4>
+                      <button 
+                        onClick={() => deleteFromCart(item.id)}
+                        className="text-red-500 hover:text-red-700"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                     <div className="flex items-center justify-between">
                       <div>
                         <span className="text-[#FF5E01] font-medium">
@@ -670,13 +736,21 @@ ${productList}
             
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-700 mb-1">Promo Code</label>
-              <input
-                type="text"
-                className="w-full rounded-lg border border-gray-300 p-2"
-                value={promoCode}
-                onChange={(e) => setPromoCode(e.target.value)}
-                placeholder="Enter promo code if available"
-              />
+              <div className="relative">
+                <input
+                  type="text"
+                  className={`w-full rounded-lg border ${promoCodeError ? 'border-red-500' : 'border-gray-300'} p-2`}
+                  value={promoCode}
+                  onChange={(e) => handlePromoCodeChange(e.target.value)}
+                  placeholder="Enter promo code if available"
+                />
+                {promoCodeError && (
+                  <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
+                )}
+                {promoDiscount > 0 && (
+                  <p className="text-green-500 text-xs mt-1">Promo code applied: {promoDiscount}% discount</p>
+                )}
+              </div>
             </div>
             
             <div className="flex justify-between items-center mb-2">
@@ -739,7 +813,15 @@ ${productList}
                           className="w-16 h-16 object-cover rounded"
                         />
                         <div className="ml-3 flex-1">
-                          <h4 className="font-medium">{item.name}</h4>
+                          <div className="flex justify-between">
+                            <h4 className="font-medium">{item.name}</h4>
+                            <button 
+                              onClick={() => deleteFromCart(item.id)}
+                              className="text-red-500 hover:text-red-700"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </button>
+                          </div>
                           <div className="flex items-center justify-between">
                             <div>
                               <span className="text-[#FF5E01] font-medium">
@@ -867,12 +949,15 @@ ${productList}
                       <h4 className="font-medium mb-2">Price by quantity:</h4>
                       <div className="grid grid-cols-2 gap-2 text-sm">
                         {selectedProduct.priceThresholds.map((threshold: any, idx: number) => (
-                          <div key={idx} className="bg-gray-50 p-2 rounded">
+                          <div 
+                            key={idx} 
+                            className="px-3 py-2 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-sm font-medium flex flex-col items-center"
+                          >
                             <span className="font-medium">
                               {threshold.minQuantity}
-                              {idx < selectedProduct.priceThresholds.length - 1 ? '-' + (selectedProduct.priceThresholds[idx + 1].minQuantity - 1) : '+'} pcs:
+                              {idx < selectedProduct.priceThresholds.length - 1 ? '-' + (selectedProduct.priceThresholds[idx + 1].minQuantity - 1) : '+'} pcs
                             </span>
-                            <span className="block text-[#FF5E01]">
+                            <span className="block">
                               Rp {threshold.price.toLocaleString('id-ID')}
                             </span>
                             {threshold.price < selectedProduct.price && (

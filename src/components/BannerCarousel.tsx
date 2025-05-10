@@ -72,11 +72,11 @@ const BannerCarousel = () => {
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
-              <div className="relative h-[360px] w-full overflow-hidden rounded-lg">
+              <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
                 <img
                   src={banner.image}
                   alt={banner.title}
-                  className="h-full w-full object-cover"
+                  className="absolute top-0 left-0 w-full h-full object-cover"
                 />
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 text-white">
                   <h3 className="text-xl font-bold">{banner.title}</h3>
