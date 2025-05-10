@@ -59,7 +59,7 @@ const BannerCarousel = () => {
   }, [autoplay]);
 
   return (
-    <div className="relative mb-4">
+    <div className="relative mb-3">
       <Carousel
         className="w-full"
         onMouseEnter={() => setAutoplay(false)}
@@ -78,28 +78,28 @@ const BannerCarousel = () => {
                   alt={banner.title}
                   className="absolute top-0 left-0 w-full h-full object-cover"
                 />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-4 text-white">
-                  <h3 className="text-xl font-bold">{banner.title}</h3>
-                  <p className="mt-1 text-sm">{banner.description}</p>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 text-white">
+                  <h3 className="text-lg font-bold">{banner.title}</h3>
+                  <p className="text-xs">{banner.description}</p>
                 </div>
               </div>
             </CarouselItem>
           ))}
         </CarouselContent>
-        <CarouselPrevious className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white">
-          <ChevronLeft className="h-6 w-6" />
+        <CarouselPrevious className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8">
+          <ChevronLeft className="h-5 w-5" />
         </CarouselPrevious>
-        <CarouselNext className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white">
-          <ChevronRight className="h-6 w-6" />
+        <CarouselNext className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8">
+          <ChevronRight className="h-5 w-5" />
         </CarouselNext>
       </Carousel>
 
       {/* Pagination dots */}
-      <div className="absolute bottom-2 left-1/2 flex -translate-x-1/2 space-x-2">
+      <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 space-x-1">
         {banners.map((_, index) => (
           <div
             key={index}
-            className={`h-2 w-2 rounded-full ${
+            className={`h-1.5 w-1.5 rounded-full ${
               index === currentSlide % banners.length
                 ? "bg-white"
                 : "bg-white bg-opacity-50"

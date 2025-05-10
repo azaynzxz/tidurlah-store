@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { ShoppingCart, ShoppingBag, Check, Trash2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -11,7 +10,8 @@ import { toast } from "sonner";
 const validPromoCodes = {
   "DISCOUNT10": 10,
   "SAVE15": 15,
-  "PROMO20": 20
+  "PROMO20": 20,
+  "KKN15": 15
 };
 
 // Product Data with Price Thresholds
@@ -481,8 +481,8 @@ ${productList}
     <div className="min-h-screen bg-gray-50">
       <div className="container mx-auto max-w-md bg-white min-h-screen">
         {/* Header */}
-        <div className="bg-white shadow-sm p-4 flex justify-between items-center sticky top-0 z-10">
-          <h1 className="text-xl font-bold">Shopping Cart</h1>
+        <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
+          <h1 className="text-lg font-bold">Shopping Cart</h1>
           <button 
             className="relative p-2"
             onClick={() => setShowCart(true)}
@@ -498,7 +498,7 @@ ${productList}
 
         {!showOrderForm ? (
           /* Product Listing */
-          <div className="p-4">
+          <div className="p-3">
             {/* Search Bar above banner */}
             <SearchBar onSearch={handleSearch} />
             
@@ -506,7 +506,7 @@ ${productList}
             <BannerCarousel />
             
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="w-full mb-4 bg-gray-100">
+              <TabsList className="w-full mb-3 bg-gray-100">
                 {Object.keys(filteredProducts).map(category => (
                   <TabsTrigger 
                     key={category}
@@ -520,7 +520,7 @@ ${productList}
 
               {Object.keys(filteredProducts).map(category => (
                 <TabsContent key={category} value={category}>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="grid grid-cols-2 gap-3">
                     {filteredProducts[category].map((product: any) => (
                       <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm flex flex-col h-full">
                         <div 
@@ -538,41 +538,41 @@ ${productList}
                             View details
                           </div>
                         </div>
-                        <div className="p-3 flex flex-col flex-grow">
-                          <h3 className="font-medium text-sm line-clamp-2">{product.name}</h3>
+                        <div className="p-2 flex flex-col flex-grow">
+                          <h3 className="font-medium text-xs line-clamp-2">{product.name}</h3>
                           {product.priceThresholds && (
-                            <div className="flex flex-wrap gap-1 mt-2">
+                            <div className="flex flex-wrap gap-1 mt-1">
                               {product.priceThresholds.slice(0, 2).map((threshold: any, idx: number) => (
                                 <div 
                                   key={idx}
-                                  className="px-2 py-1 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-xs font-medium"
+                                  className="px-1.5 py-0.5 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-xxs font-medium"
                                 >
                                   {threshold.minQuantity}
-                                  {idx < product.priceThresholds.length - 1 ? '-' + (product.priceThresholds[idx + 1].minQuantity - 1) : '+'} pcs: Rp {threshold.price.toLocaleString('id-ID')}
+                                  {idx < product.priceThresholds.length - 1 ? '-' + (product.priceThresholds[idx + 1].minQuantity - 1) : '+'} : Rp {threshold.price.toLocaleString('id-ID')}
                                 </div>
                               ))}
                               {product.priceThresholds.length > 2 && (
-                                <div className="text-xs text-gray-500 mt-1">
-                                  +{product.priceThresholds.length - 2} more pricing options
+                                <div className="text-xxs text-gray-500 mt-0.5">
+                                  +{product.priceThresholds.length - 2} more
                                 </div>
                               )}
                             </div>
                           )}
-                          <div className="mt-auto pt-2">
+                          <div className="mt-auto pt-1">
                             {product.discountPrice !== null ? (
                               <div className="flex flex-col">
-                                <span className="line-through text-gray-500 text-xs">
+                                <span className="line-through text-gray-500 text-xxs">
                                   Rp {product.price.toLocaleString('id-ID')}
                                 </span>
-                                <span className="text-[#FF5E01] font-semibold">
+                                <span className="text-[#FF5E01] font-semibold text-xs">
                                   Rp {product.discountPrice.toLocaleString('id-ID')}
                                 </span>
-                                <span className="text-xs text-green-500">
+                                <span className="text-xxs text-green-500">
                                   Anda hemat Rp {(product.price - product.discountPrice).toLocaleString('id-ID')}
                                 </span>
                               </div>
                             ) : (
-                              <span className="font-semibold">
+                              <span className="font-semibold text-xs">
                                 Rp {product.price.toLocaleString('id-ID')}
                               </span>
                             )}
@@ -582,9 +582,9 @@ ${productList}
                               e.stopPropagation();
                               addToCart(product);
                             }}
-                            className="mt-2 w-full bg-[#FF5E01] text-white rounded-full py-1 px-3 text-sm flex items-center justify-center"
+                            className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
                           >
-                            <ShoppingBag className="h-4 w-4 mr-1" /> Add to cart
+                            <ShoppingBag className="h-3 w-3 mr-1" /> Add to cart
                           </button>
                         </div>
                       </div>
@@ -595,10 +595,10 @@ ${productList}
             </Tabs>
 
             {cartItems.length > 0 && (
-              <div className="mt-8 flex justify-center">
+              <div className="mt-4 flex justify-center">
                 <button
                   onClick={() => setShowOrderForm(true)}
-                  className="bg-[#FF5E01] text-white rounded-full py-2 px-8 font-medium shadow-md"
+                  className="bg-[#FF5E01] text-white rounded-full py-2 px-6 font-medium shadow-md"
                 >
                   Next
                 </button>
@@ -607,18 +607,18 @@ ${productList}
           </div>
         ) : (
           /* Order Form */
-          <div className="p-4">
+          <div className="p-3">
             <button
               onClick={() => setShowOrderForm(false)}
-              className="mb-4 text-[#FF5E01] flex items-center"
+              className="mb-3 text-[#FF5E01] flex items-center"
             >
               ← Back to Products
             </button>
             
-            <h2 className="text-xl font-bold mb-4">Order Information</h2>
-            <p className="text-sm text-gray-600 mb-4">Invoice: {invoiceNumber}</p>
+            <h2 className="text-lg font-bold mb-3">Order Information</h2>
+            <p className="text-sm text-gray-600 mb-3">Invoice: {invoiceNumber}</p>
             
-            <div className="space-y-4 mb-6">
+            <div className="space-y-3 mb-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
                 <input
@@ -680,18 +680,18 @@ ${productList}
               )}
             </div>
             
-            <div className="border-t border-b py-4 my-4">
-              <h3 className="font-medium mb-3">Order Summary</h3>
+            <div className="border-t border-b py-3 my-3">
+              <h3 className="font-medium mb-2 text-sm">Order Summary</h3>
               {cartItems.map(item => (
-                <div key={item.id} className="flex items-center mb-3">
+                <div key={item.id} className="flex items-center mb-2">
                   <img 
                     src={item.image} 
                     alt={item.name} 
-                    className="w-16 h-16 object-cover rounded"
+                    className="w-14 h-14 object-cover rounded"
                   />
-                  <div className="ml-3 flex-1">
+                  <div className="ml-2 flex-1">
                     <div className="flex justify-between">
-                      <h4 className="font-medium">{item.name}</h4>
+                      <h4 className="font-medium text-sm">{item.name}</h4>
                       <button 
                         onClick={() => deleteFromCart(item.id)}
                         className="text-red-500 hover:text-red-700"
@@ -701,14 +701,14 @@ ${productList}
                     </div>
                     <div className="flex items-center justify-between">
                       <div>
-                        <span className="text-[#FF5E01] font-medium">
+                        <span className="text-[#FF5E01] font-medium text-xs">
                           Rp {item.appliedPrice.toLocaleString('id-ID')}
                         </span>
-                        <span className="text-gray-500 text-sm ml-2">
+                        <span className="text-gray-500 text-xs ml-1">
                           x{item.quantity}
                         </span>
                         {item.savings > 0 && (
-                          <span className="text-xs block text-green-500">
+                          <span className="text-xxs block text-green-500">
                             Anda hemat Rp {item.savings.toLocaleString('id-ID')}
                           </span>
                         )}
@@ -716,14 +716,14 @@ ${productList}
                       <div className="flex items-center">
                         <button
                           onClick={() => removeFromCart(item.id)}
-                          className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded"
+                          className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
                         >
                           -
                         </button>
-                        <span className="mx-2">{item.quantity}</span>
+                        <span className="mx-1 text-xs">{item.quantity}</span>
                         <button
                           onClick={() => addToCart(item)}
-                          className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded"
+                          className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
                         >
                           +
                         </button>
@@ -734,7 +734,7 @@ ${productList}
               ))}
             </div>
             
-            <div className="mb-4">
+            <div className="mb-3">
               <label className="block text-sm font-medium text-gray-700 mb-1">Promo Code</label>
               <div className="relative">
                 <input
@@ -753,16 +753,16 @@ ${productList}
               </div>
             </div>
             
-            <div className="flex justify-between items-center mb-2">
+            <div className="flex justify-between items-center mb-1">
               <span className="text-gray-700">Total</span>
-              <span className="text-xl font-bold text-[#FF5E01]">
+              <span className="text-lg font-bold text-[#FF5E01]">
                 Rp {calculateTotal().toLocaleString('id-ID')}
               </span>
             </div>
             
             {calculateTotalSavings() > 0 && (
-              <div className="flex justify-end items-center mb-6">
-                <span className="text-green-500 text-sm">
+              <div className="flex justify-end items-center mb-3">
+                <span className="text-green-500 text-xs">
                   Total hemat: Rp {calculateTotalSavings().toLocaleString('id-ID')}
                 </span>
               </div>
@@ -770,13 +770,13 @@ ${productList}
             
             <button
               onClick={handleWhatsAppRedirect}
-              className="w-full bg-[#FF5E01] text-white rounded-full py-3 font-medium shadow-md mb-4 relative"
+              className="w-full bg-[#FF5E01] text-white rounded-full py-2 font-medium shadow-md mb-3 relative"
               disabled={showOrderSuccess}
             >
               {showOrderSuccess ? (
                 <div className="flex items-center justify-center">
                   <div className="bg-white rounded-full p-1 mr-2">
-                    <Check className="h-5 w-5 text-green-500" />
+                    <Check className="h-4 w-4 text-green-500" />
                   </div>
                   Processing...
                 </div>
@@ -785,7 +785,7 @@ ${productList}
               )}
             </button>
             
-            <p className="text-center text-sm text-gray-500 italic">
+            <p className="text-center text-xs text-gray-500 italic">
               Pesanan kamu akan kami alihkan ke admin whatsapp
             </p>
           </div>
@@ -795,26 +795,26 @@ ${productList}
         {showCart && (
           <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
             <div className="bg-white w-full max-w-md h-full overflow-y-auto">
-              <div className="p-4 border-b sticky top-0 bg-white">
+              <div className="p-3 border-b sticky top-0 bg-white">
                 <div className="flex justify-between items-center">
                   <h3 className="font-bold text-lg">Your Cart</h3>
                   <button onClick={() => setShowCart(false)}>✕</button>
                 </div>
               </div>
 
-              <div className="p-4">
+              <div className="p-3">
                 {cartItems.length > 0 ? (
                   <>
                     {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center mb-4">
+                      <div key={item.id} className="flex items-center mb-3">
                         <img 
                           src={item.image} 
                           alt={item.name} 
-                          className="w-16 h-16 object-cover rounded"
+                          className="w-14 h-14 object-cover rounded"
                         />
-                        <div className="ml-3 flex-1">
+                        <div className="ml-2 flex-1">
                           <div className="flex justify-between">
-                            <h4 className="font-medium">{item.name}</h4>
+                            <h4 className="font-medium text-sm">{item.name}</h4>
                             <button 
                               onClick={() => deleteFromCart(item.id)}
                               className="text-red-500 hover:text-red-700"
@@ -824,14 +824,14 @@ ${productList}
                           </div>
                           <div className="flex items-center justify-between">
                             <div>
-                              <span className="text-[#FF5E01] font-medium">
+                              <span className="text-[#FF5E01] font-medium text-xs">
                                 Rp {item.appliedPrice.toLocaleString('id-ID')}
                               </span>
-                              <span className="text-gray-500 text-sm ml-2">
+                              <span className="text-gray-500 text-xs ml-1">
                                 x{item.quantity}
                               </span>
                               {item.savings > 0 && (
-                                <span className="text-xs block text-green-500">
+                                <span className="text-xxs block text-green-500">
                                   Anda hemat Rp {item.savings.toLocaleString('id-ID')}
                                 </span>
                               )}
@@ -839,14 +839,14 @@ ${productList}
                             <div className="flex items-center">
                               <button
                                 onClick={() => removeFromCart(item.id)}
-                                className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded"
+                                className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
                               >
                                 -
                               </button>
-                              <span className="mx-2">{item.quantity}</span>
+                              <span className="mx-1 text-xs">{item.quantity}</span>
                               <button
                                 onClick={() => addToCart(item)}
-                                className="w-6 h-6 flex items-center justify-center bg-gray-100 rounded"
+                                className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
                               >
                                 +
                               </button>
@@ -856,8 +856,8 @@ ${productList}
                       </div>
                     ))}
 
-                    <div className="border-t pt-4 mt-4">
-                      <div className="flex justify-between mb-2">
+                    <div className="border-t pt-3 mt-3">
+                      <div className="flex justify-between mb-1">
                         <span>Total</span>
                         <span className="font-bold">
                           Rp {calculateTotal().toLocaleString('id-ID')}
@@ -865,8 +865,8 @@ ${productList}
                       </div>
                       
                       {calculateTotalSavings() > 0 && (
-                        <div className="flex justify-end mb-4">
-                          <span className="text-green-500 text-sm">
+                        <div className="flex justify-end mb-3">
+                          <span className="text-green-500 text-xs">
                             Total hemat: Rp {calculateTotalSavings().toLocaleString('id-ID')}
                           </span>
                         </div>
@@ -911,7 +911,7 @@ ${productList}
                         : selectedProduct.additionalImages[currentImageIndex - 1]
                     } 
                     alt={selectedProduct.name}
-                    className="w-full h-64 object-cover rounded-md"
+                    className="w-full h-56 object-cover rounded-md"
                   />
                   
                   {([selectedProduct.image, ...selectedProduct.additionalImages].length > 1) && (
@@ -951,7 +951,7 @@ ${productList}
                         {selectedProduct.priceThresholds.map((threshold: any, idx: number) => (
                           <div 
                             key={idx} 
-                            className="px-3 py-2 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-sm font-medium flex flex-col items-center"
+                            className="px-3 py-2 bg-[#FF5E01] bg-opacity-10 rounded text-[#FF5E01] text-sm font-medium flex flex-col items-center"
                           >
                             <span className="font-medium">
                               {threshold.minQuantity}
