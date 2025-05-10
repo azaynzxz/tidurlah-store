@@ -16,19 +16,19 @@ const validPromoCodes = {
 
 // Product Data with Price Thresholds
 const products = {
-  "ID Card Lanyard": [
+  "ID Card & Lanyard": [
     {
       id: 1,
-      name: "Basic ID Card Lanyard",
+      name: "ID Card 1S",
       image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Standard ID card lanyard with clip attachment, perfect for everyday use.",
+      description: "Standard ID card single side print with premium materials.",
       price: 25000,
       discountPrice: null,
-      category: "ID Card Lanyard",
+      category: "ID Card & Lanyard",
       priceThresholds: [
         { minQuantity: 1, price: 25000 },
         { minQuantity: 4, price: 20000 },
@@ -40,16 +40,16 @@ const products = {
     },
     {
       id: 2,
-      name: "Premium ID Card Lanyard",
+      name: "ID Card 2S",
       image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "High quality lanyard with custom printing options and durable materials.",
+      description: "Double sided ID card print with premium materials.",
       price: 35000,
       discountPrice: 30000,
-      category: "ID Card Lanyard",
+      category: "ID Card & Lanyard",
       priceThresholds: [
         { minQuantity: 1, price: 30000 },
         { minQuantity: 5, price: 28000 },
@@ -61,16 +61,16 @@ const products = {
     },
     {
       id: 3,
-      name: "Custom Print Lanyard",
+      name: "IDC Tali & Case Kulit",
       image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Fully customizable lanyard with your logo or design printed on both sides.",
+      description: "Premium ID card with leather case and lanyard.",
       price: 40000,
       discountPrice: null,
-      category: "ID Card Lanyard",
+      category: "ID Card & Lanyard",
       priceThresholds: [
         { minQuantity: 1, price: 40000 },
         { minQuantity: 10, price: 37000 },
@@ -79,83 +79,165 @@ const products = {
       ],
       time: "3-5 days",
       rating: 4.9
-    }
-  ],
-  "Merch": [
+    },
     {
       id: 4,
-      name: "T-Shirt with Logo",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      name: "Lanyard Saja 1S",
+      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Premium cotton t-shirt with embroidered logo, available in multiple sizes.",
-      price: 120000,
-      discountPrice: 99000,
-      category: "Merch",
+      description: "Single sided printed lanyard without ID card or case.",
+      price: 15000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 99000 },
-        { minQuantity: 5, price: 89000 },
-        { minQuantity: 25, price: 79000 },
-        { minQuantity: 100, price: 69000 }
+        { minQuantity: 1, price: 15000 },
+        { minQuantity: 10, price: 13000 },
+        { minQuantity: 50, price: 12000 },
+        { minQuantity: 100, price: 10000 }
       ],
-      time: "1 week",
+      time: "1-2 days",
       rating: 4.6
     },
     {
       id: 5,
-      name: "Coffee Mug",
-      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      name: "Lanyard Saja 2S",
+      image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Ceramic mug with printed design, microwave and dishwasher safe.",
-      price: 45000,
+      description: "Double sided printed lanyard without ID card or case.",
+      price: 18000,
       discountPrice: null,
-      category: "Merch",
+      category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 45000 },
-        { minQuantity: 5, price: 42000 },
-        { minQuantity: 20, price: 38000 },
-        { minQuantity: 50, price: 35000 }
+        { minQuantity: 1, price: 18000 },
+        { minQuantity: 10, price: 16000 },
+        { minQuantity: 50, price: 15000 },
+        { minQuantity: 100, price: 13000 }
       ],
-      time: "3-5 days",
-      rating: 4.5
+      time: "1-2 days",
+      rating: 4.7
     },
     {
       id: 6,
-      name: "Notebook Set",
-      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      name: "IDC Tali Biasa",
+      image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Set of 3 notebooks with different paper types and custom cover designs.",
-      price: 50000,
-      discountPrice: 40000,
-      category: "Merch",
+      description: "Standard ID card with basic lanyard.",
+      price: 22000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 40000 },
-        { minQuantity: 3, price: 38000 },
-        { minQuantity: 10, price: 36000 },
-        { minQuantity: 25, price: 33000 }
+        { minQuantity: 1, price: 22000 },
+        { minQuantity: 10, price: 20000 },
+        { minQuantity: 50, price: 18000 },
+        { minQuantity: 100, price: 16000 }
       ],
-      time: "2-4 days",
-      rating: 4.7
+      time: "1-2 days",
+      rating: 4.5
+    },
+    {
+      id: 7,
+      name: "Paket IDC LYD 1S",
+      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Complete package with single sided ID card and matching lanyard.",
+      price: 30000,
+      discountPrice: 28000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 10, price: 26000 },
+        { minQuantity: 50, price: 24000 },
+        { minQuantity: 100, price: 22000 }
+      ],
+      time: "2-3 days",
+      rating: 4.8
+    },
+    {
+      id: 8,
+      name: "Paket IDC LYD 2S",
+      image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Complete package with double sided ID card and matching lanyard.",
+      price: 35000,
+      discountPrice: 32000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 32000 },
+        { minQuantity: 10, price: 30000 },
+        { minQuantity: 50, price: 28000 },
+        { minQuantity: 100, price: 26000 }
+      ],
+      time: "2-3 days",
+      rating: 4.9
+    },
+    {
+      id: 9,
+      name: "Paket IDC LYD Kulit",
+      image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Premium package with ID card, leather case, and matching lanyard.",
+      price: 45000,
+      discountPrice: 42000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 42000 },
+        { minQuantity: 10, price: 40000 },
+        { minQuantity: 50, price: 38000 },
+        { minQuantity: 100, price: 35000 }
+      ],
+      time: "3-4 days",
+      rating: 5.0
+    },
+    {
+      id: 10,
+      name: "Paket IDC LYD Premium",
+      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Deluxe package with double sided ID card, premium case, and custom printed lanyard.",
+      price: 50000,
+      discountPrice: 45000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 45000 },
+        { minQuantity: 10, price: 42000 },
+        { minQuantity: 50, price: 40000 },
+        { minQuantity: 100, price: 38000 }
+      ],
+      time: "3-5 days",
+      rating: 4.9
     }
   ],
   "Media Promosi": [
     {
-      id: 7,
-      name: "Roll Up Banner",
+      id: 11,
+      name: "Banner",
       image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Portable roll-up banner with stand, perfect for events and trade shows.",
+      description: "Custom printed banner for events and promotions.",
       price: 250000,
       discountPrice: 220000,
       category: "Media Promosi",
@@ -169,16 +251,16 @@ const products = {
       rating: 4.8
     },
     {
-      id: 8,
-      name: "Flyer Design (100pcs)",
+      id: 12,
+      name: "X Banner (60x160)",
       image: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Custom flyer designs printed on high-quality paper, pack of 100 pieces.",
-      price: 150000,
-      discountPrice: null,
+      description: "X-shaped banner stand with 60x160cm custom printed banner.",
+      price: 180000,
+      discountPrice: 150000,
       category: "Media Promosi",
       priceThresholds: [
         { minQuantity: 1, price: 150000 },
@@ -190,31 +272,266 @@ const products = {
       rating: 4.6
     },
     {
-      id: 9,
-      name: "Backdrop Banner",
+      id: 13,
+      name: "Roll Banner",
       image: "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
-      description: "Large format backdrop banner for events, exhibitions and photo opportunities.",
-      price: 350000,
-      discountPrice: 300000,
+      description: "Portable roll-up banner with stand, perfect for events and trade shows.",
+      price: 200000,
+      discountPrice: 180000,
       category: "Media Promosi",
       priceThresholds: [
-        { minQuantity: 1, price: 300000 },
-        { minQuantity: 2, price: 280000 },
-        { minQuantity: 3, price: 260000 },
-        { minQuantity: 5, price: 250000 }
+        { minQuantity: 1, price: 180000 },
+        { minQuantity: 3, price: 170000 },
+        { minQuantity: 5, price: 160000 },
+        { minQuantity: 10, price: 150000 }
+      ],
+      time: "3-4 days",
+      rating: 4.8
+    },
+    {
+      id: 14,
+      name: "Poster A3",
+      image: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "A3 size posters printed on high-quality paper.",
+      price: 25000,
+      discountPrice: null,
+      category: "Media Promosi",
+      priceThresholds: [
+        { minQuantity: 1, price: 25000 },
+        { minQuantity: 10, price: 22000 },
+        { minQuantity: 25, price: 20000 },
+        { minQuantity: 50, price: 18000 }
+      ],
+      time: "1-2 days",
+      rating: 4.7
+    }
+  ],
+  "Merchandise": [
+    {
+      id: 15,
+      name: "Cutting Stiker Kontur",
+      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Custom cut vinyl stickers with your design.",
+      price: 15000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 15000 },
+        { minQuantity: 10, price: 12000 },
+        { minQuantity: 50, price: 10000 },
+        { minQuantity: 100, price: 8000 }
+      ],
+      time: "1-2 days",
+      rating: 4.6
+    },
+    {
+      id: 16,
+      name: "Ganci Akrilik",
+      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Custom printed acrylic badges with your design.",
+      price: 10000,
+      discountPrice: 8000,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 8000 },
+        { minQuantity: 10, price: 7000 },
+        { minQuantity: 50, price: 6000 },
+        { minQuantity: 100, price: 5000 }
+      ],
+      time: "1-2 days",
+      rating: 4.5
+    },
+    {
+      id: 17,
+      name: "Ganci 5 cm",
+      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "5cm diameter custom printed badges.",
+      price: 12000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 12000 },
+        { minQuantity: 10, price: 10000 },
+        { minQuantity: 50, price: 9000 },
+        { minQuantity: 100, price: 8000 }
+      ],
+      time: "1-2 days",
+      rating: 4.7
+    },
+    {
+      id: 18,
+      name: "Ganci 3 cm",
+      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "3cm diameter custom printed badges.",
+      price: 8000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 8000 },
+        { minQuantity: 10, price: 7000 },
+        { minQuantity: 50, price: 6000 },
+        { minQuantity: 100, price: 5000 }
+      ],
+      time: "1 day",
+      rating: 4.6
+    },
+    {
+      id: 19,
+      name: "Ganci Tali",
+      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Custom printed badges with string attachment.",
+      price: 15000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 15000 },
+        { minQuantity: 10, price: 13000 },
+        { minQuantity: 50, price: 12000 },
+        { minQuantity: 100, price: 10000 }
+      ],
+      time: "1-2 days",
+      rating: 4.8
+    },
+    {
+      id: 20,
+      name: "Mug Custom",
+      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Ceramic mug with printed design, microwave and dishwasher safe.",
+      price: 45000,
+      discountPrice: 40000,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 40000 },
+        { minQuantity: 5, price: 38000 },
+        { minQuantity: 20, price: 35000 },
+        { minQuantity: 50, price: 32000 }
+      ],
+      time: "3-5 days",
+      rating: 4.8
+    },
+    {
+      id: 21,
+      name: "Tumbler Custom",
+      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Custom printed travel tumbler with lid, perfect for hot and cold beverages.",
+      price: 70000,
+      discountPrice: 65000,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 65000 },
+        { minQuantity: 5, price: 60000 },
+        { minQuantity: 20, price: 55000 },
+        { minQuantity: 50, price: 50000 }
+      ],
+      time: "3-5 days",
+      rating: 4.9
+    },
+    {
+      id: 22,
+      name: "Plakat Akrilik Reg",
+      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Regular size acrylic award plaque with custom design and text.",
+      price: 150000,
+      discountPrice: 135000,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 135000 },
+        { minQuantity: 3, price: 125000 },
+        { minQuantity: 10, price: 115000 },
+        { minQuantity: 25, price: 110000 }
       ],
       time: "4-7 days",
       rating: 4.9
+    },
+    {
+      id: 23,
+      name: "Sablon Kaos",
+      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Custom screen printed t-shirts with your design.",
+      price: 80000,
+      discountPrice: 75000,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 75000 },
+        { minQuantity: 10, price: 70000 },
+        { minQuantity: 25, price: 65000 },
+        { minQuantity: 50, price: 60000 }
+      ],
+      time: "5-7 days",
+      rating: 4.7
     }
-  ]
+  ],
+  "Jasa Desain": [
+    {
+      id: 24,
+      name: "Jasa Desain",
+      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      additionalImages: [
+        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+      ],
+      description: "Professional graphic design services for all your needs.",
+      price: 200000,
+      discountPrice: null,
+      category: "Jasa Desain",
+      priceThresholds: [
+        { minQuantity: 1, price: 200000 },
+        { minQuantity: 3, price: 180000 },
+        { minQuantity: 5, price: 150000 },
+        { minQuantity: 10, price: 120000 }
+      ],
+      time: "3-7 days",
+      rating: 4.9
+    }
+  ],
 };
 
 const Index = () => {
-  const [activeTab, setActiveTab] = useState("ID Card Lanyard");
+  const [activeTab, setActiveTab] = useState("ID Card & Lanyard");
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
   const [showOrderForm, setShowOrderForm] = useState(false);
@@ -682,329 +999,4 @@ ${productList}
             
             <div className="border-t border-b py-3 my-3">
               <h3 className="font-medium mb-2 text-sm">Order Summary</h3>
-              {cartItems.map(item => (
-                <div key={item.id} className="flex items-center mb-2">
-                  <img 
-                    src={item.image} 
-                    alt={item.name} 
-                    className="w-14 h-14 object-cover rounded"
-                  />
-                  <div className="ml-2 flex-1">
-                    <div className="flex justify-between">
-                      <h4 className="font-medium text-sm">{item.name}</h4>
-                      <button 
-                        onClick={() => deleteFromCart(item.id)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </button>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <span className="text-[#FF5E01] font-medium text-xs">
-                          Rp {item.appliedPrice.toLocaleString('id-ID')}
-                        </span>
-                        <span className="text-gray-500 text-xs ml-1">
-                          x{item.quantity}
-                        </span>
-                        {item.savings > 0 && (
-                          <span className="text-xxs block text-green-500">
-                            Anda hemat Rp {item.savings.toLocaleString('id-ID')}
-                          </span>
-                        )}
-                      </div>
-                      <div className="flex items-center">
-                        <button
-                          onClick={() => removeFromCart(item.id)}
-                          className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
-                        >
-                          -
-                        </button>
-                        <span className="mx-1 text-xs">{item.quantity}</span>
-                        <button
-                          onClick={() => addToCart(item)}
-                          className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
-                        >
-                          +
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-            
-            <div className="mb-3">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Promo Code</label>
-              <div className="relative">
-                <input
-                  type="text"
-                  className={`w-full rounded-lg border ${promoCodeError ? 'border-red-500' : 'border-gray-300'} p-2`}
-                  value={promoCode}
-                  onChange={(e) => handlePromoCodeChange(e.target.value)}
-                  placeholder="Enter promo code if available"
-                />
-                {promoCodeError && (
-                  <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
-                )}
-                {promoDiscount > 0 && (
-                  <p className="text-green-500 text-xs mt-1">Promo code applied: {promoDiscount}% discount</p>
-                )}
-              </div>
-            </div>
-            
-            <div className="flex justify-between items-center mb-1">
-              <span className="text-gray-700">Total</span>
-              <span className="text-lg font-bold text-[#FF5E01]">
-                Rp {calculateTotal().toLocaleString('id-ID')}
-              </span>
-            </div>
-            
-            {calculateTotalSavings() > 0 && (
-              <div className="flex justify-end items-center mb-3">
-                <span className="text-green-500 text-xs">
-                  Total hemat: Rp {calculateTotalSavings().toLocaleString('id-ID')}
-                </span>
-              </div>
-            )}
-            
-            <button
-              onClick={handleWhatsAppRedirect}
-              className="w-full bg-[#FF5E01] text-white rounded-full py-2 font-medium shadow-md mb-3 relative"
-              disabled={showOrderSuccess}
-            >
-              {showOrderSuccess ? (
-                <div className="flex items-center justify-center">
-                  <div className="bg-white rounded-full p-1 mr-2">
-                    <Check className="h-4 w-4 text-green-500" />
-                  </div>
-                  Processing...
-                </div>
-              ) : (
-                "Order via WhatsApp"
-              )}
-            </button>
-            
-            <p className="text-center text-xs text-gray-500 italic">
-              Pesanan kamu akan kami alihkan ke admin whatsapp
-            </p>
-          </div>
-        )}
-
-        {/* Cart Sidebar */}
-        {showCart && (
-          <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-end">
-            <div className="bg-white w-full max-w-md h-full overflow-y-auto">
-              <div className="p-3 border-b sticky top-0 bg-white">
-                <div className="flex justify-between items-center">
-                  <h3 className="font-bold text-lg">Your Cart</h3>
-                  <button onClick={() => setShowCart(false)}>✕</button>
-                </div>
-              </div>
-
-              <div className="p-3">
-                {cartItems.length > 0 ? (
-                  <>
-                    {cartItems.map(item => (
-                      <div key={item.id} className="flex items-center mb-3">
-                        <img 
-                          src={item.image} 
-                          alt={item.name} 
-                          className="w-14 h-14 object-cover rounded"
-                        />
-                        <div className="ml-2 flex-1">
-                          <div className="flex justify-between">
-                            <h4 className="font-medium text-sm">{item.name}</h4>
-                            <button 
-                              onClick={() => deleteFromCart(item.id)}
-                              className="text-red-500 hover:text-red-700"
-                            >
-                              <Trash2 className="h-4 w-4" />
-                            </button>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <div>
-                              <span className="text-[#FF5E01] font-medium text-xs">
-                                Rp {item.appliedPrice.toLocaleString('id-ID')}
-                              </span>
-                              <span className="text-gray-500 text-xs ml-1">
-                                x{item.quantity}
-                              </span>
-                              {item.savings > 0 && (
-                                <span className="text-xxs block text-green-500">
-                                  Anda hemat Rp {item.savings.toLocaleString('id-ID')}
-                                </span>
-                              )}
-                            </div>
-                            <div className="flex items-center">
-                              <button
-                                onClick={() => removeFromCart(item.id)}
-                                className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
-                              >
-                                -
-                              </button>
-                              <span className="mx-1 text-xs">{item.quantity}</span>
-                              <button
-                                onClick={() => addToCart(item)}
-                                className="w-5 h-5 flex items-center justify-center bg-gray-100 rounded"
-                              >
-                                +
-                              </button>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    ))}
-
-                    <div className="border-t pt-3 mt-3">
-                      <div className="flex justify-between mb-1">
-                        <span>Total</span>
-                        <span className="font-bold">
-                          Rp {calculateTotal().toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                      
-                      {calculateTotalSavings() > 0 && (
-                        <div className="flex justify-end mb-3">
-                          <span className="text-green-500 text-xs">
-                            Total hemat: Rp {calculateTotalSavings().toLocaleString('id-ID')}
-                          </span>
-                        </div>
-                      )}
-                      
-                      <button
-                        className="w-full bg-[#FF5E01] text-white rounded-full py-2 font-medium"
-                        onClick={() => {
-                          setShowCart(false);
-                          setShowOrderForm(true);
-                        }}
-                      >
-                        Checkout
-                      </button>
-                    </div>
-                  </>
-                ) : (
-                  <div className="text-center py-8">
-                    <ShoppingCart className="mx-auto h-16 w-16 text-gray-300" />
-                    <p className="mt-2 text-gray-500">Your cart is empty</p>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Product Details Modal */}
-        <Dialog open={!!selectedProduct} onOpenChange={(open) => !open && setSelectedProduct(null)}>
-          <DialogContent className="sm:max-w-md">
-            <DialogHeader>
-              <DialogTitle>{selectedProduct?.name}</DialogTitle>
-            </DialogHeader>
-            
-            {selectedProduct && (
-              <div className="mt-2">
-                <div className="relative">
-                  <img 
-                    src={
-                      currentImageIndex === 0 
-                        ? selectedProduct.image 
-                        : selectedProduct.additionalImages[currentImageIndex - 1]
-                    } 
-                    alt={selectedProduct.name}
-                    className="w-full h-56 object-cover rounded-md"
-                  />
-                  
-                  {([selectedProduct.image, ...selectedProduct.additionalImages].length > 1) && (
-                    <>
-                      <button 
-                        onClick={prevImage}
-                        className="absolute left-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
-                      >
-                        ←
-                      </button>
-                      <button 
-                        onClick={nextImage}
-                        className="absolute right-2 top-1/2 -translate-y-1/2 bg-white bg-opacity-70 rounded-full p-1"
-                      >
-                        →
-                      </button>
-                      
-                      <div className="flex justify-center mt-2 gap-1">
-                        {[selectedProduct.image, ...selectedProduct.additionalImages].map((_, index) => (
-                          <div 
-                            key={index}
-                            className={`w-2 h-2 rounded-full ${index === currentImageIndex ? 'bg-[#FF5E01]' : 'bg-gray-300'}`}
-                          />
-                        ))}
-                      </div>
-                    </>
-                  )}
-                </div>
-                
-                <div className="mt-4">
-                  <p className="text-gray-600 text-sm mb-4">{selectedProduct.description}</p>
-                  
-                  {selectedProduct.priceThresholds && (
-                    <div className="mb-4">
-                      <h4 className="font-medium mb-2">Price by quantity:</h4>
-                      <div className="grid grid-cols-2 gap-2 text-sm">
-                        {selectedProduct.priceThresholds.map((threshold: any, idx: number) => (
-                          <div 
-                            key={idx} 
-                            className="px-3 py-2 bg-[#FF5E01] bg-opacity-10 rounded text-[#FF5E01] text-sm font-medium flex flex-col items-center"
-                          >
-                            <span className="font-medium">
-                              {threshold.minQuantity}
-                              {idx < selectedProduct.priceThresholds.length - 1 ? '-' + (selectedProduct.priceThresholds[idx + 1].minQuantity - 1) : '+'} pcs
-                            </span>
-                            <span className="block">
-                              Rp {threshold.price.toLocaleString('id-ID')}
-                            </span>
-                            {threshold.price < selectedProduct.price && (
-                              <span className="text-xs text-green-500">
-                                Save Rp {(selectedProduct.price - threshold.price).toLocaleString('id-ID')}/pc
-                              </span>
-                            )}
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-                  
-                  <div className="flex justify-between items-center">
-                    {selectedProduct.discountPrice !== null ? (
-                      <div>
-                        <span className="line-through text-gray-500">
-                          Rp {selectedProduct.price.toLocaleString('id-ID')}
-                        </span>
-                        <span className="text-[#FF5E01] font-bold ml-2">
-                          Rp {selectedProduct.discountPrice.toLocaleString('id-ID')}
-                        </span>
-                      </div>
-                    ) : (
-                      <span className="font-bold">
-                        Rp {selectedProduct.price.toLocaleString('id-ID')}
-                      </span>
-                    )}
-                    
-                    <button
-                      onClick={() => {
-                        addToCart(selectedProduct);
-                        setSelectedProduct(null);
-                      }}
-                      className="bg-[#FF5E01] text-white px-4 py-2 rounded-full text-sm"
-                    >
-                      Add to Cart
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-          </DialogContent>
-        </Dialog>
-      </div>
-    </div>
-  );
-};
-
-export default Index;
+              {cartItems

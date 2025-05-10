@@ -16,18 +16,18 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
   };
 
   return (
-    <div className="relative my-3">
-      <div className="flex items-center bg-gray-100 rounded-full p-2 border-2 border-[#FF5E01] shadow-md">
-        <Search className="text-[#FF5E01] h-5 w-5 ml-1" />
+    <div className="relative my-2">
+      <div className="flex items-center bg-gray-100 rounded-full p-1.5 border-2 border-[#FF5E01] shadow-md">
+        <Search className="text-[#FF5E01] h-4 w-4 ml-1" />
         <input
           type="text"
           placeholder="Search products"
-          className="w-full bg-transparent border-none outline-none pl-2 text-gray-700"
+          className="w-full bg-transparent border-none outline-none pl-1.5 text-gray-700 text-sm"
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button className="bg-white p-1.5 rounded-full mr-1">
-          <SlidersHorizontal className="h-4 w-4 text-[#FF5E01]" />
+        <button className="bg-white p-1 rounded-full mr-0.5">
+          <SlidersHorizontal className="h-3.5 w-3.5 text-[#FF5E01]" />
         </button>
       </div>
     </div>

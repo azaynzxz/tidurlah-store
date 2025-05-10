@@ -26,7 +26,7 @@ const FoodGrid = ({ foods, activeFilter, onAddToCart, onViewDetails }: FoodGridP
   );
 
   return (
-    <div className="grid grid-cols-2 gap-4">
+    <div className="grid grid-cols-2 gap-3">
       {filteredFoods.map((food) => (
         <FoodCard 
           key={food.id} 
