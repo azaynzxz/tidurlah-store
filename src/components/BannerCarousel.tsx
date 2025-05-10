@@ -22,21 +22,21 @@ interface Banner {
 const banners: Banner[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=820&h=360&q=80",
+    image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
     title: "Special Promo",
     description: "Get 15% off on all media promotion items",
     linkUrl: "#promo",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=820&h=360&q=80",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
     title: "New Collection",
     description: "Check out our latest merchandise",
     linkUrl: "#merch",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=820&h=360&q=80",
+    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
     title: "Premium Lanyards",
     description: "Custom designs for your organization",
     linkUrl: "#lanyards",
