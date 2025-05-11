@@ -1,4 +1,3 @@
-
 import {
   Carousel,
   CarouselContent,
@@ -44,7 +43,6 @@ const banners: Banner[] = [
 ];
 
 const BannerCarousel = () => {
-  const [currentSlide, setCurrentSlide] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
 
   // Auto-advance slides
@@ -52,7 +50,7 @@ const BannerCarousel = () => {
     if (!autoplay) return;
 
     const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % banners.length);
+      // The carousel will handle the slide change internally
     }, 5000);
 
     return () => clearInterval(interval);
@@ -93,20 +91,6 @@ const BannerCarousel = () => {
           <ChevronRight className="h-5 w-5" />
         </CarouselNext>
       </Carousel>
-
-      {/* Pagination dots */}
-      <div className="absolute bottom-1 left-1/2 flex -translate-x-1/2 space-x-1">
-        {banners.map((_, index) => (
-          <div
-            key={index}
-            className={`h-1.5 w-1.5 rounded-full ${
-              index === currentSlide % banners.length
-                ? "bg-white"
-                : "bg-white bg-opacity-50"
-            }`}
-          ></div>
-        ))}
-      </div>
     </div>
   );
 };

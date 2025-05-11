@@ -1,5 +1,4 @@
-
-import { Search, SlidersHorizontal } from "lucide-react";
+import { Search } from "lucide-react";
 import { useState } from "react";
 
 interface SearchBarProps {
@@ -26,9 +25,6 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
           value={searchTerm}
           onChange={handleSearch}
         />
-        <button className="bg-white p-1 rounded-full mr-0.5">
-          <SlidersHorizontal className="h-3.5 w-3.5 text-[#FF5E01]" />
-        </button>
       </div>
     </div>
   );
