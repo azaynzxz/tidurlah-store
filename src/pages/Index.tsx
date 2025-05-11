@@ -8,10 +8,11 @@ import { toast } from "sonner";
 
 // Valid promo codes with their discount percentage
 const validPromoCodes = {
-  "DISCOUNT10": 10,
-  "SAVE15": 15,
-  "PROMO20": 20,
-  "KKN15": 15
+  "DISCOUNT10": { discount: 10, productIds: null }, // applies to all products
+  "SAVE15": { discount: 15, productIds: null },
+  "PROMO20": { discount: 20, productIds: null },
+  "KKN15": { discount: 15, productIds: null },
+  "IDCARD15": { discount: 15, productIds: [2] } // only applies to ID Card 2S
 };
 
 // Product Data with Price Thresholds
@@ -231,24 +232,30 @@ const products = {
   "Media Promosi": [
     {
       id: 11,
-      name: "Banner",
+      name: "Banner Indoor/Outdoor",
       image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
       additionalImages: [
         "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
         "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
       description: "Custom printed banner for events and promotions.",
-      price: 250000,
-      discountPrice: 220000,
+      price: 20000,
+      discountPrice: 17000,
       category: "Media Promosi",
       priceThresholds: [
-        { minQuantity: 1, price: 220000 },
-        { minQuantity: 2, price: 200000 },
-        { minQuantity: 5, price: 180000 },
-        { minQuantity: 10, price: 170000 }
+        //{ minQuantity: 1, price: 17000 },
+        //{ minQuantity: 2, price: 200000 },
+        //{ minQuantity: 5, price: 180000 },
+        //{ minQuantity: 10, price: 170000 }
       ],
       time: "3-5 days",
-      rating: 4.8
+      rating: 4.8,
+      pricingMethod: "dimensional",
+      basePricePerSqm: 17000,
+      minWidth: 0.5,
+      maxWidth: 5, 
+      minHeight: 0.5,
+      maxHeight: 10
     },
     {
       id: 12,
@@ -259,14 +266,14 @@ const products = {
         "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
       ],
       description: "X-shaped banner stand with 60x160cm custom printed banner.",
-      price: 180000,
-      discountPrice: 150000,
+      price: 120000,
+      discountPrice: 90000,
       category: "Media Promosi",
       priceThresholds: [
         { minQuantity: 1, price: 150000 },
         { minQuantity: 3, price: 140000 },
-        { minQuantity: 5, price: 130000 },
-        { minQuantity: 10, price: 120000 }
+        //{ minQuantity: 5, price: 130000 },
+        //{ minQuantity: 10, price: 120000 }
       ],
       time: "2-3 days",
       rating: 4.6
@@ -530,6 +537,18 @@ const products = {
   ],
 };
 
+const calculateBannerPrice = (product, width, height) => {
+  if (!width || !height || width < product.minWidth || height < product.minHeight) {
+    return product.discountPrice || product.price;
+  }
+  
+  const area = width * height;
+  const basePrice = Math.max(product.basePricePerSqm * area, product.discountPrice || product.price);
+  
+  // Apply any quantity discounts if needed
+  return basePrice;
+};
+
 const Index = () => {
   const [activeTab, setActiveTab] = useState("ID Card & Lanyard");
   const [cartItems, setCartItems] = useState<any[]>([]);
@@ -544,6 +563,9 @@ const Index = () => {
   const [activeCategory, setActiveCategory] = useState("");
   const [promoCodeError, setPromoCodeError] = useState("");
   const [promoDiscount, setPromoDiscount] = useState(0);
+  const [bannerWidth, setBannerWidth] = useState(1);
+  const [bannerHeight, setBannerHeight] = useState(1);
+  const [whatsAppUrl, setWhatsAppUrl] = useState("");
   
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -613,8 +635,8 @@ const Index = () => {
     }
     
     if (validPromoCodes[code as keyof typeof validPromoCodes]) {
-      setPromoDiscount(validPromoCodes[code as keyof typeof validPromoCodes]);
-      toast.success(`Promo code ${code} applied! ${validPromoCodes[code as keyof typeof validPromoCodes]}% discount`);
+      setPromoDiscount(validPromoCodes[code as keyof typeof validPromoCodes].discount);
+      toast.success(`Promo code ${code} applied! ${validPromoCodes[code as keyof typeof validPromoCodes].discount}% discount`);
     } else if (code) {
       setPromoDiscount(0);
       setPromoCodeError("Invalid promo code");
@@ -713,13 +735,21 @@ const Index = () => {
 
   // Calculate total price with promo discount
   const calculateTotal = () => {
-    const subtotal = cartItems.reduce((total, item) => {
-      return total + (item.appliedPrice * item.quantity);
+    return cartItems.reduce((total, item) => {
+      let itemPrice = item.appliedPrice * item.quantity;
+      
+      // Check if promo applies to this product
+      if (promoCode && validPromoCodes[promoCode]) {
+        const promoInfo = validPromoCodes[promoCode];
+        const appliesTo = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
+        
+        if (appliesTo) {
+          itemPrice = itemPrice * (1 - promoInfo.discount / 100);
+        }
+      }
+      
+      return total + itemPrice;
     }, 0);
-    
-    return promoDiscount > 0 
-      ? subtotal * (1 - promoDiscount / 100) 
-      : subtotal;
   };
 
   // Calculate total savings
@@ -733,6 +763,20 @@ const Index = () => {
   const openProductDetails = (product: any) => {
     setSelectedProduct(product);
     setCurrentImageIndex(0);
+    
+    // Set default dimensions for dimensional products
+    if (product.pricingMethod === "dimensional") {
+      // Set default dimensions based on the product type
+      // Default to a reasonable size like 1x1 or match any predefined dimensions
+      setBannerWidth(1);
+      setBannerHeight(1);
+      
+      // If it's the banner product, set a more standard banner size
+      if (product.name === "Banner") {
+        setBannerWidth(2);
+        setBannerHeight(1);
+      }
+    }
   };
 
   // Navigate through product images
@@ -822,9 +866,16 @@ const Index = () => {
       await submitToGoogleSheet(orderData);
 
       // Prepare WhatsApp message (do this before showing success dialog)
-      const productList = cartItems.map(item => 
-        `- ${item.name} (${item.quantity}×) — Rp ${item.appliedPrice.toLocaleString('id-ID')}`
-      ).join('\n');
+      const productList = cartItems.map(item => {
+        let itemInfo = `- ${item.name} (${item.quantity}×) — Rp ${item.appliedPrice.toLocaleString('id-ID')}`;
+        
+        // Add dimensions for banner products
+        if (item.width && item.height) {
+          itemInfo += ` [${item.width}m × ${item.height}m]`;
+        }
+        
+        return itemInfo;
+      }).join('\n');
 
       const totalSavings = calculateTotalSavings();
       const savingsMessage = totalSavings > 0 ? 
@@ -860,7 +911,20 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
     }
   };
 
-  const [whatsAppUrl, setWhatsAppUrl] = useState("");
+  const addBannerToCart = (product, width, height) => {
+    const calculatedPrice = calculateBannerPrice(product, width, height);
+    const newItem = {
+      ...product,
+      width,
+      height, 
+      appliedPrice: calculatedPrice,
+      quantity: 1,
+      savings: product.price - calculatedPrice > 0 ? product.price - calculatedPrice : 0
+    };
+    
+    setCartItems([...cartItems, newItem]);
+    setSelectedProduct(null);
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -970,15 +1034,27 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                               </span>
                             )}
                           </div>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              addToCart(product);
-                            }}
-                            className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
-                          >
-                            <ShoppingBag className="h-3 w-3 mr-1" /> Masukkan Keranjang
-                          </button>
+                          {product.pricingMethod === "dimensional" ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openProductDetails(product);
+                              }}
+                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
+                            >
+                              <ShoppingBag className="h-3 w-3 mr-1" /> Masukkan Ukuran
+                            </button>
+                          ) : (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                addToCart(product);
+                              }}
+                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
+                            >
+                              <ShoppingBag className="h-3 w-3 mr-1" /> Masukkan Keranjang
+                            </button>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1079,6 +1155,11 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                 <div key={item.id} className="flex justify-between items-center text-sm mb-3">
                   <div className="flex-1">
                     <p className="font-medium">{item.name}</p>
+                    {item.width && item.height && (
+                      <p className="text-xs text-gray-600">
+                        {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -1204,6 +1285,11 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                         />
                         <div className="flex-1">
                           <h3 className="font-medium text-sm">{item.name}</h3>
+                          {item.width && item.height && (
+                            <p className="text-xs text-gray-600">
+                              {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
+                            </p>
+                          )}
                           <p className="text-gray-500 text-xs">Rp {item.appliedPrice.toLocaleString('id-ID')}</p>
                           <div className="flex items-center gap-2 mt-1">
                             <button
@@ -1345,7 +1431,46 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                 <div className="space-y-3">
                   <p className="text-gray-600 text-sm">{selectedProduct.description}</p>
                   
-                  {selectedProduct.priceThresholds && (
+                  {/* Banner Dimension Inputs for dimensional pricing method */}
+                  {selectedProduct.pricingMethod === "dimensional" && (
+                    <div className="space-y-2 mt-3 bg-gray-50 p-3 rounded-lg">
+                      <p className="font-medium text-sm">Ukuran Banner:</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Lebar (m)</label>
+                          <input 
+                            type="number"
+                            min={selectedProduct.minWidth}
+                            max={selectedProduct.maxWidth}
+                            step="0.1"
+                            value={bannerWidth}
+                            onChange={(e) => setBannerWidth(parseFloat(e.target.value) || 1)}
+                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Tinggi (m)</label>
+                          <input
+                            type="number"
+                            min={selectedProduct.minHeight}
+                            max={selectedProduct.maxHeight}
+                            step="0.1" 
+                            value={bannerHeight}
+                            onChange={(e) => setBannerHeight(parseFloat(e.target.value) || 1)}
+                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-[#FF5E01] mt-2">
+                        Ukuran: {bannerWidth}m × {bannerHeight}m ({(bannerWidth * bannerHeight).toFixed(2)} m²)
+                      </div>
+                      <div className="text-sm font-medium text-[#FF5E01]">
+                        Harga: Rp {calculateBannerPrice(selectedProduct, bannerWidth, bannerHeight).toLocaleString('id-ID')}
+                      </div>
+                    </div>
+                  )}
+                  
+                  {selectedProduct.priceThresholds && !selectedProduct.pricingMethod && (
                     <div className="space-y-2">
                       <p className="font-medium text-sm">Harga Grosir:</p>
                       <div className="grid grid-cols-2 gap-2">
@@ -1396,15 +1521,25 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                     </div>
                   </div>
                   
-                  <button
-                    onClick={() => {
-                      addToCart(selectedProduct);
-                      setSelectedProduct(null);
-                    }}
-                    className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
-                  >
-                    Masukkan Keranjang
-                  </button>
+                  {/* Conditional Add to Cart button based on pricingMethod */}
+                  {selectedProduct.pricingMethod === "dimensional" ? (
+                    <button
+                      onClick={() => addBannerToCart(selectedProduct, bannerWidth, bannerHeight)}
+                      className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                    >
+                      Masukkan Keranjang
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        addToCart(selectedProduct);
+                        setSelectedProduct(null);
+                      }}
+                      className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                    >
+                      Masukkan Keranjang
+                    </button>
+                  )}
                 </div>
               </>
             )}
