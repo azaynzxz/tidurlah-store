@@ -628,16 +628,26 @@ const Index = () => {
   const handlePromoCodeChange = (code: string) => {
     setPromoCode(code);
     setPromoCodeError("");
-    
+
     if (!code) {
       setPromoDiscount(0);
       return;
     }
-    
-    if (validPromoCodes[code as keyof typeof validPromoCodes]) {
-      setPromoDiscount(validPromoCodes[code as keyof typeof validPromoCodes].discount);
-      toast.success(`Promo code ${code} applied! ${validPromoCodes[code as keyof typeof validPromoCodes].discount}% discount`);
-    } else if (code) {
+
+    const promo = validPromoCodes[code as keyof typeof validPromoCodes];
+    if (promo) {
+      // Check if promo applies to any product in the cart
+      const appliesToAny = cartItems.some(item =>
+        promo.productIds === null || promo.productIds.includes(item.id)
+      );
+      if (appliesToAny) {
+        setPromoDiscount(promo.discount);
+        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`);
+      } else {
+        setPromoDiscount(0);
+        setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
+      }
+    } else {
       setPromoDiscount(0);
       setPromoCodeError("Invalid promo code");
     }
