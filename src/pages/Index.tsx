@@ -747,17 +747,13 @@ const Index = () => {
   const calculateTotal = () => {
     return cartItems.reduce((total, item) => {
       let itemPrice = item.appliedPrice * item.quantity;
-      
-      // Check if promo applies to this product
       if (promoCode && validPromoCodes[promoCode]) {
         const promoInfo = validPromoCodes[promoCode];
         const appliesTo = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
-        
         if (appliesTo) {
           itemPrice = itemPrice * (1 - promoInfo.discount / 100);
         }
       }
-      
       return total + itemPrice;
     }, 0);
   };
@@ -934,6 +930,18 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
     
     setCartItems([...cartItems, newItem]);
     setSelectedProduct(null);
+  };
+
+  const calculateTotalDiscount = () => {
+    if (!promoCode || !validPromoCodes[promoCode]) return 0;
+    const promoInfo = validPromoCodes[promoCode];
+    return cartItems.reduce((discount, item) => {
+      const appliesTo = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
+      if (appliesTo) {
+        return discount + (item.appliedPrice * item.quantity * (promoInfo.discount / 100));
+      }
+      return discount;
+    }, 0);
   };
 
   return (
@@ -1223,7 +1231,7 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                 {promoDiscount > 0 && (
                   <div className="flex justify-between items-center text-sm text-green-600">
                     <p>Diskon Promo ({promoDiscount}%)</p>
-                    <p>- Rp {(cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0) * (promoDiscount / 100)).toLocaleString('id-ID')}</p>
+                    <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
                   </div>
                 )}
                 
@@ -1364,7 +1372,7 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                   {promoDiscount > 0 && (
                     <div className="flex justify-between items-center text-sm text-green-600">
                       <p>Diskon Promo ({promoDiscount}%)</p>
-                      <p>- Rp {(cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0) * (promoDiscount / 100)).toLocaleString('id-ID')}</p>
+                      <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
                     </div>
                   )}
                   
