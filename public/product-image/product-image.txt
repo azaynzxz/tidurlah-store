@@ -1,0 +1,113 @@
+Let me list all the products with their main images and additional images (carousel images) for easy review:
+ID Card & Lanyard
+1.	ID Card 1S
+•	Main Image: /product-image/1 ID Card.jpg
+•	Additional Images:
+•	/product-image/ Case-ID Card.jpg
+2.	ID Card 2S
+•	Main Image: /product-image/1 ID Card.jpg
+o	Additional Images:
+o	/product-image/ Case-ID Card.jpg
+3.	IDC Tali & Case Kulit
+•	Main Image: /product-image/case-tali-kulit.jpg
+•	Additional Images:
+•	/product-image/ case-kulit.jpg
+4.	Lanyard Saja 1S
+•	Main Image: /product-image/lanyard-only-1S.jpg
+•	Additional Images:
+•	/product-image/lanyard-only-1S-2
+5.	Lanyard Saja 2S
+•	Main Image: /product-image/ lanyard-only-2S.jpg
+•	Additional Images:
+•	/product-image/ lanyard-only-2S-2.jpg
+6.	IDC Tali Biasa
+•	Main Image: /product-image/ IDC Tali Biasa.jpg
+•	Additional Images:
+•	/product-image/case-biasa.jpg
+
+7.	IDC Tali Hitam
+•	Main Image: /product-image/ IDC-tali-hitam.jpg
+•	Additional Images:
+•	/product-image/case-biasa.jpg
+
+7.	Paket IDC LYD 1S
+•	Main Image: /product-image/ paket-idc-1s.jpg
+•	Additional Images:
+•	/product-image/ID Card Lanyard-1.jpg
+•	/product-image/1 ID Card.jpg
+8.	Paket IDC LYD 2S
+•	Main Image: /product-image/ paket-idc-2s.jpg
+•	Additional Images:
+•	/product-image/ID Card Lanyard-2.jpg
+•	/product-image/1 ID Card.jpg
+9.	Paket IDC LYD Kulit
+•	Main Image: /product-image/ paket-idc-case-kulit.jpg
+•	Additional Images:
+•	/product-image/ case-kulit.jpg
+10.	Paket IDC LYD Premium
+•	Main Image: /product-image/ paket-idc-lyd-premium.jpg
+•	Additional Images:
+•	/product-image/ case-premium.jpg
+Media Promosi
+11.	Banner Indoor/Outdoor
+•	Main Image: /product-image/Banner 1.jpg
+•	Additional Images:
+•	/product-image/Banner 2.jpg
+12.	X Banner (60x160)
+•	Main Image: /product-image/X banner 1.jpg
+•	Additional Images:
+•	/product-image/X banner-2.jpg
+13.	Roll Banner
+•	Main Image: /product-image/Roll Banner 1.jpg
+•	Additional Images:
+•	/product-image/Roll Banner 2.jpg
+14.	Poster A3
+•	Main Image: /product-image/Poster 1.jpg
+•	Additional Images:
+•	/product-image/Poster 2.jpg
+•	/product-image/Insert Paper 1.jpg
+•	
+Merchandise
+15.	Cutting Stiker Kontur
+•	Main Image: /product-image/Cut Stiker.jpg
+•	Additional Images:
+•	/product-image/ cut-stiker1.jpg
+16.	Ganci Akrilik
+•	Main Image: /product-image/ ganciakrilik-1.jpg
+•	Additional Images:
+•	/product-image/ ganciakrilik-2.jpg
+•	/product-image/ ganciakrilik-3.jpg
+17.	Ganci 5 cm
+•	Main Image: /product-image/ Ganci-5-cm1.jpg
+•	Additional Images: {No Image}
+18.	Ganci 3 cm
+•	Main Image: /product-image/ Ganci-3cm-1.jpg
+•	Additional Images:{No Image}
+19.	Ganci Tali
+•	Main Image: /product-image/ ganci-tali.jpg
+•	Additional Images:
+•	/product-image/ ganci-tali-2.jpg
+20.	Mug Custom
+•	Main Image: /product-image/Mug 1.jpg
+•	Additional Images:
+•	/product-image/Mug 2.jpg
+•	/product-image/Mug 3.jpg
+21.	Tumbler Custom
+•	Main Image: /product-image/ Insert Paper 1.jpg
+•	Additional Images:
+•	/product-image/ Insert Paper 2.jpg
+•	/product-image/ Insert Paper 3.jpg
+22.	Plakat Akrilik Reg
+•	Main Image: /product-image/ plakat-reg-1.jpg
+•	Additional Images:
+•	/product-image/ plakat-reg-2.jpg
+•	/product-image/ plakat-reg-3.jpg
+23.	Sablon Kaos
+•	Main Image: /product-image/ t-shirt-3.jpg
+•	Additional Images:
+•	/product-image/ t-shirt-2.jpg
+•	/product-image/ t-shirt-3 jpg
+Jasa Desain
+24.	Jasa Desain
+•	Main Image: /product-image/ Jasa Desain.jpg
+•	Additional Images: {No Image}

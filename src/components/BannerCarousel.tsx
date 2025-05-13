@@ -21,24 +21,24 @@ interface Banner {
 const banners: Banner[] = [
   {
     id: 1,
-    image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
-    title: "Special Promo",
-    description: "Get 15% off on all media promotion items",
+    image: "/banners/banner-1.jpg",
+    title: "SUPER SALE",
+    description: "Diskon Khusus Mahasiswa KKN",
     linkUrl: "#promo",
   },
   {
     id: 2,
-    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
-    title: "New Collection",
-    description: "Check out our latest merchandise",
-    linkUrl: "#merch",
+    image: "/banners/banner-2.jpg",
+    title: "TIDURLAH STORE",
+    description: "UP TO 15% OFF",
+    linkUrl: "#shop",
   },
   {
     id: 3,
-    image: "https://images.unsplash.com/photo-1498050108023-c5249f4df085?ixlib=rb-1.2.1&auto=format&fit=crop&w=1920&h=1080&q=80",
-    title: "Premium Lanyards",
-    description: "Custom designs for your organization",
-    linkUrl: "#lanyards",
+    image: "/banners/banner-3.jpg",
+    title: "BUNDLE SPESIAL",
+    description: "Promo Spesial Mahasiswa KKN",
+    linkUrl: "#bundle",
   },
 ];
 
@@ -70,17 +70,15 @@ const BannerCarousel = () => {
         <CarouselContent>
           {banners.map((banner) => (
             <CarouselItem key={banner.id}>
-              <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "56.25%" }}>
-                <img
-                  src={banner.image}
-                  alt={banner.title}
-                  className="absolute top-0 left-0 w-full h-full object-cover"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black to-transparent p-3 text-white">
-                  <h3 className="text-lg font-bold">{banner.title}</h3>
-                  <p className="text-xs">{banner.description}</p>
+              <a href={banner.linkUrl} className="block">
+                <div className="relative w-full overflow-hidden rounded-lg bg-orange-50" style={{ paddingBottom: "45%" }}>
+                  <img
+                    src={banner.image}
+                    alt={banner.title}
+                    className="absolute top-0 left-0 w-full h-full object-contain"
+                  />
                 </div>
-              </div>
+              </a>
             </CarouselItem>
           ))}
         </CarouselContent>

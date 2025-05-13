@@ -21,211 +21,197 @@ const products = {
     {
       id: 1,
       name: "ID Card 1S",
-      image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/ID Card 1S.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Case-ID Card.jpg"
       ],
-      description: "Standard ID card single side print with premium materials.",
-      price: 25000,
+      description: "ID card satu sisi dengan bahan premium berkualitas.",
+      price: 9000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 25000 },
-        { minQuantity: 4, price: 20000 },
-        { minQuantity: 35, price: 18000 },
-        { minQuantity: 100, price: 17000 }
+        { minQuantity: 1, price: 9000 },
+        { minQuantity: 4, price: 8000 },
+        { minQuantity: 25, price: 7000 },
+        { minQuantity: 100, price: 6000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.7
     },
     {
       id: 2,
       name: "ID Card 2S",
-      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/1 ID Card.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Case-ID Card.jpg"
       ],
-      description: "Double sided ID card print with premium materials.",
-      price: 35000,
-      discountPrice: 30000,
+      description: "ID card dua sisi dengan bahan premium berkualitas.",
+      price: 10000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 30000 },
-        { minQuantity: 5, price: 28000 },
-        { minQuantity: 25, price: 26000 },
-        { minQuantity: 100, price: 25000 }
+        { minQuantity: 1, price: 10000 },
+        { minQuantity: 4, price: 9000 },
+        { minQuantity: 25, price: 8000 },
+        { minQuantity: 100, price: 7000 }
       ],
-      time: "2-3 days",
+      time: "2-3 hari",
       rating: 4.8
     },
     {
       id: 3,
       name: "IDC Tali & Case Kulit",
-      image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/case-tali-kulit.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/case-kulit.jpg"
       ],
-      description: "Premium ID card with leather case and lanyard.",
-      price: 40000,
+      description: "ID card premium dengan case kulit dan tali lanyard.",
+      price: 30000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 40000 },
-        { minQuantity: 10, price: 37000 },
-        { minQuantity: 50, price: 35000 },
-        { minQuantity: 150, price: 32000 }
+        { minQuantity: 1, price: 30000 },
+        { minQuantity: 4, price: 29000 },
+        { minQuantity: 25, price: 27000 },
+        { minQuantity: 100, price: 25000 }
       ],
-      time: "3-5 days",
+      time: "3-5 hari",
       rating: 4.9
     },
     {
       id: 4,
       name: "Lanyard Saja 1S",
-      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/lanyard-only-1S.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/lanyard-only-1S-2.jpg"
       ],
-      description: "Single sided printed lanyard without ID card or case.",
+      description: "Lanyard cetak satu sisi tanpa ID card atau case.",
       price: 15000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
         { minQuantity: 1, price: 15000 },
-        { minQuantity: 10, price: 13000 },
-        { minQuantity: 50, price: 12000 },
+        { minQuantity: 4, price: 13000 },
+        { minQuantity: 25, price: 12000 },
         { minQuantity: 100, price: 10000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.6
     },
     {
       id: 5,
       name: "Lanyard Saja 2S",
-      image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/lanyard-only-2S.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/lanyard-only-2S-2.jpg"
       ],
-      description: "Double sided printed lanyard without ID card or case.",
-      price: 18000,
+      description: "Lanyard cetak dua sisi tanpa ID card atau case.",
+      price: 17000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 18000 },
-        { minQuantity: 10, price: 16000 },
-        { minQuantity: 50, price: 15000 },
+        { minQuantity: 1, price: 17000 },
+        { minQuantity: 4, price: 16000 },
+        { minQuantity: 25, price: 15000 },
         { minQuantity: 100, price: 13000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.7
     },
     {
       id: 6,
       name: "IDC Tali Biasa",
-      image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/IDC Tali Biasa.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/case-biasa.jpg"
       ],
-      description: "Standard ID card with basic lanyard.",
-      price: 22000,
+      description: "ID card standar dengan lanyard biasa.",
+      price: 13000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 22000 },
-        { minQuantity: 10, price: 20000 },
-        { minQuantity: 50, price: 18000 },
-        { minQuantity: 100, price: 16000 }
+        { minQuantity: 1, price: 13000 },
+        { minQuantity: 4, price: 12000 },
+        { minQuantity: 25, price: 10000 },
+        { minQuantity: 100, price: 8000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.5
     },
     {
       id: 7,
       name: "Paket IDC LYD 1S",
-      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-      additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
-      ],
-      description: "Complete package with single sided ID card and matching lanyard.",
-      price: 30000,
-      discountPrice: 28000,
+      image: "/product-image/paket-idc-1s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card satu sisi dan lanyard yang sesuai.",
+      price: 20000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 28000 },
-        { minQuantity: 10, price: 26000 },
-        { minQuantity: 50, price: 24000 },
-        { minQuantity: 100, price: 22000 }
+        { minQuantity: 1, price: 20000 },
+        { minQuantity: 4, price: 18000 },
+        { minQuantity: 25, price: 16000 },
+        { minQuantity: 100, price: 14000 }
       ],
-      time: "2-3 days",
+      time: "2-3 hari",
       rating: 4.8
     },
     {
       id: 8,
       name: "Paket IDC LYD 2S",
-      image: "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-      additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
-      ],
-      description: "Complete package with double sided ID card and matching lanyard.",
-      price: 35000,
-      discountPrice: 32000,
+      image: "/product-image/paket-idc-2s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card dua sisi dan lanyard yang sesuai.",
+      price: 25000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 32000 },
-        { minQuantity: 10, price: 30000 },
-        { minQuantity: 50, price: 28000 },
-        { minQuantity: 100, price: 26000 }
+        { minQuantity: 1, price: 25000 },
+        { minQuantity: 4, price: 23000 },
+        { minQuantity: 25, price: 20000 },
+        { minQuantity: 100, price: 17000 }
       ],
-      time: "2-3 days",
+      time: "2-3 hari",
       rating: 4.9
     },
     {
       id: 9,
       name: "Paket IDC LYD Kulit",
-      image: "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/paket-idc-case-kulit.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/case-kulit.jpg"
       ],
-      description: "Premium package with ID card, leather case, and matching lanyard.",
-      price: 45000,
-      discountPrice: 42000,
+      description: "Paket premium dengan ID card, case kulit, dan lanyard yang sesuai.",
+      price: 35000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 42000 },
-        { minQuantity: 10, price: 40000 },
-        { minQuantity: 50, price: 38000 },
-        { minQuantity: 100, price: 35000 }
+        { minQuantity: 1, price: 35000 },
+        { minQuantity: 4, price: 32000 },
+        { minQuantity: 25, price: 28000 },
+        { minQuantity: 100, price: 23000 }
       ],
-      time: "3-4 days",
+      time: "3-4 hari",
       rating: 5.0
     },
     {
       id: 10,
       name: "Paket IDC LYD Premium",
-      image: "https://images.unsplash.com/photo-1586105251261-72a756497a11?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/paket-idc-lyd-premium.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1601597111158-2fceff292cdc?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1559310589-2673bfe16970?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/case-premium.jpg"
       ],
-      description: "Deluxe package with double sided ID card, premium case, and custom printed lanyard.",
-      price: 50000,
-      discountPrice: 45000,
+      description: "Paket deluxe dengan ID card dua sisi, case premium, dan lanyard custom.",
+      price: 30000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 45000 },
-        { minQuantity: 10, price: 42000 },
-        { minQuantity: 50, price: 40000 },
-        { minQuantity: 100, price: 38000 }
+        { minQuantity: 1, price: 30000 },
+        { minQuantity: 4, price: 28000 },
+        { minQuantity: 25, price: 26000 },
+        { minQuantity: 100, price: 24000 }
       ],
-      time: "3-5 days",
+      time: "3-5 hari",
       rating: 4.9
     }
   ],
@@ -233,25 +219,24 @@ const products = {
     {
       id: 11,
       name: "Banner Indoor/Outdoor",
-      image: "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Banner 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Banner 2.jpg"
       ],
-      description: "Custom printed banner for events and promotions.",
-      price: 20000,
-      discountPrice: 17000,
+      description: "Banner custom cetak untuk acara dan promosi.",
+      price: 18000,
+      discountPrice: null,
       category: "Media Promosi",
       priceThresholds: [
-        //{ minQuantity: 1, price: 17000 },
-        //{ minQuantity: 2, price: 200000 },
-        //{ minQuantity: 5, price: 180000 },
-        //{ minQuantity: 10, price: 170000 }
+        { minQuantity: 1, price: 18000 },
+        { minQuantity: 4, price: 18000 },
+        { minQuantity: 25, price: 17000 },
+        { minQuantity: 100, price: 16000 }
       ],
-      time: "3-5 days",
+      time: "3-5 hari",
       rating: 4.8,
       pricingMethod: "dimensional",
-      basePricePerSqm: 17000,
+      basePricePerSqm: 18000,
       minWidth: 0.5,
       maxWidth: 5, 
       minHeight: 0.5,
@@ -260,64 +245,62 @@ const products = {
     {
       id: 12,
       name: "X Banner (60x160)",
-      image: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/X banner 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/X banner-2.jpg"
       ],
-      description: "X-shaped banner stand with 60x160cm custom printed banner.",
-      price: 120000,
-      discountPrice: 90000,
+      description: "Stand banner bentuk X dengan banner cetak custom ukuran 60x160cm.",
+      price: 90000,
+      discountPrice: null,
       category: "Media Promosi",
       priceThresholds: [
-        { minQuantity: 1, price: 150000 },
-        { minQuantity: 3, price: 140000 },
-        //{ minQuantity: 5, price: 130000 },
-        //{ minQuantity: 10, price: 120000 }
+        { minQuantity: 1, price: 90000 },
+        { minQuantity: 4, price: 85000 },
+        { minQuantity: 25, price: 80000 },
+        { minQuantity: 100, price: 75000 }
       ],
-      time: "2-3 days",
+      time: "2-3 hari",
       rating: 4.6
     },
     {
       id: 13,
       name: "Roll Banner",
-      image: "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Roll Banner 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Roll Banner 2.jpg"
       ],
-      description: "Portable roll-up banner with stand, perfect for events and trade shows.",
-      price: 200000,
-      discountPrice: 180000,
+      description: "Banner gulung portable dengan stand, sempurna untuk acara dan pameran.",
+      price: 350000,
+      discountPrice: null,
       category: "Media Promosi",
       priceThresholds: [
-        { minQuantity: 1, price: 180000 },
-        { minQuantity: 3, price: 170000 },
-        { minQuantity: 5, price: 160000 },
-        { minQuantity: 10, price: 150000 }
+        { minQuantity: 1, price: 350000 },
+        { minQuantity: 4, price: 170000 },
+        { minQuantity: 25, price: 160000 },
+        { minQuantity: 100, price: 150000 }
       ],
-      time: "3-4 days",
+      time: "3-4 hari",
       rating: 4.8
     },
     {
       id: 14,
       name: "Poster A3",
-      image: "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Poster 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1586717799252-bd134ad00e26?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Poster 2.jpg",
+        "/product-image/Insert Paper 1.jpg"
       ],
-      description: "A3 size posters printed on high-quality paper.",
+      description: "Poster ukuran A3 dicetak pada kertas berkualitas tinggi.",
       price: 25000,
       discountPrice: null,
       category: "Media Promosi",
       priceThresholds: [
         { minQuantity: 1, price: 25000 },
-        { minQuantity: 10, price: 22000 },
+        { minQuantity: 4, price: 22000 },
         { minQuantity: 25, price: 20000 },
-        { minQuantity: 50, price: 18000 }
+        { minQuantity: 100, price: 18000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.7
     }
   ],
@@ -325,190 +308,182 @@ const products = {
     {
       id: 15,
       name: "Cutting Stiker Kontur",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Cut Stiker.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/cut-stiker1.jpg"
       ],
-      description: "Custom cut vinyl stickers with your design.",
+      description: "Stiker vinyl potong custom dengan desain Anda.",
       price: 15000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 15000 },
-        { minQuantity: 10, price: 12000 },
-        { minQuantity: 50, price: 10000 },
+        { minQuantity: 4, price: 12000 },
+        { minQuantity: 25, price: 10000 },
         { minQuantity: 100, price: 8000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.6
     },
     {
       id: 16,
       name: "Ganci Akrilik",
-      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/ganciakrilik-1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/ganciakrilik-2.jpg",
+        "/product-image/ganciakrilik-3.jpg"
       ],
-      description: "Custom printed acrylic badges with your design.",
-      price: 10000,
-      discountPrice: 8000,
-      category: "Merchandise",
-      priceThresholds: [
-        { minQuantity: 1, price: 8000 },
-        { minQuantity: 10, price: 7000 },
-        { minQuantity: 50, price: 6000 },
-        { minQuantity: 100, price: 5000 }
-      ],
-      time: "1-2 days",
-      rating: 4.5
-    },
-    {
-      id: 17,
-      name: "Ganci 5 cm",
-      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-      additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
-      ],
-      description: "5cm diameter custom printed badges.",
-      price: 12000,
-      discountPrice: null,
-      category: "Merchandise",
-      priceThresholds: [
-        { minQuantity: 1, price: 12000 },
-        { minQuantity: 10, price: 10000 },
-        { minQuantity: 50, price: 9000 },
-        { minQuantity: 100, price: 8000 }
-      ],
-      time: "1-2 days",
-      rating: 4.7
-    },
-    {
-      id: 18,
-      name: "Ganci 3 cm",
-      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-      additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
-      ],
-      description: "3cm diameter custom printed badges.",
+      description: "Ganci akrilik custom cetak dengan desain Anda.",
       price: 8000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 8000 },
-        { minQuantity: 10, price: 7000 },
-        { minQuantity: 50, price: 6000 },
+        { minQuantity: 4, price: 7000 },
+        { minQuantity: 25, price: 6000 },
         { minQuantity: 100, price: 5000 }
       ],
-      time: "1 day",
+      time: "1-2 hari",
+      rating: 4.5
+    },
+    {
+      id: 17,
+      name: "Ganci 5 cm",
+      image: "/product-image/Ganci-5-cm1.jpg",
+      additionalImages: [],
+      description: "Ganci custom cetak diameter 5 cm.",
+      price: 12000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 12000 },
+        { minQuantity: 4, price: 10000 },
+        { minQuantity: 25, price: 9000 },
+        { minQuantity: 100, price: 8000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.7
+    },
+    {
+      id: 18,
+      name: "Ganci 3 cm",
+      image: "/product-image/Ganci-3cm-1.jpg",
+      additionalImages: [],
+      description: "Ganci custom cetak diameter 3 cm.",
+      price: 8000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 8000 },
+        { minQuantity: 4, price: 7000 },
+        { minQuantity: 25, price: 6000 },
+        { minQuantity: 100, price: 5000 }
+      ],
+      time: "1 hari",
       rating: 4.6
     },
     {
       id: 19,
       name: "Ganci Tali",
-      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/ganci-tali.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/ganci-tali-2.jpg"
       ],
-      description: "Custom printed badges with string attachment.",
+      description: "Ganci custom cetak dengan tambahan tali.",
       price: 15000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 15000 },
-        { minQuantity: 10, price: 13000 },
-        { minQuantity: 50, price: 12000 },
+        { minQuantity: 4, price: 13000 },
+        { minQuantity: 25, price: 12000 },
         { minQuantity: 100, price: 10000 }
       ],
-      time: "1-2 days",
+      time: "1-2 hari",
       rating: 4.8
     },
     {
       id: 20,
       name: "Mug Custom",
-      image: "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Mug 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Mug 2.jpg",
+        "/product-image/Mug 3.jpg"
       ],
-      description: "Ceramic mug with printed design, microwave and dishwasher safe.",
-      price: 45000,
-      discountPrice: 40000,
+      description: "Mug keramik dengan desain cetak, aman untuk microwave dan mesin pencuci piring.",
+      price: 40000,
+      discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 40000 },
-        { minQuantity: 5, price: 38000 },
-        { minQuantity: 20, price: 35000 },
-        { minQuantity: 50, price: 32000 }
+        { minQuantity: 4, price: 38000 },
+        { minQuantity: 25, price: 35000 },
+        { minQuantity: 100, price: 32000 }
       ],
-      time: "3-5 days",
+      time: "3-5 hari",
       rating: 4.8
     },
     {
       id: 21,
       name: "Tumbler Custom",
-      image: "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/Insert Paper 1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/Insert Paper 2.jpg",
+        "/product-image/Insert Paper 3.jpg"
       ],
-      description: "Custom printed travel tumbler with lid, perfect for hot and cold beverages.",
-      price: 70000,
-      discountPrice: 65000,
+      description: "Tumbler travel custom cetak dengan tutup, cocok untuk minuman panas dan dingin.",
+      price: 65000,
+      discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 65000 },
-        { minQuantity: 5, price: 60000 },
-        { minQuantity: 20, price: 55000 },
-        { minQuantity: 50, price: 50000 }
+        { minQuantity: 4, price: 60000 },
+        { minQuantity: 25, price: 55000 },
+        { minQuantity: 100, price: 50000 }
       ],
-      time: "3-5 days",
+      time: "3-5 hari",
       rating: 4.9
     },
     {
       id: 22,
       name: "Plakat Akrilik Reg",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/plakat-reg-1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/plakat-reg-2.jpg",
+        "/product-image/plakat-reg-3.jpg"
       ],
-      description: "Regular size acrylic award plaque with custom design and text.",
-      price: 150000,
-      discountPrice: 135000,
+      description: "Plakat penghargaan akrilik ukuran reguler dengan desain dan teks kustom.",
+      price: 135000,
+      discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 135000 },
-        { minQuantity: 3, price: 125000 },
-        { minQuantity: 10, price: 115000 },
-        { minQuantity: 25, price: 110000 }
+        { minQuantity: 4, price: 125000 },
+        { minQuantity: 25, price: 115000 },
+        { minQuantity: 100, price: 110000 }
       ],
-      time: "4-7 days",
+      time: "4-7 hari",
       rating: 4.9
     },
     {
       id: 23,
       name: "Sablon Kaos",
-      image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
+      image: "/product-image/t-shirt-1.jpg",
       additionalImages: [
-        "https://images.unsplash.com/photo-1544365558-35aa4afcf11f?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1531346878377-a5be20888e57?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
+        "/product-image/t-shirt-2.jpg",
+        "/product-image/t-shirt-3.jpg"
       ],
-      description: "Custom screen printed t-shirts with your design.",
-      price: 80000,
-      discountPrice: 75000,
+      description: "Kaos sablon custom dengan desain Anda.",
+      price: 75000,
+      discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 75000 },
-        { minQuantity: 10, price: 70000 },
+        { minQuantity: 4, price: 70000 },
         { minQuantity: 25, price: 65000 },
-        { minQuantity: 50, price: 60000 }
+        { minQuantity: 100, price: 60000 }
       ],
-      time: "5-7 days",
+      time: "5-7 hari",
       rating: 4.7
     }
   ],
@@ -516,12 +491,9 @@ const products = {
     {
       id: 24,
       name: "Jasa Desain",
-      image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-      additionalImages: [
-        "https://images.unsplash.com/photo-1572044162444-ad60f128bdea?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80",
-        "https://images.unsplash.com/photo-1580130379256-ef084aa4c560?ixlib=rb-1.2.1&auto=format&fit=crop&w=600&h=600&q=80"
-      ],
-      description: "Professional graphic design services for all your needs.",
+      image: "/product-image/Jasa Desain.jpg",
+      additionalImages: [],
+      description: "Layanan desain grafis profesional untuk semua kebutuhan Anda.",
       price: 200000,
       discountPrice: null,
       category: "Jasa Desain",
@@ -531,7 +503,7 @@ const products = {
         { minQuantity: 5, price: 150000 },
         { minQuantity: 10, price: 120000 }
       ],
-      time: "3-7 days",
+      time: "3-7 hari",
       rating: 4.9
     }
   ],
