@@ -1,10 +1,12 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
 import SearchBar from "@/components/SearchBar";
 import { toast } from "sonner";
+import ChatBot from "@/components/ChatBot";
+import MusicPlayer from "@/components/MusicPlayer";
 
 // Valid promo codes with their discount percentage
 const validPromoCodes = {
@@ -916,9 +918,17 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
     }, 0);
   };
 
+  // Create an array of categories with their Google Material icons and colors for the visual display
+  const categories = [
+    { id: "ID Card & Lanyard", name: "ID Card", icon: "badge", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Media Promosi", name: "Banner", icon: "ad_units", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Merchandise", name: "Merchandise", icon: "redeem", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Jasa Desain", name: "Desain", icon: "design_services", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
+  ];
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-md bg-white min-h-screen px-4">
+      <div className="container mx-auto max-w-md bg-white min-h-screen px-4 pb-16">
         {/* Header */}
         <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
           <img 
@@ -926,17 +936,20 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
             alt="TIDURLAH STORE"
             className="h-8 object-contain"
           />
-          <button 
-            className="relative p-2"
-            onClick={() => setShowCart(true)}
-          >
-            <ShoppingCart className="h-6 w-6 text-[#FF5E01]" />
-            {cartItems.length > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {cartItems.reduce((total, item) => total + item.quantity, 0)}
-              </span>
-            )}
-          </button>
+          <div className="flex items-center">
+            <MusicPlayer />
+            <button 
+              className="relative p-2"
+              onClick={() => setShowCart(true)}
+            >
+              <ShoppingCart className="h-6 w-6 text-[#FF5E01]" />
+              {cartItems.length > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {cartItems.reduce((total, item) => total + item.quantity, 0)}
+                </span>
+              )}
+            </button>
+          </div>
         </div>
 
         {!showOrderForm ? (
@@ -948,23 +961,28 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
             {/* Banner Carousel */}
             <BannerCarousel />
             
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <div className="relative">
-                <div className="overflow-x-auto scrollbar-hide">
-                  <TabsList className="w-max mb-3 bg-gray-100">
-                    {Object.keys(filteredProducts).map(category => (
-                      <TabsTrigger 
-                        key={category}
-                        value={category} 
-                        className="flex-1 data-[state=active]:bg-[#FF5E01] data-[state=active]:text-white whitespace-nowrap"
-                      >
-                        {category}
-                      </TabsTrigger>
-                    ))}
-                  </TabsList>
-                </div>
+            {/* Category Grid - UPDATED SECTION */}
+            <div className="mt-6 mb-4">
+              <h2 className="text-lg font-bold mb-3 text-gray-800">Kategori Produk:</h2>
+              <div className="grid grid-cols-4 gap-3">
+                {categories.map(category => (
+                  <div 
+                    key={category.id}
+                    onClick={() => setActiveTab(category.id)}
+                    className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-1 cursor-pointer transition-colors ${
+                      activeTab === category.id 
+                        ? `${category.color} ${category.textColor}` 
+                        : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
+                    }`}
+                  >
+                    <span className="material-symbols-outlined text-2xl">{category.icon}</span>
+                    <span className="text-xs font-medium text-center">{category.name}</span>
+                  </div>
+                ))}
               </div>
-
+            </div>
+            
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
               {Object.keys(filteredProducts).map(category => (
                 <TabsContent key={category} value={category}>
                   <div className="grid grid-cols-2 gap-3">
@@ -1570,6 +1588,59 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* ChatBot component */}
+        <ChatBot />
+
+        {/* Footer Section - REDESIGNED MINIMAL FOOTER */}
+        <footer className="bg-gray-100 px-4 py-5 mt-6 -mx-4 text-xs">
+          <div className="grid grid-cols-3 gap-4">
+            {/* Column 1: Logo and Slogan */}
+            <div>
+              <h4 className="font-bold text-[#FF5E01] mb-2">TIDURLAH</h4>
+              <p className="text-gray-600 text-[10px] leading-tight">
+                "Cetak apa aja,<br />
+                Tidurlah Grafika!"
+              </p>
+              {/*<div className="flex mt-2 space-x-2">
+                <a href="https://facebook.com/tidurlahstore" aria-label="Facebook" className="text-blue-600 hover:text-blue-800">
+                  <Facebook size={14} />
+                </a>
+                <a href="https://instagram.com/tidurlahstore" aria-label="Instagram" className="text-pink-600 hover:text-pink-800">
+                  <Instagram size={14} />
+                </a>
+                <a href="https://youtube.com/tidurlahstore" aria-label="Youtube" className="text-red-600 hover:text-red-800">
+                  <Youtube size={14} />
+                </a>
+              </div>*/}
+            </div>
+            
+            {/* Column 2: Contact */}
+            <div>
+              <h4 className="font-bold text-gray-700 mb-2">Contact</h4>
+              <ul className="space-y-1 text-gray-600">
+                <li className="flex items-center">
+                  <Phone size={10} className="mr-1" /> +62 851-7215-7808
+                </li>
+                {/*<li className="flex items-center">
+                  <Mail size={10} className="mr-1" /> info@tidurlah.com
+                </li>*/}
+              </ul>
+            </div>
+            
+            {/* Column 3: Address */}
+            <div>
+              <h4 className="font-bold text-gray-700 mb-2">Address</h4>
+              <p className="text-gray-600 text-[10px] leading-tight">
+                Perum. Korpri Raya, Blok D3. No. 3, Sukarame, Bandar Lampung
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-3 pt-3 border-t border-gray-200 text-[10px] text-center text-gray-500">
+            &copy; {new Date().getFullYear()} TIDURLAH STORE
+          </div>
+        </footer>
       </div>
     </div>
   );
