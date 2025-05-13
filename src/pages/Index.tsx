@@ -41,7 +41,7 @@ const products = {
     {
       id: 2,
       name: "ID Card 2S",
-      image: "/product-image/1 ID Card.jpg",
+      image: "/product-image/ID Card 2S.jpg",
       additionalImages: [
         "/product-image/Case-ID Card.jpg"
       ],
