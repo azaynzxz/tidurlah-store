@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Music } from "lucide-react";
 
-// Using the file directly from the components folder
-const audioPath = "src/components/Tidurlah Grafika.mp3";
+// Use the file from the public directory which will be available in production
+const audioPath = "/audio/Tidurlah Grafika.mp3";
 
 const MusicPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
