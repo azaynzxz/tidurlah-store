@@ -525,7 +525,7 @@ const products = {
     {
       id: 1001,
       name: "Papan Bunga Kecil - Pink Purple Gradient #PKK1",
-      image: "/product-image/papan-bunga/Kecil - KODE PKK1 - Pink Purple gradient dengan bunga dan kupu-kupu.jpg",
+      image: "product-image/papan-bunga/Kecil - KODE PKK1 - Pink Purple gradient dengan bunga dan kupu-kupu.jpg",
       additionalImages: [],
       description: "Papan bunga kecil dengan desain pink purple gradient, dilengkapi dengan bunga dan kupu-kupu.",
       price: 65000,
@@ -542,7 +542,7 @@ const products = {
     {
       id: 1002,
       name: "Papan Bunga Kecil - Bunga Matahari Mini #PKK3",
-      image: "/product-image/papan-bunga/Kecil - KODE PKK3 dengan Bunga matahari mini dan anggrek putih.jpg",
+      image: "product-image/papan-bunga/Kecil - KODE PKK3 dengan Bunga matahari mini dan anggrek putih.jpg",
       additionalImages: [],
       description: "Papan bunga kecil dengan bunga matahari mini dan anggrek putih.",
       price: 65000,
@@ -559,7 +559,7 @@ const products = {
     {
       id: 1003,
       name: "Papan Bunga Kecil - Pink Gold Tropical #PKK5",
-      image: "/product-image/papan-bunga/Kecil - KODE PKK5 - Pink gold tropical.jpg",
+      image: "product-image/papan-bunga/Kecil - KODE PKK5 - Pink gold tropical.jpg",
       additionalImages: [],
       description: "Papan bunga kecil dengan tema pink gold tropical.",
       price: 65000,
@@ -576,7 +576,7 @@ const products = {
     {
       id: 1004,
       name: "Papan Bunga - Plakat Bunga Anggrek Biru #PKB2",
-      image: "/product-image/papan-bunga/KODE PKB2 - Plakat Bunga dengan anggrek biru moonlight.jpg",
+      image: "product-image/papan-bunga/KODE PKB2 - Plakat Bunga dengan anggrek biru moonlight.jpg",
       additionalImages: [],
       description: "Plakat bunga dengan anggrek biru moonlight.",
       price: 70000,
@@ -593,7 +593,7 @@ const products = {
     {
       id: 1005,
       name: "Papan Bunga - Plakat Bulat Anggrek Putih #PKB1",
-      image: "/product-image/papan-bunga/KODE PKB1 - Plakat Bulat dengan bunga anggrek putih.jpg",
+      image: "product-image/papan-bunga/KODE PKB1 - Plakat Bulat dengan bunga anggrek putih.jpg",
       additionalImages: [],
       description: "Plakat bulat dengan bunga anggrek putih.",
       price: 70000,
@@ -610,7 +610,7 @@ const products = {
     {
       id: 1006,
       name: "Papan Bunga - Pink Mawar Love #PKK6",
-      image: "/product-image/papan-bunga/KODE PKK6 - Pink dengan bunga mawar dan love di tepi.jpg",
+      image: "product-image/papan-bunga/KODE PKK6 - Pink dengan bunga mawar dan love di tepi.jpg",
       additionalImages: [],
       description: "Papan bunga pink dengan bunga mawar dan love di tepi.",
       price: 70000,
@@ -627,7 +627,7 @@ const products = {
     {
       id: 1007,
       name: "Papan Bunga - Hitam Emas Mewah #PKK7",
-      image: "/product-image/papan-bunga/KODE PKK7 plakat hitam emas mewah dengan bunga monokromatik.jpg",
+      image: "product-image/papan-bunga/KODE PKK7 plakat hitam emas mewah dengan bunga monokromatik.jpg",
       additionalImages: [],
       description: "Plakat hitam emas mewah dengan bunga monokromatik.",
       price: 70000,
@@ -644,7 +644,7 @@ const products = {
     {
       id: 1008,
       name: "Papan Bunga - Biru Muda Mawar #PKK4",
-      image: "/product-image/papan-bunga/KODE PKK4  - Plakat biru muda dengan bunga mawar di tepi.jpg",
+      image: "product-image/papan-bunga/KODE PKK4  - Plakat biru muda dengan bunga mawar di tepi.jpg",
       additionalImages: [],
       description: "Plakat biru muda dengan bunga mawar di tepi.",
       price: 70000,
