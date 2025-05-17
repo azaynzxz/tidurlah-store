@@ -7,15 +7,43 @@ import SearchBar from "@/components/SearchBar";
 import { toast } from "sonner";
 import ChatBot from "@/components/ChatBot";
 import MusicPlayer from "@/components/MusicPlayer";
+import PromotedProducts from "@/components/PromotedProducts";
 
 // Valid promo codes with their discount percentage
-const validPromoCodes = {
+type PromoCodeType = {
+  discount: number;
+  productIds: number[] | null;
+  minQuantity?: number;
+};
+
+const validPromoCodes: Record<string, PromoCodeType> = {
   "DISCOUNT10": { discount: 10, productIds: null }, // applies to all products
   "SAVE15": { discount: 15, productIds: null },
   "PROMO20": { discount: 20, productIds: null },
-  "KKN15": { discount: 15, productIds: null },
+  "KKN15": { discount: 15, productIds: [8], minQuantity: 7 }, // only applies to product ID 8 with minimum 7 pcs
   "IDCARD15": { discount: 15, productIds: [2] } // only applies to ID Card 2S
 };
+
+// Define promoted products with end dates
+type PromotedProductType = {
+  id: number;
+  discount: number;
+  endDate: Date;
+  promoCode?: string;
+  minQuantity?: number;
+  description?: string;
+};
+
+const promotedProducts: PromotedProductType[] = [
+  {
+    id: 8,
+    discount: 15,
+    endDate: new Date('2025-07-15'),
+    promoCode: "KKN15",
+    minQuantity: 7,
+    description: "Promo spesial untuk mahasiswa KKN! Diskon 15% untuk pembelian minimal 7 pcs. Tunjukkan ID mahasiswa saat pengambilan."
+  }
+];
 
 // Product Data with Price Thresholds
 const products = {
@@ -290,7 +318,6 @@ const products = {
       image: "/product-image/Poster 1.jpg",
       additionalImages: [
         "/product-image/Poster 2.jpg",
-        "/product-image/Insert Paper 1.jpg"
       ],
       description: "Poster ukuran A3 dicetak pada kertas berkualitas tinggi.",
       price: 25000,
@@ -465,7 +492,12 @@ const products = {
         { minQuantity: 100, price: 110000 }
       ],
       time: "4-7 hari",
-      rating: 4.9
+      rating: 4.9,
+      models: [
+        { code: "PK01", name: "Model Standar", image: "/product-image/plakat-reg-1.jpg" },
+        { code: "PK02", name: "Model Premium", image: "/product-image/plakat-reg-2.jpg" },
+        { code: "PK03", name: "Model Deluxe", image: "/product-image/plakat-reg-3.jpg" }
+      ]
     },
     {
       id: 23,
@@ -489,26 +521,144 @@ const products = {
       rating: 4.7
     }
   ],
-  "Jasa Desain": [
+  "Papan Bunga": [
     {
-      id: 24,
-      name: "Jasa Desain",
-      image: "/product-image/Jasa Desain.jpg",
+      id: 1001,
+      name: "Papan Bunga Kecil - Pink Purple Gradient #PKK1",
+      image: "/product-image/papan-bunga/Kecil - KODE PKK1 - Pink Purple gradient dengan bunga dan kupu-kupu.jpg",
       additionalImages: [],
-      description: "Layanan desain grafis profesional untuk semua kebutuhan Anda.",
-      price: 200000,
+      description: "Papan bunga kecil dengan desain pink purple gradient, dilengkapi dengan bunga dan kupu-kupu.",
+      price: 65000,
       discountPrice: null,
-      category: "Jasa Desain",
+      category: "Papan Bunga",
       priceThresholds: [
-        { minQuantity: 1, price: 200000 },
-        { minQuantity: 3, price: 180000 },
-        { minQuantity: 5, price: 150000 },
-        { minQuantity: 10, price: 120000 }
+        { minQuantity: 1, price: 65000 },
+        { minQuantity: 3, price: 63000 },
+        { minQuantity: 5, price: 60000 }
       ],
-      time: "3-7 hari",
+      time: "1-2 hari",
+      rating: 4.8
+    },
+    {
+      id: 1002,
+      name: "Papan Bunga Kecil - Bunga Matahari Mini #PKK3",
+      image: "/product-image/papan-bunga/Kecil - KODE PKK3 dengan Bunga matahari mini dan anggrek putih.jpg",
+      additionalImages: [],
+      description: "Papan bunga kecil dengan bunga matahari mini dan anggrek putih.",
+      price: 65000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 65000 },
+        { minQuantity: 3, price: 63000 },
+        { minQuantity: 5, price: 60000 }
+      ],
+      time: "1-2 hari",
       rating: 4.9
+    },
+    {
+      id: 1003,
+      name: "Papan Bunga Kecil - Pink Gold Tropical #PKK5",
+      image: "/product-image/papan-bunga/Kecil - KODE PKK5 - Pink gold tropical.jpg",
+      additionalImages: [],
+      description: "Papan bunga kecil dengan tema pink gold tropical.",
+      price: 65000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 65000 },
+        { minQuantity: 3, price: 63000 },
+        { minQuantity: 5, price: 60000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.8
+    },
+    {
+      id: 1004,
+      name: "Papan Bunga - Plakat Bunga Anggrek Biru #PKB2",
+      image: "/product-image/papan-bunga/KODE PKB2 - Plakat Bunga dengan anggrek biru moonlight.jpg",
+      additionalImages: [],
+      description: "Plakat bunga dengan anggrek biru moonlight.",
+      price: 70000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 70000 },
+        { minQuantity: 3, price: 68000 },
+        { minQuantity: 5, price: 65000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.9
+    },
+    {
+      id: 1005,
+      name: "Papan Bunga - Plakat Bulat Anggrek Putih #PKB1",
+      image: "/product-image/papan-bunga/KODE PKB1 - Plakat Bulat dengan bunga anggrek putih.jpg",
+      additionalImages: [],
+      description: "Plakat bulat dengan bunga anggrek putih.",
+      price: 70000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 70000 },
+        { minQuantity: 3, price: 68000 },
+        { minQuantity: 5, price: 65000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.8
+    },
+    {
+      id: 1006,
+      name: "Papan Bunga - Pink Mawar Love #PKK6",
+      image: "/product-image/papan-bunga/KODE PKK6 - Pink dengan bunga mawar dan love di tepi.jpg",
+      additionalImages: [],
+      description: "Papan bunga pink dengan bunga mawar dan love di tepi.",
+      price: 70000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 70000 },
+        { minQuantity: 3, price: 68000 },
+        { minQuantity: 5, price: 65000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.9
+    },
+    {
+      id: 1007,
+      name: "Papan Bunga - Hitam Emas Mewah #PKK7",
+      image: "/product-image/papan-bunga/KODE PKK7 plakat hitam emas mewah dengan bunga monokromatik.jpg",
+      additionalImages: [],
+      description: "Plakat hitam emas mewah dengan bunga monokromatik.",
+      price: 70000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 70000 },
+        { minQuantity: 3, price: 68000 },
+        { minQuantity: 5, price: 65000 }
+      ],
+      time: "1-2 hari",
+      rating: 5.0
+    },
+    {
+      id: 1008,
+      name: "Papan Bunga - Biru Muda Mawar #PKK4",
+      image: "/product-image/papan-bunga/KODE PKK4  - Plakat biru muda dengan bunga mawar di tepi.jpg",
+      additionalImages: [],
+      description: "Plakat biru muda dengan bunga mawar di tepi.",
+      price: 70000,
+      discountPrice: null,
+      category: "Papan Bunga",
+      priceThresholds: [
+        { minQuantity: 1, price: 70000 },
+        { minQuantity: 3, price: 68000 },
+        { minQuantity: 5, price: 65000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.8
     }
-  ],
+  ]
 };
 
 const calculateBannerPrice = (product, width, height) => {
@@ -552,6 +702,30 @@ const Index = () => {
   // Add this state for loading
   const [isSubmitting, setIsSubmitting] = useState(false);
 
+  // Add state for selected model
+  const [selectedModel, setSelectedModel] = useState("");
+
+  // Add validation state
+  const [nameError, setNameError] = useState("");
+  const [phoneError, setPhoneError] = useState("");
+
+  // Add state for jasa desain request
+  const [requestJasaDesain, setRequestJasaDesain] = useState(false);
+  const JASA_DESAIN_PRICE = 25000;
+
+  // Add state for selected case
+  const [selectedCase, setSelectedCase] = useState("");
+
+  // Add case variants
+  const caseVariants = [
+    { code: "transparan", name: "Case Transparan" },
+    { code: "putih", name: "Case Putih Susu" },
+    { code: "hitam", name: "Case Hitam" },
+    { code: "biru", name: "Case Biru" },
+    { code: "merah", name: "Case Merah" },
+    { code: "tanpa", name: "Tanpa Casing" },
+  ];
+
   // Generate invoice number when component mounts
   useEffect(() => {
     const date = new Date();
@@ -562,6 +736,23 @@ const Index = () => {
     
     setInvoiceNumber(`INV-${year}${month}${day}-${random}`);
   }, []);
+
+  // On component mount, load cartItems from localStorage if present
+  useEffect(() => {
+    const savedCart = localStorage.getItem('cartItems');
+    if (savedCart) {
+      try {
+        setCartItems(JSON.parse(savedCart));
+      } catch (e) {
+        // ignore parse error
+      }
+    }
+  }, []);
+
+  // Whenever cartItems changes, save to localStorage
+  useEffect(() => {
+    localStorage.setItem('cartItems', JSON.stringify(cartItems));
+  }, [cartItems]);
 
   // Handle search functionality
   const handleSearch = (term: string) => {
@@ -610,20 +801,38 @@ const Index = () => {
 
     const promo = validPromoCodes[code as keyof typeof validPromoCodes];
     if (promo) {
-      // Check if promo applies to any product in the cart
-      const appliesToAny = cartItems.some(item =>
-        promo.productIds === null || promo.productIds.includes(item.id)
-      );
+      // If promo applies to specific products, check if any of those products are in the cart
+      if (promo.productIds && Array.isArray(promo.productIds)) {
+        const matchingCartItem = cartItems.find(item => promo.productIds!.includes(item.id));
+        if (!matchingCartItem) {
+          setPromoDiscount(0);
+          setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
+          return;
+        }
+        // Now check minimum quantity requirement if specified
+        if (promo.minQuantity && matchingCartItem.quantity < promo.minQuantity) {
+          setPromoDiscount(0);
+          setPromoCodeError(`Kode promo memerlukan minimal ${promo.minQuantity} pcs pada produk yang dipilih.`);
+          return;
+        }
+      }
+      // For codes that apply to all products or pass the above checks
+      // Check if promo applies to any product in the cart with sufficient quantity
+      const appliesToAny = cartItems.some(item => {
+        const productMatches = promo.productIds === null || promo.productIds.includes(item.id);
+        const quantityMatches = !promo.minQuantity || item.quantity >= promo.minQuantity;
+        return productMatches && quantityMatches;
+      });
       if (appliesToAny) {
         setPromoDiscount(promo.discount);
-        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`);
+        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, { position: 'top-center', style: { marginTop: '60px' } });
       } else {
         setPromoDiscount(0);
         setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
       }
     } else {
       setPromoDiscount(0);
-      setPromoCodeError("Invalid promo code");
+      setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
     }
   };
 
@@ -657,7 +866,19 @@ const Index = () => {
 
   // Add to cart function
   const addToCart = (product: any) => {
-    const existingItem = cartItems.find(item => item.id === product.id);
+    if (product.models && !selectedModel) {
+      toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
+      return;
+    }
+    if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
+      toast.error("Mohon pilih jenis casing terlebih dahulu!", { position: 'top-center', style: { marginTop: '60px' } });
+      return;
+    }
+    const existingItem = cartItems.find(item => 
+      item.id === product.id && 
+      (!product.models || item.modelCode === selectedModel) &&
+      (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase)
+    );
     
     if (existingItem) {
       const newQuantity = existingItem.quantity + 1;
@@ -665,7 +886,7 @@ const Index = () => {
       
       setCartItems(
         cartItems.map(item =>
-          item.id === product.id 
+          item.id === product.id && (!product.models || item.modelCode === selectedModel)
             ? { 
                 ...item, 
                 quantity: newQuantity, 
@@ -675,14 +896,18 @@ const Index = () => {
             : item
         )
       );
+      toast.success(`${product.name} ${product.models ? `(${selectedModel})` : ''} ditambahkan ke keranjang (${newQuantity}×)`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
     } else {
       const newItem = { 
         ...product, 
         quantity: 1, 
         appliedPrice: getApplicablePrice(product, 1),
-        savings: calculateSavings(product, 1)
+        savings: calculateSavings(product, 1),
+        modelCode: product.models ? selectedModel : undefined,
+        caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined
       };
       setCartItems([...cartItems, newItem]);
+      toast.success(`${product.name}${product.models ? ` (${selectedModel})` : ''}${idCardWithCaseIds.includes(product.id) ? ` [${caseVariants.find(c => c.code === selectedCase)?.name}]` : ''} ditambahkan ke keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
     }
   };
 
@@ -707,14 +932,29 @@ const Index = () => {
             : item
         )
       );
+      
+      // Show notification for decreasing quantity
+      toast.info(`Jumlah ${existingItem.name} dikurangi (${newQuantity}×)`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
     } else {
       setCartItems(cartItems.filter(item => item.id !== id));
+      
+      // Show notification for removing product
+      if (existingItem) {
+        toast.info(`${existingItem.name} dihapus dari keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+      }
     }
   };
 
   // Delete item completely from cart
   const deleteFromCart = (id: number) => {
+    const itemToDelete = cartItems.find(item => item.id === id);
+    
     setCartItems(cartItems.filter(item => item.id !== id));
+    
+    // Show notification for deleting product
+    if (itemToDelete) {
+      toast.info(`${itemToDelete.name} dihapus dari keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+    }
   };
 
   // Calculate total price with promo discount
@@ -723,8 +963,10 @@ const Index = () => {
       let itemPrice = item.appliedPrice * item.quantity;
       if (promoCode && validPromoCodes[promoCode]) {
         const promoInfo = validPromoCodes[promoCode];
-        const appliesTo = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
-        if (appliesTo) {
+        const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
+        const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
+        
+        if (productMatches && quantityMatches) {
           itemPrice = itemPrice * (1 - promoInfo.discount / 100);
         }
       }
@@ -743,6 +985,9 @@ const Index = () => {
   const openProductDetails = (product: any) => {
     setSelectedProduct(product);
     setCurrentImageIndex(0);
+    if (idCardWithCaseIds.includes(product.id)) {
+      setSelectedCase("");
+    }
     
     // Set default dimensions for dimensional products
     if (product.pricingMethod === "dimensional") {
@@ -779,12 +1024,43 @@ const Index = () => {
     try {
       const formData = new URLSearchParams();
       
-      // Format order details to only include name and quantity
-      const simplifiedOrderDetails = orderData.cartItems.map((item: any) => ({
-        name: item.name,
-        quantity: item.quantity,
-        price: item.appliedPrice
-      }));
+      // Format order details to include name, quantity, dimensions for banner products, and model code
+      const simplifiedOrderDetails = [
+        ...orderData.cartItems.map((item: any) => {
+          let modifiedName = item.name;
+          if (item.width && item.height) {
+            const area = (item.width * item.height).toFixed(2);
+            modifiedName = `${item.name} [${item.width}m × ${item.height}m, ${area}m²]`;
+          }
+          if (item.modelCode) {
+            modifiedName = `${item.name} [${item.modelCode}]`;
+          }
+          // Add this for casing
+          if (item.caseVariant) {
+            const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
+            modifiedName = `${item.name} [Casing: ${caseName}]`;
+          }
+          return {
+            name: modifiedName,
+            quantity: item.quantity,
+            price: item.appliedPrice,
+            width: item.width || 0,
+            height: item.height || 0,
+            hasDimensions: item.width && item.height ? true : false,
+            modelCode: item.modelCode || '',
+            caseVariant: item.caseVariant
+          };
+        }),
+        ...(orderData.requestJasaDesain ? [{
+          name: 'Jasa Desain',
+          quantity: 1,
+          price: JASA_DESAIN_PRICE,
+          width: 0,
+          height: 0,
+          hasDimensions: false,
+          modelCode: ''
+        }] : [])
+      ];
       
       // Add all order data to formData
       formData.append('InvoiceNumber', orderData.invoiceNumber);
@@ -792,22 +1068,73 @@ const Index = () => {
       formData.append('Instansi', orderData.instansi || '');
       formData.append('PhoneNumber', orderData.phoneNumber);
       formData.append('OrderDetails', JSON.stringify(simplifiedOrderDetails));
+      
+      // Add separate detail fields for banners to ensure dimensions are captured
+      const bannerItems = orderData.cartItems.filter(item => item.width && item.height);
+      if (bannerItems.length > 0) {
+        formData.append('HasBanners', 'true');
+        formData.append('BannerDetails', JSON.stringify(bannerItems.map(item => ({
+          name: item.name,
+          id: item.id,
+          width: item.width,
+          height: item.height,
+          dimensions: `${item.width}m × ${item.height}m`,
+          area: (item.width * item.height).toFixed(2),
+          price: item.appliedPrice,
+          quantity: item.quantity
+        }))));
+        
+        // Add a single string with all banner dimensions for easier Google Sheet processing
+        const bannerDimensionsText = bannerItems.map(item => 
+          `${item.name}: ${item.width}m × ${item.height}m (${(item.width * item.height).toFixed(2)}m²)`
+        ).join('; ');
+        formData.append('BannerDimensions', bannerDimensionsText);
+        
+        // Also add individual banner dimensions for easier parsing
+        bannerItems.forEach((item, index) => {
+          formData.append(`Banner_${index}_Name`, item.name);
+          formData.append(`Banner_${index}_Width`, item.width.toString());
+          formData.append(`Banner_${index}_Height`, item.height.toString());
+          formData.append(`Banner_${index}_Area`, (item.width * item.height).toFixed(2));
+          formData.append(`Banner_${index}_Quantity`, item.quantity.toString());
+          formData.append(`Banner_${index}_Price`, item.appliedPrice.toString());
+        });
+        
+        // Log banner details to console for debugging
+        console.log('Banner details being sent:', bannerItems);
+      }
+      
       formData.append('Subtotal', orderData.subtotal.toString());
       formData.append('PromoCode', orderData.promoCode || '');
       formData.append('PromoDiscount', orderData.promoDiscount.toString());
       formData.append('Total', orderData.total.toString());
       formData.append('ShippingInfo', orderData.isShipping.toString());
       formData.append('Address', orderData.address || '');
+      formData.append('RequestJasaDesain', orderData.requestJasaDesain ? 'Ya' : 'Tidak');
+      if (orderData.requestJasaDesain) {
+        formData.append('JasaDesainPrice', JASA_DESAIN_PRICE.toString());
+      }
 
-      const response = await fetch('https://script.google.com/macros/s/AKfycbw7Ht5Ax693Wt99YC-kBQXYmzohctNRUQzuH_rLWvfySR9lM3QkBo_7emeL7T8Erkpy/exec', {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-      });
-
-      return { success: true };
+      try {
+        const response = await fetch('https://script.google.com/macros/s/AKfycbw7Ht5Ax693Wt99YC-kBQXYmzohctNRUQzuH_rLWvfySR9lM3QkBo_7emeL7T8Erkpy/exec', {
+          method: 'POST',
+          body: formData,
+          mode: 'no-cors'
+        });
+        
+        // Note: With 'no-cors' mode, we can't read the response,
+        // but we can assume it's successful if no error is thrown
+        console.log('Google Sheets submission completed');
+        return { success: true };
+      } catch (fetchError) {
+        console.error('Error submitting to Google Sheet:', fetchError);
+        // Show a toast with error details
+        toast.error('Error sending to Google Sheets: ' + fetchError.message, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+        throw fetchError;
+      }
     } catch (error) {
-      console.error('Error submitting to Google Sheet:', error);
+      console.error('Error preparing order data:', error);
+      toast.error('Error preparing order data: ' + error.message, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
       throw error;
     }
   };
@@ -815,12 +1142,12 @@ const Index = () => {
   // WhatsApp redirection function
   const handleWhatsAppRedirect = async () => {
     if (!customerName || !phoneNumber) {
-      toast.error("Mohon isi nama dan nomor telepon kamu.");
+      toast.error("Mohon isi nama dan nomor telepon kamu.", { position: 'top-center', style: { marginTop: '60px' } });
       return;
     }
 
     if (isShipping && !address) {
-      toast.error("Mohon isi alamat pengiriman kamu.");
+      toast.error("Mohon isi alamat pengiriman kamu.", { position: 'top-center', style: { marginTop: '60px' } });
       return;
     }
 
@@ -837,9 +1164,10 @@ const Index = () => {
         subtotal: cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0),
         promoCode,
         promoDiscount,
-        total: calculateTotal(),
+        total: calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0),
         isShipping,
-        address
+        address,
+        requestJasaDesain
       };
 
       // Save to Google Sheet
@@ -848,21 +1176,26 @@ const Index = () => {
       // Prepare WhatsApp message (do this before showing success dialog)
       const productList = cartItems.map(item => {
         let itemInfo = `- ${item.name} (${item.quantity}×) — Rp ${item.appliedPrice.toLocaleString('id-ID')}`;
-        
-        // Add dimensions for banner products
         if (item.width && item.height) {
-          itemInfo += ` [${item.width}m × ${item.height}m]`;
+          const area = (item.width * item.height).toFixed(2);
+          itemInfo += `\n  Ukuran: ${item.width}m × ${item.height}m (${area} m²)`;
         }
-        
+        if (item.modelCode) {
+          itemInfo += `\n  Kode: ${item.modelCode}`;
+        }
+        if (item.caseVariant) {
+          const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
+          itemInfo += `\n  Casing: ${caseName}`;
+        }
         return itemInfo;
       }).join('\n');
 
       const totalSavings = calculateTotalSavings();
       const savingsMessage = totalSavings > 0 ? 
         `\nKamu hemat: Rp ${totalSavings.toLocaleString('id-ID')}` : '';
-        
       const promoMessage = promoDiscount > 0 ?
         `\nKode Promo: ${promoCode} (${promoDiscount}% discount)` : '';
+      const jasaDesainMessage = requestJasaDesain ? `\nJasa Desain: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
 
       const message = `Informasi Order:
 Nama: ${customerName}
@@ -871,9 +1204,9 @@ Telp: ${phoneNumber}${promoMessage}
 ${isShipping ? `Alamat: ${address}` : 'Ambil di tempat: Ya (tidak perlu dikirim)'}
 
 Detail Order:
-${productList}
+${productList}${jasaDesainMessage}
 
-Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
+Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}${savingsMessage}`;
 
       const whatsappUrl = `https://wa.me/6285172157808?text=${encodeURIComponent(message)}`;
       
@@ -886,7 +1219,7 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
       
     } catch (error) {
       setIsSubmitting(false);
-      toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.");
+      toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.", { position: 'top-center', style: { marginTop: '60px' } });
       console.error(error);
     }
   };
@@ -899,19 +1232,28 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
       height, 
       appliedPrice: calculatedPrice,
       quantity: 1,
-      savings: product.price - calculatedPrice > 0 ? product.price - calculatedPrice : 0
+      savings: product.price - calculatedPrice > 0 ? product.price - calculatedPrice : 0,
+      isDimensionalProduct: true,
+      dimensionText: `${width}m × ${height}m`,
+      area: (width * height).toFixed(2) + ' m²'
     };
     
     setCartItems([...cartItems, newItem]);
     setSelectedProduct(null);
+    
+    // Show success notification for banner with dimensions
+    toast.success(`${product.name} ${width}m × ${height}m ditambahkan ke keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
   };
 
   const calculateTotalDiscount = () => {
     if (!promoCode || !validPromoCodes[promoCode]) return 0;
+    
     const promoInfo = validPromoCodes[promoCode];
     return cartItems.reduce((discount, item) => {
-      const appliesTo = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
-      if (appliesTo) {
+      const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
+      const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
+      
+      if (productMatches && quantityMatches) {
         return discount + (item.appliedPrice * item.quantity * (promoInfo.discount / 100));
       }
       return discount;
@@ -923,11 +1265,14 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
     { id: "ID Card & Lanyard", name: "ID Card", icon: "badge", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
     { id: "Media Promosi", name: "Banner", icon: "ad_units", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
     { id: "Merchandise", name: "Merchandise", icon: "redeem", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-    { id: "Jasa Desain", name: "Desain", icon: "design_services", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
+    { id: "Papan Bunga", name: "Papan Bunga", icon: "local_florist", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
   ];
 
+  // IDs that require case selection
+  const idCardWithCaseIds = [1, 2, 6, 7, 8];
+
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 notranslate" translate="no">
       <div className="container mx-auto max-w-md bg-white min-h-screen px-4 pb-16">
         {/* Header */}
         <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
@@ -961,6 +1306,14 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
             {/* Banner Carousel */}
             <BannerCarousel />
             
+            {/* Promoted Products */}
+            <PromotedProducts 
+              products={products as Record<string, any[]>}
+              promotedProducts={promotedProducts}
+              onAddToCart={addToCart}
+              onOpenDetails={openProductDetails}
+            />
+            
             {/* Category Grid - UPDATED SECTION */}
             <div className="mt-6 mb-4">
               <h2 className="text-lg font-bold mb-3 text-gray-800">Kategori Produk:</h2>
@@ -975,7 +1328,7 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                         : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
                     }`}
                   >
-                    <span className="material-symbols-outlined text-2xl">{category.icon}</span>
+                    <span className="material-symbols-outlined notranslate text-2xl" translate="no">{category.icon}</span>
                     <span className="text-xs font-medium text-center">{category.name}</span>
                   </div>
                 ))}
@@ -1052,6 +1405,16 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                             >
                               <ShoppingBag className="h-3 w-3 mr-1" /> Masukkan Ukuran
                             </button>
+                          ) : idCardWithCaseIds.includes(product.id) ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openProductDetails(product);
+                              }}
+                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
+                            >
+                              <ShoppingBag className="h-3 w-3 mr-1" /> Pilih Casing
+                            </button>
                           ) : (
                             <button
                               onClick={(e) => {
@@ -1102,10 +1465,18 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                   type="text"
                   className="w-full rounded-lg border border-gray-300 p-2"
                   value={customerName}
-                  onChange={(e) => setCustomerName(e.target.value)}
+                  onChange={(e) => {
+                    setCustomerName(e.target.value);
+                    if (e.target.value.length < 3) {
+                      setNameError("Nama minimal 3 karakter");
+                    } else {
+                      setNameError("");
+                    }
+                  }}
                   placeholder="Nama Kamu"
                   required
                 />
+                {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
               </div>
               
               <div>
@@ -1125,10 +1496,18 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                   type="tel"
                   className="w-full rounded-lg border border-gray-300 p-2"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value);
+                    if (e.target.value.length < 10) {
+                      setPhoneError("Nomor telepon minimal 10 digit");
+                    } else {
+                      setPhoneError("");
+                    }
+                  }}
                   placeholder="Nomor Telepon Kamu"
                   required
                 />
+                {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
               </div>
 
               <div className="flex items-center">
@@ -1157,15 +1536,34 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
               )}
             </div>
             
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="jasaDesainOption"
+                checked={requestJasaDesain}
+                onChange={() => setRequestJasaDesain(!requestJasaDesain)}
+                className="mr-2"
+              />
+              <label htmlFor="jasaDesainOption" className="text-sm">Request Jasa Desain? (+Rp 25.000)</label>
+            </div>
+            
             <div className="border-t border-b py-3 my-3">
               <h3 className="font-medium mb-2 text-sm">Ringkasan Pesanan</h3>
               {cartItems.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm mb-3">
                   <div className="flex-1">
                     <p className="font-medium">{item.name}</p>
+                    {item.modelCode && (
+                      <p className="text-xs text-gray-600">Kode: {item.modelCode}</p>
+                    )}
                     {item.width && item.height && (
                       <p className="text-xs text-gray-600">
                         {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
+                      </p>
+                    )}
+                    {item.caseVariant && (
+                      <p className="text-xs text-gray-600">
+                        Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
                       </p>
                     )}
                     <div className="flex items-center gap-2 mt-1">
@@ -1225,9 +1623,16 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                   </div>
                 )}
                 
+                {requestJasaDesain && (
+                  <div className="flex justify-between items-center text-sm text-blue-600">
+                    <p>Jasa Desain</p>
+                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                  </div>
+                )}
+                
                 <div className="flex justify-between items-center font-medium mt-2">
                   <p>Total</p>
-                  <p>Rp {calculateTotal().toLocaleString('id-ID')}</p>
+                  <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
                 </div>
               </div>
             </div>
@@ -1251,9 +1656,15 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
               
               <button
                 onClick={handleWhatsAppRedirect}
-                disabled={isSubmitting}
+                disabled={
+                  Boolean(isSubmitting) ||
+                  Boolean(nameError) ||
+                  Boolean(phoneError) ||
+                  customerName.length < 3 ||
+                  phoneNumber.length < 10
+                }
                 className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md text-base ${
-                  isSubmitting ? 'opacity-50 cursor-not-allowed' : ''
+                  Boolean(isSubmitting) || Boolean(nameError) || Boolean(phoneError) || customerName.length < 3 || phoneNumber.length < 10 ? 'opacity-50 cursor-not-allowed' : ''
                 }`}
               >
                 {isSubmitting ? 'Memproses...' : 'Lanjut ke WhatsApp'}
@@ -1344,6 +1755,9 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                               <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
+                          {item.caseVariant && (
+                            <p className="text-xs text-gray-600">Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}</p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -1366,9 +1780,16 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                     </div>
                   )}
                   
+                  {requestJasaDesain && (
+                    <div className="flex justify-between items-center text-sm text-blue-600">
+                      <p>Jasa Desain</p>
+                      <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                    </div>
+                  )}
+                  
                   <div className="flex justify-between items-center font-medium mt-2">
                     <p>Total</p>
-                    <p>Rp {calculateTotal().toLocaleString('id-ID')}</p>
+                    <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
                   </div>
                   
                   <button
@@ -1397,11 +1818,11 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                 <div className="relative">
                   <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "75%" }}>
                     <img
-                      src={[selectedProduct.image, ...selectedProduct.additionalImages][currentImageIndex]}
+                      src={selectedProduct.models ? selectedProduct.models.find(m => m.code === selectedModel)?.image || selectedProduct.models[0].image : [selectedProduct.image, ...selectedProduct.additionalImages][currentImageIndex]}
                       alt={selectedProduct.name}
                       className="absolute top-0 left-0 w-full h-full object-cover"
                     />
-                    {selectedProduct.additionalImages.length > 0 && (
+                    {selectedProduct.additionalImages.length > 0 && !selectedProduct.models && (
                       <>
                         <button
                           onClick={prevImage}
@@ -1418,62 +1839,84 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                       </>
                     )}
                   </div>
-                  <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-                    {[selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
-                      <div
-                        key={index}
-                        className={`relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden cursor-pointer ${
-                          index === currentImageIndex ? 'ring-2 ring-[#FF5E01]' : ''
-                        }`}
-                        onClick={() => setCurrentImageIndex(index)}
-                      >
-                        <img
-                          src={image}
-                          alt={`${selectedProduct.name} - Gambar ${index + 1}`}
-                          className="w-full h-full object-cover"
-                        />
+                  
+                  {/* Model Selector for Plakat */}
+                  {selectedProduct.models && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium mb-2">Pilih Model:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedProduct.models.map((model) => (
+                          <button
+                            key={model.code}
+                            onClick={() => setSelectedModel(model.code)}
+                            className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                              selectedModel === model.code
+                                ? "bg-[#FF5E01] text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                          >
+                            {model.code} - {model.name}
+                          </button>
+                        ))}
                       </div>
-                    ))}
+                    </div>
+                  )}
+                  
+                  <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide pb-2">
+                    {selectedProduct.models ? (
+                      selectedProduct.models.map((model, index) => (
+                        <div
+                          key={index}
+                          className={`relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden cursor-pointer ${
+                            model.code === selectedModel ? 'ring-2 ring-[#FF5E01]' : ''
+                          }`}
+                          onClick={() => setSelectedModel(model.code)}
+                        >
+                          <img
+                            src={model.image}
+                            alt={`${model.name} - ${model.code}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    ) : (
+                      [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
+                        <div
+                          key={index}
+                          className={`relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden cursor-pointer ${
+                            index === currentImageIndex ? 'ring-2 ring-[#FF5E01]' : ''
+                          }`}
+                          onClick={() => setCurrentImageIndex(index)}
+                        >
+                          <img
+                            src={image}
+                            alt={`${selectedProduct.name} - Gambar ${index + 1}`}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ))
+                    )}
                   </div>
                 </div>
                 <div className="space-y-3">
                   <p className="text-gray-600 text-sm">{selectedProduct.description}</p>
-                  
-                  {/* Banner Dimension Inputs for dimensional pricing method */}
-                  {selectedProduct.pricingMethod === "dimensional" && (
-                    <div className="space-y-2 mt-3 bg-gray-50 p-3 rounded-lg">
-                      <p className="font-medium text-sm">Ukuran Banner:</p>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <label className="text-xs text-gray-600">Lebar (m)</label>
-                          <input 
-                            type="number"
-                            min={selectedProduct.minWidth}
-                            max={selectedProduct.maxWidth}
-                            step="0.1"
-                            value={bannerWidth}
-                            onChange={(e) => setBannerWidth(parseFloat(e.target.value) || 1)}
-                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
-                          />
-                        </div>
-                        <div>
-                          <label className="text-xs text-gray-600">Tinggi (m)</label>
-                          <input
-                            type="number"
-                            min={selectedProduct.minHeight}
-                            max={selectedProduct.maxHeight}
-                            step="0.1" 
-                            value={bannerHeight}
-                            onChange={(e) => setBannerHeight(parseFloat(e.target.value) || 1)}
-                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
-                          />
-                        </div>
-                      </div>
-                      <div className="text-sm font-medium text-[#FF5E01] mt-2">
-                        Ukuran: {bannerWidth}m × {bannerHeight}m ({(bannerWidth * bannerHeight).toFixed(2)} m²)
-                      </div>
-                      <div className="text-sm font-medium text-[#FF5E01]">
-                        Harga: Rp {calculateBannerPrice(selectedProduct, bannerWidth, bannerHeight).toLocaleString('id-ID')}
+                  {selectedProduct && idCardWithCaseIds.includes(selectedProduct.id) && (
+                    <div className="mt-4">
+                      <h4 className="text-sm font-medium mb-2">Pilih Jenis Casing:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {caseVariants.map((variant) => (
+                          <button
+                            key={variant.code}
+                            onClick={() => setSelectedCase(variant.code)}
+                            className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                              selectedCase === variant.code
+                                ? "bg-[#FF5E01] text-white"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                          >
+                            {variant.name}
+                          </button>
+                        ))}
                       </div>
                     </div>
                   )}
@@ -1529,25 +1972,87 @@ Total: Rp ${calculateTotal().toLocaleString('id-ID')}${savingsMessage}`;
                     </div>
                   </div>
                   
-                  {/* Conditional Add to Cart button based on pricingMethod */}
-                  {selectedProduct.pricingMethod === "dimensional" ? (
-                    <button
-                      onClick={() => addBannerToCart(selectedProduct, bannerWidth, bannerHeight)}
-                      className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
-                    >
-                      Masukkan Keranjang
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        addToCart(selectedProduct);
-                        setSelectedProduct(null);
-                      }}
-                      className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
-                    >
-                      Masukkan Keranjang
-                    </button>
+                  {selectedProduct.pricingMethod === "dimensional" && (
+                    <div className="space-y-2 mt-3 bg-gray-50 p-3 rounded-lg">
+                      <p className="font-medium text-sm">Ukuran Banner:</p>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <label className="text-xs text-gray-600">Lebar (m)</label>
+                          <input
+                            type="number"
+                            min={selectedProduct.minWidth}
+                            max={selectedProduct.maxWidth}
+                            step="0.5"
+                            value={bannerWidth}
+                            onChange={(e) => {
+                              let val = parseFloat(e.target.value) || selectedProduct.minWidth;
+                              val = Math.round(val * 2) / 2;
+                              if (val < selectedProduct.minWidth) val = selectedProduct.minWidth;
+                              if (val > selectedProduct.maxWidth) val = selectedProduct.maxWidth;
+                              setBannerWidth(val);
+                            }}
+                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-xs text-gray-600">Tinggi (m)</label>
+                          <input
+                            type="number"
+                            min={selectedProduct.minHeight}
+                            max={selectedProduct.maxHeight}
+                            step="0.5"
+                            value={bannerHeight}
+                            onChange={(e) => {
+                              let val = parseFloat(e.target.value) || selectedProduct.minHeight;
+                              val = Math.round(val * 2) / 2;
+                              if (val < selectedProduct.minHeight) val = selectedProduct.minHeight;
+                              if (val > selectedProduct.maxHeight) val = selectedProduct.maxHeight;
+                              setBannerHeight(val);
+                            }}
+                            className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="text-sm font-medium text-[#FF5E01] mt-2">
+                        Ukuran: {bannerWidth}m × {bannerHeight}m ({(bannerWidth * bannerHeight).toFixed(2)} m²)
+                      </div>
+                      <div className="text-sm font-medium text-[#FF5E01]">
+                        Harga: Rp {calculateBannerPrice(selectedProduct, bannerWidth, bannerHeight).toLocaleString('id-ID')}
+                      </div>
+                    </div>
                   )}
+
+                  <div className="mt-4">
+                    {selectedProduct.pricingMethod === "dimensional" ? (
+                      <button
+                        onClick={() => addBannerToCart(selectedProduct, bannerWidth, bannerHeight)}
+                        className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                      >
+                        Masukkan Keranjang
+                      </button>
+                    ) : selectedProduct.models ? (
+                      <button
+                        onClick={() => {
+                          addToCart(selectedProduct);
+                          setSelectedProduct(null);
+                        }}
+                        className={`w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium ${!selectedModel ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={!selectedModel}
+                      >
+                        Masukkan Keranjang
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => {
+                          addToCart(selectedProduct);
+                          setSelectedProduct(null);
+                        }}
+                        className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                      >
+                        Masukkan Keranjang
+                      </button>
+                    )}
+                  </div>
                 </div>
               </>
             )}

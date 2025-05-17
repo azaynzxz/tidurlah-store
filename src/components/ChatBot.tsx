@@ -68,12 +68,27 @@ const responseData = {
   "layanan desain": "Layanan desain kami (Rp 200.000) mencakup pekerjaan desain grafis profesional yang disesuaikan dengan kebutuhan Anda. Ini mencakup pembuatan konsep, hingga 3 putaran revisi, dan file akhir yang dikirimkan dalam format yang sesuai dengan penggunaan yang Anda inginkan.",
   
   // Order related
-  "promo": "Gunakan kode DISCOUNT10 untuk diskon 10%, SAVE15 untuk diskon 15%, atau PROMO20 untuk diskon 20% pada semua produk. Khusus untuk ID Card 2S, gunakan IDCARD15 untuk diskon 15%.",
-  "kode promo": "Gunakan kode DISCOUNT10 untuk diskon 10%, SAVE15 untuk diskon 15%, atau PROMO20 untuk diskon 20% pada semua produk. Khusus untuk ID Card 2S, gunakan IDCARD15 untuk diskon 15%.",
+  "promo": `Contoh kode promo yang bisa dicoba:
+• PROMO123 — Diskon 10%
+• SAVE20 — Diskon 20%
+• HEMAT — Diskon khusus event
+
+Masukkan kode promo di halaman checkout untuk mendapatkan diskon.`,
+  "kode promo": `Contoh kode promo yang bisa dicoba:
+• PROMO123 — Diskon 10%
+• SAVE20 — Diskon 20%
+• HEMAT — Diskon khusus event
+
+Masukkan kode promo di halaman checkout untuk mendapatkan diskon.`,
   "cara order": "Pilih produk, masukkan ke keranjang, isi data diri, dan pilih metode pengiriman. Pembayaran dan konfirmasi melalui WhatsApp.",
   "pengiriman": "Kami melayani pengiriman ke seluruh Indonesia. Biaya kirim akan dihitung berdasarkan berat dan tujuan.",
   "diskon": "Kami memberikan diskon kuantitas untuk pembelian 4+, 25+, dan 100+ unit. Semakin banyak pesanan, semakin besar diskon yang Anda dapatkan.",
-  "cara apply promo": "Selama checkout, Anda akan menemukan kolom 'Kode Promo' di mana Anda dapat memasukkan kode promo. Kode yang valid seperti DISCOUNT10 atau SAVE15 akan secara otomatis menerapkan diskon ke produk yang memenuhi syarat.",
+  "cara apply promo": `Cara menggunakan kode promo:
+1. Pilih produk dan lanjut ke checkout.
+2. Masukkan kode promo pada kolom "Kode Promo".
+3. Jika kode valid, diskon akan otomatis diterapkan pada total belanja Anda.
+
+Contoh kode: PROMO123, SAVE20, HEMAT`,
   "ubah pesanan": "Ya, Anda dapat meminta perubahan sebelum produksi dimulai. Silakan hubungi kami segera melalui WhatsApp dengan nomor pesanan dan perubahan yang Anda minta.",
   "kirim luar kota": "Ya, kami menawarkan pengiriman ke seluruh Indonesia. Biaya pengiriman akan dihitung berdasarkan lokasi, berat paket, dan layanan kurir yang Anda pilih.",
   "rush order": "Kami mungkin dapat mengakomodasi pesanan mendesak tergantung jadwal produksi kami saat ini. Biasanya ada biaya tambahan 30% untuk layanan rush, dan ketersediaan bervariasi berdasarkan jenis produk.",
