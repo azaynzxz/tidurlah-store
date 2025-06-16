@@ -189,29 +189,16 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
 };
 
 // Linear Scale Component
-const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: {
+const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel, onSound }: {
   value: number;
   onChange: (value: number) => void;
   min?: number;
   max?: number;
   minLabel: string;
   maxLabel: string;
+  onSound: () => void;
 }) => {
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
-
-  // Sound effect function for scale
-  const playScaleSound = () => {
-    const sounds = [
-      '/audio/Bubble.mp3',
-      '/audio/Bubble 2.mp3', 
-      '/audio/Bubble 3.mp3',
-      '/audio/Bubble 4.mp3'
-    ];
-    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-    const audio = new Audio(randomSound);
-    audio.volume = 0.3;
-    audio.play().catch(() => {}); // Ignore errors if audio fails
-  };
 
   return (
     <div className="space-y-4">
@@ -226,7 +213,7 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: 
             type="button"
             onClick={() => {
               onChange(num);
-              playScaleSound(); // Play sound when scale button is clicked
+              onSound(); // Use the passed sound function
             }}
             onMouseEnter={() => setHoveredValue(num)}
             onMouseLeave={() => setHoveredValue(null)}
@@ -247,28 +234,15 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: 
 };
 
 // Card Answers Component
-const CardAnswers = ({ options, value, onChange, multiple = false }: {
+const CardAnswers = ({ options, value, onChange, multiple = false, onSound }: {
   options: string[];
   value: string | string[];
   onChange: (value: string | string[]) => void;
   multiple?: boolean;
+  onSound: () => void;
 }) => {
-  // Sound effect function for cards
-  const playCardSound = () => {
-    const sounds = [
-      '/audio/Bubble.mp3',
-      '/audio/Bubble 2.mp3', 
-      '/audio/Bubble 3.mp3',
-      '/audio/Bubble 4.mp3'
-    ];
-    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-    const audio = new Audio(randomSound);
-    audio.volume = 0.3;
-    audio.play().catch(() => {}); // Ignore errors if audio fails
-  };
-
   const handleCardClick = (option: string) => {
-    playCardSound(); // Play sound when card is clicked
+    onSound(); // Use the passed sound function
     
     if (multiple) {
       const currentValues = Array.isArray(value) ? value : [];
@@ -328,16 +302,21 @@ export default function Survey() {
   const [questionAnswered, setQuestionAnswered] = useState(false);
   const progress = ((currentStep + 1) / surveyQuestions.length) * 100;
 
-  // Sound effect function
+  // Unified sound effect function - prioritizes Bubble.mp3 with 70% chance
   const playSound = () => {
-    const sounds = [
-      '/audio/Bubble.mp3',
-      '/audio/Bubble 2.mp3', 
-      '/audio/Bubble 3.mp3',
-      '/audio/Bubble 4.mp3'
-    ];
-    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
-    const audio = new Audio(randomSound);
+    const random = Math.random();
+    let soundFile;
+    
+    if (random < 0.7) {
+      // 70% chance to play the satisfying Bubble.mp3
+      soundFile = '/audio/Bubble.mp3';
+    } else {
+      // 30% chance for variety with other sounds
+      const otherSounds = ['/audio/Bubble 2.mp3', '/audio/Bubble 3.mp3', '/audio/Bubble 4.mp3'];
+      soundFile = otherSounds[Math.floor(Math.random() * otherSounds.length)];
+    }
+    
+    const audio = new Audio(soundFile);
     audio.volume = 0.3;
     audio.play().catch(() => {}); // Ignore errors if audio fails
   };
@@ -348,6 +327,20 @@ export default function Survey() {
       setQuestionAnswered(true);
     }
     playSound(); // Play sound for every answer interaction
+  };
+
+  // Silent handlers for components that handle their own sound
+  const handleAnswerSilent = (questionId: number, answer: any) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+    if (!questionAnswered) {
+      setQuestionAnswered(true);
+    }
+    // No sound - component handles it
+  };
+
+  const handleCheckboxAnswerSilent = (questionId: number, answer: any) => {
+    setAnswers(prev => ({ ...prev, [questionId]: answer }));
+    // No sound - component handles it
   };
 
   // Special handler for checkboxes to play sound on every interaction
@@ -441,7 +434,6 @@ export default function Survey() {
             type="text"
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
-            onFocus={() => playSound()}
             placeholder={currentQuestion.id === 1 ? "Contoh: Budi, PT. Tidurlah" : "Ketik jawaban Anda di sini"}
             className="w-full transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
@@ -472,21 +464,23 @@ export default function Survey() {
             value={answers[currentQuestion.id] || (isMultiple ? [] : '')}
             onChange={(value) => {
               if (isMultiple) {
-                handleCheckboxAnswer(currentQuestion.id, value);
+                handleCheckboxAnswerSilent(currentQuestion.id, value);
               } else {
-                handleAnswer(currentQuestion.id, value);
+                handleAnswerSilent(currentQuestion.id, value);
               }
             }}
             multiple={isMultiple}
+            onSound={playSound}
           />
         );
       case 'scale':
         return (
           <LinearScale
             value={answers[currentQuestion.id] || 0}
-            onChange={(value) => handleAnswer(currentQuestion.id, value)}
+            onChange={(value) => handleAnswerSilent(currentQuestion.id, value)}
             minLabel={currentQuestion.scaleLabels?.min || '1'}
             maxLabel={currentQuestion.scaleLabels?.max || '5'}
+            onSound={playSound}
           />
         );
       case 'checkbox':
@@ -518,7 +512,6 @@ export default function Survey() {
           <Textarea
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
-            onFocus={() => playSound()}
             placeholder="Ketik jawaban Anda di sini"
             className="w-full h-24 sm:h-32 transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
