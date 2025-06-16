@@ -199,6 +199,20 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: 
 }) => {
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
 
+  // Sound effect function for scale
+  const playScaleSound = () => {
+    const sounds = [
+      '/audio/Bubble.mp3',
+      '/audio/Bubble 2.mp3', 
+      '/audio/Bubble 3.mp3',
+      '/audio/Bubble 4.mp3'
+    ];
+    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+    const audio = new Audio(randomSound);
+    audio.volume = 0.3;
+    audio.play().catch(() => {}); // Ignore errors if audio fails
+  };
+
   return (
     <div className="space-y-4">
       <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-2">
@@ -210,7 +224,10 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: 
           <button
             key={num}
             type="button"
-            onClick={() => onChange(num)}
+            onClick={() => {
+              onChange(num);
+              playScaleSound(); // Play sound when scale button is clicked
+            }}
             onMouseEnter={() => setHoveredValue(num)}
             onMouseLeave={() => setHoveredValue(null)}
             className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 transition-all duration-200 flex items-center justify-center font-bold text-sm sm:text-lg
@@ -229,18 +246,34 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel }: 
   );
 };
 
-// Card Style Answer Component
+// Card Answers Component
 const CardAnswers = ({ options, value, onChange, multiple = false }: {
   options: string[];
   value: string | string[];
   onChange: (value: string | string[]) => void;
   multiple?: boolean;
 }) => {
+  // Sound effect function for cards
+  const playCardSound = () => {
+    const sounds = [
+      '/audio/Bubble.mp3',
+      '/audio/Bubble 2.mp3', 
+      '/audio/Bubble 3.mp3',
+      '/audio/Bubble 4.mp3'
+    ];
+    const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
+    const audio = new Audio(randomSound);
+    audio.volume = 0.3;
+    audio.play().catch(() => {}); // Ignore errors if audio fails
+  };
+
   const handleCardClick = (option: string) => {
+    playCardSound(); // Play sound when card is clicked
+    
     if (multiple) {
       const currentValues = Array.isArray(value) ? value : [];
       if (currentValues.includes(option)) {
-        onChange(currentValues.filter(item => item !== option));
+        onChange(currentValues.filter(v => v !== option));
       } else {
         onChange([...currentValues, option]);
       }
@@ -249,33 +282,41 @@ const CardAnswers = ({ options, value, onChange, multiple = false }: {
     }
   };
 
-  const isSelected = (option: string) => {
-    if (multiple) {
-      return Array.isArray(value) && value.includes(option);
-    }
-    return value === option;
-  };
-
   return (
-    <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2">
-      {options.map((option) => (
-        <Card
-          key={option}
-          className={`p-3 sm:p-4 cursor-pointer transition-all duration-300 hover:shadow-lg transform hover:-translate-y-1 ${
-            isSelected(option)
-              ? 'bg-gradient-to-r from-orange-500 to-orange-600 text-white shadow-xl scale-105'
-              : 'bg-white hover:bg-orange-50 border-2 hover:border-orange-200'
-          }`}
-          onClick={() => handleCardClick(option)}
-        >
-          <div className="flex items-center justify-between">
-            <span className="font-medium text-center flex-1 text-sm sm:text-base leading-snug">{option}</span>
-            {isSelected(option) && (
-              <Check className="h-4 w-4 sm:h-5 sm:w-5 ml-2 animate-bounce flex-shrink-0" />
+    <div className="grid grid-cols-1 gap-3">
+      {options.map((option) => {
+        const isSelected = multiple 
+          ? Array.isArray(value) && value.includes(option)
+          : value === option;
+        
+        return (
+          <div
+            key={option}
+            onClick={() => handleCardClick(option)}
+            className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 relative overflow-hidden
+              ${isSelected 
+                ? multiple
+                  ? 'border-orange-400 bg-gradient-to-r from-orange-50 to-orange-100 shadow-md scale-[1.02]'
+                  : 'border-orange-500 bg-orange-50 shadow-md scale-[1.02]'
+                : 'border-gray-200 hover:border-orange-300 hover:bg-orange-25 hover:scale-[1.01]'
+              }`}
+          >
+            <div className="flex items-center justify-between">
+              <span className="text-sm sm:text-base font-medium text-gray-800">{option}</span>
+              {multiple && isSelected && (
+                <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                  <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                </div>
+              )}
+            </div>
+            {isSelected && !multiple && (
+              <div className="absolute inset-0 bg-orange-500 opacity-10 animate-pulse"></div>
             )}
           </div>
-        </Card>
-      ))}
+        );
+      })}
     </div>
   );
 };
@@ -305,8 +346,8 @@ export default function Survey() {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
     if (!questionAnswered) {
       setQuestionAnswered(true);
-      playSound();
     }
+    playSound(); // Play sound for every answer interaction
   };
 
   // Special handler for checkboxes to play sound on every interaction
@@ -319,7 +360,7 @@ export default function Survey() {
     if (currentStep < surveyQuestions.length - 1) {
       setCurrentStep(prev => prev + 1);
       setQuestionAnswered(false);
-      playSound();
+      playSound(); // Play sound when navigating
     }
   };
 
@@ -327,11 +368,12 @@ export default function Survey() {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       setQuestionAnswered(false);
-      playSound();
+      playSound(); // Play sound when navigating
     }
   };
 
   const handleSubmit = async () => {
+    playSound(); // Play sound when submitting
     try {
       // Debug: Log all answers before processing
       console.log('All answers:', answers);
@@ -399,6 +441,7 @@ export default function Survey() {
             type="text"
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+            onFocus={() => playSound()}
             placeholder={currentQuestion.id === 1 ? "Contoh: Budi, PT. Tidurlah" : "Ketik jawaban Anda di sini"}
             className="w-full transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
@@ -407,7 +450,9 @@ export default function Survey() {
         return (
           <RadioGroup
             value={answers[currentQuestion.id] || ''}
-            onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
+            onValueChange={(value) => {
+              handleAnswer(currentQuestion.id, value);
+            }}
             className="space-y-3"
           >
             {currentQuestion.options?.map((option) => (
@@ -458,10 +503,10 @@ export default function Survey() {
                     if (e.target.checked) {
                       handleCheckboxAnswer(currentQuestion.id, [...currentAnswers, option]);
                     } else {
-                      handleCheckboxAnswer(currentQuestion.id, currentAnswers.filter(item => item !== option));
+                      handleCheckboxAnswer(currentQuestion.id, currentAnswers.filter((item: string) => item !== option));
                     }
                   }}
-                  className="h-4 w-4 rounded border border-gray-300 text-orange-500 focus:ring-orange-500 transition-transform duration-200 hover:scale-110"
+                  className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
                 />
                 <Label htmlFor={option} className="cursor-pointer flex-1 text-sm sm:text-base">{option}</Label>
               </div>
@@ -473,6 +518,7 @@ export default function Survey() {
           <Textarea
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+            onFocus={() => playSound()}
             placeholder="Ketik jawaban Anda di sini"
             className="w-full h-24 sm:h-32 transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
