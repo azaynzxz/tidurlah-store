@@ -123,7 +123,7 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
     // Load and trigger confetti
     const script = document.createElement('script');
-    script.src = '/src/components/ui/confetti.min.js';
+    script.src = '/confetti.min.js';
     script.onload = () => {
       // Create a temporary element for confetti
       const confettiDiv = document.createElement('div');
@@ -290,10 +290,10 @@ export default function Survey() {
   // Sound effect function
   const playSound = () => {
     const sounds = [
-      '/src/components/Bubble.mp3',
-      '/src/components/Bubble 2.mp3', 
-      '/src/components/Bubble 3.mp3',
-      '/src/components/Bubble 4.mp3'
+      '/audio/Bubble.mp3',
+      '/audio/Bubble 2.mp3', 
+      '/audio/Bubble 3.mp3',
+      '/audio/Bubble 4.mp3'
     ];
     const randomSound = sounds[Math.floor(Math.random() * sounds.length)];
     const audio = new Audio(randomSound);
