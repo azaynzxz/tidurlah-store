@@ -698,6 +698,10 @@ const Index = () => {
   const [promoCode, setPromoCode] = useState("");
   const [isShipping, setIsShipping] = useState(false);
   const [address, setAddress] = useState("");
+  const [designNote, setDesignNote] = useState("");
+  const [isExpressPrint, setIsExpressPrint] = useState(false);
+  const [showExpressTooltip, setShowExpressTooltip] = useState(false);
+  const [showShippingTooltip, setShowShippingTooltip] = useState(false);
 
   // Add this state for loading
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -1067,6 +1071,7 @@ const Index = () => {
       formData.append('CustomerName', orderData.customerName);
       formData.append('Instansi', orderData.instansi || '');
       formData.append('PhoneNumber', orderData.phoneNumber);
+      formData.append('DesignNote', orderData.designNote || '');
       formData.append('OrderDetails', JSON.stringify(simplifiedOrderDetails));
       
       // Add separate detail fields for banners to ensure dimensions are captured
@@ -1111,6 +1116,7 @@ const Index = () => {
       formData.append('ShippingInfo', orderData.isShipping.toString());
       formData.append('Address', orderData.address || '');
       formData.append('RequestJasaDesain', orderData.requestJasaDesain ? 'Ya' : 'Tidak');
+      formData.append('IsExpressPrint', orderData.isExpressPrint ? 'Ya' : 'Tidak');
       if (orderData.requestJasaDesain) {
         formData.append('JasaDesainPrice', JASA_DESAIN_PRICE.toString());
       }
@@ -1160,14 +1166,16 @@ const Index = () => {
         customerName,
         instansi,
         phoneNumber,
+        designNote,
         cartItems,
         subtotal: cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0),
         promoCode,
         promoDiscount,
-        total: calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0),
+        total: calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0),
         isShipping,
         address,
-        requestJasaDesain
+        requestJasaDesain,
+        isExpressPrint
       };
 
       // Save to Google Sheet
@@ -1196,17 +1204,19 @@ const Index = () => {
       const promoMessage = promoDiscount > 0 ?
         `\nKode Promo: ${promoCode} (${promoDiscount}% discount)` : '';
       const jasaDesainMessage = requestJasaDesain ? `\nJasa Desain: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
+      const expressPrintMessage = isExpressPrint ? `\nCetak Express: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
+      const designNoteMessage = designNote ? `\nNote/Link Desain: ${designNote}` : '';
 
       const message = `Informasi Order:
 Nama: ${customerName}
 Instansi/Alias: ${instansi || '-'}
-Telp: ${phoneNumber}${promoMessage}
+Telp: ${phoneNumber}${promoMessage}${designNoteMessage}
 ${isShipping ? `Alamat: ${address}` : 'Ambil di tempat: Ya (tidak perlu dikirim)'}
 
 Detail Order:
-${productList}${jasaDesainMessage}
+${productList}${jasaDesainMessage}${expressPrintMessage}
 
-Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}${savingsMessage}`;
+Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}${savingsMessage}`;
 
       const whatsappUrl = `https://wa.me/6285172157808?text=${encodeURIComponent(message)}`;
       
@@ -1455,8 +1465,10 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
               ← Kembali ke Produk
             </button>
             
-            <h2 className="text-lg font-bold mb-3">Informasi Pesanan</h2>
-            <p className="text-sm text-gray-600 mb-3">No. Invoice: {invoiceNumber}</p>
+            <div className="flex justify-between items-center mb-3">
+              <h2 className="text-lg font-bold">Informasi Pesanan</h2>
+              <p className="text-sm text-gray-600">No. Invoice: {invoiceNumber}</p>
+            </div>
             
             <div className="space-y-3 mb-4">
               <div>
@@ -1473,7 +1485,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
                       setNameError("");
                     }
                   }}
-                  placeholder="Nama Kamu"
+                  placeholder="Nama Panggilan"
                   required
                 />
                 {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
@@ -1486,7 +1498,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
                   className="w-full rounded-lg border border-gray-300 p-2"
                   value={instansi}
                   onChange={(e) => setInstansi(e.target.value)}
-                  placeholder="Instansi atau Alias Kamu"
+                  placeholder="Nama Sekolah, Kampus/Perusahaan kamu"
                 />
               </div>
               
@@ -1510,15 +1522,91 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
                 {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
               </div>
 
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="shippingOption"
-                  checked={isShipping}
-                  onChange={() => setIsShipping(!isShipping)}
-                  className="mr-2"
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Note/Link Desain (Jika Ada) </label>
+                <textarea
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={designNote}
+                  onChange={(e) => setDesignNote(e.target.value)}
+                  placeholder="Masukkan note cetak dan atau link desain kamu (canva/Google Drive), pastikan akses sudah dibuka"
+                  rows={3}
                 />
-                <label htmlFor="shippingOption" className="text-sm">Perlu pengiriman? (Jika tidak dicentang, ambil di tempat)</label>
+              </div>
+
+              <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="shippingOption"
+                    checked={isShipping}
+                    onChange={() => setIsShipping(!isShipping)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="shippingOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Perlu pengiriman?
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowShippingTooltip(!showShippingTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showShippingTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Jika tidak dicentang, ambil di tempat
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="jasaDesainOption"
+                    checked={requestJasaDesain}
+                    onChange={() => setRequestJasaDesain(!requestJasaDesain)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed">
+                    Request Jasa Desain? (+Rp 25.000)
+                  </label>
+                </div>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="expressPrintOption"
+                    checked={isExpressPrint}
+                    onChange={() => setIsExpressPrint(!isExpressPrint)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="expressPrintOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Cetak Express (+Rp 25.000)
+                      </label>
+                      <span className="bg-[#FF5E01] text-white text-xs px-2 py-1 rounded-full mr-1">HOT</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowExpressTooltip(!showExpressTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showExpressTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Cetak express artinya cetakan akan masuk urutan prioritas, dan akan di cetak lebih dulu estimasi:<br/><span className="line-through">2-3 hari</span> <span className="font-semibold">(1 hari)</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
               
               {isShipping && (
@@ -1534,17 +1622,6 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
                   />
                 </div>
               )}
-            </div>
-            
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="jasaDesainOption"
-                checked={requestJasaDesain}
-                onChange={() => setRequestJasaDesain(!requestJasaDesain)}
-                className="mr-2"
-              />
-              <label htmlFor="jasaDesainOption" className="text-sm">Request Jasa Desain? (+Rp 25.000)</label>
             </div>
             
             <div className="border-t border-b py-3 my-3">
@@ -1624,15 +1701,22 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toL
                 )}
                 
                 {requestJasaDesain && (
-                  <div className="flex justify-between items-center text-sm text-blue-600">
+                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
                     <p>Jasa Desain</p>
+                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                  </div>
+                )}
+                
+                {isExpressPrint && (
+                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
+                    <p>Cetak Express</p>
                     <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
                   </div>
                 )}
                 
                 <div className="flex justify-between items-center font-medium mt-2">
                   <p>Total</p>
-                  <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
+                  <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
                 </div>
               </div>
             </div>

@@ -5,8 +5,9 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import type { CarouselApi } from "@/components/ui/carousel";
 
 // Banner data type
 interface Banner {
@@ -43,25 +44,62 @@ const banners: Banner[] = [
 ];
 
 const BannerCarousel = () => {
+  const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
   const [autoplay, setAutoplay] = useState(true);
+  const intervalRef = useRef<NodeJS.Timeout>();
 
-  // Auto-advance slides
+  // Auto-advance slides every 3.5 seconds
   useEffect(() => {
-    if (!autoplay) return;
+    if (!api || !autoplay) return;
 
-    const interval = setInterval(() => {
-      // The carousel will handle the slide change internally
-    }, 5000);
+    const startAutoplay = () => {
+      intervalRef.current = setInterval(() => {
+        api.scrollNext();
+      }, 3500); // 3.5 seconds delay
+    };
 
-    return () => clearInterval(interval);
-  }, [autoplay]);
+    const stopAutoplay = () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+
+    startAutoplay();
+
+    return () => stopAutoplay();
+  }, [api, autoplay]);
+
+  // Track current slide
+  useEffect(() => {
+    if (!api) return;
+
+    setCurrent(api.selectedScrollSnap());
+
+    api.on("select", () => {
+      setCurrent(api.selectedScrollSnap());
+    });
+  }, [api]);
+
+  // Handle mouse events for autoplay control
+  const handleMouseEnter = () => {
+    setAutoplay(false);
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setAutoplay(true);
+  };
 
   return (
     <div className="relative mb-3">
       <Carousel
+        setApi={setApi}
         className="w-full"
-        onMouseEnter={() => setAutoplay(false)}
-        onMouseLeave={() => setAutoplay(true)}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
         opts={{
           align: "start",
           loop: true,
@@ -88,6 +126,19 @@ const BannerCarousel = () => {
         <CarouselNext className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8">
           <ChevronRight className="h-5 w-5" />
         </CarouselNext>
+        
+        {/* Dot indicators */}
+        <div className="flex justify-center mt-2 space-x-2">
+          {banners.map((_, index) => (
+            <button
+              key={index}
+              className={`w-2 h-2 rounded-full transition-colors ${
+                index === current ? 'bg-[#FF5E01]' : 'bg-gray-300'
+              }`}
+              onClick={() => api?.scrollTo(index)}
+            />
+          ))}
+        </div>
       </Carousel>
     </div>
   );
