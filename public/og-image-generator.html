@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TIDURLAH STORE - Open Graph Image</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        .og-container {
+            width: 1200px;
+            height: 630px;
+            background: linear-gradient(135deg, #FF5E01 0%, #FF8C42 100%);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 60px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .og-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -20%;
+            width: 800px;
+            height: 800px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            transform: rotate(45deg);
+        }
+        
+        .og-container::after {
+            content: '';
+            position: absolute;
+            bottom: -30%;
+            left: -10%;
+            width: 600px;
+            height: 600px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+        
+        .content {
+            flex: 1;
+            z-index: 2;
+            max-width: 60%;
+        }
+        
+        .title {
+            font-size: 48px;
+            font-weight: 800;
+            color: white;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        
+        .subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 30px;
+            line-height: 1.4;
+            font-weight: 500;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .feature {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .cta {
+            background: white;
+            color: #FF5E01;
+            padding: 15px 30px;
+            border-radius: 30px;
+            font-size: 18px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .visual {
+            flex: 0 0 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 2;
+        }
+        
+        .logo-circle {
+            width: 200px;
+            height: 200px;
+            background: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            margin-bottom: 20px;
+        }
+        
+        .logo-text {
+            font-size: 32px;
+            font-weight: 900;
+            color: #FF5E01;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .domain {
+            color: white;
+            font-size: 20px;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 10px 20px;
+            border-radius: 20px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .stats {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            text-align: right;
+            color: white;
+            z-index: 3;
+        }
+        
+        .stat-item {
+            font-size: 14px;
+            margin-bottom: 5px;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body>
+    <div class="og-container">
+        <div class="stats">
+            <div class="stat-item">⭐ Trusted by 1000+ customers</div>
+            <div class="stat-item">📍 Bandar Lampung</div>
+        </div>
+        
+        <div class="content">
+            <h1 class="title">Spesialis ID Card & Lanyard Lampung</h1>
+            <p class="subtitle">Merchandise Custom Berkualitas dengan Harga Terjangkau</p>
+            
+            <div class="features">
+                <span class="feature">ID Card Premium</span>
+                <span class="feature">Lanyard Custom</span>
+                <span class="feature">Banner & Poster</span>
+                <span class="feature">Plakat Akrilik</span>
+                <span class="feature">Merchandise</span>
+            </div>
+            
+            <a href="#" class="cta">Order Sekarang!</a>
+        </div>
+        
+        <div class="visual">
+            <div class="logo-circle">
+                <div class="logo-text">TIDURLAH<br>STORE</div>
+            </div>
+            <div class="domain">tidurlah.com</div>
+        </div>
+    </div>
+</body>
+</html> 
