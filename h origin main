@@ -1,0 +1,2 @@
+[33m9adee0b[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m 🔒 SECURITY FIX: Remove exposed Google API key - Move API key to environment variable to prevent unauthorized access
+[33mba64eec[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m 🔧 Fix OG Image URL - Remove spaces from filename (web preview.png → web-preview.png) to resolve Facebook debugger issues
