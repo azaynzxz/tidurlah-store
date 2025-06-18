@@ -851,7 +851,7 @@ const BlogPost = () => {
         ogImage.setAttribute('property', 'og:image');
         document.head.appendChild(ogImage);
       }
-      ogImage.setAttribute('content', `${window.location.origin}/product-image/Case-ID Card.jpg`);
+      ogImage.setAttribute('content', `${window.location.origin}/product-image/web preview.png`);
 
       // Update OG URL
       let ogUrl = document.querySelector('meta[property="og:url"]');
