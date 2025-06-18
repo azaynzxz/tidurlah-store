@@ -824,6 +824,47 @@ const BlogPost = () => {
     // Set document title
     document.title = `${foundBlogPost.title} - TIDURLAH STORE Blog`;
     
+    // Set dynamic OG meta tags
+    const updateMetaTags = () => {
+      // Update OG title
+      let ogTitle = document.querySelector('meta[property="og:title"]');
+      if (!ogTitle) {
+        ogTitle = document.createElement('meta');
+        ogTitle.setAttribute('property', 'og:title');
+        document.head.appendChild(ogTitle);
+      }
+      ogTitle.setAttribute('content', foundBlogPost.title);
+
+      // Update OG description
+      let ogDescription = document.querySelector('meta[property="og:description"]');
+      if (!ogDescription) {
+        ogDescription = document.createElement('meta');
+        ogDescription.setAttribute('property', 'og:description');
+        document.head.appendChild(ogDescription);
+      }
+      ogDescription.setAttribute('content', foundBlogPost.subtitle);
+
+      // Update OG image - use dynamic generator
+      let ogImage = document.querySelector('meta[property="og:image"]');
+      if (!ogImage) {
+        ogImage = document.createElement('meta');
+        ogImage.setAttribute('property', 'og:image');
+        document.head.appendChild(ogImage);
+      }
+      ogImage.setAttribute('content', `${window.location.origin}/og-image-generator.html?title=${encodeURIComponent(foundBlogPost.title)}&subtitle=${encodeURIComponent(foundBlogPost.subtitle)}`);
+
+      // Update OG URL
+      let ogUrl = document.querySelector('meta[property="og:url"]');
+      if (!ogUrl) {
+        ogUrl = document.createElement('meta');
+        ogUrl.setAttribute('property', 'og:url');
+        document.head.appendChild(ogUrl);
+      }
+      ogUrl.setAttribute('content', window.location.href);
+    };
+    
+    updateMetaTags();
+    
     // Get related products
     const related: any[] = [];
     foundBlogPost.relatedProducts.forEach(category => {
