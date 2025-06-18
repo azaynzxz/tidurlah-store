@@ -1,8 +1,12 @@
 User-agent: Googlebot
 Allow: /
+Allow: /blog
+Allow: /blog/*
 
 User-agent: Bingbot
 Allow: /
+Allow: /blog
+Allow: /blog/*
 
 User-agent: Twitterbot
 Allow: /
@@ -12,3 +16,11 @@ Allow: /
 
 User-agent: *
 Allow: /
+Allow: /blog
+Allow: /blog/*
+
+# Sitemaps
+Sitemap: https://tidurlah.com/sitemap.xml
+
+# Crawl-delay to prevent server overload
+Crawl-delay: 1
