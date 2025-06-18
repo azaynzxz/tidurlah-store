@@ -573,7 +573,7 @@ const Blog = () => {
                       <iframe 
                         style={{height: '100%', width: '100%', border: 0}} 
                         frameBorder="0" 
-                        src="https://www.google.com/maps/embed/v1/search?q=id+card+lampung&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8"
+                        src={`https://www.google.com/maps/embed/v1/search?q=id+card+lampung&key=${import.meta.env.VITE_GOOGLE_MAPS_API_KEY || 'YOUR_GOOGLE_MAPS_API_KEY'}`}
                       />
                     </div>
                   </div>
