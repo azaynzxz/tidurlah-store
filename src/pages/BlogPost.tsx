@@ -83,6 +83,25 @@ interface BlogPostData {
   relatedProducts: string[];
 }
 
+// Blog post image mapping
+const blogImageMap: Record<string, string> = {
+  "pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung": "/blog-thumbnail/1_result.webp",
+  "pt-bisi-international-percayakan-id-card-karyawan": "/blog-thumbnail/2_result.webp",
+  "diskon-khusus-mahasiswa-kkn-15-persen": "/blog-thumbnail/3_result.webp",
+  "rahasia-produksi-super-cepat-aplikasi-custom": "/blog-thumbnail/4_result.webp",
+  "pondok-pesantren-natar-makin-hitz-pakai-id-card": "/blog-thumbnail/5_result.webp",
+  "andalan-karyawan-bumn-id-card-lampung": "/blog-thumbnail/6_result.webp",
+  "cetak-id-card-online-dari-rumah": "/blog-thumbnail/7_result.webp",
+  "tembus-1000-pcs-per-bulan-kampus-lampung": "/blog-thumbnail/8_result.webp",
+  "tradisi-mahasiswa-kkn-uin-raden-intan-lampung": "/blog-thumbnail/9_result.webp",
+  "itera-percayakan-produksi-massal-1000-id-card": "/blog-thumbnail/10_result.webp",
+  "standar-kualitas-tinggi-fakultas-kedokteran-malahayati": "/blog-thumbnail/11_result.webp",
+  "lanyard-cepat-kusam-4-cara-mudah-merawatnya": "/blog-thumbnail/12_result.webp",
+  "lampung-creative-week-sukses-branding-lanyard-custom": "/blog-thumbnail/13_result.webp",
+  "panduan-memilih-id-card-tepat-kantor-bandar-lampung": "/blog-thumbnail/14_result.webp",
+  "5-ide-desain-lanyard-anti-bosan-event-hits-lampung": "/blog-thumbnail/15_result.webp"
+};
+
 // Blog posts content based on real customer experiences
 const blogPostsContent: Record<string, BlogPostData> = {
   "pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung": {
@@ -851,7 +870,7 @@ const BlogPost = () => {
         ogImage.setAttribute('property', 'og:image');
         document.head.appendChild(ogImage);
       }
-      ogImage.setAttribute('content', `${window.location.origin}/product-image/web-preview.png`);
+      ogImage.setAttribute('content', `${window.location.origin}/product-image/web-preview.jpg`);
 
       // Update OG URL
       let ogUrl = document.querySelector('meta[property="og:url"]');
@@ -952,6 +971,18 @@ const BlogPost = () => {
                 ))}
               </div>
             </header>
+
+            {/* Featured Image */}
+            {blogImageMap[title || ""] && (
+              <div className="mb-8">
+                <img 
+                  src={blogImageMap[title || ""]}
+                  alt={blogPost.title}
+                  className="w-full h-64 md:h-96 object-cover rounded-xl shadow-lg"
+                  loading="lazy"
+                />
+              </div>
+            )}
 
             {/* Article Content */}
             <article className="mb-12">

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -1275,12 +1275,12 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     }, 0);
   };
 
-  // Create an array of categories with their Google Material icons and colors for the visual display
+  // Create an array of categories with their Lucide React icons and colors for the visual display
   const categories = [
-    { id: "ID Card & Lanyard", name: "ID Card", icon: "badge", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-    { id: "Media Promosi", name: "Banner", icon: "ad_units", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-    { id: "Merchandise", name: "Merchandise", icon: "redeem", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-    { id: "Papan Bunga", name: "Papan Bunga", icon: "local_florist", color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
+    { id: "ID Card & Lanyard", name: "ID Card", icon: CreditCard, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Media Promosi", name: "Banner", icon: Megaphone, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Merchandise", name: "Merchandise", icon: Gift, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
+    { id: "Papan Bunga", name: "Papan Bunga", icon: Flower, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
   ];
 
   // IDs that require case selection
@@ -1300,9 +1300,9 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
             <MusicPlayer />
                         <button 
               onClick={() => window.open('/blog', '_blank')}
-              className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium mr-3 flex items-center"
+              className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium mr-3 flex items-center p-2"
             >
-              <span className="material-symbols-outlined h-6 w-6">newspaper</span>
+              <Newspaper className="h-5 w-5" />
             </button>
             <button 
               className="relative p-2"
@@ -1339,20 +1339,23 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
             <div className="mt-6 mb-4">
               <h2 className="text-lg font-bold mb-3 text-gray-800">Kategori Produk:</h2>
               <div className="grid grid-cols-4 gap-3">
-                {categories.map(category => (
-                  <div 
-                    key={category.id}
-                    onClick={() => setActiveTab(category.id)}
-                    className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-1 cursor-pointer transition-colors ${
-                      activeTab === category.id 
-                        ? `${category.color} ${category.textColor}` 
-                        : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
-                    }`}
-                  >
-                    <span className="material-symbols-outlined notranslate text-2xl" translate="no">{category.icon}</span>
-                    <span className="text-xs font-medium text-center">{category.name}</span>
-                  </div>
-                ))}
+                {categories.map(category => {
+                  const IconComponent = category.icon;
+                  return (
+                    <div 
+                      key={category.id}
+                      onClick={() => setActiveTab(category.id)}
+                      className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-1 cursor-pointer transition-colors ${
+                        activeTab === category.id 
+                          ? `${category.color} ${category.textColor}` 
+                          : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
+                      }`}
+                    >
+                      <IconComponent className="h-6 w-6" />
+                      <span className="text-xs font-medium text-center">{category.name}</span>
+                    </div>
+                  );
+                })}
               </div>
             </div>
             

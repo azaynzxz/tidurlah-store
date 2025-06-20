@@ -38,7 +38,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Sekolah", "ID Card", "Lanyard", "Studi Kasus", "Pendidikan"],
     readTime: "6 menit",
     views: 1450,
-    image: "/blog-thumbnail/1.png",
+    image: "/blog-thumbnail/1_result.webp",
     slug: "pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung"
   },
   {
@@ -50,7 +50,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Korporat", "BUMN", "ID Card", "Profesional", "Testimoni"],
     readTime: "5 menit",
     views: 1280,
-    image: "/blog-thumbnail/2.png",
+    image: "/blog-thumbnail/2_result.webp",
     slug: "pt-bisi-international-percayakan-id-card-karyawan"
   },
   {
@@ -62,7 +62,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Pesantren", "Komunitas", "Modern", "Identitas", "Natar"],
     readTime: "4 menit",
     views: 890,
-    image: "/blog-thumbnail/3.png",
+    image: "/blog-thumbnail/3_result.webp",
     slug: "pondok-pesantren-natar-makin-hitz-pakai-id-card"
   },
   {
@@ -74,7 +74,7 @@ const blogPosts: BlogPost[] = [
     tags: ["BUMN", "Loyalitas", "Kualitas", "Pelanggan Setia", "Testimoni"],
     readTime: "5 menit",
     views: 1150,
-    image: "/blog-thumbnail/4.png",
+    image: "/blog-thumbnail/4_result.webp",
     slug: "andalan-karyawan-bumn-id-card-lampung"
   },
   {
@@ -86,7 +86,7 @@ const blogPosts: BlogPost[] = [
     tags: ["KKN", "Mahasiswa", "Diskon", "Promo", "Pengabdian"],
     readTime: "3 menit",
     views: 2100,
-    image: "/blog-thumbnail/5.png",
+    image: "/blog-thumbnail/5_result.webp",
     slug: "diskon-khusus-mahasiswa-kkn-15-persen"
   },
   {
@@ -98,7 +98,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Teknologi", "Inovasi", "Auto-layout", "Produksi", "Efisiensi"],
     readTime: "7 menit",
     views: 980,
-    image: "/blog-thumbnail/6.png",
+    image: "/blog-thumbnail/6_result.webp",
     slug: "rahasia-produksi-super-cepat-aplikasi-custom"
   },
   {
@@ -110,7 +110,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Online", "Kemudahan", "Digital", "Pemesanan", "Anti-ribet"],
     readTime: "4 menit",
     views: 1350,
-    image: "/blog-thumbnail/7.png",
+    image: "/blog-thumbnail/7_result.webp",
     slug: "cetak-id-card-online-dari-rumah"
   },
   {
@@ -122,7 +122,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Universitas", "Kampus", "Milestone", "Volume", "Kepercayaan"],
     readTime: "6 menit",
     views: 1680,
-    image: "/blog-thumbnail/8.png",
+    image: "/blog-thumbnail/8_result.webp",
     slug: "tembus-1000-pcs-per-bulan-kampus-lampung"
   },
   {
@@ -134,7 +134,7 @@ const blogPosts: BlogPost[] = [
     tags: ["UIN", "KKN", "Tradisi", "Mahasiswa", "Loyalitas"],
     readTime: "4 menit",
     views: 920,
-    image: "/blog-thumbnail/9.png",
+    image: "/blog-thumbnail/9_result.webp",
     slug: "tradisi-mahasiswa-kkn-uin-raden-intan-lampung"
   },
   {
@@ -146,7 +146,7 @@ const blogPosts: BlogPost[] = [
     tags: ["ITERA", "Produksi Massal", "KKN", "Volume Tinggi", "Manajemen"],
     readTime: "8 menit",
     views: 1320,
-    image: "/blog-thumbnail/10.png",
+    image: "/blog-thumbnail/10_result.webp",
     slug: "itera-percayakan-produksi-massal-1000-id-card"
   },
   {
@@ -158,7 +158,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Kedokteran", "Premium", "Malahayati", "Kualitas Tinggi", "Medis"],
     readTime: "5 menit",
     views: 1050,
-    image: "/blog-thumbnail/11.png",
+    image: "/blog-thumbnail/11_result.webp",
     slug: "standar-kualitas-tinggi-fakultas-kedokteran-malahayati"
   },
   {
@@ -170,7 +170,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Tips", "Perawatan", "Lanyard", "Printing", "Sablon"],
     readTime: "4 menit",
     views: 750,
-    image: "/blog-thumbnail/12.png",
+    image: "/blog-thumbnail/12_result.webp",
     slug: "lanyard-cepat-kusam-4-cara-mudah-merawatnya"
   },
   {
@@ -182,7 +182,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Studi Kasus", "Event", "Branding", "Creative Week", "Lanyard Custom"],
     readTime: "6 menit",
     views: 1250,
-    image: "/blog-thumbnail/13.png",
+    image: "/blog-thumbnail/13_result.webp",
     slug: "lampung-creative-week-sukses-branding-lanyard-custom"
   },
   {
@@ -194,7 +194,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Panduan", "ID Card", "Kantor", "PVC", "Proximity", "Profesional"],
     readTime: "7 menit",
     views: 980,
-    image: "/blog-thumbnail/14.png",
+    image: "/blog-thumbnail/14_result.webp",
     slug: "panduan-memilih-id-card-tepat-kantor-bandar-lampung"
   },
   {
@@ -206,7 +206,7 @@ const blogPosts: BlogPost[] = [
     tags: ["Desain", "Inspirasi", "Event", "Lanyard", "Kreatif"],
     readTime: "5 menit",
     views: 1180,
-    image: "/blog-thumbnail/15.png", 
+    image: "/blog-thumbnail/15_result.webp", 
     slug: "5-ide-desain-lanyard-anti-bosan-event-hits-lampung"
   }
 ];
