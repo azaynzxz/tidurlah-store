@@ -1292,7 +1292,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
         {/* Header */}
         <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
           <img 
-            src="https://zkreatif.wordpress.com/wp-content/uploads/2025/05/logo-tidurlah-grafika-horizontal.png"
+            src="/product-image/Tidurlah Logo Horizontal.png"
             alt="TIDURLAH STORE"
             className="h-8 object-contain"
           />
