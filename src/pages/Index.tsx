@@ -357,7 +357,12 @@ const products = {
         { minQuantity: 100, price: 8000 }
       ],
       time: "1-2 hari",
-      rating: 4.6
+      rating: 4.6,
+      laminationOptions: [
+        { type: "Laminasi Doff", price: 0 },
+        { type: "Laminasi Glossy", price: 0 },
+        { type: "Tanpa Laminasi", price: 0 }
+      ]
     },
     {
       id: 16,
@@ -386,14 +391,14 @@ const products = {
       image: "/product-image/Ganci-5-cm1.jpg",
       additionalImages: [],
       description: "Ganci custom cetak diameter 5 cm.",
-      price: 12000,
+      price: 3000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 12000 },
-        { minQuantity: 4, price: 10000 },
-        { minQuantity: 25, price: 9000 },
-        { minQuantity: 100, price: 8000 }
+        { minQuantity: 1, price: 3000 },
+        { minQuantity: 4, price: 2700 },
+        { minQuantity: 25, price: 2500 },
+        { minQuantity: 100, price: 2300 }
       ],
       time: "1-2 hari",
       rating: 4.7
@@ -404,14 +409,14 @@ const products = {
       image: "/product-image/Ganci-3cm-1.jpg",
       additionalImages: [],
       description: "Ganci custom cetak diameter 3 cm.",
-      price: 8000,
+      price: 5000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 8000 },
-        { minQuantity: 4, price: 7000 },
-        { minQuantity: 25, price: 6000 },
-        { minQuantity: 100, price: 5000 }
+        { minQuantity: 1, price: 5000 },
+        { minQuantity: 4, price: 4500 },
+        { minQuantity: 25, price: 4000 },
+        { minQuantity: 100, price: 3000 }
       ],
       time: "1 hari",
       rating: 4.6
@@ -424,14 +429,14 @@ const products = {
         "/product-image/ganci-tali-2.jpg"
       ],
       description: "Ganci custom cetak dengan tambahan tali.",
-      price: 15000,
+      price: 5000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 15000 },
-        { minQuantity: 4, price: 13000 },
-        { minQuantity: 25, price: 12000 },
-        { minQuantity: 100, price: 10000 }
+        { minQuantity: 1, price: 5000 },
+        { minQuantity: 4, price: 4500 },
+        { minQuantity: 25, price: 3500 },
+        { minQuantity: 100, price: 3000 }
       ],
       time: "1-2 hari",
       rating: 4.8
@@ -445,14 +450,14 @@ const products = {
         "/product-image/Mug 3.jpg"
       ],
       description: "Mug keramik dengan desain cetak, aman untuk microwave dan mesin pencuci piring.",
-      price: 40000,
+      price: 28000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 40000 },
-        { minQuantity: 4, price: 38000 },
-        { minQuantity: 25, price: 35000 },
-        { minQuantity: 100, price: 32000 }
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 25000 },
+        { minQuantity: 25, price: 22000 },
+        { minQuantity: 100, price: 19000 }
       ],
       time: "3-5 hari",
       rating: 4.8
@@ -486,17 +491,14 @@ const products = {
         "/product-image/plakat-reg-2.jpg",
         "/product-image/plakat-reg-3.jpg"
       ],
-      description: "Plakat penghargaan akrilik ukuran reguler dengan desain dan teks kustom.",
-      price: 135000,
+      description: "Plakat akrilik berkualitas tinggi dengan berbagai pilihan model.",
+      price: 90000,
       discountPrice: null,
-      category: "Merchandise",
+      category: "Digital Print",
       priceThresholds: [
-        { minQuantity: 1, price: 135000 },
-        { minQuantity: 4, price: 125000 },
-        { minQuantity: 25, price: 115000 },
-        { minQuantity: 100, price: 110000 }
+        { minQuantity: 1, price: 90000 }
       ],
-      time: "4-7 hari",
+      time: "3-5 hari",
       rating: 4.9,
       models: [
         { code: "PK01", name: "Model Standar", image: "/product-image/plakat-reg-1.jpg" },
@@ -724,6 +726,14 @@ const Index = () => {
 
   // Add state for selected case
   const [selectedCase, setSelectedCase] = useState("");
+  const [selectedLamination, setSelectedLamination] = useState("");
+
+  // Add state for angry case animation
+  const [showAngryCase, setShowAngryCase] = useState(false);
+  const [showAngryLamination, setShowAngryLamination] = useState(false);
+
+  // Add state for flying animation
+  const [flyingBubbles, setFlyingBubbles] = useState<Array<{id: string, startX: number, startY: number, endX: number, endY: number}>>([]);
 
   // Add case variants
   const caseVariants = [
@@ -734,6 +744,49 @@ const Index = () => {
     { code: "merah", name: "Case Merah" },
     { code: "tanpa", name: "Tanpa Casing" },
   ];
+
+  // Flying animation function
+  const triggerFlyingAnimation = (sourceElement?: HTMLElement) => {
+    // Get source position (product location)
+    let startX = window.innerWidth / 2; // Default to center
+    let startY = window.innerHeight / 2;
+    
+    if (sourceElement) {
+      const rect = sourceElement.getBoundingClientRect();
+      startX = rect.left + rect.width / 2;
+      startY = rect.top + rect.height / 2;
+    }
+    
+    // Get cart icon position
+    const cartIcon = document.querySelector('[data-cart-icon]') || document.querySelector('.relative button');
+    let endX = window.innerWidth - 100; // Default position
+    let endY = 80;
+    
+    if (cartIcon) {
+      const cartRect = cartIcon.getBoundingClientRect();
+      endX = cartRect.left + cartRect.width / 2;
+      endY = cartRect.top + cartRect.height / 2;
+    }
+    
+    // Create bubble
+    const bubbleId = Date.now().toString();
+    const newBubble = { id: bubbleId, startX, startY, endX, endY };
+    
+    setFlyingBubbles(prev => [...prev, newBubble]);
+    
+    // Trigger cart bounce effect
+    if (cartIcon) {
+      cartIcon.classList.add('cart-bounce');
+      setTimeout(() => {
+        cartIcon.classList.remove('cart-bounce');
+      }, 600);
+    }
+    
+    // Remove bubble after animation completes
+    setTimeout(() => {
+      setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
+    }, 1200);
+  };
 
   // Generate invoice number when component mounts
   useEffect(() => {
@@ -874,19 +927,82 @@ const Index = () => {
   };
 
   // Add to cart function
-  const addToCart = (product: any) => {
+  const addToCart = (product: any, sourceElement?: HTMLElement) => {
     if (product.models && !selectedModel) {
       toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
       return;
     }
     if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
-      toast.error("Mohon pilih jenis casing terlebih dahulu!", { position: 'top-center', style: { marginTop: '60px' } });
+      setShowAngryCase(true);
+      toast.error("🚨 Mohon pilih jenis casing terlebih dahulu!", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #ff6b35',
+          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+        },
+        duration: 4000
+      });
+      
+      // Scroll to case selection area to draw attention
+      setTimeout(() => {
+        const caseContainer = document.getElementById('case-selection-container');
+        if (caseContainer) {
+          caseContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 100);
+      
+      // Reset angry animation after 3 seconds
+      setTimeout(() => {
+        setShowAngryCase(false);
+      }, 3000);
+      
+      return;
+    }
+    if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
+      setShowAngryLamination(true);
+      toast.error("🚨 Mohon pilih jenis laminasi terlebih dahulu!", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #ff6b35',
+          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+        },
+        duration: 4000
+      });
+      
+      // Scroll to lamination selection area to draw attention
+      setTimeout(() => {
+        const laminationContainer = document.getElementById('lamination-selection-container');
+        if (laminationContainer) {
+          laminationContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 100);
+      
+      // Reset angry animation after 3 seconds
+      setTimeout(() => {
+        setShowAngryLamination(false);
+      }, 3000);
+      
       return;
     }
     const existingItem = cartItems.find(item => 
       item.id === product.id && 
       (!product.models || item.modelCode === selectedModel) &&
-      (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase)
+      (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+      (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
     );
     
     if (existingItem) {
@@ -905,7 +1021,20 @@ const Index = () => {
             : item
         )
       );
-      toast.success(`${product.name} ${product.models ? `(${selectedModel})` : ''} ditambahkan ke keranjang (${newQuantity}×)`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+      toast.success(`${product.name} ditambahkan (${newQuantity}×)`, { 
+        position: 'top-center', 
+        duration: 2000, 
+        style: { 
+          marginTop: '60px',
+          fontSize: '12px',
+          padding: '6px 10px',
+          minHeight: '36px',
+          maxWidth: '260px'
+        }
+      });
+      
+      // Trigger flying animation only on successful add
+      triggerFlyingAnimation(sourceElement);
     } else {
       const newItem = { 
         ...product, 
@@ -913,10 +1042,24 @@ const Index = () => {
         appliedPrice: getApplicablePrice(product, 1),
         savings: calculateSavings(product, 1),
         modelCode: product.models ? selectedModel : undefined,
-        caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined
+        caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
+        laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
       };
       setCartItems([...cartItems, newItem]);
-      toast.success(`${product.name}${product.models ? ` (${selectedModel})` : ''}${idCardWithCaseIds.includes(product.id) ? ` [${caseVariants.find(c => c.code === selectedCase)?.name}]` : ''} ditambahkan ke keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+      toast.success(`${product.name} ditambahkan ke keranjang`, { 
+        position: 'top-center', 
+        duration: 2000, 
+        style: { 
+          marginTop: '60px',
+          fontSize: '12px',
+          padding: '6px 10px',
+          minHeight: '36px',
+          maxWidth: '260px'
+        }
+      });
+      
+      // Trigger flying animation only on successful add
+      triggerFlyingAnimation(sourceElement);
     }
   };
 
@@ -997,6 +1140,9 @@ const Index = () => {
     if (idCardWithCaseIds.includes(product.id)) {
       setSelectedCase("");
     }
+    if (stikerWithLaminationIds.includes(product.id)) {
+      setSelectedLamination("");
+    }
     
     // Set default dimensions for dimensional products
     if (product.pricingMethod === "dimensional") {
@@ -1049,6 +1195,10 @@ const Index = () => {
             const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
             modifiedName = `${item.name} [Casing: ${caseName}]`;
           }
+          // Add this for lamination
+          if (item.laminationVariant) {
+            modifiedName = `${item.name} [Laminasi: ${item.laminationVariant}]`;
+          }
           return {
             name: modifiedName,
             quantity: item.quantity,
@@ -1057,7 +1207,8 @@ const Index = () => {
             height: item.height || 0,
             hasDimensions: item.width && item.height ? true : false,
             modelCode: item.modelCode || '',
-            caseVariant: item.caseVariant
+            caseVariant: item.caseVariant,
+            laminationVariant: item.laminationVariant
           };
         }),
         ...(orderData.requestJasaDesain ? [{
@@ -1076,7 +1227,7 @@ const Index = () => {
       formData.append('CustomerName', orderData.customerName);
       formData.append('Instansi', orderData.instansi || '');
       formData.append('PhoneNumber', orderData.phoneNumber);
-      formData.append('DesignNote', orderData.designNote || '');
+      formData.append('DesignNote', encodeURIComponent(orderData.designNote || '').replace(/%20/g, '+'));
       formData.append('OrderDetails', JSON.stringify(simplifiedOrderDetails));
       
       // Add separate detail fields for banners to ensure dimensions are captured
@@ -1200,6 +1351,9 @@ const Index = () => {
           const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
           itemInfo += `\n  Casing: ${caseName}`;
         }
+        if (item.laminationVariant) {
+          itemInfo += `\n  Laminasi: ${item.laminationVariant}`;
+        }
         return itemInfo;
       }).join('\n');
 
@@ -1257,7 +1411,20 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     setSelectedProduct(null);
     
     // Show success notification for banner with dimensions
-    toast.success(`${product.name} ${width}m × ${height}m ditambahkan ke keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+    toast.success(`${product.name} ditambahkan ke keranjang`, { 
+      position: 'top-center', 
+      duration: 2000, 
+      style: { 
+        marginTop: '60px',
+        fontSize: '12px',
+        padding: '6px 10px',
+        minHeight: '36px',
+        maxWidth: '260px'
+      }
+    });
+    
+    // Trigger flying animation for banner products
+    triggerFlyingAnimation();
   };
 
   const calculateTotalDiscount = () => {
@@ -1285,6 +1452,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
 
   // IDs that require case selection
   const idCardWithCaseIds = [1, 2, 6, 7, 8];
+  const stikerWithLaminationIds = [15]; // Cutting Stiker Kontur
 
   return (
     <div className="min-h-screen bg-gray-50 notranslate" translate="no">
@@ -1307,6 +1475,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
             <button 
               className="relative p-2"
               onClick={() => setShowCart(true)}
+              data-cart-icon
             >
               <ShoppingCart className="h-6 w-6 text-[#FF5E01]" />
               {cartItems.length > 0 && (
@@ -1439,11 +1608,21 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                             >
                               <ShoppingBag className="h-3 w-3 mr-1" /> Pilih Casing
                             </button>
+                          ) : stikerWithLaminationIds.includes(product.id) ? (
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                openProductDetails(product);
+                              }}
+                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
+                            >
+                              <ShoppingBag className="h-3 w-3 mr-1" /> Pilih Laminasi
+                            </button>
                           ) : (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                addToCart(product);
+                                addToCart(product, e.currentTarget);
                               }}
                               className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
                             >
@@ -1657,6 +1836,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                         Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
                       </p>
                     )}
+                    {item.laminationVariant && (
+                      <p className="text-xs text-gray-600">
+                        Laminasi: {item.laminationVariant}
+                      </p>
+                    )}
                     <div className="flex items-center gap-2 mt-1">
                       <button
                         onClick={() => removeFromCart(item.id)}
@@ -1856,6 +2040,9 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           {item.caseVariant && (
                             <p className="text-xs text-gray-600">Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}</p>
                           )}
+                          {item.laminationVariant && (
+                            <p className="text-xs text-gray-600">Laminasi: {item.laminationVariant}</p>
+                          )}
                         </div>
                       </div>
                     ))}
@@ -2000,19 +2187,95 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                   <p className="text-gray-600 text-sm">{selectedProduct.description}</p>
                   {selectedProduct && idCardWithCaseIds.includes(selectedProduct.id) && (
                     <div className="mt-4">
-                      <h4 className="text-sm font-medium mb-2">Pilih Jenis Casing:</h4>
-                      <div className="flex flex-wrap gap-2">
+                      <h4 className={`text-sm font-medium mb-2 transition-colors ${
+                        showAngryCase ? "text-orange-600 font-bold" : ""
+                      }`}>
+                        Pilih Jenis Casing:
+                      </h4>
+                      <div 
+                        className={`flex flex-wrap gap-2 transition-all duration-300 ${
+                          showAngryCase ? "angry-wiggle" : ""
+                        }`}
+                        id="case-selection-container"
+                      >
                         {caseVariants.map((variant) => (
                           <button
                             key={variant.code}
-                            onClick={() => setSelectedCase(variant.code)}
-                            className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                            onClick={() => {
+                              setSelectedCase(variant.code);
+                              if (showAngryCase) {
+                                setShowAngryCase(false); // Reset angry state when user selects
+                                toast.success(`✅ Casing dipilih!`, {
+                                  position: 'top-center',
+                                  style: { 
+                                    marginTop: '60px',
+                                    fontSize: '12px',
+                                    padding: '6px 10px',
+                                    minHeight: '36px',
+                                    maxWidth: '260px'
+                                  },
+                                  duration: 2000
+                                });
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-xs transition-all duration-300 ${
                               selectedCase === variant.code
                                 ? "bg-[#FF5E01] text-white"
+                                : showAngryCase
+                                ? "angry-highlight angry-pulse"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
                           >
                             {variant.name}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Lamination Selection */}
+                  {selectedProduct && stikerWithLaminationIds.includes(selectedProduct.id) && (
+                    <div className="space-y-2">
+                      <h4 className={`font-medium text-sm transition-all duration-300 ${
+                        showAngryLamination ? "text-orange-600 font-bold" : ""
+                      }`}>
+                        Pilih Jenis Laminasi:
+                      </h4>
+                      <div 
+                        className={`flex flex-wrap gap-2 transition-all duration-300 ${
+                          showAngryLamination ? "angry-wiggle" : ""
+                        }`}
+                        id="lamination-selection-container"
+                      >
+                        {selectedProduct.laminationOptions.map((lamination) => (
+                          <button
+                            key={lamination.type}
+                            onClick={() => {
+                              setSelectedLamination(lamination.type);
+                              if (showAngryLamination) {
+                                setShowAngryLamination(false); // Reset angry state when user selects
+                                toast.success(`✅ Laminasi dipilih!`, {
+                                  position: 'top-center',
+                                  style: { 
+                                    marginTop: '60px',
+                                    fontSize: '12px',
+                                    padding: '6px 10px',
+                                    minHeight: '36px',
+                                    maxWidth: '260px'
+                                  },
+                                  duration: 2000
+                                });
+                              }
+                            }}
+                            className={`px-3 py-1.5 rounded-full text-xs transition-all duration-300 ${
+                              selectedLamination === lamination.type
+                                ? "bg-[#FF5E01] text-white"
+                                : showAngryLamination
+                                ? "angry-highlight angry-pulse"
+                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                            }`}
+                          >
+                            {lamination.type}
                           </button>
                         ))}
                       </div>
@@ -2131,8 +2394,14 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     ) : selectedProduct.models ? (
                       <button
                         onClick={() => {
-                          addToCart(selectedProduct);
-                          setSelectedProduct(null);
+                          // Check if adding to cart was successful before closing modal
+                          const wasSuccessful = !selectedProduct.models || selectedModel;
+                          if (wasSuccessful) {
+                            addToCart(selectedProduct);
+                            if (!idCardWithCaseIds.includes(selectedProduct.id) || selectedCase) {
+                              setSelectedProduct(null);
+                            }
+                          }
                         }}
                         className={`w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium ${!selectedModel ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={!selectedModel}
@@ -2142,8 +2411,20 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     ) : (
                       <button
                         onClick={() => {
+                          // Check if case is selected for products that require it
+                          const needsCase = idCardWithCaseIds.includes(selectedProduct.id);
+                          const hasCase = !needsCase || selectedCase;
+                          
+                          // Check if lamination is selected for products that require it
+                          const needsLamination = stikerWithLaminationIds.includes(selectedProduct.id);
+                          const hasLamination = !needsLamination || selectedLamination;
+                          
                           addToCart(selectedProduct);
-                          setSelectedProduct(null);
+                          
+                          // Only close modal if all validations passed
+                          if (hasCase && hasLamination) {
+                            setSelectedProduct(null);
+                          }
                         }}
                         className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
                       >
@@ -2194,6 +2475,27 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
 
         {/* ChatBot component */}
         <ChatBot />
+
+        {/* Flying Bubbles */}
+        {flyingBubbles.map((bubble) => (
+          <div
+            key={bubble.id}
+            className="flying-bubble"
+            style={{
+              left: bubble.startX,
+              top: bubble.startY,
+              '--end-x': `${bubble.endX}px`,
+              '--end-y': `${bubble.endY}px`,
+              '--start-x': `${bubble.startX}px`,
+              '--start-y': `${bubble.startY}px`,
+            } as React.CSSProperties & {
+              '--end-x': string;
+              '--end-y': string;
+              '--start-x': string;
+              '--start-y': string;
+            }}
+          />
+        ))}
 
         {/* Footer Section - REDESIGNED MINIMAL FOOTER */}
         <footer className="bg-gray-100 px-4 py-5 mt-6 -mx-4 text-xs">

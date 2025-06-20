@@ -403,13 +403,13 @@ const ChatBot = () => {
   };
 
   return (
-    <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
+    <div className="fixed bottom-20 right-5 z-50 flex flex-col items-end">
       {/* Chat button */}
       <Button
         variant="default"
         size="icon"
         className={cn(
-          "rounded-full w-14 h-14 bg-[#FF5E01] hover:bg-[#FF5E01]/90 shadow-lg",
+          "rounded-full w-12 h-12 bg-[#FF5E01] hover:bg-[#FF5E01]/90 shadow-lg",
           isOpen && "hidden"
         )}
         onClick={() => setIsOpen(true)}
@@ -426,7 +426,7 @@ const ChatBot = () => {
       
       {/* Chat window */}
       {isOpen && (
-        <div className="bg-white w-80 h-[450px] rounded-lg shadow-xl flex flex-col border border-gray-200 overflow-hidden">
+        <div className="bg-white w-72 h-[400px] rounded-lg shadow-xl flex flex-col border border-gray-200 overflow-hidden">
           {/* Header */}
           <div className="bg-[#FF5E01] text-white p-3 flex justify-between items-center">
             <div>
