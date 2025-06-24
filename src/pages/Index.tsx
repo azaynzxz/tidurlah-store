@@ -94,6 +94,43 @@ const products = {
       rating: 4.8
     },
     {
+      id: 7,
+      name: "Paket IDC LYD 1S",
+      image: "/product-image/paket-idc-1s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card satu sisi dan lanyard yang sesuai.",
+      price: 20000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 20000 },
+        { minQuantity: 4, price: 18000 },
+        { minQuantity: 25, price: 16000 },
+        { minQuantity: 100, price: 14000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
+    },
+    {
+      id: 8,
+      name: "Paket IDC LYD 2S",
+      image: "/product-image/paket-idc-2s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card dua sisi dan lanyard yang sesuai.",
+      price: 25000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 25000 },
+        { minQuantity: 4, price: 23000 },
+        { minQuantity: 25, price: 20000 },
+        { minQuantity: 100, price: 17000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.9,
+      bestseller: true
+    },
+    {
       id: 3,
       name: "IDC Tali & Case Kulit",
       image: "/product-image/case-tali-kulit.jpg",
@@ -102,12 +139,12 @@ const products = {
       ],
       description: "ID card premium dengan case kulit dan tali lanyard.",
       price: 30000,
-      discountPrice: null,
+      discountPrice: 28000,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 30000 },
-        { minQuantity: 4, price: 29000 },
-        { minQuantity: 25, price: 27000 },
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 27000 },
+        { minQuantity: 25, price: 26500 },
         { minQuantity: 100, price: 25000 }
       ],
       time: "3-5 hari",
@@ -174,42 +211,6 @@ const products = {
       rating: 4.5
     },
     {
-      id: 7,
-      name: "Paket IDC LYD 1S",
-      image: "/product-image/paket-idc-1s.jpg",
-      additionalImages: [],
-      description: "Paket lengkap dengan ID card satu sisi dan lanyard yang sesuai.",
-      price: 20000,
-      discountPrice: null,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 20000 },
-        { minQuantity: 4, price: 18000 },
-        { minQuantity: 25, price: 16000 },
-        { minQuantity: 100, price: 14000 }
-      ],
-      time: "2-3 hari",
-      rating: 4.8
-    },
-    {
-      id: 8,
-      name: "Paket IDC LYD 2S",
-      image: "/product-image/paket-idc-2s.jpg",
-      additionalImages: [],
-      description: "Paket lengkap dengan ID card dua sisi dan lanyard yang sesuai.",
-      price: 25000,
-      discountPrice: null,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 25000 },
-        { minQuantity: 4, price: 23000 },
-        { minQuantity: 25, price: 20000 },
-        { minQuantity: 100, price: 17000 }
-      ],
-      time: "2-3 hari",
-      rating: 4.9
-    },
-    {
       id: 9,
       name: "Paket IDC LYD Kulit",
       image: "/product-image/paket-idc-case-kulit.jpg",
@@ -217,14 +218,14 @@ const products = {
         "/product-image/case-kulit.jpg"
       ],
       description: "Paket premium dengan ID card, case kulit, dan lanyard yang sesuai.",
-      price: 35000,
-      discountPrice: null,
+      price: 30000,
+      discountPrice: 28000,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 35000 },
-        { minQuantity: 4, price: 32000 },
-        { minQuantity: 25, price: 28000 },
-        { minQuantity: 100, price: 23000 }
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 27000 },
+        { minQuantity: 25, price: 26500 },
+        { minQuantity: 100, price: 25000 }
       ],
       time: "3-4 hari",
       rating: 5.0
@@ -248,6 +249,37 @@ const products = {
       ],
       time: "3-5 hari",
       rating: 4.9
+    },
+    {
+      id: 24,
+      name: "IDC Lanyard tali Hitam Polos",
+      image: "/product-image/IDC-Tali Hitam.jpg",
+      additionalImages: [],
+      description: "ID card dengan lanyard tali hitam polos, praktis dan elegan.",
+      price: 14000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 14000 },
+        { minQuantity: 50, price: 13000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.6
+    },
+    {
+      id: 25,
+      name: "IDC B4 Lanyard Hitam Polos",
+      image: "/product-image/IDC B4 Lanyard Hitam Polos.jpg",
+      additionalImages: [],
+      description: "ID Card kertas dengan ukuran B4 (15.5 × 16.6 cm), tali hitam polos",
+      price: 7000,
+      discountPrice: 5000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 5000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.5
     }
   ],
   "Media Promosi": [
@@ -1544,6 +1576,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               alt={product.name}
                               className="absolute top-0 left-0 w-full h-full object-cover"
                             />
+                            {product.bestseller && (
+                              <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md z-10">
+                                Produk Terlaris
+                              </div>
+                            )}
                           </div>
                           <div className="absolute bottom-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-tl-md">
                             Lihat detail
