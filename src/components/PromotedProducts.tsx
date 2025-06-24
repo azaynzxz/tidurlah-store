@@ -84,10 +84,10 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
         {promotedProductsWithData.map((product: any) => (
           <div 
             key={product.id} 
-            className="border border-green-400 rounded-lg overflow-hidden shadow-sm bg-green-50"
+            className="border border-green-400 rounded-lg overflow-hidden shadow-sm bg-green-50 cursor-pointer"
             onClick={() => onOpenDetails(product)}
           >
-            <div className="flex items-center p-2">
+            <div className="flex items-center p-3">
               <div className="w-12 h-12 relative flex-shrink-0">
                 <img 
                   src={product.image} 
@@ -96,30 +96,33 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
                 />
               </div>
               
-              <div className="ml-3 flex-1">
-                <div className="flex justify-between items-start">
-                  <h3 className="font-medium text-xs pl-0.5">{product.name}</h3>
-                  <div className="flex items-center gap-1.5">
-                    <div className="flex items-center bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xxs">
-                      <Clock className="h-2.5 w-2.5 mr-0.5" />
-                      <span>{timeRemaining[product.id]}</span>
-                    </div>
-                    <div className="bg-green-600 text-white px-1.5 py-0.5 rounded text-xxs">
-                      {product.promoInfo.discount}% OFF
-                    </div>
+              <div className="ml-3 flex-1 min-w-0">
+                <div className="flex justify-between items-start mb-2">
+                  <h3 className="font-medium text-xs text-gray-800 line-clamp-1">
+                    {product.name}
+                  </h3>
+                  <div className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs font-bold ml-2 flex-shrink-0">
+                    {product.promoInfo.discount}% OFF
                   </div>
                 </div>
                 
-                <div className="flex flex-wrap items-center gap-x-2 mt-1.5 text-xxs pl-0.5">
-                  <div className="inline-flex items-center text-green-700">
-                    <span>Kode: <span className="font-bold">KKN15</span></span>
+                <div className="flex justify-between items-center text-xs">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex items-center text-green-700">
+                      <span>Kode: <span className="font-bold">KKN15</span></span>
+                    </div>
+                    
+                    {product.promoInfo.minQuantity && (
+                      <div className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs">
+                        Min. {product.promoInfo.minQuantity} pcs
+                      </div>
+                    )}
                   </div>
                   
-                  {product.promoInfo.minQuantity && (
-                    <div className="bg-green-100 text-green-700 px-1 py-0.5 rounded-sm">
-                      Min. {product.promoInfo.minQuantity} pcs
-                    </div>
-                  )}
+                  <div className="flex items-center bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs flex-shrink-0 ml-2">
+                    <Clock className="h-3 w-3 mr-1" />
+                    <span className="font-medium">{timeRemaining[product.id]}</span>
+                  </div>
                 </div>
               </div>
             </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower } from "lucide-react";
+import { useParams, useNavigate } from "react-router-dom";
+import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -9,9 +10,17 @@ import ChatBot from "@/components/ChatBot";
 import MusicPlayer from "@/components/MusicPlayer";
 import PromotedProducts from "@/components/PromotedProducts";
 
-// Set document title
+// Set document title and load Google Fonts
 if (typeof document !== 'undefined') {
   document.title = "Spesialis ID Card Lanyard Lampung dan Merchandise Custom - TIDURLAH STORE";
+  
+  // Add Google Fonts Material Symbols if not already added
+  if (!document.querySelector('link[href*="material+symbols"]')) {
+    const link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=mail,language';
+    document.head.appendChild(link);
+  }
 }
 
 // Valid promo codes with their discount percentage
@@ -712,7 +721,33 @@ const calculateBannerPrice = (product, width, height) => {
   return basePrice;
 };
 
+// Generate URL-friendly slug from product name
+const generateProductSlug = (productName: string) => {
+  return productName
+    .toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-') // Replace multiple hyphens with single
+    .trim(); // Remove leading/trailing spaces
+};
+
+// Find product by slug
+const findProductBySlug = (slug: string) => {
+  const allProducts = Object.values(products).flat();
+  return allProducts.find(product => generateProductSlug(product.name) === slug);
+};
+
+// Generate shareable URL for product
+const generateProductUrl = (product: any) => {
+  const slug = generateProductSlug(product.name);
+  const baseUrl = window.location.origin;
+  return `${baseUrl}/product/${slug}`;
+};
+
 const Index = () => {
+  const { slug } = useParams();
+  const navigate = useNavigate();
+  
   const [activeTab, setActiveTab] = useState("ID Card & Lanyard");
   const [cartItems, setCartItems] = useState<any[]>([]);
   const [showCart, setShowCart] = useState(false);
@@ -830,6 +865,23 @@ const Index = () => {
     
     setInvoiceNumber(`INV-${year}${month}${day}-${random}`);
   }, []);
+
+  // Handle product URL deep linking
+  useEffect(() => {
+    if (slug) {
+      const product = findProductBySlug(slug);
+      if (product) {
+        // Set the appropriate category tab
+        setActiveTab(product.category);
+        // Open the product details modal
+        openProductDetails(product);
+      } else {
+        // If product not found, redirect to home and show error
+        navigate('/');
+        toast.error("Produk tidak ditemukan", { position: 'top-center', style: { marginTop: '60px' } });
+      }
+    }
+  }, [slug, navigate]);
 
   // On component mount, load cartItems from localStorage if present
   useEffect(() => {
@@ -1188,6 +1240,12 @@ const Index = () => {
         setBannerWidth(2);
         setBannerHeight(1);
       }
+    }
+    
+    // Update URL to product-specific URL (only if not already a product URL)
+    if (!slug) {
+      const productSlug = generateProductSlug(product.name);
+      navigate(`/product/${productSlug}`, { replace: true });
     }
   };
 
@@ -1585,6 +1643,26 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           <div className="absolute bottom-0 right-0 bg-black bg-opacity-60 text-white text-xs px-2 py-1 rounded-tl-md">
                             Lihat detail
                           </div>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              const shareUrl = generateProductUrl(product);
+                              if (navigator.share) {
+                                navigator.share({
+                                  title: product.name,
+                                  text: `Lihat produk ${product.name} di TIDURLAH STORE`,
+                                  url: shareUrl,
+                                });
+                              } else {
+                                navigator.clipboard.writeText(shareUrl);
+                                toast.success("Link produk disalin!", { position: 'top-center', style: { marginTop: '60px' }, duration: 2000 });
+                              }
+                            }}
+                            className="absolute top-1 right-1 bg-white bg-opacity-80 hover:bg-white p-1.5 rounded-full transition-colors z-10"
+                            title="Bagikan produk"
+                          >
+                            <Share2 className="h-3 w-3 text-gray-700" />
+                          </button>
                         </div>
                         <div className="p-2 flex flex-col flex-grow">
                           <h3 className="font-medium text-xs line-clamp-2">{product.name}</h3>
@@ -2130,13 +2208,51 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
         </Dialog>
 
         {/* Product Details Modal */}
-        <Dialog open={!!selectedProduct} onOpenChange={() => setSelectedProduct(null)}>
-          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] mx-auto rounded-lg max-h-[90vh] overflow-y-auto">
+        <Dialog open={!!selectedProduct} onOpenChange={() => {
+          setSelectedProduct(null);
+          // Reset URL to home when modal is closed
+          if (slug) {
+            navigate('/', { replace: true });
+          }
+        }}>
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
             {selectedProduct && (
-              <>
-                <DialogHeader>
-                  <DialogTitle>{selectedProduct.name}</DialogTitle>
-                </DialogHeader>
+              <div className="relative h-full flex flex-col" style={{ maxHeight: "90vh" }}>
+                {/* Fixed Header */}
+                <div className="p-4 border-b bg-white relative">
+                  <div className="pr-20">
+                    <h2 className="font-semibold text-lg">{selectedProduct.name}</h2>
+                  </div>
+                  {/* Share button positioned to align with close button */}
+                    <button
+                      onClick={() => {
+                        const shareUrl = generateProductUrl(selectedProduct);
+                        if (navigator.share) {
+                          navigator.share({
+                            title: selectedProduct.name,
+                            text: `Lihat produk ${selectedProduct.name} di TIDURLAH STORE`,
+                            url: shareUrl,
+                          });
+                        } else {
+                          navigator.clipboard.writeText(shareUrl);
+                          toast.success("Link produk disalin ke clipboard!", { position: 'top-center', style: { marginTop: '60px' } });
+                        }
+                      }}
+                    className="absolute right-12 top-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                      title="Bagikan produk"
+                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
+                      <circle cx="18" cy="5" r="3"></circle>
+                      <circle cx="6" cy="12" r="3"></circle>
+                      <circle cx="18" cy="19" r="3"></circle>
+                      <line x1="8.59" x2="15.42" y1="13.51" y2="17.49"></line>
+                      <line x1="15.41" x2="8.59" y1="6.51" y2="10.49"></line>
+                    </svg>
+                    </button>
+                  </div>
+
+                {/* Scrollable Content */}
+                <div className="flex-1 overflow-y-auto p-4" style={{ maxHeight: "calc(90vh - 140px)" }}>
                 <div className="relative">
                   <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "75%" }}>
                     <img
@@ -2420,11 +2536,17 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     </div>
                   )}
 
-                  <div className="mt-4">
+                    {/* Add some bottom padding to ensure content doesn't get hidden behind the fixed button */}
+                    <div className="h-4"></div>
+                  </div>
+                </div>
+
+                {/* Fixed Footer with Action Button */}
+                <div className="p-4 border-t bg-white">
                     {selectedProduct.pricingMethod === "dimensional" ? (
                       <button
                         onClick={() => addBannerToCart(selectedProduct, bannerWidth, bannerHeight)}
-                        className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                      className="w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md"
                       >
                         Masukkan Keranjang
                       </button>
@@ -2440,7 +2562,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                             }
                           }
                         }}
-                        className={`w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium ${!selectedModel ? 'opacity-50 cursor-not-allowed' : ''}`}
+                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${!selectedModel ? 'opacity-50 cursor-not-allowed' : ''}`}
                         disabled={!selectedModel}
                       >
                         Masukkan Keranjang
@@ -2463,14 +2585,13 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                             setSelectedProduct(null);
                           }
                         }}
-                        className="w-full bg-[#FF5E01] text-white rounded-lg py-2 font-medium"
+                      className="w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md"
                       >
                         Masukkan Keranjang
                       </button>
                     )}
                   </div>
                 </div>
-              </>
             )}
           </DialogContent>
         </Dialog>
@@ -2534,53 +2655,93 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           />
         ))}
 
-        {/* Footer Section - REDESIGNED MINIMAL FOOTER */}
-        <footer className="bg-gray-100 px-4 py-5 mt-6 -mx-4 text-xs">
-          <div className="grid grid-cols-3 gap-4">
-            {/* Column 1: Logo and Slogan */}
+        {/* Footer Section - MODERN FOOTER */}
+        <footer className="bg-gray-900 text-white px-4 py-8 mt-6 -mx-4">
+          <div className="max-w-6xl mx-auto">
+            {/* Main Footer Content - 2 Columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+              {/* Left Column - Title and Slogan */}
             <div>
-              <h4 className="font-bold text-[#FF5E01] mb-2">TIDURLAH</h4>
-              <p className="text-gray-600 text-[10px] leading-tight">
-                "Cetak apa aja,<br />
-                Tidurlah Grafika!"
+                <h3 className="text-2xl font-bold text-[#FF5E01] mb-3">TIDURLAH GRAFIKA</h3>
+                <p className="text-gray-300 text-sm italic">
+                  "Cetak apa aja, Tidurlah Grafika!"
               </p>
-              {/*<div className="flex mt-2 space-x-2">
-                <a href="https://facebook.com/tidurlahstore" aria-label="Facebook" className="text-blue-600 hover:text-blue-800">
-                  <Facebook size={14} />
-                </a>
-                <a href="https://instagram.com/tidurlahstore" aria-label="Instagram" className="text-pink-600 hover:text-pink-800">
-                  <Instagram size={14} />
-                </a>
-                <a href="https://youtube.com/tidurlahstore" aria-label="Youtube" className="text-red-600 hover:text-red-800">
-                  <Youtube size={14} />
-                </a>
-              </div>*/}
             </div>
             
-            {/* Column 2: Contact */}
+              {/* Right Column - Address */}
             <div>
-              <h4 className="font-bold text-gray-700 mb-2">Contact</h4>
-              <ul className="space-y-1 text-gray-600">
-                <li className="flex items-center">
-                  <Phone size={10} className="mr-1" /> +62 851-7215-7808
-                </li>
-                {/*<li className="flex items-center">
-                  <Mail size={10} className="mr-1" /> info@tidurlah.com
-                </li>*/}
-              </ul>
+                <h4 className="font-semibold text-white mb-2 flex items-center">
+                  <svg className="w-4 h-4 mr-2 text-[#FF5E01]" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  Alamat
+                </h4>
+                <p className="text-gray-300 text-sm ml-6">
+                  Perum. Korpri Raya, Blok D3. No. 3<br />
+                  Sukarame, Bandar Lampung
+                </p>
+              </div>
             </div>
             
-            {/* Column 3: Address */}
+            {/* Bottom Row - 2 Columns */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-700 pt-6">
+              {/* Left Column - Social Links */}
             <div>
-              <h4 className="font-bold text-gray-700 mb-2">Address</h4>
-              <p className="text-gray-600 text-[10px] leading-tight">
-                Perum. Korpri Raya, Blok D3. No. 3, Sukarame, Bandar Lampung
-              </p>
+                <div className="flex items-center space-x-6">
+                  {/* Blog */}
+                  <button
+                    onClick={() => navigate('/blog')}
+                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    title="Blog & Tips"
+                  >
+                    <span className="material-symbols-outlined text-white text-2xl leading-none">language</span>
+                  </button>
+
+                  {/* WhatsApp */}
+                  <a 
+                    href="https://wa.me/6283143790990"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    title="WhatsApp"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 32 32">
+                      <path fillRule="evenodd" d="M 24.503906 7.503906 C 22.246094 5.246094 19.246094 4 16.050781 4 C 9.464844 4 4.101563 9.359375 4.101563 15.945313 C 4.097656 18.050781 4.648438 20.105469 5.695313 21.917969 L 4 28.109375 L 10.335938 26.445313 C 12.078125 27.398438 14.046875 27.898438 16.046875 27.902344 L 16.050781 27.902344 C 22.636719 27.902344 27.996094 22.542969 28 15.953125 C 28 12.761719 26.757813 9.761719 24.503906 7.503906 Z M 16.050781 25.882813 L 16.046875 25.882813 C 14.265625 25.882813 12.515625 25.402344 10.992188 24.5 L 10.628906 24.285156 L 6.867188 25.269531 L 7.871094 21.605469 L 7.636719 21.230469 C 6.640625 19.648438 6.117188 17.820313 6.117188 15.945313 C 6.117188 10.472656 10.574219 6.019531 16.054688 6.019531 C 18.707031 6.019531 21.199219 7.054688 23.074219 8.929688 C 24.949219 10.808594 25.980469 13.300781 25.980469 15.953125 C 25.980469 21.429688 21.523438 25.882813 16.050781 25.882813 Z M 21.496094 18.445313 C 21.199219 18.296875 19.730469 17.574219 19.457031 17.476563 C 19.183594 17.375 18.984375 17.328125 18.785156 17.625 C 18.585938 17.925781 18.015625 18.597656 17.839844 18.796875 C 17.667969 18.992188 17.492188 19.019531 17.195313 18.871094 C 16.894531 18.722656 15.933594 18.40625 14.792969 17.386719 C 13.90625 16.597656 13.304688 15.617188 13.132813 15.320313 C 12.957031 15.019531 13.113281 14.859375 13.261719 14.710938 C 13.398438 14.578125 13.5625 14.363281 13.710938 14.1875 C 13.859375 14.015625 13.910156 13.890625 14.011719 13.691406 C 14.109375 13.492188 14.058594 13.316406 13.984375 13.167969 C 13.910156 13.019531 13.3125 11.546875 13.0625 10.949219 C 12.820313 10.367188 12.574219 10.449219 12.390625 10.4375 C 12.21875 10.429688 12.019531 10.429688 11.820313 10.429688 C 11.621094 10.429688 11.296875 10.503906 11.023438 10.804688 C 10.75 11.101563 9.980469 11.824219 9.980469 13.292969 C 9.980469 14.761719 11.050781 16.183594 11.199219 16.382813 C 11.347656 16.578125 13.304688 19.59375 16.300781 20.886719 C 17.011719 21.195313 17.566406 21.378906 18 21.515625 C 18.714844 21.742188 19.367188 21.710938 19.882813 21.636719 C 20.457031 21.550781 21.648438 20.914063 21.898438 20.214844 C 22.144531 19.519531 22.144531 18.921875 22.070313 18.796875 C 21.996094 18.671875 21.796875 18.597656 21.496094 18.445313 Z"></path>
+                    </svg>
+                  </a>
+
+                  {/* Email */}
+                  <a 
+                    href="mailto:halo.idcardlampung@gmail.com"
+                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    title="Email"
+                  >
+                    <span className="material-symbols-outlined text-white text-2xl leading-none">mail</span>
+                  </a>
+
+                  {/* Instagram */}
+                  <a 
+                    href="https://instagram.com/tidurlah_grafika"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    title="Instagram"
+                  >
+                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.40s-.644-1.44-1.439-1.44z"/>
+                    </svg>
+                  </a>
             </div>
           </div>
           
-          <div className="mt-3 pt-3 border-t border-gray-200 text-[10px] text-center text-gray-500">
-            &copy; {new Date().getFullYear()} TIDURLAH STORE
+              {/* Right Column - Copyright */}
+              <div className="flex justify-end items-center">
+                <p className="text-sm text-gray-400 text-right leading-relaxed">
+                  © 2022-{new Date().getFullYear()}.<br />
+                  All rights reserved.
+                </p>
+              </div>
+            </div>
           </div>
         </footer>
       </div>
