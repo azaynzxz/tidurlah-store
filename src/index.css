@@ -410,7 +410,7 @@
   /* Receipt paper texture */
   .receipt-content {
     position: relative;
-    font-family: 'Courier New', monospace;
+    font-family: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
     background: 
       repeating-linear-gradient(
         0deg,

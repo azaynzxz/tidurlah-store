@@ -1619,8 +1619,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     
     if (receiptRef.current) {
       try {
-        // Wait a bit for images to fully load
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // Wait longer for fonts and images to fully load
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Force a reflow to ensure all text is rendered
+        receiptRef.current.offsetHeight;
         
         const canvas = await html2canvas(receiptRef.current, {
           backgroundColor: '#ffffff',
@@ -1629,7 +1632,19 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           allowTaint: true,
           logging: false,
           width: receiptRef.current.scrollWidth,
-          height: receiptRef.current.scrollHeight
+          height: receiptRef.current.scrollHeight,
+          removeContainer: true,
+          foreignObjectRendering: false,
+          // Force text rendering
+          onclone: (clonedDoc) => {
+            const clonedElement = clonedDoc.querySelector('.receipt-content') as HTMLElement;
+            if (clonedElement) {
+              // Force font loading
+              clonedElement.style.fontFamily = 'Courier New, Consolas, Monaco, Lucida Console, monospace';
+              clonedElement.style.fontSize = clonedElement.style.fontSize || '12px';
+              clonedElement.style.lineHeight = clonedElement.style.lineHeight || '1.4';
+            }
+          }
         });
         
         // Convert to JPG and download
@@ -2808,12 +2823,16 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     <div 
                       className="receipt-content p-3 sm:p-4 md:p-6"
                       style={{ 
-                        fontSize: 'clamp(11px, 3.5vw, 14px)',
+                        fontSize: '12px',
                         lineHeight: '1.4',
                         width: '100%',
                         maxWidth: 'min(350px, calc(100vw - 100px))',
                         margin: '0 auto',
-                        minWidth: '250px'
+                        minWidth: '250px',
+                        fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
+                        color: '#000000',
+                        overflow: 'visible',
+                        wordWrap: 'break-word'
                       }}
                     >
                                       {/* Store Header */}
@@ -2901,9 +2920,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                                   </div>
                                 )}
                               </div>
-                              <div className="flex justify-between text-xs">
-                                <span className="truncate mr-2">{item.quantity} x Rp {item.appliedPrice.toLocaleString('id-ID')}</span>
-                                <span className="whitespace-nowrap">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</span>
+                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
+                                <div style={{ display: 'table-row' }}>
+                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
+                                    {item.quantity} x Rp {item.appliedPrice.toLocaleString('id-ID')}
+                                  </span>
+                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                    Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           ))}
@@ -2911,9 +2936,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           {requestJasaDesain && (
                             <div className="mb-2 sm:mb-3">
                               <div className="font-medium text-xs">Jasa Desain</div>
-                              <div className="flex justify-between text-xs">
-                                <span className="truncate mr-2">1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
-                                <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
+                                <div style={{ display: 'table-row' }}>
+                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
+                                    1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                                  </span>
+                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                    Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -2921,9 +2952,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           {isExpressPrint && (
                             <div className="mb-2 sm:mb-3">
                               <div className="font-medium text-xs">Cetak Express</div>
-                              <div className="flex justify-between text-xs">
-                                <span className="truncate mr-2">1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
-                                <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
+                                <div style={{ display: 'table-row' }}>
+                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
+                                    1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                                  </span>
+                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                                    Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                                  </span>
+                                </div>
                               </div>
                             </div>
                           )}
@@ -2931,37 +2968,47 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                       </div>
 
                       {/* Totals */}
-                      <div className="text-xs sm:text-sm">
-                        <div className="flex justify-between">
-                          <span>Subtotal:</span>
-                          <span className="whitespace-nowrap">Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</span>
+                      <div className="text-xs sm:text-sm" style={{ display: 'table', width: '100%' }}>
+                        <div style={{ display: 'table-row' }}>
+                          <span style={{ display: 'table-cell', paddingRight: '8px' }}>Subtotal:</span>
+                          <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                            Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}
+                          </span>
                         </div>
                         
                         {promoDiscount > 0 && (
-                          <div className="flex justify-between text-green-600">
-                            <span>Diskon ({promoDiscount}%):</span>
-                            <span className="whitespace-nowrap">-Rp {calculateTotalDiscount().toLocaleString('id-ID')}</span>
+                          <div style={{ display: 'table-row', color: '#16a34a' }}>
+                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Diskon ({promoDiscount}%):</span>
+                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                              -Rp {calculateTotalDiscount().toLocaleString('id-ID')}
+                            </span>
                           </div>
                         )}
                         
                         {requestJasaDesain && (
-                          <div className="flex justify-between">
-                            <span>Jasa Desain:</span>
-                            <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                          <div style={{ display: 'table-row' }}>
+                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Jasa Desain:</span>
+                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                              Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                            </span>
                           </div>
                         )}
                         
                         {isExpressPrint && (
-                          <div className="flex justify-between">
-                            <span>Cetak Express:</span>
-                            <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                          <div style={{ display: 'table-row' }}>
+                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Cetak Express:</span>
+                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                              Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
+                            </span>
                           </div>
                         )}
                         
                         <div className="border-t border-dashed border-gray-400 mt-2 pt-2">
-                          <div className="flex justify-between font-bold text-sm sm:text-lg">
-                            <span>TOTAL:</span>
-                            <span className="whitespace-nowrap">Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</span>
+                          <div style={{ display: 'table-row', fontWeight: 'bold', fontSize: '14px' }}>
+                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>TOTAL:</span>
+                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
+                              Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}
+                            </span>
                           </div>
                         </div>
                       </div>
