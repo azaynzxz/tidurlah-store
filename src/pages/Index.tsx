@@ -11,6 +11,24 @@ import MusicPlayer from "@/components/MusicPlayer";
 import PromotedProducts from "@/components/PromotedProducts";
 import html2canvas from "html2canvas";
 
+// Convert image to base64 for html2canvas compatibility
+const convertImageToBase64 = (src: string): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx?.drawImage(img, 0, 0);
+      resolve(canvas.toDataURL('image/png'));
+    };
+    img.onerror = reject;
+    img.src = src;
+  });
+};
+
 // Set document title and load Google Fonts
 if (typeof document !== 'undefined') {
   document.title = "Spesialis ID Card Lanyard Lampung dan Merchandise Custom - TIDURLAH STORE";
@@ -768,6 +786,7 @@ const Index = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const [logoBase64, setLogoBase64] = useState<string>("");
   
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -868,6 +887,21 @@ const Index = () => {
     const random = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
     
     setInvoiceNumber(`INV-${year}${month}${day}-${random}`);
+  }, []);
+
+  // Load logo as base64 for html2canvas compatibility
+  useEffect(() => {
+    const loadLogo = async () => {
+      try {
+        const base64Logo = await convertImageToBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+        setLogoBase64(base64Logo);
+      } catch (error) {
+        console.error('Failed to load logo:', error);
+        // Fallback to original image path if conversion fails
+        setLogoBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+      }
+    };
+    loadLogo();
   }, []);
 
   // Handle product URL deep linking
@@ -1551,6 +1585,21 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
       return;
     }
     
+    // Wait for logo to load if not already loaded
+    if (!logoBase64) {
+      console.log('Waiting for logo to load...');
+      await new Promise(resolve => {
+        const checkLogo = () => {
+          if (logoBase64) {
+            resolve(true);
+          } else {
+            setTimeout(checkLogo, 100);
+          }
+        };
+        checkLogo();
+      });
+    }
+    
     // Show receipt modal first
     setShowReceipt(true);
     
@@ -1570,11 +1619,17 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     
     if (receiptRef.current) {
       try {
+        // Wait a bit for images to fully load
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
         const canvas = await html2canvas(receiptRef.current, {
           backgroundColor: '#ffffff',
           scale: 2,
           useCORS: true,
-          allowTaint: true
+          allowTaint: true,
+          logging: false,
+          width: receiptRef.current.scrollWidth,
+          height: receiptRef.current.scrollHeight
         });
         
         // Convert to JPG and download
@@ -2764,11 +2819,18 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                                       {/* Store Header */}
                       <div className="text-center border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
                         <div className="flex justify-center items-center mb-2">
-                          <img 
-                            src="/product-image/Logo Tidurlah and ID Card Lampung.png"
-                            alt="TIDURLAH GRAFIKA"
-                            className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
-                          />
+                          {logoBase64 ? (
+                            <img 
+                              src={logoBase64}
+                              alt="TIDURLAH GRAFIKA"
+                              className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
+                              crossOrigin="anonymous"
+                            />
+                          ) : (
+                            <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
+                              <span className="text-xs text-gray-500">Loading...</span>
+                            </div>
+                          )}
                         </div>
                         <h2 className="text-base sm:text-lg font-bold tracking-wider">TIDURLAH GRAFIKA</h2>
                         <p className="text-xs italic">"Cetak apa aja, Tidurlah Grafika!"</p>
