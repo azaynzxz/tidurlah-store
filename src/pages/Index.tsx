@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2 } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Printer } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import ChatBot from "@/components/ChatBot";
 import MusicPlayer from "@/components/MusicPlayer";
 import PromotedProducts from "@/components/PromotedProducts";
+import html2canvas from "html2canvas";
 
 // Set document title and load Google Fonts
 if (typeof document !== 'undefined') {
@@ -764,6 +765,9 @@ const Index = () => {
   const [bannerWidth, setBannerWidth] = useState(1);
   const [bannerHeight, setBannerHeight] = useState(1);
   const [whatsAppUrl, setWhatsAppUrl] = useState("");
+  const [showReceipt, setShowReceipt] = useState(false);
+  const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
+  const receiptRef = useRef<HTMLDivElement>(null);
   
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -1391,8 +1395,13 @@ const Index = () => {
     }
   };
 
-  // WhatsApp redirection function
+  // WhatsApp redirection function with integrated receipt generation
   const handleWhatsAppRedirect = async () => {
+    // Prevent multiple submissions
+    if (isSubmitting) {
+      return;
+    }
+
     if (!customerName || !phoneNumber) {
       toast.error("Mohon isi nama dan nomor telepon kamu.", { position: 'top-center', style: { marginTop: '60px' } });
       return;
@@ -1423,6 +1432,9 @@ const Index = () => {
         requestJasaDesain,
         isExpressPrint
       };
+
+      // Start receipt generation process (non-blocking)
+      generateReceiptDuringProcessing();
 
       // Save to Google Sheet
       await submitToGoogleSheet(orderData);
@@ -1472,12 +1484,12 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
       // Store the WhatsApp URL in state
       setWhatsAppUrl(whatsappUrl);
       
-      // Show success dialog with button instead of auto-redirect
-      setShowOrderSuccess(true);
-      setIsSubmitting(false);
+      // Wait for receipt generation to complete before showing success dialog
+      // We'll set this in the generateReceiptDuringProcessing function
       
     } catch (error) {
       setIsSubmitting(false);
+      setShowReceipt(false); // Close receipt modal on error
       toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.", { position: 'top-center', style: { marginTop: '60px' } });
       console.error(error);
     }
@@ -1532,6 +1544,83 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     }, 0);
   };
 
+  // Generate receipt as JPG during order processing
+  const generateReceiptDuringProcessing = async () => {
+    // Only proceed if not already showing receipt (prevent multiple calls)
+    if (showReceipt) {
+      return;
+    }
+    
+    // Show receipt modal first
+    setShowReceipt(true);
+    
+    // Play printing sound effect
+    try {
+      const audio = new Audio('/audio/printing.wav');
+      audio.volume = 0.6; // Set volume to 60%
+      audio.play().catch(error => {
+        console.log('Audio play prevented by browser policy:', error);
+      });
+    } catch (error) {
+      console.log('Audio loading error:', error);
+    }
+    
+    // Wait for printing animation to complete (4 seconds)
+    await new Promise(resolve => setTimeout(resolve, 4500));
+    
+    if (receiptRef.current) {
+      try {
+        const canvas = await html2canvas(receiptRef.current, {
+          backgroundColor: '#ffffff',
+          scale: 2,
+          useCORS: true,
+          allowTaint: true
+        });
+        
+        // Convert to JPG and download
+        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        const link = document.createElement('a');
+        link.download = `nota-${invoiceNumber}.jpg`;
+        link.href = imgData;
+        link.click();
+        
+        toast.success("Nota berhasil diunduh! Silakan lanjut ke WhatsApp.", { 
+          position: 'top-center', 
+          style: { marginTop: '60px' },
+          duration: 3000 
+        });
+        
+        // Close receipt modal and show success dialog
+        setTimeout(() => {
+          setShowReceipt(false);
+          setShowOrderSuccess(true);
+          setIsSubmitting(false);
+        }, 1000);
+        
+      } catch (error) {
+        console.error('Error generating receipt:', error);
+        toast.error("Gagal membuat nota, tapi pesanan tetap berhasil.", { 
+          position: 'top-center', 
+          style: { marginTop: '60px' } 
+        });
+        
+        // Close receipt modal and show success dialog even on error
+        setTimeout(() => {
+          setShowReceipt(false);
+          setShowOrderSuccess(true);
+          setIsSubmitting(false);
+        }, 1000);
+      }
+    } else {
+      // If receiptRef is not available, just show success dialog
+      setTimeout(() => {
+        setShowReceipt(false);
+        setShowOrderSuccess(true);
+        setIsSubmitting(false);
+      }, 1000);
+    }
+  };
+
   // Create an array of categories with their Lucide React icons and colors for the visual display
   const categories = [
     { id: "ID Card & Lanyard", name: "ID Card", icon: CreditCard, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
@@ -1545,10 +1634,10 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
   const stikerWithLaminationIds = [15]; // Cutting Stiker Kontur
 
   return (
-    <div className="min-h-screen bg-gray-50 notranslate" translate="no">
-      <div className="container mx-auto max-w-md bg-white min-h-screen px-4 pb-16">
+    <div className="min-h-screen bg-gray-50 notranslate flex flex-col" translate="no">
+      <div className="container mx-auto max-w-md bg-white flex-1 flex flex-col px-4">
         {/* Header */}
-        <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
+        <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-20">
           <img 
             src="/product-image/Tidurlah Logo Horizontal.png"
             alt="TIDURLAH STORE"
@@ -1579,7 +1668,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
 
         {!showOrderForm ? (
           /* Product Listing */
-          <div className="p-3">
+          <div className="p-3 flex-1">
             {/* Search Bar above banner */}
             <SearchBar onSearch={handleSearch} />
             
@@ -1635,7 +1724,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               className="absolute top-0 left-0 w-full h-full object-cover"
                             />
                             {product.bestseller && (
-                              <div className="absolute top-1 left-1 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md z-10">
+                              <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md z-[5]">
                                 Produk Terlaris
                               </div>
                             )}
@@ -1658,7 +1747,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                                 toast.success("Link produk disalin!", { position: 'top-center', style: { marginTop: '60px' }, duration: 2000 });
                               }
                             }}
-                            className="absolute top-1 right-1 bg-white bg-opacity-80 hover:bg-white p-1.5 rounded-full transition-colors z-10"
+                            className="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-white p-1.5 rounded-full transition-colors z-[5]"
                             title="Bagikan produk"
                           >
                             <Share2 className="h-3 w-3 text-gray-700" />
@@ -1765,7 +1854,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           </div>
         ) : (
           /* Order Form */
-          <div className="p-3">
+          <div className="p-3 flex-1">
             <button
               onClick={() => setShowOrderForm(false)}
               className="mb-3 text-[#FF5E01] flex items-center"
@@ -2238,7 +2327,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           toast.success("Link produk disalin ke clipboard!", { position: 'top-center', style: { marginTop: '60px' } });
                         }
                       }}
-                    className="absolute right-12 top-4 p-2 hover:bg-gray-100 rounded-full transition-colors"
+                    className="absolute right-14 top-2 p-2 hover:bg-gray-100 rounded-full transition-colors z-[5]"
                       title="Bagikan produk"
                     >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gray-600">
@@ -2609,8 +2698,8 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
               ) : (
                 <>
                   <Check className="h-12 w-12 text-green-500 mx-auto mb-3" />
-                  <h3 className="text-lg font-medium mb-2">Pesanan Terkirim!</h3>
-                  <p className="text-gray-600 mb-4">Silakan klik tombol di bawah untuk melanjutkan pemesanan via WhatsApp</p>
+                  <h3 className="text-lg font-medium mb-2">Pesanan Berhasil!</h3>
+                  <p className="text-gray-600 mb-4">Nota telah dicetak dan diunduh. Silakan lanjutkan ke WhatsApp untuk konfirmasi dengan admin kami.</p>
                   
                   <a 
                     href={whatsAppUrl} 
@@ -2628,6 +2717,214 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                 </>
               )}
             </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Receipt Modal */}
+        <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
+          <DialogContent className="sm:max-w-lg max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0">
+            <div className="p-4">
+              <div className="text-center mb-4">
+                <h3 className="text-lg font-medium flex items-center justify-center gap-2">
+                  Mencetak Nota Pembelian
+                  <div className="loading-dots">
+                    <div className="loading-dot"></div>
+                    <div className="loading-dot"></div>
+                    <div className="loading-dot"></div>
+                  </div>
+                </h3>
+                <p className="text-sm text-gray-600">Silakan tunggu, nota sedang dicetak</p>
+              </div>
+              
+              {/* Thermal Printer Simulation */}
+              <div className={`printer-container ${showReceipt ? 'printer-active' : ''}`}>
+                {/* Printer LED Indicator */}
+                <div className="printer-indicator"></div>
+                
+                {/* Printer Slot */}
+                <div className="printer-slot"></div>
+                
+                {/* Receipt Sliding Area */}
+                <div className="receipt-slide-container">
+                  <div 
+                    ref={receiptRef}
+                    className={`receipt-paper ${showReceipt ? 'receipt-sliding' : ''}`}
+                  >
+                    <div 
+                      className="receipt-content p-3 sm:p-4 md:p-6"
+                      style={{ 
+                        fontSize: 'clamp(11px, 3.5vw, 14px)',
+                        lineHeight: '1.4',
+                        width: '100%',
+                        maxWidth: 'min(350px, calc(100vw - 100px))',
+                        margin: '0 auto',
+                        minWidth: '250px'
+                      }}
+                    >
+                                      {/* Store Header */}
+                      <div className="text-center border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
+                        <div className="flex justify-center items-center mb-2">
+                          <img 
+                            src="/product-image/Logo Tidurlah and ID Card Lampung.png"
+                            alt="TIDURLAH GRAFIKA"
+                            className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
+                          />
+                        </div>
+                        <h2 className="text-base sm:text-lg font-bold tracking-wider">TIDURLAH GRAFIKA</h2>
+                        <p className="text-xs italic">"Cetak apa aja, Tidurlah Grafika!"</p>
+                                                  <p className="text-xs mt-1">Perum. Korpri Raya, Blok D3. No. 3</p>
+                          <p className="text-xs">Sukarame, Bandar Lampung</p>
+                          <div className="border-b border-dashed border-gray-400 my-2"></div>
+                          <p className="text-xs">WhatsApp: 085172157808</p>
+                          <p className="text-xs">Instagram: @tidurlah_grafika</p>
+                      </div>
+
+                      {/* Transaction Details */}
+                      <div className="border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
+                        <div className="flex justify-between text-xs sm:text-sm">
+                          <span>No. Invoice:</span>
+                          <span className="font-bold">{invoiceNumber}</span>
+                        </div>
+                        <div className="flex justify-between text-xs sm:text-sm">
+                          <span>Tanggal:</span>
+                          <span>{new Date().toLocaleDateString('id-ID', { 
+                            day: '2-digit', 
+                            month: '2-digit', 
+                            year: 'numeric' 
+                          })}</span>
+                        </div>
+                        <div className="flex justify-between text-xs sm:text-sm">
+                          <span>Waktu:</span>
+                          <span>{new Date().toLocaleTimeString('id-ID', { 
+                            hour: '2-digit', 
+                            minute: '2-digit' 
+                          })}</span>
+                        </div>
+                        {customerName && (
+                          <div className="flex justify-between text-xs sm:text-sm">
+                            <span>Pelanggan:</span>
+                            <span className="font-medium break-words">{customerName}</span>
+                          </div>
+                        )}
+                        {instansi && (
+                          <div className="flex justify-between text-xs sm:text-sm">
+                            <span>Instansi:</span>
+                            <span className="break-words">{instansi}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Items */}
+                      <div className="border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
+                        <div className="text-center font-bold mb-2 text-xs sm:text-sm">DETAIL PEMBELIAN</div>
+                        <div className="text-xs">
+                          {cartItems.map((item, index) => (
+                            <div key={index} className="mb-2 sm:mb-3">
+                              <div className="font-medium text-xs break-words">
+                                {item.name}
+                                {item.width && item.height && (
+                                  <span className="text-xs"> ({item.width}m x {item.height}m)</span>
+                                )}
+                                {item.modelCode && (
+                                  <span className="text-xs"> [{item.modelCode}]</span>
+                                )}
+                                {item.caseVariant && (
+                                  <div className="text-xs text-gray-600">
+                                    Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
+                                  </div>
+                                )}
+                                {item.laminationVariant && (
+                                  <div className="text-xs text-gray-600">
+                                    Laminasi: {item.laminationVariant}
+                                  </div>
+                                )}
+                              </div>
+                              <div className="flex justify-between text-xs">
+                                <span className="truncate mr-2">{item.quantity} x Rp {item.appliedPrice.toLocaleString('id-ID')}</span>
+                                <span className="whitespace-nowrap">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+                          ))}
+                          
+                          {requestJasaDesain && (
+                            <div className="mb-2 sm:mb-3">
+                              <div className="font-medium text-xs">Jasa Desain</div>
+                              <div className="flex justify-between text-xs">
+                                <span className="truncate mr-2">1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                                <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+                          )}
+                          
+                          {isExpressPrint && (
+                            <div className="mb-2 sm:mb-3">
+                              <div className="font-medium text-xs">Cetak Express</div>
+                              <div className="flex justify-between text-xs">
+                                <span className="truncate mr-2">1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                                <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      {/* Totals */}
+                      <div className="text-xs sm:text-sm">
+                        <div className="flex justify-between">
+                          <span>Subtotal:</span>
+                          <span className="whitespace-nowrap">Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</span>
+                        </div>
+                        
+                        {promoDiscount > 0 && (
+                          <div className="flex justify-between text-green-600">
+                            <span>Diskon ({promoDiscount}%):</span>
+                            <span className="whitespace-nowrap">-Rp {calculateTotalDiscount().toLocaleString('id-ID')}</span>
+                          </div>
+                        )}
+                        
+                        {requestJasaDesain && (
+                          <div className="flex justify-between">
+                            <span>Jasa Desain:</span>
+                            <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                          </div>
+                        )}
+                        
+                        {isExpressPrint && (
+                          <div className="flex justify-between">
+                            <span>Cetak Express:</span>
+                            <span className="whitespace-nowrap">Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</span>
+                          </div>
+                        )}
+                        
+                        <div className="border-t border-dashed border-gray-400 mt-2 pt-2">
+                          <div className="flex justify-between font-bold text-sm sm:text-lg">
+                            <span>TOTAL:</span>
+                            <span className="whitespace-nowrap">Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Footer */}
+                      <div className="text-center text-xs mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-dashed border-gray-400">
+                        <p>Terima kasih atas kepercayaan Anda!</p>
+                        <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
+                        
+                        <p className="mt-2 text-gray-600">
+                          Nota ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+               
+               <div className="text-center mt-4">
+                 <div className="flex items-center justify-center text-sm text-gray-500">
+                   <Printer className="h-4 w-4 mr-2" />
+                   <span>Nota akan tertutup otomatis setelah selesai dicetak</span>
+                 </div>
+               </div>
+             </div>
           </DialogContent>
         </Dialog>
 
@@ -2655,68 +2952,61 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           />
         ))}
 
-        {/* Footer Section - MODERN FOOTER */}
-        <footer className="bg-gray-900 text-white px-4 py-8 mt-6 -mx-4">
-          <div className="max-w-6xl mx-auto">
-            {/* Main Footer Content - 2 Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-              {/* Left Column - Title and Slogan */}
-            <div>
-                <h3 className="text-2xl font-bold text-[#FF5E01] mb-3">TIDURLAH GRAFIKA</h3>
-                <p className="text-gray-300 text-sm italic">
+        {/* Professional Footer - Always at bottom */}
+        <footer className="bg-gradient-to-r from-gray-900 to-gray-800 text-white -mx-4 mt-auto">
+          <div className="px-4 py-6">
+            {/* Main Footer Content */}
+            <div className="space-y-4">
+              {/* Company Info */}
+              <div className="text-center">
+                <h3 className="text-lg font-bold text-[#FF5E01] mb-1">TIDURLAH GRAFIKA</h3>
+                <p className="text-gray-300 text-xs italic mb-2">
                   "Cetak apa aja, Tidurlah Grafika!"
-              </p>
-            </div>
-            
-              {/* Right Column - Address */}
-            <div>
-                <h4 className="font-semibold text-white mb-2 flex items-center">
-                  <svg className="w-4 h-4 mr-2 text-[#FF5E01]" fill="currentColor" viewBox="0 0 20 20">
-                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-                  </svg>
-                  Alamat
-                </h4>
-                <p className="text-gray-300 text-sm ml-6">
-                  Perum. Korpri Raya, Blok D3. No. 3<br />
-                  Sukarame, Bandar Lampung
                 </p>
+                <div className="text-xs text-gray-400 space-y-1">
+                  <p className="flex items-center justify-center gap-1">
+                    <span className="material-symbols-outlined text-sm">location_on</span>
+                    Perum. Korpri Raya, Blok D3. No. 3
+                  </p>
+                  <p>Sukarame, Bandar Lampung</p>
+                </div>
               </div>
-            </div>
-            
-            {/* Bottom Row - 2 Columns */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 border-t border-gray-700 pt-6">
-              {/* Left Column - Social Links */}
-            <div>
+              
+              {/* Divider */}
+              <div className="border-t border-gray-700"></div>
+              
+              {/* Social Links & Contact */}
+              <div className="flex flex-col items-center space-y-3">
                 <div className="flex items-center space-x-6">
                   {/* Blog */}
                   <button
                     onClick={() => navigate('/blog')}
-                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    className="text-gray-400 hover:text-[#FF5E01] transition-colors duration-200"
                     title="Blog & Tips"
                   >
-                    <span className="material-symbols-outlined text-white text-2xl leading-none">language</span>
+                    <span className="material-symbols-outlined text-2xl">language</span>
                   </button>
 
                   {/* WhatsApp */}
                   <a 
-                    href="https://wa.me/6283143790990"
+                    href="https://wa.me/6285172157808"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    className="text-gray-400 hover:text-green-500 transition-colors duration-200"
                     title="WhatsApp"
                   >
-                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 32 32">
-                      <path fillRule="evenodd" d="M 24.503906 7.503906 C 22.246094 5.246094 19.246094 4 16.050781 4 C 9.464844 4 4.101563 9.359375 4.101563 15.945313 C 4.097656 18.050781 4.648438 20.105469 5.695313 21.917969 L 4 28.109375 L 10.335938 26.445313 C 12.078125 27.398438 14.046875 27.898438 16.046875 27.902344 L 16.050781 27.902344 C 22.636719 27.902344 27.996094 22.542969 28 15.953125 C 28 12.761719 26.757813 9.761719 24.503906 7.503906 Z M 16.050781 25.882813 L 16.046875 25.882813 C 14.265625 25.882813 12.515625 25.402344 10.992188 24.5 L 10.628906 24.285156 L 6.867188 25.269531 L 7.871094 21.605469 L 7.636719 21.230469 C 6.640625 19.648438 6.117188 17.820313 6.117188 15.945313 C 6.117188 10.472656 10.574219 6.019531 16.054688 6.019531 C 18.707031 6.019531 21.199219 7.054688 23.074219 8.929688 C 24.949219 10.808594 25.980469 13.300781 25.980469 15.953125 C 25.980469 21.429688 21.523438 25.882813 16.050781 25.882813 Z M 21.496094 18.445313 C 21.199219 18.296875 19.730469 17.574219 19.457031 17.476563 C 19.183594 17.375 18.984375 17.328125 18.785156 17.625 C 18.585938 17.925781 18.015625 18.597656 17.839844 18.796875 C 17.667969 18.992188 17.492188 19.019531 17.195313 18.871094 C 16.894531 18.722656 15.933594 18.40625 14.792969 17.386719 C 13.90625 16.597656 13.304688 15.617188 13.132813 15.320313 C 12.957031 15.019531 13.113281 14.859375 13.261719 14.710938 C 13.398438 14.578125 13.5625 14.363281 13.710938 14.1875 C 13.859375 14.015625 13.910156 13.890625 14.011719 13.691406 C 14.109375 13.492188 14.058594 13.316406 13.984375 13.167969 C 13.910156 13.019531 13.3125 11.546875 13.0625 10.949219 C 12.820313 10.367188 12.574219 10.449219 12.390625 10.4375 C 12.21875 10.429688 12.019531 10.429688 11.820313 10.429688 C 11.621094 10.429688 11.296875 10.503906 11.023438 10.804688 C 10.75 11.101563 9.980469 11.824219 9.980469 13.292969 C 9.980469 14.761719 11.050781 16.183594 11.199219 16.382813 C 11.347656 16.578125 13.304688 19.59375 16.300781 20.886719 C 17.011719 21.195313 17.566406 21.378906 18 21.515625 C 18.714844 21.742188 19.367188 21.710938 19.882813 21.636719 C 20.457031 21.550781 21.648438 20.914063 21.898438 20.214844 C 22.144531 19.519531 22.144531 18.921875 22.070313 18.796875 C 21.996094 18.671875 21.796875 18.597656 21.496094 18.445313 Z"></path>
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893A11.821 11.821 0 0020.885 3.515z"/>
                     </svg>
                   </a>
 
                   {/* Email */}
                   <a 
                     href="mailto:halo.idcardlampung@gmail.com"
-                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    className="text-gray-400 hover:text-blue-500 transition-colors duration-200"
                     title="Email"
                   >
-                    <span className="material-symbols-outlined text-white text-2xl leading-none">mail</span>
+                    <span className="material-symbols-outlined text-2xl">mail</span>
                   </a>
 
                   {/* Instagram */}
@@ -2724,21 +3014,21 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     href="https://instagram.com/tidurlah_grafika"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="hover:opacity-70 transition-opacity duration-200 flex items-center justify-center w-6 h-6"
+                    className="text-gray-400 hover:text-pink-500 transition-colors duration-200"
                     title="Instagram"
                   >
-                    <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.40s-.644-1.44-1.439-1.44z"/>
+                    <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.40s-.644-1.44-1.439-1.40z"/>
                     </svg>
                   </a>
-            </div>
-          </div>
-          
-              {/* Right Column - Copyright */}
-              <div className="flex justify-end items-center">
-                <p className="text-sm text-gray-400 text-right leading-relaxed">
-                  © 2022-{new Date().getFullYear()}.<br />
-                  All rights reserved.
+                </div>
+            
+              </div>
+              
+              {/* Copyright */}
+              <div className="text-center pt-2 border-t border-gray-700">
+                <p className="text-xs text-gray-500">
+                  © 2022-{new Date().getFullYear()} TIDURLAH GRAFIKA. All rights reserved.
                 </p>
               </div>
             </div>
