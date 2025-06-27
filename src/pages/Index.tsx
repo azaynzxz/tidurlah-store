@@ -1627,7 +1627,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
         
         const canvas = await html2canvas(receiptRef.current, {
           backgroundColor: '#ffffff',
-          scale: 2,
+          scale: 3,
           useCORS: true,
           allowTaint: true,
           logging: false,
@@ -1635,6 +1635,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           height: receiptRef.current.scrollHeight,
           removeContainer: true,
           foreignObjectRendering: false,
+          pixelRatio: window.devicePixelRatio || 1,
           // Force text rendering
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector('.receipt-content') as HTMLElement;
@@ -1647,10 +1648,10 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           }
         });
         
-        // Convert to JPG and download
-        const imgData = canvas.toDataURL('image/jpeg', 0.9);
+        // Convert to PNG for perfect color fidelity (or JPG for smaller file size)
+        const imgData = canvas.toDataURL('image/png');
         const link = document.createElement('a');
-        link.download = `nota-${invoiceNumber}.jpg`;
+        link.download = `estimasi-biaya-${invoiceNumber}.png`;
         link.href = imgData;
         link.click();
         
@@ -2853,7 +2854,8 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                         </div>
                         <h2 className="text-base sm:text-lg font-bold tracking-wider">TIDURLAH GRAFIKA</h2>
                         <p className="text-xs italic">"Cetak apa aja, Tidurlah Grafika!"</p>
-                                                  <p className="text-xs mt-1">Perum. Korpri Raya, Blok D3. No. 3</p>
+                        
+                        <p className="text-xs mt-1">Perum. Korpri Raya, Blok D3. No. 3</p>
                           <p className="text-xs">Sukarame, Bandar Lampung</p>
                           <div className="border-b border-dashed border-gray-400 my-2"></div>
                           <p className="text-xs">WhatsApp: 085172157808</p>
@@ -2863,7 +2865,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                       {/* Transaction Details */}
                       <div className="border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
                         <div className="flex justify-between text-xs sm:text-sm">
-                          <span>No. Invoice:</span>
+                          <span>No. Estimasi:</span>
                           <span className="font-bold">{invoiceNumber}</span>
                         </div>
                         <div className="flex justify-between text-xs sm:text-sm">
@@ -3015,8 +3017,37 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
 
                       {/* Footer */}
                       <div className="text-center text-xs mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-dashed border-gray-400">
+                        {/* Payment Status Warning */}
+                        <div className="bg-yellow-100 border border-yellow-400 rounded" style={{ 
+                          padding: '8px', 
+                          margin: '0 0 12px 0',
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          minHeight: '60px'
+                        }}>
+                          <p className="text-xs font-bold text-yellow-800 flex items-center justify-center gap-1" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>
+                            <span className="material-icons text-yellow-800" style={{fontSize: '14px'}}>description</span>
+                            NOTA PERKIRAAN
+                          </p>
+                          <p className="text-xxs text-yellow-700" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>Silakan bayar melalui WhatsApp<br/>untuk konfirmasi pesanan</p>
+                          <p className="text-xxs text-yellow-700 flex items-center justify-center gap-1" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>
+                            <span className="material-icons text-yellow-700" style={{fontSize: '12px'}}>pending</span>
+                            Status: MENUNGGU PEMBAYARAN
+                          </p>
+                        </div>
+                        
                         <p>Terima kasih atas kepercayaan Anda!</p>
                         <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
+                        
+                        {/* Watermark disclaimer */}
+                        <div className="mt-2 pt-2 border-t border-dashed border-gray-400">
+                          <p className="text-xxs text-gray-500 italic">
+                            Nota ini dibuat untuk kemudahan estimasi biaya.<br/>
+                            Tidak dapat digunakan sebagai bukti pembayaran.
+                          </p>
+                        </div>
                         
                         <p className="mt-2 text-gray-600">
                           Nota ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
@@ -3033,7 +3064,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                    <span>Nota akan tertutup otomatis setelah selesai dicetak</span>
                  </div>
                </div>
-             </div>
+            </div>
           </DialogContent>
         </Dialog>
 
@@ -3071,16 +3102,16 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                 <h3 className="text-lg font-bold text-[#FF5E01] mb-1">TIDURLAH GRAFIKA</h3>
                 <p className="text-gray-300 text-xs italic mb-2">
                   "Cetak apa aja, Tidurlah Grafika!"
-                </p>
+              </p>
                 <div className="text-xs text-gray-400 space-y-1">
                   <p className="flex items-center justify-center gap-1">
                     <span className="material-symbols-outlined text-sm">location_on</span>
                     Perum. Korpri Raya, Blok D3. No. 3
                   </p>
                   <p>Sukarame, Bandar Lampung</p>
-                </div>
               </div>
-              
+            </div>
+            
               {/* Divider */}
               <div className="border-t border-gray-700"></div>
               
@@ -3130,10 +3161,10 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                       <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.40s-.644-1.44-1.439-1.40z"/>
                     </svg>
                   </a>
-                </div>
+            </div>
             
-              </div>
-              
+          </div>
+          
               {/* Copyright */}
               <div className="text-center pt-2 border-t border-gray-700">
                 <p className="text-xs text-gray-500">
