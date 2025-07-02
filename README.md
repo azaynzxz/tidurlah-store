@@ -185,7 +185,7 @@ This project is proprietary software for **Tidurlah Grafika**. All rights reserv
 ## 📞 Support
 
 For support and inquiries:
-- **Website**: [tidurlah-store.netlify.app](https://tidurlah-store.netlify.app)
+- **Website**: [tidurlah.com](https://tidurlah.com)
 - **WhatsApp**: Available through the website
 - **Email**: Contact through the website form
 
