@@ -799,6 +799,7 @@ const Index = () => {
   const [isExpressPrint, setIsExpressPrint] = useState(false);
   const [showExpressTooltip, setShowExpressTooltip] = useState(false);
   const [showShippingTooltip, setShowShippingTooltip] = useState(false);
+  const [showJasaDesainTooltip, setShowJasaDesainTooltip] = useState(false);
 
   // Add this state for loading
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -821,6 +822,10 @@ const Index = () => {
   // Add state for angry case animation
   const [showAngryCase, setShowAngryCase] = useState(false);
   const [showAngryLamination, setShowAngryLamination] = useState(false);
+  
+  // Add state for product quantity in modal
+  const [modalQuantity, setModalQuantity] = useState(1);
+  const [showAngryQuantity, setShowAngryQuantity] = useState(false);
 
   // Add state for flying animation
   const [flyingBubbles, setFlyingBubbles] = useState<Array<{id: string, startX: number, startY: number, endX: number, endY: number}>>([]);
@@ -1049,7 +1054,30 @@ const Index = () => {
   };
 
   // Add to cart function
-  const addToCart = (product: any, sourceElement?: HTMLElement) => {
+  const addToCart = (product: any, sourceElement?: HTMLElement, quantity: number = 1) => {
+    // Validate quantity first
+    if (quantity <= 0) {
+      setShowAngryQuantity(true);
+      toast.error("🚨 Jumlah produk harus lebih dari 0!", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #ff6b35',
+          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+        },
+        duration: 3000
+      });
+      
+      // Reset angry animation after 3 seconds
+      setTimeout(() => {
+        setShowAngryQuantity(false);
+      }, 3000);
+      return;
+    }
+    
     if (product.models && !selectedModel) {
       toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
       return;
@@ -1128,7 +1156,7 @@ const Index = () => {
     );
     
     if (existingItem) {
-      const newQuantity = existingItem.quantity + 1;
+      const newQuantity = existingItem.quantity + quantity;
       const newPrice = getApplicablePrice(product, newQuantity);
       
       setCartItems(
@@ -1143,7 +1171,7 @@ const Index = () => {
             : item
         )
       );
-      toast.success(`${product.name} ditambahkan (${newQuantity}×)`, { 
+      toast.success(`${product.name} ditambahkan +${quantity} (Total: ${newQuantity}×)`, { 
         position: 'top-center', 
         duration: 2000, 
         style: { 
@@ -1160,15 +1188,15 @@ const Index = () => {
     } else {
       const newItem = { 
         ...product, 
-        quantity: 1, 
-        appliedPrice: getApplicablePrice(product, 1),
-        savings: calculateSavings(product, 1),
+        quantity: quantity, 
+        appliedPrice: getApplicablePrice(product, quantity),
+        savings: calculateSavings(product, quantity),
         modelCode: product.models ? selectedModel : undefined,
         caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
         laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
       };
       setCartItems([...cartItems, newItem]);
-      toast.success(`${product.name} ditambahkan ke keranjang`, { 
+      toast.success(`${product.name} ditambahkan ${quantity}× ke keranjang`, { 
         position: 'top-center', 
         duration: 2000, 
         style: { 
@@ -1259,6 +1287,8 @@ const Index = () => {
   const openProductDetails = (product: any) => {
     setSelectedProduct(product);
     setCurrentImageIndex(0);
+    setModalQuantity(0); // Reset quantity to 0 to demonstrate highlight
+    setShowAngryQuantity(false); // Reset angry quantity state
     if (idCardWithCaseIds.includes(product.id)) {
       setSelectedCase("");
     }
@@ -1635,7 +1665,6 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
           height: receiptRef.current.scrollHeight,
           removeContainer: true,
           foreignObjectRendering: false,
-          pixelRatio: window.devicePixelRatio || 1,
           // Force text rendering
           onclone: (clonedDoc) => {
             const clonedElement = clonedDoc.querySelector('.receipt-content') as HTMLElement;
@@ -1897,11 +1926,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                addToCart(product, e.currentTarget);
+                                openProductDetails(product);
                               }}
                               className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 px-2 text-xs flex items-center justify-center"
                             >
-                              <ShoppingBag className="h-3 w-3 mr-1" /> Masukkan Keranjang
+                              <ShoppingBag className="h-3 w-3 mr-1" /> Pilih Jumlah
                             </button>
                           )}
                         </div>
@@ -2027,7 +2056,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     </div>
                     {showShippingTooltip && (
                       <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                        Jika tidak dicentang, ambil di tempat
+                        Jika tidak dicentang, ambil di tempat, jasa kirim JNT, JNE, Maxim/Gojek, ongkir ditanggung customer
                       </div>
                     )}
                   </div>
@@ -2041,9 +2070,25 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     onChange={() => setRequestJasaDesain(!requestJasaDesain)}
                     className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
                   />
-                  <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed">
-                    Request Jasa Desain? (+Rp 25.000)
-                  </label>
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Request Jasa Desain? (+Rp 25.000)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showJasaDesainTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Desain kami yang buatkan, gratis revisi 2x, dengan desain terbaik. bisa request sesuai contoh
+                      </div>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex items-start">
@@ -2696,19 +2741,109 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     </div>
                   )}
 
-                    {/* Add some bottom padding to ensure content doesn't get hidden behind the fixed button */}
+                    {/* Add some bottom padding to ensure content doesn't get hidden behind the fixed footer */}
                     <div className="h-4"></div>
                   </div>
                 </div>
 
-                {/* Fixed Footer with Action Button */}
-                <div className="p-4 border-t bg-white">
+                {/* Fixed Footer with Quantity Selector and Action Button */}
+                <div className="border-t bg-white">
+                  {/* Quantity Selector */}
+                  <div className="p-4 pb-2">
+                    <div className={`bg-gray-50 p-3 rounded-lg transition-all duration-300 ${
+                      showAngryQuantity ? "angry-wiggle" : ""
+                    }`}>
+                      <div className="flex items-center justify-between">
+                        <span className={`font-medium text-sm transition-colors ${
+                          showAngryQuantity ? "text-orange-600 font-bold" : ""
+                        }`}>Jumlah:</span>
+                        <div className={`flex items-center gap-3 transition-all duration-300 ${
+                          showAngryQuantity ? "angry-highlight angry-pulse" : ""
+                        }`}>
+                          <button
+                            onClick={() => {
+                              if (modalQuantity > 0) {
+                                setModalQuantity(modalQuantity - 1);
+                                if (showAngryQuantity) {
+                                  setShowAngryQuantity(false);
+                                }
+                              }
+                            }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-medium transition-all ${
+                              modalQuantity <= 0 
+                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                : showAngryQuantity
+                                ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                : 'bg-gray-300 text-gray-700 hover:bg-gray-400'
+                            }`}
+                            disabled={modalQuantity <= 0}
+                          >
+                            -
+                          </button>
+                          <span className={`min-w-[3rem] text-center font-medium transition-all duration-300 ${
+                            showAngryQuantity ? "text-orange-600 font-bold text-lg" : ""
+                          } ${modalQuantity === 0 ? "text-red-500" : ""}`}>
+                            {modalQuantity}
+                          </span>
+                          <button
+                            onClick={() => {
+                              setModalQuantity(modalQuantity + 1);
+                              if (showAngryQuantity) {
+                                setShowAngryQuantity(false);
+                                toast.success(`✅ Jumlah dipilih!`, {
+                                  position: 'top-center',
+                                  style: { 
+                                    marginTop: '60px',
+                                    fontSize: '12px',
+                                    padding: '6px 10px',
+                                    minHeight: '36px',
+                                    maxWidth: '260px'
+                                  },
+                                  duration: 2000
+                                });
+                              }
+                            }}
+                            className={`w-8 h-8 rounded-full flex items-center justify-center font-medium transition-all ${
+                              showAngryQuantity
+                                ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                : 'bg-[#FF5E01] text-white hover:bg-[#e54d00]'
+                            }`}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      
+                      {/* Show total price based on quantity */}
+                      {selectedProduct && !selectedProduct.pricingMethod && (
+                        <div className="mt-2 pt-2 border-t border-gray-200">
+                          <div className="flex justify-between items-center">
+                            <span className="text-sm text-gray-600">Total Harga:</span>
+                            <span className="font-medium text-[#FF5E01]">
+                              Rp {(getApplicablePrice(selectedProduct, modalQuantity) * modalQuantity).toLocaleString('id-ID')}
+                            </span>
+                          </div>
+                          {modalQuantity > 1 && calculateSavings(selectedProduct, modalQuantity) > 0 && (
+                            <div className="flex justify-between items-center text-sm">
+                              <span className="text-green-600">Hemat:</span>
+                              <span className="text-green-600 font-medium">
+                                Rp {calculateSavings(selectedProduct, modalQuantity).toLocaleString('id-ID')}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  
+                  {/* Action Button */}
+                  <div className="px-4 pb-4">
                     {selectedProduct.pricingMethod === "dimensional" ? (
                       <button
                         onClick={() => addBannerToCart(selectedProduct, bannerWidth, bannerHeight)}
                       className="w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md"
                       >
-                        Masukkan Keranjang
+                        Tambahkan ke Keranjang
                       </button>
                     ) : selectedProduct.models ? (
                       <button
@@ -2716,16 +2851,16 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           // Check if adding to cart was successful before closing modal
                           const wasSuccessful = !selectedProduct.models || selectedModel;
                           if (wasSuccessful) {
-                            addToCart(selectedProduct);
+                            addToCart(selectedProduct, undefined, modalQuantity);
                             if (!idCardWithCaseIds.includes(selectedProduct.id) || selectedCase) {
                               setSelectedProduct(null);
                             }
                           }
                         }}
-                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${!selectedModel ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={!selectedModel}
+                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${!selectedModel || modalQuantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={!selectedModel || modalQuantity <= 0}
                       >
-                        Masukkan Keranjang
+                        Tambahkan ke Keranjang ({modalQuantity}×)
                       </button>
                     ) : (
                       <button
@@ -2738,20 +2873,22 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           const needsLamination = stikerWithLaminationIds.includes(selectedProduct.id);
                           const hasLamination = !needsLamination || selectedLamination;
                           
-                          addToCart(selectedProduct);
+                          addToCart(selectedProduct, undefined, modalQuantity);
                           
-                          // Only close modal if all validations passed
-                          if (hasCase && hasLamination) {
+                          // Only close modal if all validations passed and quantity is valid
+                          if (hasCase && hasLamination && modalQuantity > 0) {
                             setSelectedProduct(null);
                           }
                         }}
-                      className="w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md"
+                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${modalQuantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        disabled={modalQuantity <= 0}
                       >
-                        Masukkan Keranjang
+                        Tambahkan ke Keranjang ({modalQuantity}×)
                       </button>
                     )}
                   </div>
                 </div>
+              </div>
             )}
           </DialogContent>
         </Dialog>

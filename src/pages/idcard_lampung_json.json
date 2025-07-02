@@ -1,0 +1,53 @@
+{
+  "header": {
+    "image": "Header Image",
+    "logo": "Logo"
+  },
+  "content": {
+    "title": "Mengapa harus ID Card Lampung?",
+    "h1": "Karena kami menawarkan bahan terbaik, desain kreatif, dan layanan cepat. Hubungi kami sekarang untuk mewujudkan desain impian Anda dengan hasil memuaskan!",
+    "cta": "Hubungi Admin Sekarang!"
+  },
+  "buttons": {
+    "contact": {
+      "whatsapp": {
+        "text": "wa",
+        "value": "62872157808"
+      },
+      "pricelist": {
+        "text": "pricelists",
+        "url": "https://tidurlah.com"
+      }
+    },
+    "social_media": {
+      "title": "follow sosial media kami:",
+      "platforms": [
+        {
+          "platform": "Instagram",
+          "text": "@idcard_lampung & tidurlah_grafika"
+        },
+        {
+          "platform": "Facebook",
+          "text": "ID Card Lampung"
+        },
+        {
+          "platform": "tiktok",
+          "text": "@idcard_lampung"
+        },
+        {
+          "platform": "Google Maps",
+          "url": "https://maps.app.goo.gl/VUTUHS7BXC48fr2s7"
+        }
+      ]
+    },
+    "privacy_policy": {
+      "text": "kebijakan privasi"
+    }
+  },
+  "footer": {
+    "disclaimer": {
+      "type": "small_text",
+      "content": "Kami melindungi data pribadi Anda. Informasi Anda digunakan hanya untuk tujuan yang dijelaskan dan tidak dibagikan tanpa persetujuan Anda, kecuali diwajibkan oleh hukum. Dengan menggunakan layanan kami, Anda setuju dengan kebijakan ini."
+    }
+  }
+}
