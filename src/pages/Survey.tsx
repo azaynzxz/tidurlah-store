@@ -433,7 +433,7 @@ export default function Survey() {
           <Input
             type="text"
             value={answers[currentQuestion.id] || ''}
-            onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+            onChange={(e) => handleAnswerSilent(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.id === 1 ? "Contoh: Budi, PT. Tidurlah" : "Ketik jawaban Anda di sini"}
             className="w-full transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
@@ -511,7 +511,7 @@ export default function Survey() {
         return (
           <Textarea
             value={answers[currentQuestion.id] || ''}
-            onChange={(e) => handleAnswer(currentQuestion.id, e.target.value)}
+            onChange={(e) => handleAnswerSilent(currentQuestion.id, e.target.value)}
             placeholder="Ketik jawaban Anda di sini"
             className="w-full h-24 sm:h-32 transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
           />
