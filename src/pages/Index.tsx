@@ -82,24 +82,101 @@ const promotedProducts: PromotedProductType[] = [
 const products = {
   "ID Card & Lanyard": [
     {
-      id: 1,
-      name: "ID Card 1S",
-      image: "/product-image/ID Card 1S.jpg",
-      additionalImages: [
-        "/product-image/Case-ID Card.jpg"
-      ],
-      description: "ID card satu sisi dengan bahan premium berkualitas.",
-      price: 9000,
+      id: 8,
+      name: "Paket IDC LYD 2S",
+      image: "/product-image/paket-idc-2s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card dua sisi dan lanyard yang sesuai.",
+      price: 25000,
       discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 9000 },
-        { minQuantity: 4, price: 8000 },
-        { minQuantity: 25, price: 7000 },
-        { minQuantity: 100, price: 6000 }
+        { minQuantity: 1, price: 25000 },
+        { minQuantity: 4, price: 23000 },
+        { minQuantity: 25, price: 20000 },
+        { minQuantity: 100, price: 17000 }
       ],
-      time: "1-2 hari",
-      rating: 4.7
+      time: "2-3 hari",
+      rating: 4.9,
+      bestseller: true
+    },
+    {
+      id: 9,
+      name: "Paket IDC LYD Kulit",
+      image: "/product-image/paket-idc-case-kulit.jpg",
+      additionalImages: [
+        "/product-image/case-kulit.jpg"
+      ],
+      description: "Paket premium dengan ID card, case kulit, dan lanyard yang sesuai.",
+      price: 30000,
+      discountPrice: 28000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 27000 },
+        { minQuantity: 25, price: 26500 },
+        { minQuantity: 100, price: 25000 }
+      ],
+      time: "3-4 hari",
+      rating: 5.0
+    },
+    {
+      id: 10,
+      name: "Paket IDC LYD Premium",
+      image: "/product-image/paket-idc-lyd-premium.jpg",
+      additionalImages: [
+        "/product-image/case-premium.jpg"
+      ],
+      description: "Paket deluxe dengan ID card dua sisi, case premium, dan lanyard custom.",
+      price: 30000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 30000 },
+        { minQuantity: 4, price: 28000 },
+        { minQuantity: 25, price: 26000 },
+        { minQuantity: 100, price: 24000 }
+      ],
+      time: "3-5 hari",
+      rating: 4.9
+    },
+    {
+      id: 7,
+      name: "Paket IDC LYD 1S",
+      image: "/product-image/paket-idc-1s.jpg",
+      additionalImages: [],
+      description: "Paket lengkap dengan ID card satu sisi dan lanyard yang sesuai.",
+      price: 20000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 20000 },
+        { minQuantity: 4, price: 18000 },
+        { minQuantity: 25, price: 16000 },
+        { minQuantity: 100, price: 14000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
+    },
+    {
+      id: 3,
+      name: "IDC Tali & Case Kulit",
+      image: "/product-image/case-tali-kulit.jpg",
+      additionalImages: [
+        "/product-image/case-kulit.jpg"
+      ],
+      description: "ID card premium dengan case kulit dan tali lanyard.",
+      price: 30000,
+      discountPrice: 28000,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 27000 },
+        { minQuantity: 25, price: 26500 },
+        { minQuantity: 100, price: 25000 }
+      ],
+      time: "3-5 hari",
+      rating: 4.9
     },
     {
       id: 2,
@@ -122,61 +199,24 @@ const products = {
       rating: 4.8
     },
     {
-      id: 7,
-      name: "Paket IDC LYD 1S",
-      image: "/product-image/paket-idc-1s.jpg",
-      additionalImages: [],
-      description: "Paket lengkap dengan ID card satu sisi dan lanyard yang sesuai.",
-      price: 20000,
-      discountPrice: null,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 20000 },
-        { minQuantity: 4, price: 18000 },
-        { minQuantity: 25, price: 16000 },
-        { minQuantity: 100, price: 14000 }
-      ],
-      time: "2-3 hari",
-      rating: 4.8
-    },
-    {
-      id: 8,
-      name: "Paket IDC LYD 2S",
-      image: "/product-image/paket-idc-2s.jpg",
-      additionalImages: [],
-      description: "Paket lengkap dengan ID card dua sisi dan lanyard yang sesuai.",
-      price: 25000,
-      discountPrice: null,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 25000 },
-        { minQuantity: 4, price: 23000 },
-        { minQuantity: 25, price: 20000 },
-        { minQuantity: 100, price: 17000 }
-      ],
-      time: "2-3 hari",
-      rating: 4.9,
-      bestseller: true
-    },
-    {
-      id: 3,
-      name: "IDC Tali & Case Kulit",
-      image: "/product-image/case-tali-kulit.jpg",
+      id: 1,
+      name: "ID Card 1S",
+      image: "/product-image/ID Card 1S.jpg",
       additionalImages: [
-        "/product-image/case-kulit.jpg"
+        "/product-image/Case-ID Card.jpg"
       ],
-      description: "ID card premium dengan case kulit dan tali lanyard.",
-      price: 30000,
-      discountPrice: 28000,
+      description: "ID card satu sisi dengan bahan premium berkualitas.",
+      price: 9000,
+      discountPrice: null,
       category: "ID Card & Lanyard",
       priceThresholds: [
-        { minQuantity: 1, price: 28000 },
-        { minQuantity: 4, price: 27000 },
-        { minQuantity: 25, price: 26500 },
-        { minQuantity: 100, price: 25000 }
+        { minQuantity: 1, price: 9000 },
+        { minQuantity: 4, price: 8000 },
+        { minQuantity: 25, price: 7000 },
+        { minQuantity: 100, price: 6000 }
       ],
-      time: "3-5 hari",
-      rating: 4.9
+      time: "1-2 hari",
+      rating: 4.7
     },
     {
       id: 4,
@@ -237,46 +277,6 @@ const products = {
       ],
       time: "1-2 hari",
       rating: 4.5
-    },
-    {
-      id: 9,
-      name: "Paket IDC LYD Kulit",
-      image: "/product-image/paket-idc-case-kulit.jpg",
-      additionalImages: [
-        "/product-image/case-kulit.jpg"
-      ],
-      description: "Paket premium dengan ID card, case kulit, dan lanyard yang sesuai.",
-      price: 30000,
-      discountPrice: 28000,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 28000 },
-        { minQuantity: 4, price: 27000 },
-        { minQuantity: 25, price: 26500 },
-        { minQuantity: 100, price: 25000 }
-      ],
-      time: "3-4 hari",
-      rating: 5.0
-    },
-    {
-      id: 10,
-      name: "Paket IDC LYD Premium",
-      image: "/product-image/paket-idc-lyd-premium.jpg",
-      additionalImages: [
-        "/product-image/case-premium.jpg"
-      ],
-      description: "Paket deluxe dengan ID card dua sisi, case premium, dan lanyard custom.",
-      price: 30000,
-      discountPrice: null,
-      category: "ID Card & Lanyard",
-      priceThresholds: [
-        { minQuantity: 1, price: 30000 },
-        { minQuantity: 4, price: 28000 },
-        { minQuantity: 25, price: 26000 },
-        { minQuantity: 100, price: 24000 }
-      ],
-      time: "3-5 hari",
-      rating: 4.9
     },
     {
       id: 24,
@@ -2430,7 +2430,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
             navigate('/', { replace: true });
           }
         }}>
-          <DialogContent className="sm:max-w-md lg:max-w-4xl xl:max-w-5xl max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
             {selectedProduct && (
               <div className="relative h-full flex flex-col" style={{ maxHeight: "90vh" }}>
                 {/* Fixed Header */}
@@ -2760,6 +2760,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                 <div className="border-t bg-white">
                   {/* Quantity Selector */}
                   <div className="p-4 pb-2">
+                    {/* Progress Text for Discount - Moved Above */}
+                    {selectedProduct && modalQuantity > 0 && modalQuantity < 4 && (
+                      <div className="mb-3 text-center">
+                        <span className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded-md">
+                          Tambah {4 - modalQuantity} lagi untuk diskon maksimal!
+                        </span>
+                      </div>
+                    )}
+                    
                     <div className={`bg-gray-50 p-3 rounded-lg transition-all duration-300 ${
                       showAngryQuantity ? "angry-wiggle" : ""
                     }`}>
@@ -2790,11 +2799,43 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                           >
                             -
                           </button>
-                          <span className={`min-w-[3rem] text-center font-medium transition-all duration-300 ${
-                            showAngryQuantity ? "text-orange-600 font-bold text-lg" : ""
-                          } ${modalQuantity === 0 ? "text-red-500" : ""}`}>
-                            {modalQuantity}
-                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            max="9999"
+                            value={modalQuantity === 0 ? '' : modalQuantity}
+                            placeholder="0"
+                            onFocus={(e) => {
+                              // Select all text when focused for easy replacement
+                              e.target.select();
+                            }}
+                            onChange={(e) => {
+                              let rawValue = e.target.value;
+                              
+                              // Handle empty input
+                              if (rawValue === '' || rawValue === null || rawValue === undefined) {
+                                setModalQuantity(0);
+                                return;
+                              }
+                              
+                              // Remove leading zeros but keep single zero
+                              rawValue = rawValue.replace(/^0+(?=\d)/, '');
+                              
+                              // Convert to number
+                              const value = parseInt(rawValue) || 0;
+                              
+                              if (value >= 0 && value <= 9999) {
+                                setModalQuantity(value);
+                                if (showAngryQuantity && value > 0) {
+                                  setShowAngryQuantity(false);
+                                }
+                              }
+                            }}
+                            className={`min-w-[3rem] w-16 text-center font-medium border rounded px-1 py-1 transition-all duration-300 ${
+                              showAngryQuantity ? "text-orange-600 font-bold border-orange-300 bg-orange-50" : "border-gray-300 bg-white"
+                            } ${modalQuantity === 0 ? "text-red-500 border-red-300" : ""}`}
+                            style={{ fontSize: '14px' }}
+                          />
                           <button
                             onClick={() => {
                               setModalQuantity(modalQuantity + 1);
