@@ -40,6 +40,14 @@ if (typeof document !== 'undefined') {
     link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=mail,language';
     document.head.appendChild(link);
   }
+  
+  // Add Pinterest domain verification meta tag if not already added
+  if (!document.querySelector('meta[name="p:domain_verify"]')) {
+    const pinterestMeta = document.createElement('meta');
+    pinterestMeta.name = 'p:domain_verify';
+    pinterestMeta.content = 'f7a470f109ea7ae611e1b5b33291e82c';
+    document.head.appendChild(pinterestMeta);
+  }
 }
 
 // Valid promo codes with their discount percentage
