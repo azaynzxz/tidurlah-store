@@ -1977,314 +1977,324 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
               <p className="text-sm text-gray-600">No. Invoice: {invoiceNumber}</p>
             </div>
             
-            <div className="space-y-3 mb-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                <input
-                  type="text"
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                  value={customerName}
-                  onChange={(e) => {
-                    setCustomerName(e.target.value);
-                    if (e.target.value.length < 3) {
-                      setNameError("Nama minimal 3 karakter");
-                    } else {
-                      setNameError("");
-                    }
-                  }}
-                  placeholder="Nama Panggilan"
-                  required
-                />
-                {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
-              </div>
+            {/* Desktop: Two Column Layout, Mobile: Single Column */}
+            <div className="grid grid-cols-1 xl:grid-cols-2 gap-6 xl:gap-8">
               
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instansi/Alias</label>
-                <input
-                  type="text"
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                  value={instansi}
-                  onChange={(e) => setInstansi(e.target.value)}
-                  placeholder="Nama Sekolah, Kampus/Perusahaan kamu"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
-                <input
-                  type="tel"
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                  value={phoneNumber}
-                  onChange={(e) => {
-                    setPhoneNumber(e.target.value);
-                    if (e.target.value.length < 10) {
-                      setPhoneError("Nomor telepon minimal 10 digit");
-                    } else {
-                      setPhoneError("");
-                    }
-                  }}
-                  placeholder="Nomor Telepon Kamu"
-                  required
-                />
-                {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
-              </div>
+              {/* Left Column: Customer Information */}
+              <div className="space-y-4">
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border border-gray-300 p-2"
+                      value={customerName}
+                      onChange={(e) => {
+                        setCustomerName(e.target.value);
+                        if (e.target.value.length < 3) {
+                          setNameError("Nama minimal 3 karakter");
+                        } else {
+                          setNameError("");
+                        }
+                      }}
+                      placeholder="Nama Panggilan"
+                      required
+                    />
+                    {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Instansi/Alias</label>
+                    <input
+                      type="text"
+                      className="w-full rounded-lg border border-gray-300 p-2"
+                      value={instansi}
+                      onChange={(e) => setInstansi(e.target.value)}
+                      placeholder="Nama Sekolah, Kampus/Perusahaan kamu"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                    <input
+                      type="tel"
+                      className="w-full rounded-lg border border-gray-300 p-2"
+                      value={phoneNumber}
+                      onChange={(e) => {
+                        setPhoneNumber(e.target.value);
+                        if (e.target.value.length < 10) {
+                          setPhoneError("Nomor telepon minimal 10 digit");
+                        } else {
+                          setPhoneError("");
+                        }
+                      }}
+                      placeholder="Nomor Telepon Kamu"
+                      required
+                    />
+                    {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
+                  </div>
 
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Note/Link Desain (Jika Ada) </label>
-                <textarea
-                  className="w-full rounded-lg border border-gray-300 p-2"
-                  value={designNote}
-                  onChange={(e) => setDesignNote(e.target.value)}
-                  placeholder="Masukkan note cetak dan atau link desain kamu (canva/Google Drive), pastikan akses sudah dibuka"
-                  rows={3}
-                />
-              </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Note/Link Desain (Jika Ada) </label>
+                    <textarea
+                      className="w-full rounded-lg border border-gray-300 p-2"
+                      value={designNote}
+                      onChange={(e) => setDesignNote(e.target.value)}
+                      placeholder="Masukkan note cetak dan atau link desain kamu (canva/Google Drive), pastikan akses sudah dibuka"
+                      rows={3}
+                    />
+                  </div>
 
-              <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
-                <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
-                
-                <div className="flex items-start">
-                  <input
-                    type="checkbox"
-                    id="shippingOption"
-                    checked={isShipping}
-                    onChange={() => setIsShipping(!isShipping)}
-                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center">
-                      <label htmlFor="shippingOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                        Perlu pengiriman?
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowShippingTooltip(!showShippingTooltip)}
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                      >
-                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                      </button>
-                    </div>
-                    {showShippingTooltip && (
-                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                        Jika tidak dicentang, ambil di tempat, jasa kirim JNT, JNE, Maxim/Gojek, ongkir ditanggung customer
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <input
-                    type="checkbox"
-                    id="jasaDesainOption"
-                    checked={requestJasaDesain}
-                    onChange={() => setRequestJasaDesain(!requestJasaDesain)}
-                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center">
-                      <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                        Request Jasa Desain? (+Rp 25.000)
-                      </label>
-                      <button
-                        type="button"
-                        onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                      >
-                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                      </button>
-                    </div>
-                    {showJasaDesainTooltip && (
-                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                        Desain kami yang buatkan, gratis revisi 2x, dengan desain terbaik. bisa request sesuai contoh
-                      </div>
-                    )}
-                  </div>
-                </div>
-                
-                <div className="flex items-start">
-                  <input
-                    type="checkbox"
-                    id="expressPrintOption"
-                    checked={isExpressPrint}
-                    onChange={() => setIsExpressPrint(!isExpressPrint)}
-                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center">
-                      <label htmlFor="expressPrintOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                        Cetak Express (+Rp 25.000)
-                      </label>
-                      <span className="bg-[#FF5E01] text-white text-xs px-2 py-1 rounded-full mr-1">HOT</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowExpressTooltip(!showExpressTooltip)}
-                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                      >
-                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                      </button>
-                    </div>
-                    {showExpressTooltip && (
-                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                        Cetak express artinya cetakan akan masuk urutan prioritas, dan akan di cetak lebih dulu estimasi:<br/><span className="line-through">2-3 hari</span> <span className="font-semibold">(1 hari)</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-              
-              {isShipping && (
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Pengiriman</label>
-                  <textarea
-                    className="w-full rounded-lg border border-gray-300 p-2"
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    placeholder="Masukkan alamat lengkap pengiriman"
-                    rows={3}
-                    required
-                  />
-                </div>
-              )}
-            </div>
-            
-            <div className="border-t border-b py-3 my-3">
-              <h3 className="font-medium mb-2 text-sm">Ringkasan Pesanan</h3>
-              {cartItems.map((item) => (
-                <div key={item.id} className="flex justify-between items-center text-sm mb-3">
-                  <div className="flex-1">
-                    <p className="font-medium">{item.name}</p>
-                    {item.modelCode && (
-                      <p className="text-xs text-gray-600">Kode: {item.modelCode}</p>
-                    )}
-                    {item.width && item.height && (
-                      <p className="text-xs text-gray-600">
-                        {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
-                      </p>
-                    )}
-                    {item.caseVariant && (
-                      <p className="text-xs text-gray-600">
-                        Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
-                      </p>
-                    )}
-                    {item.laminationVariant && (
-                      <p className="text-xs text-gray-600">
-                        Laminasi: {item.laminationVariant}
-                      </p>
-                    )}
-                    <div className="flex items-center gap-2 mt-1">
-                      <button
-                        onClick={() => removeFromCart(item.id)}
-                        className="p-1 rounded-full hover:bg-gray-100 border"
-                      >
-                        -
-                      </button>
+                  <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
+                    <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
+                    
+                    <div className="flex items-start">
                       <input
-                        type="number"
-                        min="1"
-                        value={item.quantity}
-                        onChange={(e) => {
-                          const newQuantity = parseInt(e.target.value) || 1;
-                          const product = Object.values(products).flat().find((p: any) => p.id === item.id);
-                          if (product) {
-                            const newPrice = getApplicablePrice(product, newQuantity);
-                            setCartItems(
-                              cartItems.map(cartItem =>
-                                cartItem.id === item.id 
-                                  ? { 
-                                      ...cartItem, 
-                                      quantity: newQuantity, 
-                                      appliedPrice: newPrice,
-                                      savings: calculateSavings(product, newQuantity)
-                                    } 
-                                  : cartItem
-                              )
-                            );
-                          }
-                        }}
-                        className="w-12 text-center border rounded p-1"
+                        type="checkbox"
+                        id="shippingOption"
+                        checked={isShipping}
+                        onChange={() => setIsShipping(!isShipping)}
+                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
                       />
-                      <button
-                        onClick={() => addToCart(item)}
-                        className="p-1 rounded-full hover:bg-gray-100 border"
-                      >
-                        +
-                      </button>
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <label htmlFor="shippingOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                            Perlu pengiriman?
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setShowShippingTooltip(!showShippingTooltip)}
+                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          >
+                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                          </button>
+                        </div>
+                        {showShippingTooltip && (
+                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                            Jika tidak dicentang, ambil di tempat, jasa kirim JNT, JNE, Maxim/Gojek, ongkir ditanggung customer
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <input
+                        type="checkbox"
+                        id="jasaDesainOption"
+                        checked={requestJasaDesain}
+                        onChange={() => setRequestJasaDesain(!requestJasaDesain)}
+                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                            Request Jasa Desain? (+Rp 25.000)
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
+                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          >
+                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                          </button>
+                        </div>
+                        {showJasaDesainTooltip && (
+                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                            Desain kami yang buatkan, gratis revisi 2x, dengan desain terbaik. bisa request sesuai contoh
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                    
+                    <div className="flex items-start">
+                      <input
+                        type="checkbox"
+                        id="expressPrintOption"
+                        checked={isExpressPrint}
+                        onChange={() => setIsExpressPrint(!isExpressPrint)}
+                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-center">
+                          <label htmlFor="expressPrintOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                            Cetak Express (+Rp 25.000)
+                          </label>
+                          <span className="bg-[#FF5E01] text-white text-xs px-2 py-1 rounded-full mr-1">HOT</span>
+                          <button
+                            type="button"
+                            onClick={() => setShowExpressTooltip(!showExpressTooltip)}
+                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                          >
+                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                          </button>
+                        </div>
+                        {showExpressTooltip && (
+                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                            Cetak express artinya cetakan akan masuk urutan prioritas, dan akan di cetak lebih dulu estimasi:<br/><span className="line-through">2-3 hari</span> <span className="font-semibold">(1 hari)</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                   </div>
-                  <p className="text-right">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</p>
-                </div>
-              ))}
-              
-              <div className="mt-2 pt-2 border-t">
-                <div className="flex justify-between items-center text-sm">
-                  <p>Subtotal</p>
-                  <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
-                </div>
-                
-                {promoDiscount > 0 && (
-                  <div className="flex justify-between items-center text-sm text-green-600">
-                    <p>Diskon Promo ({promoDiscount}%)</p>
-                    <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
-                  </div>
-                )}
-                
-                {requestJasaDesain && (
-                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
-                    <p>Jasa Desain</p>
-                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
-                  </div>
-                )}
-                
-                {isExpressPrint && (
-                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
-                    <p>Cetak Express</p>
-                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
-                  </div>
-                )}
-                
-                <div className="flex justify-between items-center font-medium mt-2">
-                  <p>Total</p>
-                  <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
-                </div>
-              </div>
-            </div>
-            
-            <div className="space-y-3">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Kode Promo (Opsional)</label>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    className="flex-1 rounded-lg border border-gray-300 p-2"
-                    value={promoCode}
-                    onChange={(e) => handlePromoCodeChange(e.target.value)}
-                    placeholder="Masukkan kode promo"
-                  />
-                  {promoCodeError && (
-                    <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
+                  
+                  {isShipping && (
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Pengiriman</label>
+                      <textarea
+                        className="w-full rounded-lg border border-gray-300 p-2"
+                        value={address}
+                        onChange={(e) => setAddress(e.target.value)}
+                        placeholder="Masukkan alamat lengkap pengiriman"
+                        rows={3}
+                        required
+                      />
+                    </div>
                   )}
                 </div>
               </div>
-              
-              <button
-                onClick={handleWhatsAppRedirect}
-                disabled={
-                  Boolean(isSubmitting) ||
-                  Boolean(nameError) ||
-                  Boolean(phoneError) ||
-                  customerName.length < 3 ||
-                  phoneNumber.length < 10
-                }
-                className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md text-base ${
-                  Boolean(isSubmitting) || Boolean(nameError) || Boolean(phoneError) || customerName.length < 3 || phoneNumber.length < 10 ? 'opacity-50 cursor-not-allowed' : ''
-                }`}
-              >
-                {isSubmitting ? 'Memproses...' : 'Lanjut ke WhatsApp'}
-              </button>
-              
-              <div className="flex items-center justify-center text-sm text-green-600 mt-2">
-                <Check className="h-4 w-4 mr-1" /> 
-                <p>Pesanan kamu akan kami alihkan ke admin resmi kami</p>
+
+              {/* Right Column: Order Summary */}
+              <div className="space-y-4">
+                <div className="border-t border-b xl:border xl:rounded-lg py-3 xl:p-4 my-3 xl:my-0 xl:bg-gray-50">
+                  <h3 className="font-medium mb-3 text-sm">Ringkasan Pesanan</h3>
+                  {cartItems.map((item) => (
+                    <div key={item.id} className="flex justify-between items-center text-sm mb-3">
+                      <div className="flex-1">
+                        <p className="font-medium">{item.name}</p>
+                        {item.modelCode && (
+                          <p className="text-xs text-gray-600">Kode: {item.modelCode}</p>
+                        )}
+                        {item.width && item.height && (
+                          <p className="text-xs text-gray-600">
+                            {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
+                          </p>
+                        )}
+                        {item.caseVariant && (
+                          <p className="text-xs text-gray-600">
+                            Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
+                          </p>
+                        )}
+                        {item.laminationVariant && (
+                          <p className="text-xs text-gray-600">
+                            Laminasi: {item.laminationVariant}
+                          </p>
+                        )}
+                        <div className="flex items-center gap-2 mt-1">
+                          <button
+                            onClick={() => removeFromCart(item.id)}
+                            className="p-1 rounded-full hover:bg-gray-100 border"
+                          >
+                            -
+                          </button>
+                          <input
+                            type="number"
+                            min="1"
+                            value={item.quantity}
+                            onChange={(e) => {
+                              const newQuantity = parseInt(e.target.value) || 1;
+                              const product = Object.values(products).flat().find((p: any) => p.id === item.id);
+                              if (product) {
+                                const newPrice = getApplicablePrice(product, newQuantity);
+                                setCartItems(
+                                  cartItems.map(cartItem =>
+                                    cartItem.id === item.id 
+                                      ? { 
+                                          ...cartItem, 
+                                          quantity: newQuantity, 
+                                          appliedPrice: newPrice,
+                                          savings: calculateSavings(product, newQuantity)
+                                        } 
+                                      : cartItem
+                                  )
+                                );
+                              }
+                            }}
+                            className="w-12 text-center border rounded p-1"
+                          />
+                          <button
+                            onClick={() => addToCart(item)}
+                            className="p-1 rounded-full hover:bg-gray-100 border"
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-right">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</p>
+                    </div>
+                  ))}
+                  
+                  <div className="mt-2 pt-2 border-t">
+                    <div className="flex justify-between items-center text-sm">
+                      <p>Subtotal</p>
+                      <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
+                    </div>
+                    
+                    {promoDiscount > 0 && (
+                      <div className="flex justify-between items-center text-sm text-green-600">
+                        <p>Diskon Promo ({promoDiscount}%)</p>
+                        <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
+                      </div>
+                    )}
+                    
+                    {requestJasaDesain && (
+                      <div className="flex justify-between items-center text-sm text-[#FF5E01]">
+                        <p>Jasa Desain</p>
+                        <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                      </div>
+                    )}
+                    
+                    {isExpressPrint && (
+                      <div className="flex justify-between items-center text-sm text-[#FF5E01]">
+                        <p>Cetak Express</p>
+                        <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                      </div>
+                    )}
+                    
+                    <div className="flex justify-between items-center font-medium mt-2">
+                      <p>Total</p>
+                      <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">Kode Promo (Opsional)</label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        className="flex-1 rounded-lg border border-gray-300 p-2"
+                        value={promoCode}
+                        onChange={(e) => handlePromoCodeChange(e.target.value)}
+                        placeholder="Masukkan kode promo"
+                      />
+                      {promoCodeError && (
+                        <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
+                      )}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={handleWhatsAppRedirect}
+                    disabled={
+                      Boolean(isSubmitting) ||
+                      Boolean(nameError) ||
+                      Boolean(phoneError) ||
+                      customerName.length < 3 ||
+                      phoneNumber.length < 10
+                    }
+                    className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md text-base ${
+                      Boolean(isSubmitting) || Boolean(nameError) || Boolean(phoneError) || customerName.length < 3 || phoneNumber.length < 10 ? 'opacity-50 cursor-not-allowed' : ''
+                    }`}
+                  >
+                    {isSubmitting ? 'Memproses...' : 'Lanjut ke WhatsApp'}
+                  </button>
+                  
+                  <div className="flex items-center justify-center text-sm text-green-600 mt-2">
+                    <Check className="h-4 w-4 mr-1" /> 
+                    <p>Pesanan kamu akan kami alihkan ke admin resmi kami</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
