@@ -1078,81 +1078,98 @@ const Index = () => {
       return;
     }
     
-    if (product.models && !selectedModel) {
-      toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
-      return;
-    }
-    if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
-      setShowAngryCase(true);
-      toast.error("🚨 Mohon pilih jenis casing terlebih dahulu!", { 
-        position: 'top-center', 
-        style: { 
-          marginTop: '60px',
-          backgroundColor: '#ff4500',
-          color: 'white',
-          fontWeight: 'bold',
-          border: '2px solid #ff6b35',
-          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-        },
-        duration: 4000
-      });
-      
-      // Scroll to case selection area to draw attention
-      setTimeout(() => {
-        const caseContainer = document.getElementById('case-selection-container');
-        if (caseContainer) {
-          caseContainer.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-        }
-      }, 100);
-      
-      // Reset angry animation after 3 seconds
-      setTimeout(() => {
-        setShowAngryCase(false);
-      }, 3000);
-      
-      return;
-    }
-    if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
-      setShowAngryLamination(true);
-      toast.error("🚨 Mohon pilih jenis laminasi terlebih dahulu!", { 
-        position: 'top-center', 
-        style: { 
-          marginTop: '60px',
-          backgroundColor: '#ff4500',
-          color: 'white',
-          fontWeight: 'bold',
-          border: '2px solid #ff6b35',
-          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-        },
-        duration: 4000
-      });
-      
-      // Scroll to lamination selection area to draw attention
-      setTimeout(() => {
-        const laminationContainer = document.getElementById('lamination-selection-container');
-        if (laminationContainer) {
-          laminationContainer.scrollIntoView({ 
-            behavior: 'smooth', 
-            block: 'center' 
-          });
-        }
-      }, 100);
-      
-      // Reset angry animation after 3 seconds
-      setTimeout(() => {
-        setShowAngryLamination(false);
-      }, 3000);
-      
-      return;
+    // Check if this product already exists in cart with a case variant
+    const existingCartItem = cartItems.find(item => 
+      item.id === product.id && 
+      (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
+      (!idCardWithCaseIds.includes(product.id) || item.caseVariant) &&
+      (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant)
+    );
+    
+    // Skip validation if we're adding to an existing cart item that already has required selections
+    const skipValidation = existingCartItem && (
+      (idCardWithCaseIds.includes(product.id) && existingCartItem.caseVariant) ||
+      (stikerWithLaminationIds.includes(product.id) && existingCartItem.laminationVariant) ||
+      (!idCardWithCaseIds.includes(product.id) && !stikerWithLaminationIds.includes(product.id))
+    );
+    
+    if (!skipValidation) {
+      if (product.models && !selectedModel) {
+        toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
+        return;
+      }
+      if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
+        setShowAngryCase(true);
+        toast.error("🚨 Mohon pilih jenis casing terlebih dahulu!", { 
+          position: 'top-center', 
+          style: { 
+            marginTop: '60px',
+            backgroundColor: '#ff4500',
+            color: 'white',
+            fontWeight: 'bold',
+            border: '2px solid #ff6b35',
+            boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+          },
+          duration: 4000
+        });
+        
+        // Scroll to case selection area to draw attention
+        setTimeout(() => {
+          const caseContainer = document.getElementById('case-selection-container');
+          if (caseContainer) {
+            caseContainer.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        }, 100);
+        
+        // Reset angry animation after 3 seconds
+        setTimeout(() => {
+          setShowAngryCase(false);
+        }, 3000);
+        
+        return;
+      }
+      if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
+        setShowAngryLamination(true);
+        toast.error("🚨 Mohon pilih jenis laminasi terlebih dahulu!", { 
+          position: 'top-center', 
+          style: { 
+            marginTop: '60px',
+            backgroundColor: '#ff4500',
+            color: 'white',
+            fontWeight: 'bold',
+            border: '2px solid #ff6b35',
+            boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+          },
+          duration: 4000
+        });
+        
+        // Scroll to lamination selection area to draw attention
+        setTimeout(() => {
+          const laminationContainer = document.getElementById('lamination-selection-container');
+          if (laminationContainer) {
+            laminationContainer.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        }, 100);
+        
+        // Reset angry animation after 3 seconds
+        setTimeout(() => {
+          setShowAngryLamination(false);
+        }, 3000);
+        
+        return;
+      }
     }
     const existingItem = cartItems.find(item => 
       item.id === product.id && 
-      (!product.models || item.modelCode === selectedModel) &&
-      (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
-      (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
+      (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
+      (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
+      (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
     );
     
     if (existingItem) {
@@ -1161,7 +1178,10 @@ const Index = () => {
       
       setCartItems(
         cartItems.map(item =>
-          item.id === product.id && (!product.models || item.modelCode === selectedModel)
+          item.id === product.id && 
+          (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
+          (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
+          (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
             ? { 
                 ...item, 
                 quantity: newQuantity, 
@@ -1191,9 +1211,9 @@ const Index = () => {
         quantity: quantity, 
         appliedPrice: getApplicablePrice(product, quantity),
         savings: calculateSavings(product, quantity),
-        modelCode: product.models ? selectedModel : undefined,
-        caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
-        laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
+        modelCode: product.models ? (selectedModel || product.modelCode) : undefined,
+        caseVariant: idCardWithCaseIds.includes(product.id) ? (selectedCase || product.caseVariant) : undefined,
+        laminationVariant: stikerWithLaminationIds.includes(product.id) ? (selectedLamination || product.laminationVariant) : undefined
       };
       setCartItems([...cartItems, newItem]);
       toast.success(`${product.name} ditambahkan ${quantity}× ke keranjang`, { 
