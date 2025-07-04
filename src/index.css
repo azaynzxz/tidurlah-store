@@ -111,6 +111,21 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;  /* Chrome, Safari and Opera */
   }
+  
+  /* Thin scrollbar for image thumbnails */
+  .scrollbar-thin {
+    scrollbar-width: thin;  /* Firefox */
+  }
+  .scrollbar-thin::-webkit-scrollbar {
+    height: 4px;  /* Chrome, Safari and Opera */
+  }
+  .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
+    background-color: #d1d5db;
+    border-radius: 2px;
+  }
+  .scrollbar-track-gray-100::-webkit-scrollbar-track {
+    background-color: #f3f4f6;
+  }
 
   /* Angry wiggling animation for case selection */
   .angry-wiggle {
@@ -198,6 +213,45 @@
   }
 
   /* Cart icon bounce effect */
+  
+  /* Fix for UI elements disappearing when modal is open/closed */
+  /* Prevent Dialog body scroll lock from affecting carousel and other components */
+  body[data-scroll-locked] [data-embla] {
+    transform: none !important;
+    transition: none !important;
+  }
+  
+  /* Ensure all components remain visible when modal is open */
+  [data-radix-portal] ~ * [data-embla],
+  [data-radix-portal] ~ * .grid,
+  [data-radix-portal] ~ * [class*="grid-cols"] {
+    visibility: visible !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  
+  /* Maintain functionality during modal state */
+  body[data-scroll-locked] [data-embla] [data-embla-container] {
+    will-change: transform;
+    backface-visibility: hidden;
+  }
+  
+  /* Prevent z-index issues after modal closes - be more specific */
+  body:not([data-scroll-locked]) .grid:not(.sticky):not([class*="z-"]),
+  body:not([data-scroll-locked]) [class*="grid-cols"]:not(.sticky):not([class*="z-"]) {
+    z-index: auto;
+  }
+  
+  /* Force re-render of grids after modal close */
+  body:not([data-scroll-locked]) .grid,
+  body:not([data-scroll-locked]) [class*="grid-cols"] {
+    animation: fadeIn 0.1s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0.99; }
+    to { opacity: 1; }
+  }
   .cart-bounce {
     animation: cartBounce 0.6s ease-out;
   }

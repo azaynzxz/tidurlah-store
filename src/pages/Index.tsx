@@ -548,14 +548,12 @@ const products = {
       name: "Plakat Akrilik Reg",
       image: "/product-image/plakat/PKA 004.jpg",
       additionalImages: [
+        "/product-image/plakat-reg-1.jpg",
+        "/product-image/plakat-reg-2.jpg",
+        "/product-image/plakat-reg-3.jpg",
         "/product-image/plakat/PKA 005.jpg",
         "/product-image/plakat/PKA 006.jpg",
-        "/product-image/plakat/PKA 007.jpg",
-        "/product-image/plakat/PKA 008.jpg",
-        "/product-image/plakat/PKA 009.jpg",
-        "/product-image/plakat/PKA 010.jpg",
-        "/product-image/plakat/PKA 011.jpg",
-        "/product-image/plakat/PKA 012.jpg"
+        "/product-image/plakat/PKA 007.jpg"
       ],
       description: "Plakat akrilik berkualitas tinggi dengan berbagai pilihan model.",
       price: 90000,
@@ -1106,75 +1104,75 @@ const Index = () => {
     );
     
     if (!skipValidation) {
-      if (product.models && !selectedModel) {
-        toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
-        return;
-      }
-      if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
-        setShowAngryCase(true);
-        toast.error("🚨 Mohon pilih jenis casing terlebih dahulu!", { 
-          position: 'top-center', 
-          style: { 
-            marginTop: '60px',
-            backgroundColor: '#ff4500',
-            color: 'white',
-            fontWeight: 'bold',
-            border: '2px solid #ff6b35',
-            boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-          },
-          duration: 4000
-        });
-        
-        // Scroll to case selection area to draw attention
-        setTimeout(() => {
-          const caseContainer = document.getElementById('case-selection-container');
-          if (caseContainer) {
-            caseContainer.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
-            });
-          }
-        }, 100);
-        
-        // Reset angry animation after 3 seconds
-        setTimeout(() => {
-          setShowAngryCase(false);
-        }, 3000);
-        
-        return;
-      }
-      if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
-        setShowAngryLamination(true);
-        toast.error("🚨 Mohon pilih jenis laminasi terlebih dahulu!", { 
-          position: 'top-center', 
-          style: { 
-            marginTop: '60px',
-            backgroundColor: '#ff4500',
-            color: 'white',
-            fontWeight: 'bold',
-            border: '2px solid #ff6b35',
-            boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-          },
-          duration: 4000
-        });
-        
-        // Scroll to lamination selection area to draw attention
-        setTimeout(() => {
-          const laminationContainer = document.getElementById('lamination-selection-container');
-          if (laminationContainer) {
-            laminationContainer.scrollIntoView({ 
-              behavior: 'smooth', 
-              block: 'center' 
-            });
-          }
-        }, 100);
-        
-        // Reset angry animation after 3 seconds
-        setTimeout(() => {
-          setShowAngryLamination(false);
-        }, 3000);
-        
-        return;
+    if (product.models && !selectedModel) {
+      toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
+      return;
+    }
+    if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
+      setShowAngryCase(true);
+      toast.error("🚨 Mohon pilih jenis casing terlebih dahulu!", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #ff6b35',
+          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+        },
+        duration: 4000
+      });
+      
+      // Scroll to case selection area to draw attention
+      setTimeout(() => {
+        const caseContainer = document.getElementById('case-selection-container');
+        if (caseContainer) {
+          caseContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 100);
+      
+      // Reset angry animation after 3 seconds
+      setTimeout(() => {
+        setShowAngryCase(false);
+      }, 3000);
+      
+      return;
+    }
+    if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
+      setShowAngryLamination(true);
+      toast.error("🚨 Mohon pilih jenis laminasi terlebih dahulu!", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white',
+          fontWeight: 'bold',
+          border: '2px solid #ff6b35',
+          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
+        },
+        duration: 4000
+      });
+      
+      // Scroll to lamination selection area to draw attention
+      setTimeout(() => {
+        const laminationContainer = document.getElementById('lamination-selection-container');
+        if (laminationContainer) {
+          laminationContainer.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
+          });
+        }
+      }, 100);
+      
+      // Reset angry animation after 3 seconds
+      setTimeout(() => {
+        setShowAngryLamination(false);
+      }, 3000);
+      
+      return;
       }
     }
     const existingItem = cartItems.find(item => 
@@ -1769,7 +1767,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
     <div className="min-h-screen bg-white notranslate flex flex-col" translate="no">
       <div className="container mx-auto max-w-md md:max-w-full lg:max-w-7xl bg-white flex-1 flex flex-col px-4 md:px-6 lg:px-6">
         {/* Header */}
-        <div className="bg-white shadow-sm p-3 lg:p-4 flex justify-between items-center sticky top-0 z-20 -mx-4 md:-mx-6 lg:-mx-6 px-4 md:px-6 lg:px-6">
+        <div className="bg-white shadow-sm p-3 lg:p-4 flex justify-between items-center sticky top-0 z-50 -mx-4 md:-mx-6 lg:-mx-6 px-4 md:px-6 lg:px-6">
           <img 
             src="/product-image/Tidurlah Logo Horizontal.png"
             alt="TIDURLAH STORE"
@@ -2015,316 +2013,316 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
               {/* Left Column: Customer Information */}
               <div className="space-y-4">
                 <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-gray-300 p-2"
-                      value={customerName}
-                      onChange={(e) => {
-                        setCustomerName(e.target.value);
-                        if (e.target.value.length < 3) {
-                          setNameError("Nama minimal 3 karakter");
-                        } else {
-                          setNameError("");
-                        }
-                      }}
-                      placeholder="Nama Panggilan"
-                      required
-                    />
-                    {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Instansi/Alias</label>
-                    <input
-                      type="text"
-                      className="w-full rounded-lg border border-gray-300 p-2"
-                      value={instansi}
-                      onChange={(e) => setInstansi(e.target.value)}
-                      placeholder="Nama Sekolah, Kampus/Perusahaan kamu"
-                    />
-                  </div>
-                  
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
-                    <input
-                      type="tel"
-                      className="w-full rounded-lg border border-gray-300 p-2"
-                      value={phoneNumber}
-                      onChange={(e) => {
-                        setPhoneNumber(e.target.value);
-                        if (e.target.value.length < 10) {
-                          setPhoneError("Nomor telepon minimal 10 digit");
-                        } else {
-                          setPhoneError("");
-                        }
-                      }}
-                      placeholder="Nomor Telepon Kamu"
-                      required
-                    />
-                    {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
-                  </div>
-
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Note/Link Desain (Jika Ada) </label>
-                    <textarea
-                      className="w-full rounded-lg border border-gray-300 p-2"
-                      value={designNote}
-                      onChange={(e) => setDesignNote(e.target.value)}
-                      placeholder="Masukkan note cetak dan atau link desain kamu (canva/Google Drive), pastikan akses sudah dibuka"
-                      rows={3}
-                    />
-                  </div>
-
-                  <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
-                    <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
-                    
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="shippingOption"
-                        checked={isShipping}
-                        onChange={() => setIsShipping(!isShipping)}
-                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center">
-                          <label htmlFor="shippingOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                            Perlu pengiriman?
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => setShowShippingTooltip(!showShippingTooltip)}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                          >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                          </button>
-                        </div>
-                        {showShippingTooltip && (
-                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                            Jika tidak dicentang, ambil di tempat, jasa kirim JNT, JNE, Maxim/Gojek, ongkir ditanggung customer
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="jasaDesainOption"
-                        checked={requestJasaDesain}
-                        onChange={() => setRequestJasaDesain(!requestJasaDesain)}
-                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center">
-                          <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                            Request Jasa Desain? (+Rp 25.000)
-                          </label>
-                          <button
-                            type="button"
-                            onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                          >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                          </button>
-                        </div>
-                        {showJasaDesainTooltip && (
-                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                            Desain kami yang buatkan, gratis revisi 2x, dengan desain terbaik. bisa request sesuai contoh
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    <div className="flex items-start">
-                      <input
-                        type="checkbox"
-                        id="expressPrintOption"
-                        checked={isExpressPrint}
-                        onChange={() => setIsExpressPrint(!isExpressPrint)}
-                        className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-center">
-                          <label htmlFor="expressPrintOption" className="text-sm text-gray-700 leading-relaxed mr-2">
-                            Cetak Express (+Rp 25.000)
-                          </label>
-                          <span className="bg-[#FF5E01] text-white text-xs px-2 py-1 rounded-full mr-1">HOT</span>
-                          <button
-                            type="button"
-                            onClick={() => setShowExpressTooltip(!showExpressTooltip)}
-                            className="text-gray-400 hover:text-gray-600 focus:outline-none"
-                          >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
-                          </button>
-                        </div>
-                        {showExpressTooltip && (
-                          <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
-                            Cetak express artinya cetakan akan masuk urutan prioritas, dan akan di cetak lebih dulu estimasi:<br/><span className="line-through">2-3 hari</span> <span className="font-semibold">(1 hari)</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {isShipping && (
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Pengiriman</label>
-                      <textarea
-                        className="w-full rounded-lg border border-gray-300 p-2"
-                        value={address}
-                        onChange={(e) => setAddress(e.target.value)}
-                        placeholder="Masukkan alamat lengkap pengiriman"
-                        rows={3}
-                        required
-                      />
-                    </div>
-                  )}
-                </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                <input
+                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={customerName}
+                  onChange={(e) => {
+                    setCustomerName(e.target.value);
+                    if (e.target.value.length < 3) {
+                      setNameError("Nama minimal 3 karakter");
+                    } else {
+                      setNameError("");
+                    }
+                  }}
+                  placeholder="Nama Panggilan"
+                  required
+                />
+                {nameError && <p className="text-xs text-red-500 mt-1">{nameError}</p>}
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Instansi/Alias</label>
+                <input
+                  type="text"
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={instansi}
+                  onChange={(e) => setInstansi(e.target.value)}
+                  placeholder="Nama Sekolah, Kampus/Perusahaan kamu"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                <input
+                  type="tel"
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={phoneNumber}
+                  onChange={(e) => {
+                    setPhoneNumber(e.target.value);
+                    if (e.target.value.length < 10) {
+                      setPhoneError("Nomor telepon minimal 10 digit");
+                    } else {
+                      setPhoneError("");
+                    }
+                  }}
+                  placeholder="Nomor Telepon Kamu"
+                  required
+                />
+                {phoneError && <p className="text-xs text-red-500 mt-1">{phoneError}</p>}
               </div>
 
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Note/Link Desain (Jika Ada) </label>
+                <textarea
+                  className="w-full rounded-lg border border-gray-300 p-2"
+                  value={designNote}
+                  onChange={(e) => setDesignNote(e.target.value)}
+                  placeholder="Masukkan note cetak dan atau link desain kamu (canva/Google Drive), pastikan akses sudah dibuka"
+                  rows={3}
+                />
+              </div>
+
+              <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
+                <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="shippingOption"
+                    checked={isShipping}
+                    onChange={() => setIsShipping(!isShipping)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="shippingOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Perlu pengiriman?
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowShippingTooltip(!showShippingTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showShippingTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Jika tidak dicentang, ambil di tempat, jasa kirim JNT, JNE, Maxim/Gojek, ongkir ditanggung customer
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="jasaDesainOption"
+                    checked={requestJasaDesain}
+                    onChange={() => setRequestJasaDesain(!requestJasaDesain)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="jasaDesainOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Request Jasa Desain? (+Rp 25.000)
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showJasaDesainTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Desain kami yang buatkan, gratis revisi 2x, dengan desain terbaik. bisa request sesuai contoh
+                      </div>
+                    )}
+                  </div>
+                </div>
+                
+                <div className="flex items-start">
+                  <input
+                    type="checkbox"
+                    id="expressPrintOption"
+                    checked={isExpressPrint}
+                    onChange={() => setIsExpressPrint(!isExpressPrint)}
+                    className="mt-1 mr-3 h-4 w-4 text-[#FF5E01] focus:ring-[#FF5E01] border-gray-300 rounded"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center">
+                      <label htmlFor="expressPrintOption" className="text-sm text-gray-700 leading-relaxed mr-2">
+                        Cetak Express (+Rp 25.000)
+                      </label>
+                      <span className="bg-[#FF5E01] text-white text-xs px-2 py-1 rounded-full mr-1">HOT</span>
+                      <button
+                        type="button"
+                        onClick={() => setShowExpressTooltip(!showExpressTooltip)}
+                        className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                      >
+                        <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                      </button>
+                    </div>
+                    {showExpressTooltip && (
+                      <div className="mt-2 p-2 bg-orange-50 border border-orange-200 rounded-lg text-xs text-orange-800">
+                        Cetak express artinya cetakan akan masuk urutan prioritas, dan akan di cetak lebih dulu estimasi:<br/><span className="line-through">2-3 hari</span> <span className="font-semibold">(1 hari)</span>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+              
+              {isShipping && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Alamat Pengiriman</label>
+                  <textarea
+                    className="w-full rounded-lg border border-gray-300 p-2"
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    placeholder="Masukkan alamat lengkap pengiriman"
+                    rows={3}
+                    required
+                  />
+                </div>
+              )}
+                </div>
+            </div>
+            
               {/* Right Column: Order Summary */}
               <div className="space-y-4">
                 <div className="border-t border-b xl:border xl:rounded-lg py-3 xl:p-4 my-3 xl:my-0 xl:bg-gray-50">
                   <h3 className="font-medium mb-3 text-sm">Ringkasan Pesanan</h3>
-                  {cartItems.map((item) => (
-                    <div key={item.id} className="flex justify-between items-center text-sm mb-3">
-                      <div className="flex-1">
-                        <p className="font-medium">{item.name}</p>
-                        {item.modelCode && (
-                          <p className="text-xs text-gray-600">Kode: {item.modelCode}</p>
-                        )}
-                        {item.width && item.height && (
-                          <p className="text-xs text-gray-600">
-                            {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
-                          </p>
-                        )}
-                        {item.caseVariant && (
-                          <p className="text-xs text-gray-600">
-                            Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
-                          </p>
-                        )}
-                        {item.laminationVariant && (
-                          <p className="text-xs text-gray-600">
-                            Laminasi: {item.laminationVariant}
-                          </p>
-                        )}
-                        <div className="flex items-center gap-2 mt-1">
-                          <button
-                            onClick={() => removeFromCart(item.id)}
-                            className="p-1 rounded-full hover:bg-gray-100 border"
-                          >
-                            -
-                          </button>
-                          <input
-                            type="number"
-                            min="1"
-                            value={item.quantity}
-                            onChange={(e) => {
-                              const newQuantity = parseInt(e.target.value) || 1;
-                              const product = Object.values(products).flat().find((p: any) => p.id === item.id);
-                              if (product) {
-                                const newPrice = getApplicablePrice(product, newQuantity);
-                                setCartItems(
-                                  cartItems.map(cartItem =>
-                                    cartItem.id === item.id 
-                                      ? { 
-                                          ...cartItem, 
-                                          quantity: newQuantity, 
-                                          appliedPrice: newPrice,
-                                          savings: calculateSavings(product, newQuantity)
-                                        } 
-                                      : cartItem
-                                  )
-                                );
-                              }
-                            }}
-                            className="w-12 text-center border rounded p-1"
-                          />
-                          <button
-                            onClick={() => addToCart(item)}
-                            className="p-1 rounded-full hover:bg-gray-100 border"
-                          >
-                            +
-                          </button>
-                        </div>
-                      </div>
-                      <p className="text-right">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</p>
-                    </div>
-                  ))}
-                  
-                  <div className="mt-2 pt-2 border-t">
-                    <div className="flex justify-between items-center text-sm">
-                      <p>Subtotal</p>
-                      <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
-                    </div>
-                    
-                    {promoDiscount > 0 && (
-                      <div className="flex justify-between items-center text-sm text-green-600">
-                        <p>Diskon Promo ({promoDiscount}%)</p>
-                        <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
-                      </div>
+              {cartItems.map((item) => (
+                <div key={item.id} className="flex justify-between items-center text-sm mb-3">
+                  <div className="flex-1">
+                    <p className="font-medium">{item.name}</p>
+                    {item.modelCode && (
+                      <p className="text-xs text-gray-600">Kode: {item.modelCode}</p>
                     )}
-                    
-                    {requestJasaDesain && (
-                      <div className="flex justify-between items-center text-sm text-[#FF5E01]">
-                        <p>Jasa Desain</p>
-                        <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
-                      </div>
+                    {item.width && item.height && (
+                      <p className="text-xs text-gray-600">
+                        {item.width}m × {item.height}m ({(item.width * item.height).toFixed(2)} m²)
+                      </p>
                     )}
-                    
-                    {isExpressPrint && (
-                      <div className="flex justify-between items-center text-sm text-[#FF5E01]">
-                        <p>Cetak Express</p>
-                        <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
-                      </div>
+                    {item.caseVariant && (
+                      <p className="text-xs text-gray-600">
+                        Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
+                      </p>
                     )}
-                    
-                    <div className="flex justify-between items-center font-medium mt-2">
-                      <p>Total</p>
-                      <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
+                    {item.laminationVariant && (
+                      <p className="text-xs text-gray-600">
+                        Laminasi: {item.laminationVariant}
+                      </p>
+                    )}
+                    <div className="flex items-center gap-2 mt-1">
+                      <button
+                        onClick={() => removeFromCart(item.id)}
+                        className="p-1 rounded-full hover:bg-gray-100 border"
+                      >
+                        -
+                      </button>
+                      <input
+                        type="number"
+                        min="1"
+                        value={item.quantity}
+                        onChange={(e) => {
+                          const newQuantity = parseInt(e.target.value) || 1;
+                          const product = Object.values(products).flat().find((p: any) => p.id === item.id);
+                          if (product) {
+                            const newPrice = getApplicablePrice(product, newQuantity);
+                            setCartItems(
+                              cartItems.map(cartItem =>
+                                cartItem.id === item.id 
+                                  ? { 
+                                      ...cartItem, 
+                                      quantity: newQuantity, 
+                                      appliedPrice: newPrice,
+                                      savings: calculateSavings(product, newQuantity)
+                                    } 
+                                  : cartItem
+                              )
+                            );
+                          }
+                        }}
+                        className="w-12 text-center border rounded p-1"
+                      />
+                      <button
+                        onClick={() => addToCart(item)}
+                        className="p-1 rounded-full hover:bg-gray-100 border"
+                      >
+                        +
+                      </button>
                     </div>
                   </div>
+                  <p className="text-right">Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}</p>
+                </div>
+              ))}
+              
+              <div className="mt-2 pt-2 border-t">
+                <div className="flex justify-between items-center text-sm">
+                  <p>Subtotal</p>
+                  <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
                 </div>
                 
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Kode Promo (Opsional)</label>
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        className="flex-1 rounded-lg border border-gray-300 p-2"
-                        value={promoCode}
-                        onChange={(e) => handlePromoCodeChange(e.target.value)}
-                        placeholder="Masukkan kode promo"
-                      />
-                      {promoCodeError && (
-                        <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
-                      )}
-                    </div>
+                {promoDiscount > 0 && (
+                  <div className="flex justify-between items-center text-sm text-green-600">
+                    <p>Diskon Promo ({promoDiscount}%)</p>
+                    <p>- Rp {calculateTotalDiscount().toLocaleString('id-ID')}</p>
                   </div>
-                  
-                  <button
-                    onClick={handleWhatsAppRedirect}
-                    disabled={
-                      Boolean(isSubmitting) ||
-                      Boolean(nameError) ||
-                      Boolean(phoneError) ||
-                      customerName.length < 3 ||
-                      phoneNumber.length < 10
-                    }
-                    className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md text-base ${
-                      Boolean(isSubmitting) || Boolean(nameError) || Boolean(phoneError) || customerName.length < 3 || phoneNumber.length < 10 ? 'opacity-50 cursor-not-allowed' : ''
-                    }`}
-                  >
-                    {isSubmitting ? 'Memproses...' : 'Lanjut ke WhatsApp'}
-                  </button>
-                  
-                  <div className="flex items-center justify-center text-sm text-green-600 mt-2">
-                    <Check className="h-4 w-4 mr-1" /> 
-                    <p>Pesanan kamu akan kami alihkan ke admin resmi kami</p>
+                )}
+                
+                {requestJasaDesain && (
+                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
+                    <p>Jasa Desain</p>
+                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                  </div>
+                )}
+                
+                {isExpressPrint && (
+                  <div className="flex justify-between items-center text-sm text-[#FF5E01]">
+                    <p>Cetak Express</p>
+                    <p>Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}</p>
+                  </div>
+                )}
+                
+                <div className="flex justify-between items-center font-medium mt-2">
+                  <p>Total</p>
+                  <p>Rp {(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}</p>
+                </div>
+              </div>
+            </div>
+            
+            <div className="space-y-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Kode Promo (Opsional)</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    className="flex-1 rounded-lg border border-gray-300 p-2"
+                    value={promoCode}
+                    onChange={(e) => handlePromoCodeChange(e.target.value)}
+                    placeholder="Masukkan kode promo"
+                  />
+                  {promoCodeError && (
+                    <p className="text-red-500 text-xs mt-1">{promoCodeError}</p>
+                  )}
+                </div>
+              </div>
+              
+              <button
+                onClick={handleWhatsAppRedirect}
+                disabled={
+                  Boolean(isSubmitting) ||
+                  Boolean(nameError) ||
+                  Boolean(phoneError) ||
+                  customerName.length < 3 ||
+                  phoneNumber.length < 10
+                }
+                className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md text-base ${
+                  Boolean(isSubmitting) || Boolean(nameError) || Boolean(phoneError) || customerName.length < 3 || phoneNumber.length < 10 ? 'opacity-50 cursor-not-allowed' : ''
+                }`}
+              >
+                {isSubmitting ? 'Memproses...' : 'Lanjut ke WhatsApp'}
+              </button>
+              
+              <div className="flex items-center justify-center text-sm text-green-600 mt-2">
+                <Check className="h-4 w-4 mr-1" /> 
+                <p>Pesanan kamu akan kami alihkan ke admin resmi kami</p>
                   </div>
                 </div>
               </div>
@@ -2467,9 +2465,10 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
         {/* Product Details Modal */}
         <Dialog open={!!selectedProduct} onOpenChange={() => {
           setSelectedProduct(null);
-          // Reset URL to home when modal is closed
+          // Clear URL slug when modal is closed without affecting tab state
           if (slug) {
-            navigate('/', { replace: true });
+            // Use window.history to avoid triggering route effects
+            window.history.replaceState({}, '', '/');
           }
         }}>
           <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
@@ -2517,17 +2516,27 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                       alt={selectedProduct.name}
                       className="absolute top-0 left-0 w-full h-full object-cover"
                     />
-                    {selectedProduct.additionalImages.length > 0 && !selectedProduct.models && (
+                    {/* Navigation buttons - show for all products with multiple images */}
+                    {((selectedProduct.models && selectedProduct.models.length > 1) || 
+                      (!selectedProduct.models && selectedProduct.additionalImages.length > 0)) && (
                       <>
                         <button
-                          onClick={prevImage}
-                          className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center"
+                          onClick={selectedProduct.models ? () => {
+                            const currentIndex = selectedProduct.models.findIndex(m => m.code === selectedModel);
+                            const prevIndex = currentIndex > 0 ? currentIndex - 1 : selectedProduct.models.length - 1;
+                            setSelectedModel(selectedProduct.models[prevIndex].code);
+                          } : prevImage}
+                          className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
                         <button
-                          onClick={nextImage}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center"
+                          onClick={selectedProduct.models ? () => {
+                            const currentIndex = selectedProduct.models.findIndex(m => m.code === selectedModel);
+                            const nextIndex = currentIndex < selectedProduct.models.length - 1 ? currentIndex + 1 : 0;
+                            setSelectedModel(selectedProduct.models[nextIndex].code);
+                          } : nextImage}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
                         >
                           <ChevronRight className="h-5 w-5" />
                         </button>
@@ -2550,47 +2559,50 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
                             }`}
                           >
-                            {model.code} - {model.name}
+                            {model.code}
                           </button>
                         ))}
                       </div>
                     </div>
                   )}
                   
-                  <div className="mt-2 flex gap-2 overflow-x-auto scrollbar-hide pb-2">
-                    {selectedProduct.models ? (
-                      selectedProduct.models.map((model, index) => (
-                        <div
-                          key={index}
-                          className={`relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden cursor-pointer ${
-                            model.code === selectedModel ? 'ring-2 ring-[#FF5E01]' : ''
-                          }`}
-                          onClick={() => setSelectedModel(model.code)}
-                        >
-                          <img
-                            src={model.image}
-                            alt={`${model.name} - ${model.code}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))
-                    ) : (
-                      [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
-                        <div
-                          key={index}
-                          className={`relative flex-shrink-0 w-12 h-12 rounded-lg overflow-hidden cursor-pointer ${
-                            index === currentImageIndex ? 'ring-2 ring-[#FF5E01]' : ''
-                          }`}
-                          onClick={() => setCurrentImageIndex(index)}
-                        >
-                          <img
-                            src={image}
-                            alt={`${selectedProduct.name} - Gambar ${index + 1}`}
-                            className="w-full h-full object-cover"
-                          />
-                        </div>
-                      ))
-                    )}
+                  {/* Image Thumbnails */}
+                  <div className="mt-2">
+                    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                      {selectedProduct.models ? (
+                        selectedProduct.models.map((model, index) => (
+                          <div
+                            key={index}
+                            className={`relative flex-shrink-0 w-10 h-10 rounded-md overflow-hidden cursor-pointer transition-all ${
+                              model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                            }`}
+                            onClick={() => setSelectedModel(model.code)}
+                          >
+                            <img
+                              src={model.image}
+                              alt={`${model.code}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))
+                      ) : (
+                        [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
+                          <div
+                            key={index}
+                            className={`relative flex-shrink-0 w-10 h-10 rounded-md overflow-hidden cursor-pointer transition-all ${
+                              index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                            }`}
+                            onClick={() => setCurrentImageIndex(index)}
+                          >
+                            <img
+                              src={image}
+                              alt={`${selectedProduct.name} - Gambar ${index + 1}`}
+                              className="w-full h-full object-cover"
+                            />
+                          </div>
+                        ))
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="space-y-3">
@@ -2694,7 +2706,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                   
                   {selectedProduct.priceThresholds && !selectedProduct.pricingMethod && (
                     <div className="space-y-2">
-                      <p className="font-medium text-sm">Harga Grosir:</p>
+                      <p className="font-medium text-sm">Daftar Harga:</p>
                       <div className="grid grid-cols-2 gap-2">
                         {selectedProduct.priceThresholds.map((threshold: any, idx: number) => (
                           <div 
