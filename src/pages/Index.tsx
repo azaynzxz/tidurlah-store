@@ -546,10 +546,16 @@ const products = {
     {
       id: 22,
       name: "Plakat Akrilik Reg",
-      image: "/product-image/plakat-reg-1.jpg",
+      image: "/product-image/plakat/PKA 004.jpg",
       additionalImages: [
-        "/product-image/plakat-reg-2.jpg",
-        "/product-image/plakat-reg-3.jpg"
+        "/product-image/plakat/PKA 005.jpg",
+        "/product-image/plakat/PKA 006.jpg",
+        "/product-image/plakat/PKA 007.jpg",
+        "/product-image/plakat/PKA 008.jpg",
+        "/product-image/plakat/PKA 009.jpg",
+        "/product-image/plakat/PKA 010.jpg",
+        "/product-image/plakat/PKA 011.jpg",
+        "/product-image/plakat/PKA 012.jpg"
       ],
       description: "Plakat akrilik berkualitas tinggi dengan berbagai pilihan model.",
       price: 90000,
@@ -561,9 +567,15 @@ const products = {
       time: "3-5 hari",
       rating: 4.9,
       models: [
-        { code: "PK01", name: "Model Standar", image: "/product-image/plakat-reg-1.jpg" },
-        { code: "PK02", name: "Model Premium", image: "/product-image/plakat-reg-2.jpg" },
-        { code: "PK03", name: "Model Deluxe", image: "/product-image/plakat-reg-3.jpg" }
+        { code: "PKA004", image: "/product-image/plakat/PKA 004.jpg" },
+        { code: "PKA005", image: "/product-image/plakat/PKA 005.jpg" },
+        { code: "PKA006", image: "/product-image/plakat/PKA 006.jpg" },
+        { code: "PKA007", image: "/product-image/plakat/PKA 007.jpg" },
+        { code: "PKA008", image: "/product-image/plakat/PKA 008.jpg" },
+        { code: "PKA009", image: "/product-image/plakat/PKA 009.jpg" },
+        { code: "PKA010", image: "/product-image/plakat/PKA 010.jpg" },
+        { code: "PKA011", image: "/product-image/plakat/PKA 011.jpg" },
+        { code: "PKA012", image: "/product-image/plakat/PKA 012.jpg" }
       ]
     },
     {
