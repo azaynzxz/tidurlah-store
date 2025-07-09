@@ -425,6 +425,24 @@ const products = {
       ]
     },
     {
+      id: 24,
+      name: "Cut Stiker Vynil Papan Bunga",
+      image: "/product-image/cut-stiker-vynil.png",
+      additionalImages: [],
+      description: "Jasa cutting stiker untuk papan bunga akrilik, desain dalam format CDR/JPG high resolution. Sudah termasuk Masking. Ukuran A3: 27.7 cm × 42 cm",
+      price: 15000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 15000 },
+        { minQuantity: 4, price: 14000 },
+        { minQuantity: 25, price: 13000 },
+        { minQuantity: 100, price: 12000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.8
+    },
+    {
       id: 16,
       name: "Ganci Akrilik",
       image: "/product-image/ganciakrilik-1.jpg",
@@ -558,7 +576,7 @@ const products = {
       description: "Plakat akrilik berkualitas tinggi dengan berbagai pilihan model.",
       price: 90000,
       discountPrice: null,
-      category: "Digital Print",
+      category: "Merchandise",
       priceThresholds: [
         { minQuantity: 1, price: 90000 }
       ],
@@ -1317,8 +1335,19 @@ const Index = () => {
   const openProductDetails = (product: any) => {
     setSelectedProduct(product);
     setCurrentImageIndex(0);
-    setModalQuantity(0); // Reset quantity to 0 to demonstrate highlight
+    setModalQuantity(1); // Set initial quantity to 1 instead of 0
     setShowAngryQuantity(false); // Reset angry quantity state
+    
+    // Set the active tab to match the product's category
+    setActiveTab(product.category);
+    
+    // Initialize model selection for products with models
+    if (product.models && product.models.length > 0) {
+      setSelectedModel(product.models[0].code);
+    } else {
+      setSelectedModel("");
+    }
+    
     if (idCardWithCaseIds.includes(product.id)) {
       setSelectedCase("");
     }
@@ -2465,13 +2494,14 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
         {/* Product Details Modal */}
         <Dialog open={!!selectedProduct} onOpenChange={() => {
           setSelectedProduct(null);
+          setSelectedModel(""); // Reset model selection
           // Clear URL slug when modal is closed without affecting tab state
           if (slug) {
             // Use window.history to avoid triggering route effects
             window.history.replaceState({}, '', '/');
           }
         }}>
-          <DialogContent className="sm:max-w-md max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
+          <DialogContent className="sm:max-w-md max-w-[calc(100%-1rem)] w-[calc(100%-1rem)] sm:w-auto mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">
             {selectedProduct && (
               <div className="relative h-full flex flex-col" style={{ maxHeight: "90vh" }}>
                 {/* Fixed Header */}
@@ -2548,12 +2578,12 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                   {selectedProduct.models && (
                     <div className="mt-4">
                       <h4 className="text-sm font-medium mb-2">Pilih Model:</h4>
-                      <div className="flex flex-wrap gap-2">
+                      <div className="grid grid-cols-3 gap-2">
                         {selectedProduct.models.map((model) => (
                           <button
                             key={model.code}
                             onClick={() => setSelectedModel(model.code)}
-                            className={`px-3 py-1.5 rounded-full text-xs transition-colors ${
+                            className={`px-2 py-1.5 rounded-lg text-xs transition-colors text-center ${
                               selectedModel === model.code
                                 ? "bg-[#FF5E01] text-white"
                                 : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -2568,12 +2598,12 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                   
                   {/* Image Thumbnails */}
                   <div className="mt-2">
-                    <div className="flex gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                    <div className="grid grid-cols-8 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
                       {selectedProduct.models ? (
-                        selectedProduct.models.map((model, index) => (
+                        selectedProduct.models.slice(0, 8).map((model, index) => (
                           <div
                             key={index}
-                            className={`relative flex-shrink-0 w-10 h-10 rounded-md overflow-hidden cursor-pointer transition-all ${
+                            className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
                               model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
                             }`}
                             onClick={() => setSelectedModel(model.code)}
@@ -2589,7 +2619,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                         [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
                           <div
                             key={index}
-                            className={`relative flex-shrink-0 w-10 h-10 rounded-md overflow-hidden cursor-pointer transition-all ${
+                            className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
                               index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
                             }`}
                             onClick={() => setCurrentImageIndex(index)}
@@ -2603,10 +2633,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                         ))
                       )}
                     </div>
+                    {selectedProduct.models && selectedProduct.models.length > 8 && (
+                      <div className="text-center text-xs text-gray-500 mt-1">
+                        +{selectedProduct.models.length - 8} model lainnya tersedia
+                      </div>
+                    )}
                   </div>
                 </div>
                 <div className="space-y-3">
-                  <p className="text-gray-600 text-sm">{selectedProduct.description}</p>
+                  <p className="text-gray-600 text-sm break-words">{selectedProduct.description}</p>
                   {selectedProduct && idCardWithCaseIds.includes(selectedProduct.id) && (
                     <div className="mt-4">
                       <h4 className={`text-sm font-medium mb-2 transition-colors ${
@@ -2815,9 +2850,9 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                   {/* Quantity Selector */}
                   <div className="p-4 pb-2">
                     {/* Progress Text for Discount - Moved Above */}
-                    {selectedProduct && modalQuantity > 0 && modalQuantity < 4 && (
-                      <div className="mb-3 text-center">
-                        <span className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded-md">
+                    {selectedProduct && modalQuantity > 0 && modalQuantity < 4 && selectedProduct.priceThresholds && selectedProduct.priceThresholds.some(t => t.minQuantity === 4) && (
+                      <div className="mb-3 text-center px-2">
+                        <span className="text-xs text-orange-600 font-medium bg-orange-50 px-2 py-1 rounded-md block">
                           Tambah {4 - modalQuantity} lagi untuk diskon maksimal!
                         </span>
                       </div>
@@ -2923,15 +2958,15 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                       {selectedProduct && !selectedProduct.pricingMethod && (
                         <div className="mt-2 pt-2 border-t border-gray-200">
                           <div className="flex justify-between items-center">
-                            <span className="text-sm text-gray-600">Total Harga:</span>
-                            <span className="font-medium text-[#FF5E01]">
+                            <span className="text-sm text-gray-600 flex-shrink-0">Total Harga:</span>
+                            <span className="font-medium text-[#FF5E01] text-right break-words">
                               Rp {(getApplicablePrice(selectedProduct, modalQuantity) * modalQuantity).toLocaleString('id-ID')}
                             </span>
                           </div>
                           {modalQuantity > 1 && calculateSavings(selectedProduct, modalQuantity) > 0 && (
                             <div className="flex justify-between items-center text-sm">
-                              <span className="text-green-600">Hemat:</span>
-                              <span className="text-green-600 font-medium">
+                              <span className="text-green-600 flex-shrink-0">Hemat:</span>
+                              <span className="text-green-600 font-medium text-right break-words">
                                 Rp {calculateSavings(selectedProduct, modalQuantity).toLocaleString('id-ID')}
                               </span>
                             </div>
@@ -2953,13 +2988,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                     ) : selectedProduct.models ? (
                       <button
                         onClick={() => {
-                          // Check if adding to cart was successful before closing modal
-                          const wasSuccessful = !selectedProduct.models || selectedModel;
-                          if (wasSuccessful) {
+                          // Check if model is selected and quantity is valid
+                          if (selectedModel && modalQuantity > 0) {
                             addToCart(selectedProduct, undefined, modalQuantity);
-                            if (!idCardWithCaseIds.includes(selectedProduct.id) || selectedCase) {
-                              setSelectedProduct(null);
-                            }
+                            // Close modal after successful add for model products
+                            setSelectedProduct(null);
                           }
                         }}
                       className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${!selectedModel || modalQuantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
