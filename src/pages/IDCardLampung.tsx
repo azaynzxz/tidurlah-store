@@ -10,130 +10,20 @@ import { toast } from "sonner";
 import micrositeData from './idcard_lampung_json.json';
 
 // Swipe Tutorial Component
-const SwipeTutorial = ({ isLoaded, currentCard, totalCards }: { isLoaded: boolean, currentCard: number, totalCards: number }) => {
-  const [showTutorial, setShowTutorial] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowTutorial(false);
-    }, 5000); // Hide tutorial after 5 seconds
-
-    return () => clearTimeout(timer);
-  }, []);
-
-  return (
-    <div className="text-center mt-6">
-      {!isLoaded ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="flex items-center justify-center space-x-2"
-        >
-          <motion.div
-            className="w-2 h-2 bg-white/60 rounded-full"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1, repeat: Infinity, delay: 0 }}
-          />
-          <motion.div
-            className="w-2 h-2 bg-white/60 rounded-full"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1, repeat: Infinity, delay: 0.2 }}
-          />
-          <motion.div
-            className="w-2 h-2 bg-white/60 rounded-full"
-            animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-            transition={{ duration: 1, repeat: Infinity, delay: 0.4 }}
-          />
-          <span className="text-white/60 text-sm ml-3">Materializing cards...</span>
-        </motion.div>
-      ) : (
-        <div className="space-y-4">
-          {/* Swipe Tutorial */}
-          <AnimatePresence>
-            {showTutorial && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ delay: 2.5, duration: 0.5 }}
-                className="flex items-center justify-center space-x-4"
-              >
-                {/* Left swipe animation */}
-                <div className="flex items-center space-x-2">
-                  <motion.div
-                    className="w-10 h-7 border-2 border-white/50 rounded-lg flex items-center justify-center bg-white/5 backdrop-blur-sm"
-                    animate={{ x: [-12, 12, -12] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
-                  >
-                    <motion.div
-                      className="w-1.5 h-1.5 bg-white/70 rounded-full"
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity }}
-                    />
-                  </motion.div>
-                  <span className="text-white/70 text-sm font-medium">Swipe</span>
-                </div>
-                
-                <span className="text-white/50 text-sm">atau tap</span>
-                
-                {/* Right swipe animation */}
-                <div className="flex items-center space-x-2">
-                  <span className="text-white/70 text-sm font-medium">Swipe</span>
-                  <motion.div
-                    className="w-10 h-7 border-2 border-white/50 rounded-lg flex items-center justify-center bg-white/5 backdrop-blur-sm"
-                    animate={{ x: [12, -12, 12] }}
-                    transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut", delay: 1.2 }}
-                  >
-                    <motion.div
-                      className="w-1.5 h-1.5 bg-white/70 rounded-full"
-                      animate={{ scale: [1, 1.3, 1] }}
-                      transition={{ duration: 1.2, repeat: Infinity, delay: 1.2 }}
-                    />
-                  </motion.div>
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-          
-          {/* Card counter */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: showTutorial ? 6.5 : 2.5, duration: 0.5 }}
-            className="text-center"
-          >
-            <p className="text-white/60 text-sm font-medium">
-              {currentCard + 1} dari {totalCards} layanan
-            </p>
-          </motion.div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const IDCardLampung = () => {
   const data = micrositeData;
   const [currentCard, setCurrentCard] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [flyingBubbles, setFlyingBubbles] = useState<Array<{
-    id: string, 
-    startX: number, 
-    startY: number, 
-    endX: number, 
-    endY: number,
-    size?: string,
-    duration?: number,
-    delay?: number
-  }>>([]);
+  const [flyingBubbles, setFlyingBubbles] = useState<Array<{id: string, startX: number, startY: number, endX: number, endY: number}>>([]);
 
   // Flying animation function
   const triggerFlyingAnimation = (sourceElement?: HTMLElement) => {
-    // Get source position - start from bottom center for magical effect
-    let startX = window.innerWidth / 2; // Center horizontally
-    let startY = window.innerHeight - 100; // Bottom of screen with some padding
+    // Get source position (product location)
+    let startX = window.innerWidth / 2; // Default to center
+    let startY = window.innerHeight / 2;
     
     if (sourceElement) {
       const rect = sourceElement.getBoundingClientRect();
@@ -141,92 +31,58 @@ const IDCardLampung = () => {
       startY = rect.top + rect.height / 2;
     }
     
-    // Create many more bubbles for blowing bubbles celebration effect
-    for (let i = 0; i < 12; i++) {
-      setTimeout(() => {
-        // Create bubbles that spread out in different directions like being blown
-        const angle = (i / 12) * 2 * Math.PI; // Spread bubbles in a circle
-        const distance = 150 + Math.random() * 200; // Random distance
-        const spread = Math.random() * 100 - 50; // Add some randomness
-        
-        let endX = startX + Math.cos(angle) * distance + spread;
-        let endY = startY + Math.sin(angle) * distance + spread;
-        
-        // Some bubbles should float up like real bubbles
-        if (Math.random() > 0.5) {
-          endY = Math.random() * window.innerHeight * 0.3; // Float to top
-          endX = startX + (Math.random() - 0.5) * window.innerWidth * 0.8;
-        }
-        
-        // Ensure bubbles stay within screen bounds
-        endX = Math.max(50, Math.min(window.innerWidth - 50, endX));
-        endY = Math.max(50, Math.min(window.innerHeight - 50, endY));
-        
-        const bubbleId = Date.now().toString() + i;
-        const newBubble = { 
-          id: bubbleId, 
-          startX, 
-          startY, 
-          endX, 
-          endY,
-          // Add properties for different bubble sizes and speeds
-          size: Math.random() > 0.7 ? 'large' : Math.random() > 0.3 ? 'medium' : 'small',
-          duration: 1000 + Math.random() * 1500, // Different animation durations
-          delay: i * 50 + Math.random() * 200 // Staggered release
-        };
-        
-        setFlyingBubbles(prev => [...prev, newBubble]);
-        
-        // Remove bubble after animation completes (varied timing)
-        setTimeout(() => {
-          setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-        }, newBubble.duration + newBubble.delay + 500);
-      }, i * 80); // Stagger the bubble creation
+    // Create spectacular bubble burst with ULTRA-WIDE SPREAD! 🎉✨
+    const bubbleCount = 20; // More bubbles for fuller coverage
+    const bubblesToCreate = [];
+    
+    // Calculate MAXIMUM spread - use full screen dimensions for epic effect
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+    const maxSpread = Math.max(screenWidth, screenHeight) * 0.95; // 95% of larger dimension!
+    const minSpread = Math.min(screenWidth, screenHeight) * 0.4; // 40% for inner ring
+    
+    // Generate all bubble data with ULTRA-WIDE spread
+    for (let i = 0; i < bubbleCount; i++) {
+      const angle = (i / bubbleCount) * 2 * Math.PI; // Perfect circular distribution
+      
+      // Create varied spread distances for epic coverage
+      const baseRadius = minSpread + Math.random() * (maxSpread - minSpread);
+      const radiusVariation = (Math.random() - 0.5) * 200; // More randomness for natural look
+      const finalRadius = baseRadius + radiusVariation;
+      
+      // Calculate end positions with ULTRA-WIDE spread
+      const endX = startX + Math.cos(angle) * finalRadius + (Math.random() - 0.5) * 250;
+      const endY = startY + Math.sin(angle) * finalRadius + (Math.random() - 0.5) * 250;
+      
+      // Ensure bubbles stay within screen bounds with minimal padding
+      const padding = 20;
+      const clampedEndX = Math.max(padding, Math.min(screenWidth - padding, endX));
+      const clampedEndY = Math.max(padding, Math.min(screenHeight - padding, endY));
+      
+      bubblesToCreate.push({
+        id: Date.now().toString() + i,
+        startX,
+        startY,
+        endX: clampedEndX,
+        endY: clampedEndY
+      });
     }
     
-    // Add some delayed secondary bubbles for extra effect
+    // Create ALL bubbles simultaneously for instant spectacular effect!
+    setFlyingBubbles(prev => [...prev, ...bubblesToCreate]);
+    
+    // Remove all bubbles after animation completes
     setTimeout(() => {
-      for (let j = 0; j < 6; j++) {
-        setTimeout(() => {
-          const angle = Math.random() * 2 * Math.PI;
-          const distance = 100 + Math.random() * 150;
-          
-          // Use bottom center as start point for secondary bubbles too
-          const secondaryStartX = window.innerWidth / 2;
-          const secondaryStartY = window.innerHeight - 100;
-          
-          let endX = secondaryStartX + Math.cos(angle) * distance;
-          let endY = secondaryStartY + Math.sin(angle) * distance - 100; // Float upward
-          
-          endX = Math.max(50, Math.min(window.innerWidth - 50, endX));
-          endY = Math.max(50, Math.min(window.innerHeight - 50, endY));
-          
-          const bubbleId = Date.now().toString() + 'secondary' + j;
-          const newBubble = { 
-            id: bubbleId, 
-            startX: secondaryStartX, 
-            startY: secondaryStartY, 
-            endX, 
-            endY,
-            size: 'small',
-            duration: 2000,
-            delay: 0
-          };
-          
-          setFlyingBubbles(prev => [...prev, newBubble]);
-          
-          setTimeout(() => {
-            setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-          }, 2500);
-        }, j * 150);
-      }
-    }, 800);
+      setFlyingBubbles(prev => 
+        prev.filter(bubble => !bubblesToCreate.some(created => created.id === bubble.id))
+      );
+    }, 1300); // Match CSS animation duration
   };
 
   // Show intro notifications on component mount
   useEffect(() => {
     // First notification - Welcome
-    const timer1 = setTimeout(() => {
+    const welcomeTimer = setTimeout(() => {
       toast.success("🎉 Selamat datang di ID Card Lampung!", { 
         position: 'top-center', 
         duration: 3000, 
@@ -248,63 +104,27 @@ const IDCardLampung = () => {
     }, 500);
 
     // Second notification - Swipe instruction
-    const timer2 = setTimeout(() => {
-      toast.info("👆 Geser kartu untuk melihat semua layanan", { 
+    const swipeTimer = setTimeout(() => {
+      toast.info("👆 Geser kartu untuk melihat info lainnya", { 
         position: 'top-center', 
         duration: 4000, 
         style: { 
           marginTop: '60px',
           fontSize: '13px',
           padding: '8px 12px',
-          minHeight: '40px',
+          minHeight: '38px',
           backgroundColor: '#3B82F6',
           color: 'white',
-          fontWeight: 'bold',
+          fontWeight: '500',
           border: '2px solid #60A5FA',
           boxShadow: '0 0 15px rgba(59, 130, 246, 0.3)'
         }
       });
-      
-             // Trigger smaller secondary bubble effect for second notification
-       setTimeout(() => {
-         for (let k = 0; k < 8; k++) {
-           setTimeout(() => {
-             const angle = Math.random() * 2 * Math.PI;
-             const distance = 80 + Math.random() * 120;
-             const startX = window.innerWidth / 2; // Center horizontally
-             const startY = window.innerHeight - 100; // Bottom center
-            
-            let endX = startX + Math.cos(angle) * distance;
-            let endY = startY + Math.sin(angle) * distance - 80;
-            
-            endX = Math.max(30, Math.min(window.innerWidth - 30, endX));
-            endY = Math.max(30, Math.min(window.innerHeight - 30, endY));
-            
-            const bubbleId = Date.now().toString() + 'info' + k;
-            const newBubble = { 
-              id: bubbleId, 
-              startX, 
-              startY, 
-              endX, 
-              endY,
-              size: 'small',
-              duration: 1500 + Math.random() * 800,
-              delay: k * 60
-            };
-            
-            setFlyingBubbles(prev => [...prev, newBubble]);
-            
-            setTimeout(() => {
-              setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-            }, newBubble.duration + newBubble.delay + 300);
-          }, k * 100);
-        }
-      }, 200);
-    }, 4200); // Show after first notification
+    }, 4000); // Show 3.5 seconds after welcome
 
     return () => {
-      clearTimeout(timer1);
-      clearTimeout(timer2);
+      clearTimeout(welcomeTimer);
+      clearTimeout(swipeTimer);
     };
   }, []);
 
@@ -790,8 +610,7 @@ const IDCardLampung = () => {
                   </div>
                 </div>
                 
-                {/* Chip with depth */}
-                <div className="absolute top-20 left-4 w-10 h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-md opacity-80"></div>
+
                 
                 {/* Pattern */}
                 <div className="absolute bottom-0 right-0 w-24 h-24 opacity-10">
@@ -856,8 +675,7 @@ const IDCardLampung = () => {
                   {cards[currentCard].content}
                 </div>
 
-                {/* 3D Card Chip */}
-                <div className="absolute top-24 left-6 w-12 h-8 bg-gradient-to-r from-yellow-400 to-yellow-600 rounded-md opacity-90 transform-gpu"></div>
+
 
                 {/* Card Pattern with depth */}
                 <div className="absolute bottom-0 right-0 w-32 h-32 opacity-10">
@@ -904,59 +722,29 @@ const IDCardLampung = () => {
           </div>
         </motion.div>
 
-        {/* Instructions */}
-        <SwipeTutorial isLoaded={isLoaded} currentCard={currentCard} totalCards={cards.length} />
+
       </div>
 
-      {/* Enhanced Flying Bubbles with Size Variations */}
-      {flyingBubbles.map((bubble) => {
-        const sizeClass = bubble.size === 'large' ? 'w-4 h-4' : 
-                         bubble.size === 'medium' ? 'w-3 h-3' : 'w-2 h-2';
-        const glowIntensity = bubble.size === 'large' ? '0 0 12px rgba(59, 130, 246, 0.6)' :
-                             bubble.size === 'medium' ? '0 0 8px rgba(59, 130, 246, 0.5)' : 
-                             '0 0 6px rgba(59, 130, 246, 0.4)';
-        
-        return (
-          <motion.div
-            key={bubble.id}
-            className={`absolute rounded-full bg-gradient-to-br from-blue-400 via-cyan-400 to-blue-500 ${sizeClass} opacity-70`}
-            initial={{
-              x: bubble.startX,
-              y: bubble.startY,
-              scale: 0,
-              opacity: 0
-            }}
-            animate={{
-              x: bubble.endX,
-              y: bubble.endY,
-              scale: [0, 1.2, 1, 0.8, 0],
-              opacity: [0, 0.8, 0.9, 0.6, 0],
-              rotate: [0, 360],
-            }}
-            transition={{
-              duration: (bubble.duration || 1200) / 1000,
-              delay: (bubble.delay || 0) / 1000,
-              ease: "easeOut",
-              times: [0, 0.2, 0.5, 0.8, 1]
-            }}
-            style={{
-              boxShadow: glowIntensity,
-              background: `radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), rgba(59, 130, 246, 0.6), rgba(59, 130, 246, 0.9))`,
-              border: '1px solid rgba(255, 255, 255, 0.3)',
-              backdropFilter: 'blur(1px)'
-            }}
-          >
-            {/* Inner shine effect for realistic bubble look */}
-            <div 
-              className="absolute top-0.5 left-0.5 w-1 h-1 bg-white/80 rounded-full"
-              style={{
-                transform: 'scale(0.5)',
-                filter: 'blur(0.5px)'
-              }}
-            />
-          </motion.div>
-        );
-      })}
+      {/* Flying Bubbles */}
+      {flyingBubbles.map((bubble) => (
+        <div
+          key={bubble.id}
+          className="flying-bubble"
+          style={{
+            left: bubble.startX,
+            top: bubble.startY,
+            '--end-x': `${bubble.endX}px`,
+            '--end-y': `${bubble.endY}px`,
+            '--start-x': `${bubble.startX}px`,
+            '--start-y': `${bubble.startY}px`,
+          } as React.CSSProperties & {
+            '--end-x': string;
+            '--end-y': string;
+            '--start-x': string;
+            '--start-y': string;
+          }}
+        />
+      ))}
     </div>
   );
 };
