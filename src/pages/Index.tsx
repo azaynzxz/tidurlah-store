@@ -427,7 +427,7 @@ const products = {
     {
       id: 24,
       name: "Cut Stiker Vynil Papan Bunga",
-      image: "/product-image/cut-stiker-vynil.png",
+      image: "/product-image/vynilcut.webp",
       additionalImages: [],
       description: "Jasa cutting stiker untuk papan bunga akrilik, desain dalam format CDR/JPG high resolution. Sudah termasuk Masking. Ukuran A3: 27.7 cm × 42 cm",
       price: 15000,
