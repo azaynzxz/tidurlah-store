@@ -8,13 +8,13 @@
   "Sections": [
     {
       "title": "Panduan Desain ID Card dan Lanyard",
-      "icon": "ikon-lanyard-idcard.png",
+      "icon": "src\pages\blog\panduan desain\lanyard icon.webp",
       "link": "Selengkapnya",
       "target": "Panduan Desain ID Card dan Lanyard"
     },
     {
       "title": "Panduan Desain Mug & Tumbler",
-      "icon": "ikon-mug-tumbler.png",
+      "icon": "src\pages\blog\panduan desain\mug icon.webp",
       "link": "Selengkapnya",
       "target": "Panduan Desain Mug & Tumbler"
     }
@@ -45,8 +45,7 @@
       "Examples": {
         "title": "Lihat Contoh Berikut",
         "images": [
-          "contoh-idcard-1.jpg",
-          "contoh-lanyard-1.jpg"
+          "src\pages\blog\panduan desain\contoh lanyard.webp",
         ]
       }
     },
@@ -59,12 +58,12 @@
         {
           "product": "Mug",
           "title": "Panduan Desain Mug by ID Card Lampung",
-          "image": "photo-link-mug.jpg"
+          "image": "src\pages\blog\panduan desain\Panduan cetak mug.webp"
         },
         {
           "product": "Tumbler",
           "title": "Panduan Desain Tumbler by ID Card Lampung",
-          "image": "photo-link-tumbler.jpg"
+          "image": "src\pages\blog\panduan desain\Panduan cetak tumbler.webp"
         }
       ]
     }

@@ -244,6 +244,18 @@ const blogPosts: BlogPost[] = [
     views: 320,
     image: "/blog-thumbnail/3_result.webp",
     slug: "syarat-ketentuan-pengembalian"
+  },
+  {
+    id: 19,
+    title: "Panduan Desain",
+    subtitle: "Panduan lengkap untuk mendesain produk ID Card, Lanyard, Mug, dan Tumbler dengan ukuran dan spesifikasi yang tepat",
+    author: "ID Card Lampung",
+    date: "2024-02-03",
+    tags: ["Panduan", "Desain", "Template", "Spesifikasi", "Tutorial"],
+    readTime: "10 menit",
+    views: 890,
+    image: "/blog-thumbnail/4_result.webp",
+    slug: "panduan-desain"
   }
 ];
 
