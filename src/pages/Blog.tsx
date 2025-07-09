@@ -208,6 +208,18 @@ const blogPosts: BlogPost[] = [
     views: 1180,
     image: "/blog-thumbnail/15_result.webp", 
     slug: "5-ide-desain-lanyard-anti-bosan-event-hits-lampung"
+  },
+  {
+    id: 16,
+    title: "Komitmen Kami terhadap Privasi Anda",
+    subtitle: "Kebijakan privasi lengkap tentang bagaimana Tidurlah Grafika melindungi dan mengelola informasi pribadi pelanggan",
+    author: "Tidurlah Grafika",
+    date: "2024-01-30",
+    tags: ["Kebijakan", "Privasi", "Keamanan", "Informasi", "Perlindungan"],
+    readTime: "8 menit",
+    views: 450,
+    image: "/blog-thumbnail/1_result.webp",
+    slug: "kebijakan-privasi"
   }
 ];
 

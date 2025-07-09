@@ -788,6 +788,149 @@ const blogPostsContent: Record<string, BlogPostData> = {
       </div>
     `,
     relatedProducts: ["ID Card & Lanyard"]
+  },
+
+  "kebijakan-privasi": {
+    title: "Komitmen Kami terhadap Privasi Anda",
+    subtitle: "Kebijakan privasi lengkap tentang bagaimana Tidurlah Grafika melindungi dan mengelola informasi pribadi pelanggan",
+    author: "Tidurlah Grafika",
+    date: "2024-01-30",
+    tags: ["Kebijakan", "Privasi", "Keamanan", "Informasi", "Perlindungan"],
+    content: `
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Komitmen Kami terhadap Privasi Anda</h1>
+          <p class="text-gray-700 leading-relaxed">Di Tidurlah Grafika (termasuk sub-brand ID Card Lampung), kami menghargai privasi Anda dan berkomitmen untuk melindungi informasi pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat Anda menggunakan layanan kami atau mengunjungi situs web kami. Kami ingin Anda merasa aman dan percaya bahwa informasi pribadi Anda diperlakukan dengan hati-hati dan bertanggung jawab.</p>
+        </div>
+        
+        <!-- Collapsible Section 1 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Informasi yang Kami Kumpulkan</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4 space-y-4">
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Kami dapat mengumpulkan informasi pribadi dari Anda saat Anda memesan ID Card, termasuk:</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                  <li>Nama</li>
+                  <li>Alamat email</li>
+                  <li>Nomor telepon</li>
+                  <li>Alamat pengiriman</li>
+                  <li>Data pribadi yang tertera di ID Card</li>
+                </ul>
+              </div>
+              
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-3">Kami juga mengumpulkan informasi tentang penggunaan Anda terhadap situs web kami, termasuk:</h3>
+                <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                  <li>Halaman yang Anda kunjungi</li>
+                  <li>Produk yang Anda lihat</li>
+                  <li>Waktu Anda menggunakan situs web kami</li>
+                </ul>
+              </div>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 2 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Cara Kami Menggunakan Informasi Anda</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <p class="text-gray-700 leading-relaxed mb-3">Kami menggunakan informasi Anda untuk:</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>Memproses pesanan Anda</li>
+                <li>Menawarkan layanan dan dukungan kepada Anda</li>
+                <li>Meningkatkan pengalaman Anda di situs web kami</li>
+                <li>Mengirimkan informasi tentang produk dan layanan kami</li>
+                <li>Menyediakan iklan yang relevan dan informasi promosi, dengan persetujuan Anda</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 3 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Berbagi Informasi Anda</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <p class="text-gray-700 leading-relaxed mb-3">Kami tidak akan membagikan informasi pribadi Anda dengan pihak ketiga tanpa izin Anda, kecuali:</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>Kami diwajibkan oleh hukum untuk melakukannya</li>
+                <li>Kami bekerja sama dengan perusahaan lain untuk menyediakan produk atau layanan kepada Anda, seperti penyedia jasa pengiriman</li>
+                <li>Kami menggunakan penyedia layanan pihak ketiga untuk membantu kami menjalankan bisnis kami, seperti penyedia hosting atau layanan analitik</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 4 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Keamanan Informasi Anda</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <p class="text-gray-700 leading-relaxed mb-3">Kami mengambil langkah-langkah untuk melindungi keamanan informasi Anda, termasuk:</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>Menggunakan enkripsi untuk melindungi informasi saat Anda mengirimkannya melalui internet</li>
+                <li>Menyimpan informasi Anda di drive yang aman dengan akses ketat</li>
+                <li>Melakukan audit keamanan berkala dan prosedur tanggap insiden</li>
+                <li>Membatasi akses ke informasi Anda hanya kepada karyawan dan pihak ketiga yang memerlukan akses untuk tujuan operasional</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 5 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Hak Anda</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <p class="text-gray-700 leading-relaxed mb-3">Anda memiliki hak untuk:</p>
+              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
+                <li>Mengakses informasi pribadi Anda yang kami miliki</li>
+                <li>Mengoreksi informasi pribadi Anda yang tidak akurat atau sudah usang</li>
+                <li>Menghapus informasi pribadi Anda, kecuali jika kami memiliki kewajiban hukum untuk menyimpannya</li>
+                <li>Meminta portabilitas data Anda</li>
+                <li>Menolak pemrosesan data Anda untuk tujuan tertentu</li>
+                <li>Menarik kembali persetujuan Anda kapan saja tanpa mempengaruhi legalitas pemrosesan berdasarkan persetujuan sebelum penarikannya</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 6 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Perubahan Kebijakan Privasi</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <p class="text-gray-700 leading-relaxed">Kami dapat mengubah kebijakan privasi ini dari waktu ke waktu. Setiap perubahan akan diposting di situs web kami dan, jika perubahan tersebut signifikan, kami akan memberikan pemberitahuan lebih lanjut, seperti melalui email atau pemberitahuan langsung di situs web kami.</p>
+            </div>
+          </details>
+        </div>
+        
+        <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+          <p class="text-gray-700 leading-relaxed">Jika Anda memiliki pertanyaan tentang kebijakan privasi ini atau ingin menggunakan hak Anda, silakan hubungi kami melalui informasi kontak yang tersedia di website.</p>
+        </div>
+      </div>
+    `,
+    relatedProducts: ["ID Card & Lanyard"]
   }
 };
 
