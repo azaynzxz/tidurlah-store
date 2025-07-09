@@ -813,22 +813,22 @@ const blogPostsContent: Record<string, BlogPostData> = {
             <div class="p-4 space-y-4">
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-3">Kami dapat mengumpulkan informasi pribadi dari Anda saat Anda memesan ID Card, termasuk:</h3>
-                <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                  <li>Nama</li>
-                  <li>Alamat email</li>
-                  <li>Nomor telepon</li>
-                  <li>Alamat pengiriman</li>
-                  <li>Data pribadi yang tertera di ID Card</li>
-                </ul>
+                                 <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                   <li>Nama</li>
+                   <li>Alamat email</li>
+                   <li>Nomor telepon</li>
+                   <li>Alamat pengiriman</li>
+                   <li>Data pribadi yang tertera di ID Card</li>
+                 </ul>
               </div>
               
               <div>
                 <h3 class="text-lg font-semibold text-gray-900 mb-3">Kami juga mengumpulkan informasi tentang penggunaan Anda terhadap situs web kami, termasuk:</h3>
-                <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                  <li>Halaman yang Anda kunjungi</li>
-                  <li>Produk yang Anda lihat</li>
-                  <li>Waktu Anda menggunakan situs web kami</li>
-                </ul>
+                                 <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                   <li>Halaman yang Anda kunjungi</li>
+                   <li>Produk yang Anda lihat</li>
+                   <li>Waktu Anda menggunakan situs web kami</li>
+                 </ul>
               </div>
             </div>
           </details>
@@ -843,13 +843,13 @@ const blogPostsContent: Record<string, BlogPostData> = {
             </summary>
             <div class="p-4">
               <p class="text-gray-700 leading-relaxed mb-3">Kami menggunakan informasi Anda untuk:</p>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Memproses pesanan Anda</li>
-                <li>Menawarkan layanan dan dukungan kepada Anda</li>
-                <li>Meningkatkan pengalaman Anda di situs web kami</li>
-                <li>Mengirimkan informasi tentang produk dan layanan kami</li>
-                <li>Menyediakan iklan yang relevan dan informasi promosi, dengan persetujuan Anda</li>
-              </ul>
+                             <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                 <li>Memproses pesanan Anda</li>
+                 <li>Menawarkan layanan dan dukungan kepada Anda</li>
+                 <li>Meningkatkan pengalaman Anda di situs web kami</li>
+                 <li>Mengirimkan informasi tentang produk dan layanan kami</li>
+                 <li>Menyediakan iklan yang relevan dan informasi promosi, dengan persetujuan Anda</li>
+               </ul>
             </div>
           </details>
         </div>
@@ -863,11 +863,11 @@ const blogPostsContent: Record<string, BlogPostData> = {
             </summary>
             <div class="p-4">
               <p class="text-gray-700 leading-relaxed mb-3">Kami tidak akan membagikan informasi pribadi Anda dengan pihak ketiga tanpa izin Anda, kecuali:</p>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Kami diwajibkan oleh hukum untuk melakukannya</li>
-                <li>Kami bekerja sama dengan perusahaan lain untuk menyediakan produk atau layanan kepada Anda, seperti penyedia jasa pengiriman</li>
-                <li>Kami menggunakan penyedia layanan pihak ketiga untuk membantu kami menjalankan bisnis kami, seperti penyedia hosting atau layanan analitik</li>
-              </ul>
+                             <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                 <li>Kami diwajibkan oleh hukum untuk melakukannya</li>
+                 <li>Kami bekerja sama dengan perusahaan lain untuk menyediakan produk atau layanan kepada Anda, seperti penyedia jasa pengiriman</li>
+                 <li>Kami menggunakan penyedia layanan pihak ketiga untuk membantu kami menjalankan bisnis kami, seperti penyedia hosting atau layanan analitik</li>
+               </ul>
             </div>
           </details>
         </div>
@@ -881,12 +881,12 @@ const blogPostsContent: Record<string, BlogPostData> = {
             </summary>
             <div class="p-4">
               <p class="text-gray-700 leading-relaxed mb-3">Kami mengambil langkah-langkah untuk melindungi keamanan informasi Anda, termasuk:</p>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Menggunakan enkripsi untuk melindungi informasi saat Anda mengirimkannya melalui internet</li>
-                <li>Menyimpan informasi Anda di drive yang aman dengan akses ketat</li>
-                <li>Melakukan audit keamanan berkala dan prosedur tanggap insiden</li>
-                <li>Membatasi akses ke informasi Anda hanya kepada karyawan dan pihak ketiga yang memerlukan akses untuk tujuan operasional</li>
-              </ul>
+                             <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                 <li>Menggunakan enkripsi untuk melindungi informasi saat Anda mengirimkannya melalui internet</li>
+                 <li>Menyimpan informasi Anda di drive yang aman dengan akses ketat</li>
+                 <li>Melakukan audit keamanan berkala dan prosedur tanggap insiden</li>
+                 <li>Membatasi akses ke informasi Anda hanya kepada karyawan dan pihak ketiga yang memerlukan akses untuk tujuan operasional</li>
+               </ul>
             </div>
           </details>
         </div>
@@ -900,14 +900,14 @@ const blogPostsContent: Record<string, BlogPostData> = {
             </summary>
             <div class="p-4">
               <p class="text-gray-700 leading-relaxed mb-3">Anda memiliki hak untuk:</p>
-              <ul class="list-disc list-inside space-y-2 text-gray-700 ml-4">
-                <li>Mengakses informasi pribadi Anda yang kami miliki</li>
-                <li>Mengoreksi informasi pribadi Anda yang tidak akurat atau sudah usang</li>
-                <li>Menghapus informasi pribadi Anda, kecuali jika kami memiliki kewajiban hukum untuk menyimpannya</li>
-                <li>Meminta portabilitas data Anda</li>
-                <li>Menolak pemrosesan data Anda untuk tujuan tertentu</li>
-                <li>Menarik kembali persetujuan Anda kapan saja tanpa mempengaruhi legalitas pemrosesan berdasarkan persetujuan sebelum penarikannya</li>
-              </ul>
+                             <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                 <li>Mengakses informasi pribadi Anda yang kami miliki</li>
+                 <li>Mengoreksi informasi pribadi Anda yang tidak akurat atau sudah usang</li>
+                 <li>Menghapus informasi pribadi Anda, kecuali jika kami memiliki kewajiban hukum untuk menyimpannya</li>
+                 <li>Meminta portabilitas data Anda</li>
+                 <li>Menolak pemrosesan data Anda untuk tujuan tertentu</li>
+                 <li>Menarik kembali persetujuan Anda kapan saja tanpa mempengaruhi legalitas pemrosesan berdasarkan persetujuan sebelum penarikannya</li>
+               </ul>
             </div>
           </details>
         </div>
@@ -928,6 +928,261 @@ const blogPostsContent: Record<string, BlogPostData> = {
         <div class="mt-8 p-4 bg-blue-50 rounded-lg">
           <p class="text-gray-700 leading-relaxed">Jika Anda memiliki pertanyaan tentang kebijakan privasi ini atau ingin menggunakan hak Anda, silakan hubungi kami melalui informasi kontak yang tersedia di website.</p>
         </div>
+      </div>
+    `,
+    relatedProducts: ["ID Card & Lanyard"]
+  },
+
+  "faq-pertanyaan-umum": {
+    title: "Apa yang bisa kami bantu?",
+    subtitle: "Pertanyaan umum seputar ID Card, Lanyard, dan layanan Tidurlah Grafika yang sering ditanyakan pelanggan",
+    author: "ID Card Lampung",
+    date: "2024-02-01",
+    tags: ["FAQ", "Bantuan", "ID Card", "Lanyard", "Produk"],
+    content: `
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Apa yang bisa kami bantu?</h1>
+          <p class="text-gray-700 leading-relaxed">Kami siap membantu Anda menemukan solusi terbaik untuk kebutuhan ID card dan lanyard Anda. Berikut adalah beberapa pertanyaan umum yang sering diajukan pelanggan kami:</p>
+        </div>
+        
+        <!-- Collapsible Section 1 - Tentang Produk -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Tentang Produk</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4 space-y-4">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Berapa ukuran ID Card dan Lanyard?</h3>
+                <p class="text-gray-700">Ukuran ID Card (56mm x 86mm) dan Lanyard (90cm x 2,25 cm)</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apa saja jenis ID card yang Anda tawarkan?</h3>
+                <p class="text-gray-700">Kami menyediakan berbagai jenis ID card, termasuk ID card standar, premium, custom.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apakah ada jenis ID Card RFID dan E-Money?</h3>
+                <p class="text-gray-700">Kami menyediakan custom RFID dan E-Money dengan minimum pembelian 100 pcs.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Bahan apa yang digunakan untuk pembuatan ID card?</h3>
+                <p class="text-gray-700">Kami menggunakan bahan PVC berkualitas tinggi dengan ketebalan 0.76 mm setara dengan ketebalan KTP/SIM dan kartu lainnya.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apa saja pilihan casing ID Card?</h3>
+                <p class="text-gray-700">Kami menawarkan pilihan casing berupa casing standar, transparan, semi transparan, dan premium.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Bisakah saya memesan lanyard dengan desain custom?</h3>
+                <p class="text-gray-700">Tentu saja! Kami menerima pesanan lanyard custom dengan desain, ukuran, dan bahan sesuai keinginan Anda.</p>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apa saja aksesoris tambahan yang tersedia untuk lanyard?</h3>
+                <p class="text-gray-700">Kami menawarkan berbagai aksesoris seperti hook, safety breakaway, badge holder, dan yoyo retractable.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 2 - Tentang Pemesanan -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Tentang Pemesanan</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4 space-y-4">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Bagaimana cara memesan ID card atau lanyard?</h3>
+                <p class="text-gray-700">Anda dapat menghubungi kami melalui telepon, WhatsApp, atau email. Tim kami akan memandu Anda melalui proses pemesanan.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Berapa lama waktu produksi ID card atau lanyard?</h3>
+                <p class="text-gray-700">Waktu produksi bervariasi tergantung pada jenis produk, jumlah pesanan, dan tingkat kesulitan desain. Kami akan memberikan estimasi waktu produksi saat Anda melakukan pemesanan.</p>
+              </div>
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apakah Anda menyediakan layanan pengiriman?</h3>
+                <p class="text-gray-700">Ya, kami menyediakan layanan pengiriman ke seluruh Indonesia, termasuk Bandar Lampung dan sekitarnya.</p>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apa saja metode pembayaran yang diterima?</h3>
+                <p class="text-gray-700">Kami menerima pembayaran melalui transfer bank, dan e-wallet.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 3 - Lain-lain -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Lain-lain</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4 space-y-4">
+              <div class="border-b border-gray-100 pb-4">
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Apakah Anda menyediakan jasa desain ID card atau lanyard?</h3>
+                <p class="text-gray-700">Ya, tim desainer kami yang berpengalaman siap membantu Anda menciptakan desain yang sesuai dengan identitas merek Anda.</p>
+              </div>
+              <div>
+                <h3 class="text-lg font-semibold text-gray-900 mb-2">Bisakah saya mendapatkan sampel produk sebelum memesan?</h3>
+                <p class="text-gray-700">Tentu saja! Anda dapat mengunjungi rumah produksi kami di Bandar Lampung untuk melihat contoh produk kami.</p>
+              </div>
+            </div>
+          </details>
+        </div>
+        
+        <div class="mt-8 p-4 bg-blue-50 rounded-lg">
+          <p class="text-gray-700 leading-relaxed">Jangan ragu untuk menghubungi kami melalui telepon, WhatsApp, atau email. Tim customer service kami siap membantu Anda dengan senang hati.</p>
+        </div>
+      </div>
+    `,
+    relatedProducts: ["ID Card & Lanyard"]
+  },
+
+  "syarat-ketentuan-pengembalian": {
+    title: "Syarat & Ketentuan Pengembalian Barang",
+    subtitle: "Kebijakan pengembalian yang fleksibel dan mudah diikuti untuk kepuasan pelanggan Tidurlah Grafika",
+    author: "ID Card Lampung",
+    date: "2024-02-02",
+    tags: ["Kebijakan", "Pengembalian", "Syarat", "Ketentuan", "Garansi"],
+    content: `
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-4">Syarat & Ketentuan</h1>
+          <p class="text-gray-700 leading-relaxed">Kami berkomitmen untuk memberikan kepuasan pelanggan terbaik. Jika Anda tidak sepenuhnya puas dengan pembelian Anda, kami menyediakan kebijakan pengembalian barang yang fleksibel dan mudah diikuti. Berikut adalah langkah-langkah dan syarat untuk melakukan pengembalian barang.</p>
+        </div>
+        
+        <!-- Collapsible Section 1 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Barang yang dapat dikembalikan</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                <li>Barang yang rusak atau cacat produksi</li>
+                <li>Barang yang tidak sesuai dengan pesanan</li>
+                <li>Barang yang tidak sampai ke alamat tujuan</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 2 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Barang yang tidak dapat dikembalikan</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                <li>Barang yang rusak karena kesalahan penggunaan</li>
+                <li>Barang yang rusak karena kesalahan desain dari pelanggan</li>
+                <li>Barang yang telah digunakan (kecuali ditemukan kerusakan atau cacat produksi)</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 3 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Syarat dan ketentuan pengembalian barang</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                <li>Barang harus dalam keadaan lengkap dan dalam kondisi semula (tidak termasuk kemasan yang dibuka dengan hati-hati)</li>
+                <li>Barang harus disertai dengan nota pembelian</li>
+                <li>Barang harus dikembalikan dalam waktu maksimal 1 hari setelah diterima</li>
+                <li>Untuk barang yang tidak sampai ke alamat tujuan, pelanggan harus melaporkan dalam waktu 24 jam setelah estimasi waktu pengiriman</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 4 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Proses pengembalian barang</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                <li>Pelanggan dapat menghubungi ID Card Lampung melalui email halo.idcardlampung@gmail.com atau WhatsApp +6285172157808 untuk mengajukan pengembalian barang. Mohon sertakan foto barang dan deskripsi masalah</li>
+                <li>ID Card Lampung akan memverifikasi keluhan pelanggan dan akan memberikan instruksi selanjutnya dalam waktu 2 hari kerja</li>
+                <li>Biaya pengiriman barang yang dikembalikan akan ditanggung oleh ID Card Lampung jika kesalahan ada pada pihak kami (barang rusak, cacat produksi, tidak sesuai pesanan, atau tidak sampai)</li>
+                <li>Pelanggan akan mengirimkan barang yang dikembalikan sesuai dengan instruksi dari ID Card Lampung</li>
+                <li>ID Card Lampung akan memeriksa barang yang dikembalikan dan akan memberikan keputusan dalam waktu maksimal 7 hari kerja setelah barang diterima</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+        <!-- Collapsible Section 5 -->
+        <div class="border border-gray-200 rounded-lg">
+          <details class="group">
+            <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+              <h2 class="text-xl font-bold text-gray-900">Kebijakan pengembalian dana</h2>
+              <span class="transform group-open:rotate-180 transition-transform">▼</span>
+            </summary>
+            <div class="p-4">
+              <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                <li>Jika barang yang dikembalikan diterima dan diverifikasi sesuai dengan syarat dan ketentuan, ID Card Lampung akan menawarkan pengembalian dana, penggantian barang, sesuai pilihan pelanggan</li>
+                <li>Proses pengembalian dana akan dilakukan dalam waktu maksimal 7 hari kerja setelah keputusan pengembalian diterbitkan</li>
+              </ul>
+            </div>
+          </details>
+        </div>
+        
+                 <!-- Collapsible Section 6 -->
+         <div class="border border-gray-200 rounded-lg">
+           <details class="group">
+             <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+               <h2 class="text-xl font-bold text-gray-900">Perlindungan data pribadi</h2>
+               <span class="transform group-open:rotate-180 transition-transform">▼</span>
+             </summary>
+             <div class="p-4">
+               <ul class="list-disc list-outside space-y-2 text-gray-700 ml-6 pl-2">
+                 <li>Semua informasi pribadi yang diberikan oleh pelanggan selama proses pengembalian akan dijaga kerahasiaannya dan hanya digunakan untuk keperluan pengembalian barang</li>
+                 <li>ID Card Lampung berkomitmen untuk melindungi privasi pelanggan sesuai dengan peraturan yang berlaku</li>
+               </ul>
+             </div>
+           </details>
+         </div>
+         
+         <!-- Collapsible Section 7 - Alur Pengembalian Barang -->
+         <div class="border border-gray-200 rounded-lg">
+           <details class="group">
+             <summary class="flex justify-between items-center p-4 cursor-pointer bg-gray-50 hover:bg-gray-100 rounded-lg">
+               <h2 class="text-xl font-bold text-gray-900">Alur pengembalian barang</h2>
+               <span class="transform group-open:rotate-180 transition-transform">▼</span>
+             </summary>
+             <div class="p-4">
+               <div class="flex justify-center">
+                 <img 
+                   src="/product-image/aturan-pengembalian-barang.jpg" 
+                   alt="Alur pengembalian barang - Panduan lengkap proses pengembalian barang ID Card Lampung"
+                   class="max-w-full h-auto object-contain rounded-lg shadow-md"
+                   style="max-height: 600px; width: auto;"
+                 />
+               </div>
+               <p class="text-gray-600 text-sm text-center mt-3 italic">Diagram alur pengembalian barang untuk memudahkan pelanggan memahami prosesnya</p>
+             </div>
+           </details>
+         </div>
+         
+         <div class="mt-8 p-4 bg-green-50 rounded-lg">
+           <h3 class="text-lg font-semibold text-green-800 mb-2">Proses Mudah dan Cepat untuk Kebutuhan Cetak Anda</h3>
+           <p class="text-green-700 leading-relaxed">Untuk informasi lebih lanjut mengenai alur pengembalian barang, jangan ragu untuk menghubungi tim customer service kami.</p>
+         </div>
       </div>
     `,
     relatedProducts: ["ID Card & Lanyard"]

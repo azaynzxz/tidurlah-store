@@ -220,6 +220,30 @@ const blogPosts: BlogPost[] = [
     views: 450,
     image: "/blog-thumbnail/1_result.webp",
     slug: "kebijakan-privasi"
+  },
+  {
+    id: 17,
+    title: "Apa yang bisa kami bantu?",
+    subtitle: "Pertanyaan umum seputar ID Card, Lanyard, dan layanan Tidurlah Grafika yang sering ditanyakan pelanggan",
+    author: "ID Card Lampung",
+    date: "2024-02-01",
+    tags: ["FAQ", "Bantuan", "ID Card", "Lanyard", "Produk"],
+    readTime: "6 menit",
+    views: 680,
+    image: "/blog-thumbnail/2_result.webp",
+    slug: "faq-pertanyaan-umum"
+  },
+  {
+    id: 18,
+    title: "Syarat & Ketentuan Pengembalian Barang",
+    subtitle: "Kebijakan pengembalian yang fleksibel dan mudah diikuti untuk kepuasan pelanggan Tidurlah Grafika",
+    author: "ID Card Lampung",
+    date: "2024-02-02",
+    tags: ["Kebijakan", "Pengembalian", "Syarat", "Ketentuan", "Garansi"],
+    readTime: "5 menit",
+    views: 320,
+    image: "/blog-thumbnail/3_result.webp",
+    slug: "syarat-ketentuan-pengembalian"
   }
 ];
 

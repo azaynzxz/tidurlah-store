@@ -1,0 +1,72 @@
+{
+  "identify": "Panduan Desain - Halaman Utama",
+  "H1": "Panduan Desain",
+  "P": [
+    "Selamat datang di halaman Panduan Desain! Di sini, kami menyediakan panduan lengkap untuk mendesain produk ID Card, Lanyard, Mug, dan Tumbler.",
+    "Panduan ini bertujuan untuk menyesuaikan ukuran desain dengan hasil cetak produk yang diinginkan. Dengan mengikuti panduan desain kami, Anda akan memahami berbagai elemen penting seperti ukuran, format, tata letak, warna, dan tipografi yang ideal untuk setiap produk."
+  ],
+  "Sections": [
+    {
+      "title": "Panduan Desain ID Card dan Lanyard",
+      "icon": "ikon-lanyard-idcard.png",
+      "link": "Selengkapnya",
+      "target": "Panduan Desain ID Card dan Lanyard"
+    },
+    {
+      "title": "Panduan Desain Mug & Tumbler",
+      "icon": "ikon-mug-tumbler.png",
+      "link": "Selengkapnya",
+      "target": "Panduan Desain Mug & Tumbler"
+    }
+  ],
+  "Quote": "Not everyone knows design, but everything is designed.",
+  "Details": {
+    "Panduan Desain ID Card dan Lanyard": {
+      "H1": "Panduan Desain ID Card dan Lanyard",
+      "P": [
+        "Tips dan Inspirasi untuk Menciptakan Desain Profesional",
+        "Selamat datang di Panduan Desain ID Card dan Lanyard dari ID Card Lampung. Di halaman ini, kami akan memberikan panduan untuk membantu Anda menciptakan desain ID Card dan lanyard yang sesuai dengan standar cetak ID Card dan Lanyard kami.",
+        "Apakah Anda mendesain untuk perusahaan, acara, atau organisasi, panduan ini akan memastikan desain Anda sesuai dan memenuhi kebutuhan Anda."
+      ],
+      "ProductGuides": [
+        {
+          "product": "ID Card",
+          "size": "56 mm x 86 mm",
+          "title": "Panduan Desain ID Card by ID Card Lampung",
+          "image": "src\pages\blog\panduan desain\panduan-id-card.webp"
+        },
+        {
+          "product": "Lanyard",
+          "size": "90 cm x 2,25 cm",
+          "title": "Panduan Desain Lanyard ID Card Lampung",
+          "image": "src\pages\blog\panduan desain\panduan lanyard.webp"
+        }
+      ],
+      "Examples": {
+        "title": "Lihat Contoh Berikut",
+        "images": [
+          "contoh-idcard-1.jpg",
+          "contoh-lanyard-1.jpg"
+        ]
+      }
+    },
+    "Panduan Desain Mug & Tumbler": {
+      "H1": "Panduan Desain Mug & Tumbler",
+      "P": [
+        "Panduan desain ini ditujukan untuk memastikan desain Mug dan Tumbler Anda sesuai dengan ukuran dan spesifikasi cetak kami. Pastikan Anda mengikuti layout dan batas aman agar hasil cetak optimal."
+      ],
+      "ProductGuides": [
+        {
+          "product": "Mug",
+          "title": "Panduan Desain Mug by ID Card Lampung",
+          "image": "photo-link-mug.jpg"
+        },
+        {
+          "product": "Tumbler",
+          "title": "Panduan Desain Tumbler by ID Card Lampung",
+          "image": "photo-link-tumbler.jpg"
+        }
+      ]
+    }
+  }
+}
