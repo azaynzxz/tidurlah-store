@@ -71,8 +71,8 @@ const promotedProducts: PromotedProductType[] = [
   {
     id: 8,
     discount: 15,
-    endDate: new Date('2025-07-15'),
-    promoCode: "KKN15",
+    endDate: new Date('2025-09-30'),
+    promoCode: "SEPTEMBERCERIA",
     minQuantity: 7,
     description: "Promo spesial untuk mahasiswa KKN! Diskon 15% untuk pembelian minimal 7 pcs. Tunjukkan ID mahasiswa saat pengambilan."
   }
@@ -395,7 +395,8 @@ const products = {
         { minQuantity: 100, price: 18000 }
       ],
       time: "1-2 hari",
-      rating: 4.7
+      rating: 4.7,
+      outOfStock: true
     }
   ],
   "Merchandise": [
@@ -469,14 +470,14 @@ const products = {
       image: "/product-image/Ganci-5-cm1.jpg",
       additionalImages: [],
       description: "Ganci custom cetak diameter 5 cm.",
-      price: 3000,
+      price: 5000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 3000 },
-        { minQuantity: 4, price: 2700 },
-        { minQuantity: 25, price: 2500 },
-        { minQuantity: 100, price: 2300 }
+        { minQuantity: 1, price: 5000 },
+        { minQuantity: 4, price: 4500 },
+        { minQuantity: 25, price: 4000 },
+        { minQuantity: 100, price: 3000 }
       ],
       time: "1-2 hari",
       rating: 4.7
@@ -487,14 +488,14 @@ const products = {
       image: "/product-image/Ganci-3cm-1.jpg",
       additionalImages: [],
       description: "Ganci custom cetak diameter 3 cm.",
-      price: 5000,
+      price: 3000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 5000 },
-        { minQuantity: 4, price: 4500 },
-        { minQuantity: 25, price: 4000 },
-        { minQuantity: 100, price: 3000 }
+        { minQuantity: 1, price: 3000 },
+        { minQuantity: 4, price: 2700 },
+        { minQuantity: 25, price: 2500 },
+        { minQuantity: 100, price: 2300 }
       ],
       time: "1 hari",
       rating: 4.6
@@ -549,14 +550,14 @@ const products = {
         "/product-image/Insert Paper 3.jpg"
       ],
       description: "Tumbler travel custom cetak dengan tutup, cocok untuk minuman panas dan dingin.",
-      price: 65000,
+      price: 28000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 65000 },
-        { minQuantity: 4, price: 60000 },
-        { minQuantity: 25, price: 55000 },
-        { minQuantity: 100, price: 50000 }
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 4, price: 27000 },
+        { minQuantity: 25, price: 26000 },
+        { minQuantity: 100, price: 25000 }
       ],
       time: "3-5 hari",
       rating: 4.9
@@ -1333,6 +1334,20 @@ const Index = () => {
 
   // Open product details modal
   const openProductDetails = (product: any) => {
+    // Prevent opening modal if product is out of stock
+    if (product.outOfStock) {
+      toast.error("Produk ini sedang tidak tersedia.", { 
+        position: 'top-center', 
+        style: { 
+          marginTop: '60px',
+          backgroundColor: '#ff4500',
+          color: 'white'
+        },
+        duration: 2000
+      });
+      return;
+    }
+    
     setSelectedProduct(product);
     setCurrentImageIndex(0);
     setModalQuantity(1); // Set initial quantity to 1 instead of 0
@@ -1892,6 +1907,11 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               alt={product.name}
                               className="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
+                            {product.outOfStock && (
+                              <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10">
+                                <span className="text-white font-bold rounded-md bg-slate-900 bg-opacity-70 px-4 py-2 text-lg">Stok Kosong</span>
+                              </div>
+                            )}
                             {product.bestseller && (
                               <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md z-[5]">
                                 Produk Terlaris
@@ -1961,7 +1981,14 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               </span>
                             )}
                           </div>
-                          {product.pricingMethod === "dimensional" ? (
+                          {product.outOfStock ? (
+                            <button
+                              disabled
+                              className="mt-1 w-full bg-gray-300 text-gray-500 rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center cursor-not-allowed"
+                            >
+                              Stok Kosong
+                            </button>
+                          ) : product.pricingMethod === "dimensional" ? (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();

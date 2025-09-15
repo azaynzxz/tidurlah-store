@@ -78,7 +78,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
     <div className="mb-3">
       <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center">
         <Tag className="h-4 w-4 mr-1 text-green-600" />
-        Promo Khusus Mahasiswa KKN
+        Promo Khusus September Ceria
       </h2>
       <div className="grid grid-cols-1 gap-2">
         {promotedProductsWithData.map((product: any) => (
