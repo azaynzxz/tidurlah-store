@@ -79,6 +79,7 @@ const promotedProducts: PromotedProductType[] = [
 ];
 
 // Product Data with Price Thresholds
+const PRODUCT_VERSION = Date.now(); // Force refresh
 const products = {
   "ID Card & Lanyard": [
     {
@@ -308,6 +309,100 @@ const products = {
       ],
       time: "1-2 hari",
       rating: 4.5
+    },
+    {
+      id: 26,
+      name: "ID Card Yoyo (Tanpa Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-REG.png",
+      additionalImages: [],
+      description: "ID card yoyo praktis. Ready stok berbagai warna.",
+      price: 20000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 20000 },
+        { minQuantity: 10, price: 15000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.7
+    },
+    {
+      id: 27,
+      name: "ID Card Yoyo (Dengan Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-REG-STIKER.png",
+      additionalImages: [],
+      description: "ID card yoyo custom dengan stiker logo Anda.",
+      price: 30000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 30000 },
+        { minQuantity: 10, price: 25000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.7
+    },
+    {
+      id: 28,
+      name: "ID Card Yoyo Premium Akrilik (Tanpa Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-PREM-AK.png",
+      additionalImages: [],
+      description: "Yoyo dengan case premium akrilik transparan.",
+      price: 28000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 28000 },
+        { minQuantity: 10, price: 25000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
+    },
+    {
+      id: 29,
+      name: "ID Card Yoyo Premium Akrilik (Dengan Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-PREM-AK-STIKER.png",
+      additionalImages: [],
+      description: "Yoyo dengan case premium akrilik transparan dan stiker custom.",
+      price: 38000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 38000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
+    },
+    {
+      id: 30,
+      name: "ID Card Yoyo Premium Semi Transparan (Tanpa Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-PREM-SEMI.png",
+      additionalImages: [],
+      description: "Yoyo premium dengan case semi transparan warna biru.",
+      price: 25000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 25000 },
+        { minQuantity: 10, price: 23000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
+    },
+    {
+      id: 31,
+      name: "ID Card Yoyo Premium Semi Transparan (Dengan Stiker)",
+      image: "/product-image/New Product/IDC-YOYO-PREM-SEMI-STIKER.png",
+      additionalImages: [],
+      description: "Yoyo premium dengan case semi transparan dan stiker custom.",
+      price: 35000,
+      discountPrice: null,
+      category: "ID Card & Lanyard",
+      priceThresholds: [
+        { minQuantity: 1, price: 35000 }
+      ],
+      time: "2-3 hari",
+      rating: 4.8
     }
   ],
   "Media Promosi": [
@@ -395,14 +490,14 @@ const products = {
         { minQuantity: 100, price: 18000 }
       ],
       time: "1-2 hari",
-      rating: 4.7,
-      outOfStock: true
-    }
+      rating: 4.7
+    },
+ 
   ],
   "Merchandise": [
     {
       id: 15,
-      name: "Cutting Stiker Kontur",
+      name: "Cutting Stiker Kontur Chromo",
       image: "/product-image/Cut Stiker.jpg",
       additionalImages: [
         "/product-image/cut-stiker1.jpg"
@@ -424,6 +519,21 @@ const products = {
         { type: "Laminasi Glossy", price: 0 },
         { type: "Tanpa Laminasi", price: 0 }
       ]
+    },
+       {
+      id: 32,
+      name: "Cutting Stiker Vinyl A3+",
+      image: "/product-image/New Product/STIKER-VYNIL.png",
+      additionalImages: ["/product-image/New Product/STIKER-VYNIL-2.png"],
+      description: "Cetak stiker bahan vinyl berkualitas per lembar A3+.",
+      price: 22000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 22000 }
+      ],
+      time: "1-2 hari",
+      rating: 4.8
     },
     {
       id: 24,
@@ -466,24 +576,6 @@ const products = {
     },
     {
       id: 17,
-      name: "Ganci 5 cm",
-      image: "/product-image/Ganci-5-cm1.jpg",
-      additionalImages: [],
-      description: "Ganci custom cetak diameter 5 cm.",
-      price: 5000,
-      discountPrice: null,
-      category: "Merchandise",
-      priceThresholds: [
-        { minQuantity: 1, price: 5000 },
-        { minQuantity: 4, price: 4500 },
-        { minQuantity: 25, price: 4000 },
-        { minQuantity: 100, price: 3000 }
-      ],
-      time: "1-2 hari",
-      rating: 4.7
-    },
-    {
-      id: 18,
       name: "Ganci 3 cm",
       image: "/product-image/Ganci-3cm-1.jpg",
       additionalImages: [],
@@ -496,6 +588,24 @@ const products = {
         { minQuantity: 4, price: 2700 },
         { minQuantity: 25, price: 2500 },
         { minQuantity: 100, price: 2300 }
+      ],
+      time: "1-2 hari",
+      rating: 4.7
+    },
+    {
+      id: 18,
+      name: "Ganci 5 cm", // Updated product
+      image: "/product-image/Ganci-5-cm1.jpg",
+      additionalImages: [],
+      description: "Ganci custom cetak diameter 5 cm.",
+      price: 5000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 5000 },
+        { minQuantity: 4, price: 4500 },
+        { minQuantity: 25, price: 4000 },
+        { minQuantity: 100, price: 3000 }
       ],
       time: "1 hari",
       rating: 4.6
@@ -550,14 +660,14 @@ const products = {
         "/product-image/Insert Paper 3.jpg"
       ],
       description: "Tumbler travel custom cetak dengan tutup, cocok untuk minuman panas dan dingin.",
-      price: 28000,
+      price: 65000,
       discountPrice: null,
       category: "Merchandise",
       priceThresholds: [
-        { minQuantity: 1, price: 28000 },
-        { minQuantity: 4, price: 27000 },
-        { minQuantity: 25, price: 26000 },
-        { minQuantity: 100, price: 25000 }
+        { minQuantity: 1, price: 65000 },
+        { minQuantity: 4, price: 60000 },
+        { minQuantity: 25, price: 55000 },
+        { minQuantity: 100, price: 50000 }
       ],
       time: "3-5 hari",
       rating: 4.9
@@ -594,6 +704,44 @@ const products = {
         { code: "PKA011", image: "/product-image/plakat/PKA 011.jpg" },
         { code: "PKA012", image: "/product-image/plakat/PKA 012.jpg" }
       ]
+    },
+    {
+      id: 101,
+      name: "Gelang Tiket Kertas",
+      image: "/product-image/New Product/GELANG-TIKET.png",
+      additionalImages: [],
+      description: "Gelang tiket bahan kertas untuk event, konser, dan seminar.",
+      price: 1000,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 1000 },
+        { minQuantity: 3000, price: 950 },
+        { minQuantity: 5000, price: 800 },
+        { minQuantity: 7000, price: 750 },
+        { minQuantity: 9000, price: 700 },
+        { minQuantity: 20001, price: 520 }
+      ],
+      time: "3-5 hari",
+      rating: 4.8
+    },
+    {
+      id: 102,
+      name: "Gelang Tiket Tissue",
+      image: "/product-image/New Product/GELANG-TIKET-TISSUE.png",
+      additionalImages: ["/product-image/New Product/GELANG-TIKET-TISSUE-2.png"],
+      description: "Gelang tiket premium bahan tissue, nyaman dipakai. Sudah termasuk cetak, potong, dan pengunci.",
+      price: 3500,
+      discountPrice: null,
+      category: "Merchandise",
+      priceThresholds: [
+        { minQuantity: 1, price: 3500 },
+        { minQuantity: 2001, price: 3000 },
+        { minQuantity: 5001, price: 2500 },
+        { minQuantity: 10001, price: 2000 }
+      ],
+      time: "7-25 hari",
+      rating: 4.9
     },
     {
       id: 23,
@@ -1334,20 +1482,6 @@ const Index = () => {
 
   // Open product details modal
   const openProductDetails = (product: any) => {
-    // Prevent opening modal if product is out of stock
-    if (product.outOfStock) {
-      toast.error("Produk ini sedang tidak tersedia.", { 
-        position: 'top-center', 
-        style: { 
-          marginTop: '60px',
-          backgroundColor: '#ff4500',
-          color: 'white'
-        },
-        duration: 2000
-      });
-      return;
-    }
-    
     setSelectedProduct(product);
     setCurrentImageIndex(0);
     setModalQuantity(1); // Set initial quantity to 1 instead of 0
@@ -1808,7 +1942,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
   const stikerWithLaminationIds = [15]; // Cutting Stiker Kontur
 
   return (
-    <div className="min-h-screen bg-white notranslate flex flex-col" translate="no">
+    <div key={PRODUCT_VERSION} className="min-h-screen bg-white notranslate flex flex-col" translate="no">
       <div className="container mx-auto max-w-md md:max-w-full lg:max-w-7xl bg-white flex-1 flex flex-col px-4 md:px-6 lg:px-6">
         {/* Header */}
         <div className="bg-white shadow-sm p-3 lg:p-4 flex justify-between items-center sticky top-0 z-50 -mx-4 md:-mx-6 lg:-mx-6 px-4 md:px-6 lg:px-6">
@@ -1907,11 +2041,6 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               alt={product.name}
                               className="absolute top-0 left-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
-                            {product.outOfStock && (
-                              <div className="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center z-10">
-                                <span className="text-white font-bold rounded-md bg-slate-900 bg-opacity-70 px-4 py-2 text-lg">Stok Kosong</span>
-                              </div>
-                            )}
                             {product.bestseller && (
                               <div className="absolute top-2 left-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold shadow-md z-[5]">
                                 Produk Terlaris
@@ -1981,14 +2110,7 @@ Total: Rp ${(calculateTotal() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (i
                               </span>
                             )}
                           </div>
-                          {product.outOfStock ? (
-                            <button
-                              disabled
-                              className="mt-1 w-full bg-gray-300 text-gray-500 rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center cursor-not-allowed"
-                            >
-                              Stok Kosong
-                            </button>
-                          ) : product.pricingMethod === "dimensional" ? (
+                          {product.pricingMethod === "dimensional" ? (
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
