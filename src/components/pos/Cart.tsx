@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check, ChevronDown, ChevronUp } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Star } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { calculateBannerPrice } from "@/utils/product";
@@ -220,6 +220,27 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       position: 'top-center',
       duration: 2000,
     });
+  };
+
+  // Smart fill function to copy delivery info to customer details
+  const handleSmartFill = () => {
+    if (customerDetails.delivery) {
+      setCustomerDetails(prev => ({
+        ...prev,
+        name: customerDetails.delivery.recipientName,
+        phone: customerDetails.delivery.recipientPhone
+      }));
+      
+      toast.success("Informasi pelanggan diisi otomatis dari data pengiriman", {
+        position: 'top-center',
+        duration: 2000,
+      });
+    } else {
+      toast.error("Belum ada informasi pengiriman. Isi terlebih dahulu.", {
+        position: 'top-center',
+        duration: 2000,
+      });
+    }
   };
 
   const handleProcessOrder = async () => {
@@ -491,9 +512,24 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
             
             <div className="grid grid-cols-2 gap-2">
               <div>
-                <Label htmlFor="customer-name" className="text-xs font-medium text-gray-600">
-                  Nama Lengkap *
-                </Label>
+                <div className="flex items-center gap-2 mb-1">
+                  <button
+                    onClick={handleSmartFill}
+                    className="p-1 rounded-full hover:bg-yellow-100 transition-colors group"
+                    title="Isi otomatis dari data pengiriman"
+                  >
+                    <Star 
+                      className={`h-4 w-4 transition-colors ${
+                        customerDetails.delivery 
+                          ? 'text-yellow-500 group-hover:text-yellow-600' 
+                          : 'text-gray-400 group-hover:text-gray-500'
+                      }`} 
+                    />
+                  </button>
+                  <Label htmlFor="customer-name" className="text-xs font-medium text-gray-600">
+                    Nama Lengkap *
+                  </Label>
+                </div>
                 <Input
                   id="customer-name"
                   type="text"
