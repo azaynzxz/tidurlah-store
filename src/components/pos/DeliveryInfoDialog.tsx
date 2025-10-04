@@ -14,7 +14,7 @@ interface DeliveryInfo {
 interface DeliveryInfoDialogProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSubmit: (deliveryInfo: DeliveryInfo) => void;
+  onSubmit: (deliveryInfo: DeliveryInfo, ongkirPrice: number) => void;
   onCancel: () => void;
 }
 
@@ -24,6 +24,7 @@ export function DeliveryInfoDialog({ open, onOpenChange, onSubmit, onCancel }: D
     recipientPhone: '',
     address: ''
   });
+  const [ongkirPrice, setOngkirPrice] = useState('');
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -32,7 +33,8 @@ export function DeliveryInfoDialog({ open, onOpenChange, onSubmit, onCancel }: D
       return;
     }
 
-    onSubmit(deliveryInfo);
+    const ongkir = parseFloat(ongkirPrice) || 0;
+    onSubmit(deliveryInfo, ongkir);
     
     // Reset form
     setDeliveryInfo({
@@ -40,6 +42,7 @@ export function DeliveryInfoDialog({ open, onOpenChange, onSubmit, onCancel }: D
       recipientPhone: '',
       address: ''
     });
+    setOngkirPrice('');
   };
 
   const handleCancel = () => {
@@ -49,6 +52,7 @@ export function DeliveryInfoDialog({ open, onOpenChange, onSubmit, onCancel }: D
       recipientPhone: '',
       address: ''
     });
+    setOngkirPrice('');
     onCancel();
   };
 
@@ -104,6 +108,25 @@ export function DeliveryInfoDialog({ open, onOpenChange, onSubmit, onCancel }: D
               className="mt-1 border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01] min-h-[80px]"
               required
             />
+          </div>
+
+          <div>
+            <Label htmlFor="ongkir" className="text-sm font-medium text-gray-700">
+              Biaya Pengiriman (Ongkir)
+            </Label>
+            <Input
+              id="ongkir"
+              type="number"
+              placeholder="Rp 0"
+              value={ongkirPrice}
+              onChange={(e) => setOngkirPrice(e.target.value)}
+              className="mt-1 border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+              min="0"
+              step="1000"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Kosongkan atau isi 0 jika tidak ada biaya pengiriman
+            </p>
           </div>
 
           <div className="flex gap-2 pt-2">

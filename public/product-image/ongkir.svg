@@ -1,0 +1,17 @@
+<svg width="200" height="200" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background Circle -->
+  <circle cx="100" cy="100" r="95" fill="#10B981" stroke="#059669" stroke-width="4"/>
+  
+  <!-- Inner Circle -->
+  <circle cx="100" cy="100" r="75" fill="white" opacity="0.9"/>
+  
+  <!-- Truck Icon -->
+  <path d="M70 120 L130 120 L130 100 L140 100 L140 80 L130 80 L130 60 L70 60 L70 120 Z" fill="#10B981" stroke="#059669" stroke-width="2"/>
+  <circle cx="85" cy="120" r="8" fill="#374151"/>
+  <circle cx="115" cy="120" r="8" fill="#374151"/>
+  
+  <!-- Ongkir Text -->
+  <text x="100" y="160" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" font-weight="bold" fill="#10B981">
+    ONGKIR
+  </text>
+</svg>

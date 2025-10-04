@@ -16,6 +16,14 @@ interface ReceiptData {
     tax: number;
     total: number;
   };
+  shipping?: {
+    customerName: string;
+    customerPhone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    notes?: string;
+  };
 }
 
 export class ReceiptGenerator {
@@ -104,6 +112,19 @@ export class ReceiptGenerator {
     currentY = this.drawText(`No. Struk: ${data.receiptId}`, this.padding, currentY, this.smallFont);
     currentY = this.drawText(`Tanggal: ${data.timestamp}`, this.padding, currentY, this.smallFont);
     currentY = this.drawText(`Kasir: ${data.cashier}`, this.padding, currentY, this.smallFont);
+
+    // Shipping Info (if available)
+    if (data.shipping) {
+      currentY = this.drawLine(currentY + 8);
+      currentY = this.drawText('INFORMASI PENGIRIMAN', this.padding, currentY, this.normalFont);
+      currentY = this.drawText(`Nama: ${data.shipping.customerName}`, this.padding, currentY, this.smallFont);
+      currentY = this.drawText(`Telp: ${data.shipping.customerPhone}`, this.padding, currentY, this.smallFont);
+      currentY = this.drawText(`Alamat: ${data.shipping.address}`, this.padding, currentY, this.smallFont);
+      currentY = this.drawText(`${data.shipping.city} ${data.shipping.postalCode}`, this.padding, currentY, this.smallFont);
+      if (data.shipping.notes) {
+        currentY = this.drawText(`Catatan: ${data.shipping.notes}`, this.padding, currentY, this.smallFont);
+      }
+    }
 
     currentY = this.drawLine(currentY + 8);
 

@@ -32,6 +32,11 @@ interface ReceiptData {
     tax: number;
     total: number;
   };
+  shipping?: {
+    customerName: string;
+    customerPhone: string;
+    address: string;
+  };
 }
 
 interface OrderHistoryProps {
@@ -417,6 +422,24 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                             <span>{selectedOrder.customer.instansi}</span>
                           </div>
                         )}
+                      </>
+                    )}
+                    {selectedOrder.shipping && (
+                      <>
+                        <div className="receipt-separator"></div>
+                        <div className="receipt-shipping-title">INFORMASI PENGIRIMAN</div>
+                        <div className="receipt-meta-row">
+                          <span>Nama:</span>
+                          <span>{selectedOrder.shipping.customerName}</span>
+                        </div>
+                        <div className="receipt-meta-row">
+                          <span>Telp:</span>
+                          <span>{selectedOrder.shipping.customerPhone}</span>
+                        </div>
+                        <div className="receipt-meta-row">
+                          <span>Alamat:</span>
+                          <span>{selectedOrder.shipping.address}</span>
+                        </div>
                       </>
                     )}
                   </div>

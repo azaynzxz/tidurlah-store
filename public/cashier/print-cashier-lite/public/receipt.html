@@ -245,6 +245,19 @@
             <div><strong>Kasir:</strong> ${data.cashier}</div>
         </div>
 
+        ${data.shipping ? `
+        <div class="separator"></div>
+        
+        <div class="receipt-meta">
+            <div style="font-weight: bold; margin-bottom: 8px; text-align: center;">INFORMASI PENGIRIMAN</div>
+            <div><strong>Nama:</strong> ${data.shipping.customerName}</div>
+            <div><strong>Telp:</strong> ${data.shipping.customerPhone}</div>
+            <div><strong>Alamat:</strong> ${data.shipping.address}</div>
+            <div>${data.shipping.city} ${data.shipping.postalCode}</div>
+            ${data.shipping.notes ? `<div><strong>Catatan:</strong> ${data.shipping.notes}</div>` : ''}
+        </div>
+        ` : ''}
+
         <div class="separator"></div>
 
         <div class="items-list">

@@ -926,6 +926,41 @@
       "bestseller": true,
       "unit": "design",
       "is_available": true
+    },
+    {
+      "id": 2001,
+      "name": "Jasa Express",
+      "image": "/product-image/express-service.svg",
+      "additionalImages": [],
+      "description": "Layanan express untuk pengerjaan cepat dalam 24 jam.",
+      "price": 25000,
+      "discountPrice": null,
+      "category": "Jasa & Layanan",
+      "priceThresholds": [
+        { "minQuantity": 1, "price": 25000 }
+      ],
+      "time": "24 jam",
+      "rating": 4.9,
+      "unit": "order",
+      "is_available": true
+    },
+    {
+      "id": 2002,
+      "name": "Ongkir",
+      "image": "/product-image/ongkir.svg",
+      "additionalImages": [],
+      "description": "Biaya pengiriman yang dapat disesuaikan.",
+      "price": 0,
+      "discountPrice": null,
+      "category": "Jasa & Layanan",
+      "priceThresholds": [
+        { "minQuantity": 1, "price": 0 }
+      ],
+      "time": "Sesuai jadwal",
+      "rating": 4.5,
+      "unit": "order",
+      "is_available": true,
+      "isCustomizable": true
     }
   ]
 }

@@ -23,6 +23,14 @@ interface ReceiptData {
     tax: number;
     total: number;
   };
+  shipping?: {
+    customerName: string;
+    customerPhone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    notes?: string;
+  };
 }
 
 interface OrderHistoryProps {
@@ -194,6 +202,22 @@ export function OrderHistory({ onBack }: OrderHistoryProps) {
                           </Button>
                         </div>
                       </div>
+
+                      {/* Shipping Information */}
+                      {order.shipping && (
+                        <div className="mb-3 p-3 bg-secondary/20 rounded-lg">
+                          <h4 className="text-sm font-semibold text-foreground mb-2">Informasi Pengiriman</h4>
+                          <div className="space-y-1 text-xs">
+                            <div><strong>Nama:</strong> {order.shipping.customerName}</div>
+                            <div><strong>Telp:</strong> {order.shipping.customerPhone}</div>
+                            <div><strong>Alamat:</strong> {order.shipping.address}</div>
+                            <div>{order.shipping.city} {order.shipping.postalCode}</div>
+                            {order.shipping.notes && (
+                              <div><strong>Catatan:</strong> {order.shipping.notes}</div>
+                            )}
+                          </div>
+                        </div>
+                      )}
 
                       <div className="space-y-2">
                         {order.items.map((item, index) => (

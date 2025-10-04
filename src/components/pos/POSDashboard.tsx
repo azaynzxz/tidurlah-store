@@ -82,6 +82,7 @@ interface CartItem {
     isDimensionalProduct?: boolean;
     dimensionText?: string;
     area?: string;
+    customPrice?: number;
   };
 }
 
@@ -318,11 +319,61 @@ export function POSDashboard() {
     setCartItems([]);
   };
 
-  // Calculate applicable price for products (same logic as Cart component)
+
+  // Add design service to cart
+  const handleAddDesignService = () => {
+    // Find the design service product from products.json
+    const designService = products.find(p => p.id === 200);
+    
+    if (designService) {
+      // Check if design service is already in cart
+      const existingItem = cartItems.find(item => item.product.id === 200);
+      
+      if (!existingItem) {
+        const newItem: CartItem = {
+          product: designService,
+          quantity: 1,
+          options: {}
+        };
+        
+        setCartItems(prev => [...prev, newItem]);
+      }
+    }
+  };
+
+  // Add express service to cart
+  const handleAddExpressService = () => {
+    // Find the express service product from products.json
+    const expressService = products.find(p => p.id === 2001);
+    
+    if (expressService) {
+      // Check if express service is already in cart
+      const existingItem = cartItems.find(item => item.product.id === 2001);
+      
+      if (!existingItem) {
+        const newItem: CartItem = {
+          product: expressService,
+          quantity: 1,
+          options: {}
+        };
+        
+        setCartItems(prev => [...prev, newItem]);
+      }
+    }
+  };
+
+  // Calculate applicable price for cart items (same logic as Cart component)
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Handle ongkir with dynamic price from options
+    if (product.id === 2002 && options?.customPrice) {
+      return options.customPrice;
+    }
+
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height);
+      const area = options.width * options.height;
+      const basePrice = product.basePricePerSqm || product.price;
+      return basePrice * area;
     }
 
     // Handle regular price thresholds
@@ -341,20 +392,28 @@ export function POSDashboard() {
     return product.discountPrice || product.price;
   };
 
-  // Add design service to cart
-  const handleAddDesignService = () => {
-    // Find the design service product from products.json
-    const designService = products.find(p => p.id === 200);
+  // Add ongkir to cart with custom price
+  const handleAddOngkir = (price: number) => {
+    // Find the ongkir product from products.json
+    const ongkirProduct = products.find(p => p.id === 2002);
     
-    if (designService) {
-      // Check if design service is already in cart
-      const existingItem = cartItems.find(item => item.product.id === 200);
+    if (ongkirProduct) {
+      // Check if ongkir is already in cart
+      const existingItem = cartItems.find(item => item.product.id === 2002);
       
-      if (!existingItem) {
+      if (existingItem) {
+        // Update existing ongkir item with new price in options
+        setCartItems(prev => prev.map(item => 
+          item.product.id === 2002 
+            ? { ...item, options: { ...item.options, customPrice: price } }
+            : item
+        ));
+      } else {
+        // Add new ongkir item with custom price in options
         const newItem: CartItem = {
-          product: designService,
+          product: ongkirProduct, // Keep original product from JSON
           quantity: 1,
-          options: {}
+          options: { customPrice: price } // Store custom price in options
         };
         
         setCartItems(prev => [...prev, newItem]);
@@ -662,7 +721,13 @@ export function POSDashboard() {
           discount: 0,
           tax: 0,
           total: subtotal
-        }
+        },
+        // Add shipping info in the format expected by OrderHistory
+        shipping: customerDetails.delivery ? {
+          customerName: customerDetails.delivery.recipientName,
+          customerPhone: customerDetails.delivery.recipientPhone,
+          address: customerDetails.delivery.address
+        } : undefined
       };
 
       // Prepare POS order data for Google Sheets
@@ -876,6 +941,8 @@ export function POSDashboard() {
             onUpdateOptions={handleUpdateOptions}
             onPrintOrder={handlePrintOrder}
             onAddDesignService={handleAddDesignService}
+            onAddExpressService={handleAddExpressService}
+            onAddOngkir={handleAddOngkir}
             isBluetoothSupported={isBluetoothSupported()}
           />
         </div>

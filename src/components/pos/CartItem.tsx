@@ -43,6 +43,7 @@ interface CartItemType {
     isDimensionalProduct?: boolean;
     dimensionText?: string;
     area?: string;
+    customPrice?: number;
   };
 }
 
@@ -110,6 +111,11 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
 
   // Calculate applicable price based on quantity thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Handle ongkir with dynamic price from options
+    if (product.id === 2002 && options?.customPrice) {
+      return options.customPrice;
+    }
+
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
       return calculateBannerPrice(product, options.width, options.height);

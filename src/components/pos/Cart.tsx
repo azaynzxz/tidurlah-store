@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check } from "lucide-react";
+import { Check, ChevronDown, ChevronUp } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { calculateBannerPrice } from "@/utils/product";
@@ -58,6 +58,8 @@ interface CartProps {
   onUpdateOptions: (productId: number, options: any) => void;
   onPrintOrder?: (customerDetails: CustomerDetails) => Promise<boolean>;
   onAddDesignService: () => void;
+  onAddExpressService: () => void;
+  onAddOngkir: (price: number) => void;
   isBluetoothSupported?: boolean;
 }
 
@@ -74,7 +76,7 @@ interface CustomerDetails {
   delivery?: DeliveryInfo;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, isBluetoothSupported }: CartProps) {
+export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
@@ -84,7 +86,17 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   const [isPrinting, setIsPrinting] = useState(false);
   const [isDesignServiceSelected, setIsDesignServiceSelected] = useState(false);
   const [isDeliverySelected, setIsDeliverySelected] = useState(false);
+  const [isExpressSelected, setIsExpressSelected] = useState(false);
   const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
+  const [isLayananExpanded, setIsLayananExpanded] = useState(true);
+  const [isPelangganExpanded, setIsPelangganExpanded] = useState(true);
+
+  // Sync express service checkbox with cart items
+  useEffect(() => {
+    const expressServiceInCart = items.some(item => item.product.id === 2001);
+    setIsExpressSelected(expressServiceInCart);
+  }, [items]);
+
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -96,6 +108,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
   // Calculate totals with price thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Handle ongkir with dynamic price from options
+    if (product.id === 2002 && options?.customPrice) {
+      return options.customPrice;
+    }
+
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
       return calculateBannerPrice(product, options.width, options.height);
@@ -123,6 +140,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   }, 0);
 
   const totalDiscounts = items.reduce((total, item) => {
+    // Skip discount calculation for ongkir (custom price product)
+    if (item.product.id === 2002) {
+      return total;
+    }
+    
     const originalPrice = item.product.price;
     const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
     if (applicablePrice < originalPrice) {
@@ -152,15 +174,48 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     if (checked) {
       setShowDeliveryDialog(true);
     } else {
-      // Remove delivery info if unchecked
+      // Remove delivery info and ongkir if unchecked
       setCustomerDetails(prev => ({ ...prev, delivery: undefined }));
+      const ongkirItem = items.find(item => item.product.id === 2002);
+      if (ongkirItem) {
+        onRemoveItem(2002);
+      }
     }
   };
 
+  // Handle express service checkbox
+  const handleExpressChange = (checked: boolean) => {
+    setIsExpressSelected(checked);
+    if (checked) {
+      onAddExpressService();
+      toast.success("Jasa Express ditambahkan ke keranjang", {
+        position: 'top-center',
+        duration: 2000,
+      });
+    } else {
+      // Remove express service from cart when unchecked
+      const expressServiceItem = items.find(item => item.product.id === 2001);
+      if (expressServiceItem) {
+        onRemoveItem(2001);
+        toast.success("Jasa Express dihapus dari keranjang", {
+          position: 'top-center',
+          duration: 2000,
+        });
+      }
+    }
+  };
+
+
   // Handle delivery info submission
-  const handleDeliveryInfoSubmit = (deliveryInfo: DeliveryInfo) => {
+  const handleDeliveryInfoSubmit = (deliveryInfo: DeliveryInfo, ongkirPrice: number) => {
     setCustomerDetails(prev => ({ ...prev, delivery: deliveryInfo }));
     setShowDeliveryDialog(false);
+    
+    // Add ongkir to cart if price > 0
+    if (ongkirPrice > 0) {
+      onAddOngkir(ongkirPrice);
+    }
+    
     toast.success("Informasi pengiriman berhasil disimpan", {
       position: 'top-center',
       duration: 2000,
@@ -217,6 +272,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       
       // Reset customer details after successful order
       setCustomerDetails({ name: '', phone: '', instansi: '' });
+      setIsExpressSelected(false);
     } catch (error) {
       console.error('Error processing order:', error);
       toast.error('Terjadi kesalahan saat memproses pesanan.', {
@@ -287,6 +343,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       if (printSuccess) {
         // Reset customer details after successful print
         setCustomerDetails({ name: '', phone: '', instansi: '' });
+        setIsExpressSelected(false);
       }
     } catch (error) {
       console.error('Error printing receipt:', error);
@@ -341,51 +398,96 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       {items.length > 0 && (
         <div className="border-t bg-white">
           {/* Service Options Section */}
-          <div className="p-2 space-y-2 border-b bg-gray-50">
-            <h3 className="text-xs font-semibold text-gray-700 mb-2">
-              Layanan Tambahan
-            </h3>
-            
-            <div className="space-y-2">
-              <div className="flex items-center space-x-2">
-                <CheckboxPrimitive.Root
-                  id="design-service"
-                  checked={isDesignServiceSelected}
-                  onCheckedChange={handleDesignServiceChange}
-                  className="peer h-4 w-4 shrink-0 rounded-sm border border-[#FF5E01] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#FF5E01] data-[state=checked]:text-white"
-                >
-                  <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
-                    <Check className="h-4 w-4" />
-                  </CheckboxPrimitive.Indicator>
-                </CheckboxPrimitive.Root>
-                <Label htmlFor="design-service" className="text-xs font-medium text-gray-700 cursor-pointer">
-                  Jasa Desain (+Rp 25.000)
-                </Label>
-              </div>
-              
-              <div className="flex items-center space-x-2">
-                <CheckboxPrimitive.Root
-                  id="delivery-service"
-                  checked={isDeliverySelected}
-                  onCheckedChange={handleDeliveryChange}
-                  className="peer h-4 w-4 shrink-0 rounded-sm border border-[#FF5E01] ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 data-[state=checked]:bg-[#FF5E01] data-[state=checked]:text-white"
-                >
-                  <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current">
-                    <Check className="h-4 w-4" />
-                  </CheckboxPrimitive.Indicator>
-                </CheckboxPrimitive.Root>
-                <Label htmlFor="delivery-service" className="text-xs font-medium text-gray-700 cursor-pointer">
-                  Pengiriman
-                </Label>
+          <div className="border-b bg-gray-50">
+            {/* Header with Collapse Button */}
+            <div 
+              className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => setIsLayananExpanded(!isLayananExpanded)}
+            >
+              <h3 className="text-xs font-semibold text-gray-700">
+                Layanan Tambahan
+              </h3>
+              <div className="flex items-center">
+                {isLayananExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
               </div>
             </div>
+            
+            {/* Collapsible Content */}
+            {isLayananExpanded && (
+              <div className="px-2 pb-2 transition-all duration-300 ease-in-out">
+                <div className="grid grid-cols-3 gap-2">
+                  {/* Jasa Desain */}
+                  <button
+                    onClick={() => handleDesignServiceChange(!isDesignServiceSelected)}
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
+                      isDesignServiceSelected
+                        ? 'bg-[#FF5E01] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Jasa Desain
+                    <br />
+                    <span className="text-xs opacity-80">+Rp 25.000</span>
+                  </button>
+                  
+                  {/* Pengiriman */}
+                  <button
+                    onClick={() => handleDeliveryChange(!isDeliverySelected)}
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
+                      isDeliverySelected
+                        ? 'bg-[#FF5E01] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Pengiriman
+                    <br />
+                    <span className="text-xs opacity-80">+ Ongkir</span>
+                  </button>
+                  
+                  {/* Jasa Express */}
+                  <button
+                    onClick={() => handleExpressChange(!isExpressSelected)}
+                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
+                      isExpressSelected
+                        ? 'bg-[#FF5E01] text-white shadow-md'
+                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                    }`}
+                  >
+                    Jasa Express
+                    <br />
+                    <span className="text-xs opacity-80">+Rp 25.000</span>
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Customer Details Section */}
-          <div className="p-2 space-y-2 border-b bg-gray-50">
-            <h3 className="text-xs font-semibold text-gray-700 mb-2">
-              Informasi Pelanggan
-            </h3>
+          <div className="border-b bg-gray-50">
+            {/* Header with Collapse Button */}
+            <div 
+              className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+              onClick={() => setIsPelangganExpanded(!isPelangganExpanded)}
+            >
+              <h3 className="text-xs font-semibold text-gray-700">
+                Informasi Pelanggan
+              </h3>
+              <div className="flex items-center">
+                {isPelangganExpanded ? (
+                  <ChevronUp className="h-4 w-4 text-gray-500" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 text-gray-500" />
+                )}
+              </div>
+            </div>
+            
+            {/* Collapsible Content */}
+            {isPelangganExpanded && (
+              <div className="px-2 pb-2 space-y-2 transition-all duration-300 ease-in-out">
             
             <div className="grid grid-cols-2 gap-2">
               <div>
@@ -432,6 +534,8 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                 className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
               />
             </div>
+              </div>
+            )}
           </div>
 
           {/* Price Summary */}
@@ -452,6 +556,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                   <span className="font-medium">- {formatCurrency(totalDiscounts)}</span>
                 </div>
               )}
+
 
               <div className="flex justify-between text-sm font-bold text-[#FF5E01] pt-1 border-t">
                 <span>TOTAL:</span>

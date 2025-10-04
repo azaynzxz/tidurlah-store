@@ -1,8 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { CartItem } from "./CartItem";
 import { Separator } from "@/components/ui/separator";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { toast } from "@/hooks/use-toast";
 import { ReceiptGenerator } from "@/lib/receiptGenerator";
+import { useState } from "react";
 
 interface Product {
   id: number;
@@ -30,6 +35,15 @@ interface CartProps {
 }
 
 export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder }: CartProps) {
+  const [shippingInfo, setShippingInfo] = useState({
+    customerName: '',
+    customerPhone: '',
+    address: '',
+    city: '',
+    postalCode: '',
+    notes: ''
+  });
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -56,6 +70,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   const finalTotal = subtotal + tax;
 
   const receiptGenerator = new ReceiptGenerator();
+
 
   const handleProcessOrder = () => {
     if (items.length === 0) {
@@ -91,7 +106,8 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         discount: totalDiscounts,
         tax,
         total: finalTotal
-      }
+      },
+      shipping: shippingInfo.customerName ? shippingInfo : undefined
     };
 
     // Save to localStorage for receipt viewing
@@ -160,6 +176,79 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
           ))
         )}
       </div>
+
+      {/* Shipping Information */}
+      {items.length > 0 && (
+        <div className="p-4 border-t border-cart-border bg-secondary/20">
+          <h3 className="text-sm font-semibold text-foreground mb-3">Informasi Pengiriman</h3>
+          <div className="space-y-3">
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="customerName" className="text-xs">Nama Pelanggan</Label>
+                <Input
+                  id="customerName"
+                  value={shippingInfo.customerName}
+                  onChange={(e) => setShippingInfo(prev => ({ ...prev, customerName: e.target.value }))}
+                  placeholder="Nama lengkap"
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div>
+                <Label htmlFor="customerPhone" className="text-xs">No. Telepon</Label>
+                <Input
+                  id="customerPhone"
+                  value={shippingInfo.customerPhone}
+                  onChange={(e) => setShippingInfo(prev => ({ ...prev, customerPhone: e.target.value }))}
+                  placeholder="08xxxxxxxxxx"
+                  className="h-8 text-xs"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="address" className="text-xs">Alamat Lengkap</Label>
+              <Textarea
+                id="address"
+                value={shippingInfo.address}
+                onChange={(e) => setShippingInfo(prev => ({ ...prev, address: e.target.value }))}
+                placeholder="Jl. Nama Jalan, No. Rumah, RT/RW"
+                className="h-16 text-xs resize-none"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <Label htmlFor="city" className="text-xs">Kota</Label>
+                <Input
+                  id="city"
+                  value={shippingInfo.city}
+                  onChange={(e) => setShippingInfo(prev => ({ ...prev, city: e.target.value }))}
+                  placeholder="Bandar Lampung"
+                  className="h-8 text-xs"
+                />
+              </div>
+              <div>
+                <Label htmlFor="postalCode" className="text-xs">Kode Pos</Label>
+                <Input
+                  id="postalCode"
+                  value={shippingInfo.postalCode}
+                  onChange={(e) => setShippingInfo(prev => ({ ...prev, postalCode: e.target.value }))}
+                  placeholder="35131"
+                  className="h-8 text-xs"
+                />
+              </div>
+            </div>
+            <div>
+              <Label htmlFor="notes" className="text-xs">Catatan (Opsional)</Label>
+              <Textarea
+                id="notes"
+                value={shippingInfo.notes}
+                onChange={(e) => setShippingInfo(prev => ({ ...prev, notes: e.target.value }))}
+                placeholder="Catatan khusus untuk pengiriman"
+                className="h-12 text-xs resize-none"
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Summary */}
       {items.length > 0 && (
