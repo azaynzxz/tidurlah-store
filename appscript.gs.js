@@ -1,6 +1,8 @@
 // Replace with your Google Sheet ID
 const SPREADSHEET_ID = '1bK-hq2TDTGElXt0sJbrhGy2ka--leelHlOiH9EhUDhk';
 const DATA_ENTRY_SHEET_NAME = "Sheet1";
+const ORDER_DATA_SHEET_NAME = "OrderData";
+const CASHIER_ORDERS_SHEET_NAME = "Cashier Orders";
 const TIME_STAMP_COLUMN_NAME = "Timestamp";
 
 // Admin email addresses to receive notifications
@@ -40,8 +42,71 @@ const doPost = (request = {}) => {
   try {
     const { postData: { contents, type } = {} } = request;
     
-    // Parse the incoming data
-    var data = parseFormData(contents);
+    console.log('=== doPost RECEIVED REQUEST ===');
+    console.log('Raw POST data:', contents);
+    console.log('Content type:', type);
+    console.log('Contents length:', contents ? contents.length : 0);
+    console.log('Starts with {:', contents ? contents.startsWith('{') : false);
+    
+    // Parse form data first to check for POS marker
+    var parsedData = parseFormData(contents);
+    console.log('Parsed form data keys:', Object.keys(parsedData));
+    
+    // Check if this is a POS order using the isPOSOrder marker
+    if (parsedData.isPOSOrder === 'true' && parsedData.posData) {
+      console.log('Detected POS order marker, processing POS data...');
+      try {
+        const posOrderData = JSON.parse(parsedData.posData);
+        console.log('Successfully parsed POS data:', JSON.stringify(posOrderData));
+        
+        if (posOrderData.receiptId) {
+          console.log('receiptId found:', posOrderData.receiptId, '- Processing as POS order');
+          // Handle POS order
+          const result = submitPOSOrder(posOrderData);
+          
+          return ContentService.createTextOutput(JSON.stringify(result))
+            .setMimeType(ContentService.MimeType.JSON);
+        } else {
+          console.error('POS data missing receiptId:', Object.keys(posOrderData));
+        }
+      } catch (jsonError) {
+        console.error('Error parsing POS data JSON:', jsonError.toString());
+      }
+    }
+    
+    // Check if this is a POS order (JSON format - fallback method)
+    if (contents && (contents.startsWith('{') || type === 'application/json')) {
+      console.log('Detected potential JSON data, attempting to parse...');
+      try {
+        const posOrderData = JSON.parse(contents);
+        console.log('Successfully parsed JSON data:', JSON.stringify(posOrderData));
+        
+        // Validate that this is actually POS data by checking for receiptId
+        if (posOrderData.receiptId) {
+          console.log('receiptId found:', posOrderData.receiptId, '- Processing as POS order');
+          // Handle POS order
+          const result = submitPOSOrder(posOrderData);
+          
+          return ContentService.createTextOutput(JSON.stringify(result))
+            .setMimeType(ContentService.MimeType.JSON);
+        } else {
+          console.log('JSON data detected but no receiptId found, treating as regular order');
+          console.log('Available keys in JSON:', Object.keys(posOrderData));
+        }
+          
+      } catch (jsonError) {
+        console.error('Error parsing POS JSON data:', jsonError.toString());
+        console.log('JSON parsing failed, falling back to regular form data parsing');
+      }
+    } else {
+      console.log('Not JSON format, processing as regular form data');
+    }
+    
+    console.log('Processing as regular website order...');
+    // Use already parsed data
+    var data = parsedData;
+    
+    console.log('Parsed form data:', JSON.stringify(data));
     
     // Add timestamp
     if(TIME_STAMP_COLUMN_NAME !== ""){
@@ -58,6 +123,8 @@ const doPost = (request = {}) => {
     })).setMimeType(ContentService.MimeType.JSON);
     
   } catch (error) {
+    console.error('Error in doPost:', error.toString());
+    console.error('Error stack:', error.stack);
     // Return error response
     return ContentService.createTextOutput(JSON.stringify({
       success: false,
@@ -66,55 +133,132 @@ const doPost = (request = {}) => {
   }
 };
 
-// Parse the form data
+// Parse the form data - IMPROVED VERSION
 function parseFormData(postData) {
   var data = {};
+  
+  if (!postData) {
+    console.error('No POST data received');
+    return data;
+  }
+  
   var parameters = postData.split('&');
   
   for (var i = 0; i < parameters.length; i++) {
     var keyValue = parameters[i].split('=');
     if (keyValue.length >= 2) {
-      // For DesignNote, we need to handle it specially since we manually encoded it
-      if (keyValue[0] === 'DesignNote') {
-        data[keyValue[0]] = decodeURIComponent(keyValue[1]);
+      var key = keyValue[0];
+      var value = keyValue[1];
+      
+      // Handle special fields that need careful decoding
+      if (key === 'DesignNote' || key === 'OrderDetails') {
+        // First handle plus signs (before decoding)
+        value = value.replace(/\+/g, ' ');
+        // Then decode URI components
+        value = decodeURIComponent(value);
       } else {
         // For other fields, handle normally
-        var value = keyValue[1].replace(/\+/g, ' ');
-        data[keyValue[0]] = decodeURIComponent(value);
+        value = value.replace(/\+/g, ' ');
+        value = decodeURIComponent(value);
       }
+      
+      data[key] = value;
     }
   }
   
+  console.log('Parsed form data:', JSON.stringify(data));
   return data;
 }
 
-// Format order details as human-readable semicolon-separated string
+// Format order details as human-readable semicolon-separated string - IMPROVED VERSION
 function formatOrderDetails(orderDetailsStr) {
+  if (!orderDetailsStr) {
+    console.log('No order details to format');
+    return '';
+  }
+  
+  console.log('Raw order details string:', orderDetailsStr);
+  
   try {
+    // Clean the string before parsing
+    let cleanedStr = orderDetailsStr;
+    
+    // Handle HTML entities
+    cleanedStr = cleanedStr.replace(/&quot;/g, '"');
+    cleanedStr = cleanedStr.replace(/&amp;/g, '&');
+    cleanedStr = cleanedStr.replace(/&lt;/g, '<');
+    cleanedStr = cleanedStr.replace(/&gt;/g, '>');
+    
+    // Handle URL encoding remnants
+    cleanedStr = cleanedStr.replace(/%22/g, '"');
+    cleanedStr = cleanedStr.replace(/%5B/g, '[');
+    cleanedStr = cleanedStr.replace(/%5D/g, ']');
+    cleanedStr = cleanedStr.replace(/%7B/g, '{');
+    cleanedStr = cleanedStr.replace(/%7D/g, '}');
+    
+    console.log('Cleaned order details string:', cleanedStr);
+    
     // Parse the JSON string
-    const orderDetails = JSON.parse(orderDetailsStr);
+    const orderDetails = JSON.parse(cleanedStr);
+    
+    console.log('Parsed order details:', JSON.stringify(orderDetails));
     
     // Format each item and join with semicolons
-    return orderDetails.map(item => {
-      // Replace '+' with spaces in the name
-      const name = item.name.replace(/\+/g, ' ');
-      return `${name} (${item.quantity}) - Rp ${Number(item.price).toLocaleString('id-ID')}`;
-    }).join('; ');
+    const formattedItems = orderDetails.map(item => {
+      // Clean the name field
+      const name = item.name ? item.name.replace(/\+/g, ' ') : 'Unknown Item';
+      const quantity = item.quantity || 1;
+      const price = item.price || 0;
+      
+      // Format price with Indonesian locale
+      const formattedPrice = Number(price).toLocaleString('id-ID');
+      
+      return `${name} (${quantity}) - Rp ${formattedPrice}`;
+    });
+    
+    const result = formattedItems.join('; ');
+    console.log('Formatted order details:', result);
+    
+    return result;
+    
   } catch (error) {
     console.error('Error formatting order details:', error);
-    return orderDetailsStr; // Return original if parsing fails
+    console.error('Original string:', orderDetailsStr);
+    
+    // Return original string if parsing fails
+    return orderDetailsStr;
   }
 }
 
-// Clean and format text fields
+// Clean and format text fields - IMPROVED VERSION
 function cleanTextFormat(text) {
   if (!text) return '';
   
-  // Format newlines only (+ is already handled in parseFormData)
-  return text.replace(/%0A/g, '\n').replace(/%0D/g, '');
+  // First handle plus signs (convert to spaces)
+  text = text.replace(/\+/g, ' ');
+  
+  // Then decode all URL-encoded characters
+  try {
+    text = decodeURIComponent(text);
+  } catch (e) {
+    console.log('Error decoding text:', e);
+    // If decoding fails, manually handle common URL encodings
+    text = text.replace(/%20/g, ' ')
+               .replace(/%3A/g, ':')
+               .replace(/%2F/g, '/')
+               .replace(/%3F/g, '?')
+               .replace(/%3D/g, '=')
+               .replace(/%26/g, '&')
+               .replace(/%25/g, '%');
+  }
+  
+  // Format newlines and carriage returns
+  text = text.replace(/%0A/g, '\n').replace(/%0D/g, '');
+  
+  return text;
 }
 
-// Send email notification about new order
+// Send email notification about new order - IMPROVED VERSION
 function sendOrderEmail(orderData) {
   try {
     // Create email subject
@@ -122,14 +266,30 @@ function sendOrderEmail(orderData) {
     
     // Format the order details for email
     let orderItems = [];
-    try {
-      const parsedItems = JSON.parse(orderData.OrderDetails.replace(/&quot;/g, '"'));
-      orderItems = parsedItems.map(item => 
-        `- ${item.name} (${item.quantity}) - Rp ${Number(item.price).toLocaleString('id-ID')}`
-      ).join('\n');
-    } catch (e) {
-      // If parsing fails, use the formatted string as is
-      orderItems = orderData.OrderDetails;
+    
+    if (orderData.OrderDetails) {
+      try {
+        // Try to parse as JSON first
+        let parsedItems;
+        let orderDetailsStr = orderData.OrderDetails;
+        
+        // If it's already formatted (contains semicolons), use as is
+        if (orderDetailsStr.includes(';') && orderDetailsStr.includes('Rp')) {
+          orderItems = orderDetailsStr.split(';').map(item => `- ${item.trim()}`).join('\n');
+        } else {
+          // Try to parse as JSON
+          orderDetailsStr = orderDetailsStr.replace(/&quot;/g, '"');
+          parsedItems = JSON.parse(orderDetailsStr);
+          
+          orderItems = parsedItems.map(item => 
+            `- ${item.name} (${item.quantity}) - Rp ${Number(item.price).toLocaleString('id-ID')}`
+          ).join('\n');
+        }
+      } catch (e) {
+        console.error('Error parsing order details for email:', e);
+        // If parsing fails, use the string as is
+        orderItems = orderData.OrderDetails;
+      }
     }
     
     // Create email body
@@ -178,6 +338,7 @@ function sendOrderEmail(orderData) {
       );
     });
     
+    console.log('Email notifications sent successfully');
     return true;
   } catch (error) {
     console.error('Error sending email notification:', error);
@@ -185,63 +346,79 @@ function sendOrderEmail(orderData) {
   }
 }
 
-// Append data to Google Sheet
+// Append data to Google Sheet - IMPROVED VERSION
 function appendToGoogleSheet(data) {
-  // Get headers from first row
-  var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
-  
-  // Clean and format CustomerName field
-  if (data.CustomerName) {
-    data.CustomerName = cleanTextFormat(data.CustomerName);
+  try {
+    // Get headers from first row
+    var headers = sheet.getRange(1, 1, 1, sheet.getLastColumn()).getValues()[0];
+    
+    // Clean and format CustomerName field
+    if (data.CustomerName) {
+      data.CustomerName = cleanTextFormat(data.CustomerName);
+    }
+    
+    // Clean and format Instansi field
+    if (data.Instansi) {
+      data.Instansi = cleanTextFormat(data.Instansi);
+    }
+    
+    // Format PhoneNumber field to standard format
+    if (data.PhoneNumber) {
+      data.PhoneNumber = formatPhoneNumber(data.PhoneNumber);
+    }
+    
+    // Clean and format Address field
+    if (data.Address) {
+      data.Address = cleanTextFormat(data.Address);
+    }
+    
+    // Clean and format DesignNote field properly
+    if (data.DesignNote) {
+      data.DesignNote = cleanTextFormat(data.DesignNote);
+    }
+    
+    // Format order details as readable string if it exists
+    if (data.OrderDetails) {
+      console.log('Original OrderDetails:', data.OrderDetails);
+      data.OrderDetails = formatOrderDetails(data.OrderDetails);
+      console.log('Formatted OrderDetails:', data.OrderDetails);
+    }
+    
+    // Convert shipping info to Yes/No
+    if (data.ShippingInfo) {
+      data.ShippingInfo = data.ShippingInfo === "true" ? "Yes" : "No";
+    }
+    
+    // Convert express print to Yes/No
+    if (data.IsExpressPrint) {
+      data.IsExpressPrint = data.IsExpressPrint === "true" ? "Yes" : "No";
+    }
+    
+    // Convert jasa desain to Yes/No
+    if (data.RequestJasaDesain) {
+      data.RequestJasaDesain = data.RequestJasaDesain === "true" ? "Yes" : "No";
+    }
+    
+    // Map data to match header order
+    var rowData = headers.map(headerFld => data[headerFld] || '');
+    
+    console.log('Row data to append:', rowData);
+    
+    // Append the new row
+    sheet.appendRow(rowData);
+    
+    console.log('Data appended to sheet successfully');
+    
+    // Send email notification
+    sendOrderEmail(data);
+    
+  } catch (error) {
+    console.error('Error in appendToGoogleSheet:', error);
+    throw error;
   }
-  
-  // Clean and format Instansi field
-  if (data.Instansi) {
-    data.Instansi = cleanTextFormat(data.Instansi);
-  }
-  
-  // Format PhoneNumber field to standard format
-  if (data.PhoneNumber) {
-    data.PhoneNumber = formatPhoneNumber(data.PhoneNumber);
-  }
-  
-  // Clean and format Address field
-  if (data.Address) {
-    data.Address = cleanTextFormat(data.Address);
-  }
-  
-  // DesignNote is already properly decoded in parseFormData
-  
-  // Format order details as readable string if it exists
-  if (data.OrderDetails) {
-    data.OrderDetails = formatOrderDetails(data.OrderDetails);
-  }
-  
-  // Convert shipping info to Yes/No
-  if (data.ShippingInfo) {
-    data.ShippingInfo = data.ShippingInfo === "true" ? "Yes" : "No";
-  }
-  
-  // Convert express print to Yes/No
-  if (data.IsExpressPrint) {
-    data.IsExpressPrint = data.IsExpressPrint === "true" ? "Yes" : "No";
-  }
-  
-  // Convert jasa desain to Yes/No
-  if (data.RequestJasaDesain) {
-    data.RequestJasaDesain = data.RequestJasaDesain === "true" ? "Yes" : "No";
-  }
-  
-  // Map data to match header order
-  var rowData = headers.map(headerFld => data[headerFld] || '');
-  
-  // Append the new row
-  sheet.appendRow(rowData);
-  
-  // Send email notification
-  sendOrderEmail(data);
 }
 
+// Rest of your PDF functions remain the same...
 function onOpen() {
   createPdfMenu();
 }
@@ -254,6 +431,11 @@ function createPdfMenu() {
   const ui = SpreadsheetApp.getUi();
   ui.createMenu('PDF Tools')
     .addItem('Save Invoice as PDF', 'showSavePdfDialog')
+    .addToUi();
+  
+  // Add Input Order menu
+  ui.createMenu('Input Order')
+    .addItem('Add New Order Entry', 'showInputOrderDialog')
     .addToUi();
 }
 
@@ -532,49 +714,384 @@ function saveInvoicingRangeAsPdf() {
  * 2. Set access to "Anyone, even anonymous" or appropriate level
  * 3. Visit the web app URL to generate and download the PDF
  */
-function doGet() {
-  // Create the PDF and get the file info
-  const result = saveInvoicingRangeAsPdf();
-  
-  if (result && result.success) {
-    // Create HTML with auto-download script
-    const fileId = result.fileId;
-    const fileName = result.fileName;
+function doGet(request = {}) {
+  try {
+    const { parameter = {} } = request;
     
-    const htmlTemplate = HtmlService.createTemplate(
-      `<!DOCTYPE html>
-      <html>
-        <head>
-          <base target="_top">
-          <script>
-            window.onload = function() {
-              // Redirect to the direct download URL
-              window.location.href = 'https://drive.google.com/uc?export=download&id=<?= fileId ?>';
-              
-              // Show status
-              document.getElementById('status').innerHTML = 'Your download should begin automatically. If not, <a href="https://drive.google.com/uc?export=download&id=<?= fileId ?>">click here</a>.';
-            }
-          </script>
-        </head>
-        <body>
-          <h3>Downloading Invoice PDF...</h3>
-          <p id="status">Preparing download...</p>
-        </body>
-      </html>`
-    );
+    console.log('=== doGet RECEIVED REQUEST ===');
+    console.log('Query parameters:', JSON.stringify(parameter));
+    console.log('isPOSOrder parameter:', parameter.isPOSOrder);
+    console.log('posData parameter exists:', !!parameter.posData);
+    console.log('posData parameter length:', parameter.posData ? parameter.posData.length : 0);
     
-    // Bind the file ID to the template
-    htmlTemplate.fileId = fileId;
+    // Check if this is a POS order
+    if (parameter.isPOSOrder === 'true' && parameter.posData) {
+      console.log('Detected POS order via GET request');
+      try {
+        // Decode base64 encoded POS data
+        const posDataDecoded = Utilities.base64Decode(decodeURIComponent(parameter.posData));
+        const posDataString = Utilities.newBlob(posDataDecoded).getDataAsString();
+        const posOrderData = JSON.parse(posDataString);
+        
+        console.log('Successfully decoded and parsed POS data:', JSON.stringify(posOrderData));
+        
+        if (posOrderData.receiptId) {
+          console.log('receiptId found:', posOrderData.receiptId, '- Processing as POS order');
+          // Handle POS order
+          const result = submitPOSOrder(posOrderData);
+          
+          return ContentService.createTextOutput(JSON.stringify(result))
+            .setMimeType(ContentService.MimeType.JSON);
+        } else {
+          console.error('POS data missing receiptId:', Object.keys(posOrderData));
+        }
+      } catch (decodeError) {
+        console.error('Error decoding/parsing POS data:', decodeError.toString());
+        return ContentService.createTextOutput(JSON.stringify({
+          success: false,
+          error: 'Error decoding POS data: ' + decodeError.toString()
+        })).setMimeType(ContentService.MimeType.JSON);
+      }
+    }
     
-    // Return the HTML page that triggers the download
-    return HtmlService.createHtmlOutput(htmlTemplate.evaluate())
-      .setTitle('Invoice PDF Download');
-  } else {
-    // Return error page
-    return HtmlService.createHtmlOutput(
-      `<h3>Error Generating PDF</h3>
-       <p>${result ? result.error : 'Unknown error occurred'}</p>
-       <p><a href="javascript:history.back()">Go Back</a></p>`
-    );
+    // Default behavior: PDF generation (existing functionality)
+    console.log('Processing as PDF generation request');
+    // Create the PDF and get the file info
+    const result = saveInvoicingRangeAsPdf();
+    
+    if (result && result.success) {
+      // Create HTML with auto-download script
+      const fileId = result.fileId;
+      const fileName = result.fileName;
+      
+      const htmlTemplate = HtmlService.createTemplate(
+        `<!DOCTYPE html>
+        <html>
+          <head>
+            <base target="_top">
+            <script>
+              window.onload = function() {
+                // Redirect to the direct download URL
+                window.location.href = 'https://drive.google.com/uc?export=download&id=<?= fileId ?>';
+                
+                // Show status
+                document.getElementById('status').innerHTML = 'Your download should begin automatically. If not, <a href="https://drive.google.com/uc?export=download&id=<?= fileId ?>">click here</a>.';
+              }
+            </script>
+          </head>
+          <body>
+            <h3>Downloading Invoice PDF...</h3>
+            <p id="status">Preparing download...</p>
+          </body>
+        </html>`
+      );
+      
+      // Bind the file ID to the template
+      htmlTemplate.fileId = fileId;
+      
+      // Return the HTML page that triggers the download
+      return HtmlService.createHtmlOutput(htmlTemplate.evaluate())
+        .setTitle('Invoice PDF Download');
+    } else {
+      // Return error page
+      return HtmlService.createHtmlOutput(
+        `<h3>Error Generating PDF</h3>
+         <p>${result ? result.error : 'Unknown error occurred'}</p>
+         <p><a href="javascript:history.back()">Go Back</a></p>`
+      );
+    }
+  } catch (error) {
+    console.error('Error in doGet:', error.toString());
+    return ContentService.createTextOutput(JSON.stringify({
+      success: false,
+      error: error.message
+    })).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+// Function to show Input Order dialog
+function showInputOrderDialog() {
+  const html = HtmlService.createHtmlOutputFromFile('InputOrderDialog')
+    .setWidth(800)
+    .setHeight(500)
+    .setTitle('Input Order Entry');
+  
+  SpreadsheetApp.getUi().showModalDialog(html, 'Input Order Entry');
+}
+
+
+
+// Function to get customer data from Sheet1 for dropdowns
+function getCustomerData() {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(DATA_ENTRY_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    
+    // Skip header row
+    const customers = [];
+    const uniqueCustomers = new Set();
+    
+    for (let i = 1; i < data.length; i++) {
+      const customerName = data[i][2]; // Column C (CustomerName)
+      const instansi = data[i][3]; // Column D (Instansi)
+      const phoneNumber = data[i][4]; // Column E (PhoneNumber)
+      const orderDetails = data[i][7]; // Column H (OrderDetails)
+      
+      if (customerName && !uniqueCustomers.has(customerName)) {
+        uniqueCustomers.add(customerName);
+        customers.push({
+          name: customerName,
+          instansi: instansi || '',
+          phone: phoneNumber || '',
+          orderDetails: orderDetails || ''
+        });
+      }
+    }
+    
+    return customers;
+  } catch (error) {
+    console.error('Error getting customer data:', error);
+    return [];
+  }
+}
+
+// Function to get unique order types from Sheet1
+function getOrderTypes() {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(DATA_ENTRY_SHEET_NAME);
+    const data = sheet.getDataRange().getValues();
+    
+    const orderTypes = new Set();
+    
+    for (let i = 1; i < data.length; i++) {
+      const orderDetails = data[i][7]; // Column H (OrderDetails)
+      if (orderDetails) {
+        orderTypes.add(orderDetails);
+      }
+    }
+    
+    return Array.from(orderTypes);
+  } catch (error) {
+    console.error('Error getting order types:', error);
+    return [];
+  }
+}
+
+// Function to submit order data to OrderData sheet
+function submitOrderData(formData) {
+  try {
+    const sheet = SpreadsheetApp.openById(SPREADSHEET_ID).getSheetByName(ORDER_DATA_SHEET_NAME);
+    
+    // Get the last row to append data
+    const lastRow = sheet.getLastRow();
+    const newRow = lastRow + 1;
+    
+    // Prepare data for columns D-N (extended to include Discount, Down Payment, and Extracted Price)
+    const rowData = [
+      formData.bayar,              // Column D - Bayar
+      formData.nama,               // Column E - Nama
+      formData.instansi,           // Column F - Instansi
+      formData.nomor,              // Column G - Nomor
+      formData.jenisPesanan,       // Column H - Jenis Pesanan
+      formData.qty,                // Column I - QTY
+      formData.tgl,                // Column J - TGL
+      formData.dl,                 // Column K - DL
+      formData.discount || '',     // Column L - Discount
+      formData.downPayment || '',  // Column M - Down Payment
+      formData.extractedPrice || '' // Column N - Extracted Price
+    ];
+    
+    // Set data in columns D-N for the new row
+    const range = sheet.getRange(newRow, 4, 1, 11); // Row, Column D (4), 1 row, 11 columns (D-N)
+    range.setValues([rowData]);
+    
+    console.log('Order data submitted successfully');
+    return { success: true, message: 'Order entry added successfully!' };
+    
+  } catch (error) {
+    console.error('Error submitting order data:', error);
+    return { success: false, error: error.toString() };
+    }
+}
+
+// Function to handle POS orders submission
+function submitPOSOrder(posOrderData) {
+  try {
+    console.log('=== POS ORDER PROCESSING START ===');
+    console.log('Received POS order data:', JSON.stringify(posOrderData));
+    console.log('Looking for sheet:', CASHIER_ORDERS_SHEET_NAME);
+    
+    const spreadsheet = SpreadsheetApp.openById(SPREADSHEET_ID);
+    const sheet = spreadsheet.getSheetByName(CASHIER_ORDERS_SHEET_NAME);
+    
+    if (!sheet) {
+      console.error(`Sheet "${CASHIER_ORDERS_SHEET_NAME}" not found`);
+      console.log('Available sheets:', spreadsheet.getSheets().map(s => s.getName()));
+      throw new Error(`Sheet "${CASHIER_ORDERS_SHEET_NAME}" not found`);
+    }
+    
+    console.log('Found sheet:', sheet.getName());
+    
+    // Validate posOrderData structure
+    if (!posOrderData.items || !Array.isArray(posOrderData.items)) {
+      throw new Error('Invalid POS order data: items array missing');
+    }
+    
+    // Format items as readable string
+    const formattedItems = posOrderData.items.map(item => {
+      let itemStr = `${item.name || 'Unknown Item'} (${item.quantity || 0})`;
+      
+      // Add model code if available
+      if (item.modelCode) {
+        itemStr += ` [${item.modelCode}]`;
+      }
+      
+      // Add dimensions if available
+      if (item.width && item.height) {
+        itemStr += ` (${item.width}m x ${item.height}m)`;
+      }
+      
+      // Add case variant if available
+      if (item.caseVariant) {
+        itemStr += ` - Casing: ${item.caseVariant}`;
+      }
+      
+      // Add lamination if available
+      if (item.laminationVariant) {
+        itemStr += ` - Laminasi: ${item.laminationVariant}`;
+      }
+      
+      const subtotal = item.subtotal || 0;
+      itemStr += ` - Rp ${subtotal.toLocaleString('id-ID')}`;
+      
+      return itemStr;
+    }).join('; ');
+    
+    console.log('Formatted items:', formattedItems);
+    
+    // Prepare row data according to sheet columns:
+    // Receipt ID | Timestamp | Cashier | Customer Name | Phone Number | Institution | Items | Subtotal | Discount | Total | Payment Method
+    const rowData = [
+      posOrderData.receiptId || '',
+      new Date(),
+      posOrderData.cashier || 'POS Kasir',
+      posOrderData.customerName || '',
+      posOrderData.phoneNumber || '',
+      posOrderData.institution || '',
+      formattedItems,
+      posOrderData.subtotal || 0,
+      posOrderData.discount || 0,
+      posOrderData.total || 0,
+      posOrderData.paymentMethod || 'Cash'
+    ];
+    
+    console.log('Row data to append:', rowData);
+    
+    // Append the new row
+    sheet.appendRow(rowData);
+    
+    console.log('POS order data appended to sheet successfully');
+    console.log('=== POS ORDER PROCESSING END ===');
+    
+    // Send email notification for POS orders
+    sendPOSOrderEmail(posOrderData, formattedItems);
+    
+    return { success: true, message: 'POS order saved successfully!' };
+    
+  } catch (error) {
+    console.error('Error in submitPOSOrder:', error.toString());
+    console.error('Error stack:', error.stack);
+    return { success: false, error: error.toString() };
+  }
+}
+
+// Send email notification for POS orders
+function sendPOSOrderEmail(orderData, formattedItems) {
+  try {
+    const subject = `New POS Order: ${orderData.receiptId} - ${orderData.cashier}`;
+    
+    const emailBody = `
+    <html>
+      <body style="font-family: Arial, sans-serif; line-height: 1.6;">
+        <h2 style="color: #FF5E01;">New POS Order Received</h2>
+        <p><strong>Receipt ID:</strong> ${orderData.receiptId}</p>
+        <p><strong>Date:</strong> ${new Date().toLocaleString()}</p>
+        <p><strong>Cashier:</strong> ${orderData.cashier}</p>
+        
+        ${orderData.customerName ? `<p><strong>Customer:</strong> ${orderData.customerName}</p>` : ''}
+        ${orderData.phoneNumber ? `<p><strong>Phone:</strong> ${orderData.phoneNumber}</p>` : ''}
+        ${orderData.institution ? `<p><strong>Institution:</strong> ${orderData.institution}</p>` : ''}
+        
+        <h3>Order Details</h3>
+        <pre style="background-color: #f9f9f9; padding: 10px; border-radius: 5px; white-space: pre-wrap;">${formattedItems}</pre>
+        
+        <h3>Payment Summary</h3>
+        <p><strong>Subtotal:</strong> Rp ${Number(orderData.subtotal).toLocaleString('id-ID')}</p>
+        ${orderData.discount > 0 ? `<p><strong>Discount:</strong> Rp ${Number(orderData.discount).toLocaleString('id-ID')}</p>` : ''}
+        <p><strong>Total:</strong> Rp ${Number(orderData.total).toLocaleString('id-ID')}</p>
+        <p><strong>Payment Method:</strong> ${orderData.paymentMethod || 'Cash'}</p>
+        
+        <p style="margin-top: 20px;">
+          View all orders in the <a href="https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}" target="_blank">Google Sheet</a>
+        </p>
+      </body>
+    </html>
+    `;
+    
+    // Send email to each admin
+    ADMIN_EMAILS.forEach(adminEmail => {
+      GmailApp.sendEmail(
+        adminEmail,
+        subject,
+        // Plain text fallback
+        `New POS Order: ${orderData.receiptId}\nCashier: ${orderData.cashier}\nItems: ${formattedItems}\nTotal: Rp ${Number(orderData.total).toLocaleString('id-ID')}`,
+        { 
+          htmlBody: emailBody,
+          name: "POS Order Notification" 
+        }
+      );
+    });
+    
+    console.log('POS order email notifications sent successfully');
+    return true;
+  } catch (error) {
+    console.error('Error sending POS order email notification:', error);
+    return false;
+  }
+}
+
+// Test function for POS order submission - you can run this directly in Apps Script
+function testPOSOrder() {
+  const testData = {
+    receiptId: "TRX-TEST-" + new Date().getTime(),
+    cashier: "Test Kasir",
+    customerName: "Test Customer",
+    phoneNumber: "081234567890",
+    institution: "Test Institution",
+    items: [
+      {
+        name: "Test Product 1",
+        quantity: 2,
+        price: 50000,
+        subtotal: 100000,
+        modelCode: "TEST-001"
+      },
+      {
+        name: "Test Product 2",
+        quantity: 1,
+        price: 75000,
+        subtotal: 75000,
+        caseVariant: "Hard Case"
+      }
+    ],
+    subtotal: 175000,
+    discount: 0,
+    total: 175000,
+    paymentMethod: "Cash"
+  };
+  
+  console.log('Testing POS order submission...');
+  const result = submitPOSOrder(testData);
+  console.log('Test result:', result);
+  return result;
 }

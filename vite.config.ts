@@ -8,6 +8,10 @@ export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
     port: 8080,
+    fs: {
+      // Allow serving files from cashier directory
+      allow: ['..']
+    }
   },
   plugins: [
     react(),

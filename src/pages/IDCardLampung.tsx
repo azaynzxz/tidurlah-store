@@ -83,7 +83,7 @@ const IDCardLampung = () => {
   useEffect(() => {
     // First notification - Welcome
     const welcomeTimer = setTimeout(() => {
-      toast.success("🎉 Selamat datang di ID Card Lampung!", { 
+      toast.success("Selamat datang di ID Card Lampung!", { 
         position: 'top-center', 
         duration: 3000, 
         style: { 
@@ -105,7 +105,7 @@ const IDCardLampung = () => {
 
     // Second notification - Swipe instruction
     const swipeTimer = setTimeout(() => {
-      toast.info("👆 Geser kartu untuk melihat info lainnya", { 
+      toast.info("Geser kartu untuk melihat info lainnya", { 
         position: 'top-center', 
         duration: 4000, 
         style: { 

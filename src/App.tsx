@@ -8,7 +8,9 @@ import NotFound from "./pages/NotFound";
 import Survey from "./pages/Survey";
 import Blog from '@/pages/Blog';
 import BlogPost from '@/pages/BlogPost';
-import IDCardLampung from './pages/IDCardLampung';
+import Spotlight from './pages/Spotlight';
+import Cashier from "./pages/Cashier";
+import Receipt from "./pages/Receipt";
 
 const queryClient = new QueryClient();
 
@@ -24,7 +26,9 @@ const App = () => (
           <Route path="/survey" element={<Survey />} />
           <Route path="/blog" element={<Blog />} />
           <Route path="/blog/:title" element={<BlogPost />} />
-          <Route path="/hello" element={<IDCardLampung />} />
+          <Route path="/hello" element={<Spotlight />} />
+          <Route path="/cashier" element={<Cashier />} />
+          <Route path="/receipt" element={<Receipt />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
