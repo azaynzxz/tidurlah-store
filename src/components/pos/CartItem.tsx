@@ -118,7 +118,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height);
+      return calculateBannerPrice(product, options.width, options.height, quantity);
     }
 
     // Handle regular price thresholds
@@ -319,7 +319,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
               type="number"
               value={item.quantity}
               onChange={handleQuantityChange}
-              className="h-7 w-12 text-center text-sm border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+              className="h-7 w-16 text-center text-sm border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01] [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
               min="1"
             />
             <Button

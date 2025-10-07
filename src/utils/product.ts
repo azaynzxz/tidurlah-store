@@ -69,8 +69,8 @@ export const calculateSavings = (product: any, quantity: number) => {
   return (basePrice - appliedPrice) * quantity;
 };
 
-// Calculate banner price based on dimensions
-export const calculateBannerPrice = (product: any, width: number, height: number) => {
+// Calculate banner price based on dimensions and quantity
+export const calculateBannerPrice = (product: any, width: number, height: number, quantity: number = 1) => {
   // Calculate banner price based on dimensions
 
   if (!width || !height || width < product.minWidth || height < product.minHeight) {
@@ -79,9 +79,24 @@ export const calculateBannerPrice = (product: any, width: number, height: number
   }
 
   const area = width * height;
-  const calculatedPrice = product.basePricePerSqm * area;
+  
+  // Apply price thresholds to basePricePerSqm based on quantity
+  let basePricePerSqm = product.basePricePerSqm || product.price;
+  
+  if (product.priceThresholds && product.priceThresholds.length > 0) {
+    const applicableThreshold = product.priceThresholds
+      .slice()
+      .reverse()
+      .find((threshold: any) => quantity >= threshold.minQuantity);
+    
+    if (applicableThreshold) {
+      basePricePerSqm = applicableThreshold.price;
+    }
+  }
+  
+  const calculatedPrice = basePricePerSqm * area;
 
-  // Calculate area-based pricing
+  // Calculate area-based pricing with quantity-adjusted price
 
   // Use the calculated price if it's greater than base price, otherwise use base price
   const finalPrice = Math.max(calculatedPrice, product.discountPrice || product.price);

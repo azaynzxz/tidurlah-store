@@ -74,6 +74,7 @@ interface CustomerDetails {
   phone: string;
   instansi: string;
   delivery?: DeliveryInfo;
+  downPayment?: number;
 }
 
 export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported }: CartProps) {
@@ -90,6 +91,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   const [showDeliveryDialog, setShowDeliveryDialog] = useState(false);
   const [isLayananExpanded, setIsLayananExpanded] = useState(true);
   const [isPelangganExpanded, setIsPelangganExpanded] = useState(true);
+  const [downPayment, setDownPayment] = useState<number>(0);
 
   // Sync express service checkbox with cart items
   useEffect(() => {
@@ -115,7 +117,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height);
+      return calculateBannerPrice(product, options.width, options.height, quantity);
     }
 
     // Handle regular price thresholds
@@ -288,11 +290,12 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     setIsProcessing(true);
 
     try {
-      // Call the parent's onProcessOrder with customer details
-      await onProcessOrder(customerDetails);
+      // Call the parent's onProcessOrder with customer details including DP
+      await onProcessOrder({ ...customerDetails, downPayment });
       
-      // Reset customer details after successful order
+      // Reset customer details and DP after successful order
       setCustomerDetails({ name: '', phone: '', instansi: '' });
+      setDownPayment(0);
       setIsExpressSelected(false);
     } catch (error) {
       console.error('Error processing order:', error);
@@ -359,11 +362,12 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
     try {
       // Call the print order handler which handles everything
-      const printSuccess = await onPrintOrder(customerDetails);
+      const printSuccess = await onPrintOrder({ ...customerDetails, downPayment });
       
       if (printSuccess) {
-        // Reset customer details after successful print
+        // Reset customer details and DP after successful print
         setCustomerDetails({ name: '', phone: '', instansi: '' });
+        setDownPayment(0);
         setIsExpressSelected(false);
       }
     } catch (error) {
@@ -593,11 +597,45 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                 </div>
               )}
 
-
               <div className="flex justify-between text-sm font-bold text-[#FF5E01] pt-1 border-t">
                 <span>TOTAL:</span>
                 <span>{formatCurrency(finalTotal)}</span>
               </div>
+
+              {/* Down Payment Input */}
+              <div className="pt-2 border-t">
+                <Label htmlFor="downPayment" className="text-xs font-medium text-gray-700 mb-1 block">
+                  DP (Down Payment)
+                </Label>
+                <Input
+                  id="downPayment"
+                  type="number"
+                  placeholder="0"
+                  value={downPayment || ''}
+                  onChange={(e) => {
+                    const value = parseInt(e.target.value) || 0;
+                    // Prevent DP from exceeding total
+                    if (value <= finalTotal) {
+                      setDownPayment(value);
+                    } else {
+                      setDownPayment(finalTotal);
+                      toast.warning('DP tidak boleh melebihi total', {
+                        position: 'top-center',
+                        duration: 2000,
+                      });
+                    }
+                  }}
+                  className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                />
+              </div>
+
+              {/* Remaining Balance */}
+              {downPayment > 0 && (
+                <div className="flex justify-between text-sm font-bold text-blue-600 pt-1">
+                  <span>SISA BAYAR:</span>
+                  <span>{formatCurrency(finalTotal - downPayment)}</span>
+                </div>
+              )}
             </div>
 
             {/* Action Buttons */}

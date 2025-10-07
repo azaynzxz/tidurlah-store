@@ -13,7 +13,7 @@ import PromotedProducts from "@/components/PromotedProducts";
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
-import { convertImageToBase64, findProductBySlug, generateProductUrl, calculateBannerPrice } from "@/utils/product";
+import { convertImageToBase64, findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
 import { submitToGoogleSheet, handleWhatsAppRedirect } from "@/utils/api";
 import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, prevImage, generateInvoiceNumber, handleSearch } from "@/utils/form";
@@ -199,9 +199,6 @@ const Index = () => {
     );
   };
 
-  // Import the price calculation functions from utils
-  const { getApplicablePrice, calculateSavings } = { getApplicablePrice: (product: any, quantity: number) => product.discountPrice !== null ? product.discountPrice : product.price, calculateSavings: (product: any, quantity: number) => 0 };
-
   // Add to cart function using extracted logic
   const addToCartCallback = (product: any, sourceElement?: HTMLElement, quantity: number = 1) => {
     addToCart(
@@ -347,7 +344,7 @@ const Index = () => {
   };
 
   const addBannerToCartCallback = (product: any, width: number, height: number) => {
-    const calculatedPrice = calculateBannerPrice(product, width, height);
+    const calculatedPrice = calculateBannerPrice(product, width, height, 1);
     const newItem = {
       ...product,
       width,
@@ -1448,7 +1445,7 @@ const Index = () => {
                         Ukuran: {bannerWidth}m × {bannerHeight}m ({(bannerWidth * bannerHeight).toFixed(2)} m²)
                       </div>
                       <div className="text-sm font-medium text-[#FF5E01]">
-                        Harga: Rp {calculateBannerPrice(selectedProduct, bannerWidth, bannerHeight).toLocaleString('id-ID')}
+                        Harga: Rp {calculateBannerPrice(selectedProduct, bannerWidth, bannerHeight, modalQuantity).toLocaleString('id-ID')}
                       </div>
                     </div>
                   )}

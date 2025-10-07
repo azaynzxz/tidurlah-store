@@ -109,7 +109,7 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
 
   // Use the same calculation logic as the main system
   const calculateBannerPrice = (product: Product, width: number, height: number) => {
-    return calculateBannerPriceUtil(product, width, height);
+    return calculateBannerPriceUtil(product, width, height, quantity);
   };
 
   const getCurrentPrice = () => {

@@ -371,9 +371,7 @@ export function POSDashboard() {
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      const area = options.width * options.height;
-      const basePrice = product.basePricePerSqm || product.price;
-      return basePrice * area;
+      return calculateBannerPrice(product, options.width, options.height, quantity);
     }
 
     // Handle regular price thresholds
@@ -673,7 +671,7 @@ export function POSDashboard() {
   };
 
   // Process order with receipt generation (modified to handle print mode)
-  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string } }, printMode: boolean = false) => {
+  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }, printMode: boolean = false) => {
     if (cartItems.length === 0) {
       toast.error("Keranjang masih kosong!");
       return;
@@ -720,7 +718,9 @@ export function POSDashboard() {
           subtotal,
           discount: 0,
           tax: 0,
-          total: subtotal
+          total: subtotal,
+          downPayment: customerDetails.downPayment || 0,
+          remainingBalance: subtotal - (customerDetails.downPayment || 0)
         },
         // Add shipping info in the format expected by OrderHistory
         shipping: customerDetails.delivery ? {
@@ -844,7 +844,7 @@ export function POSDashboard() {
 
 
   // Handle complete print order (process + print via Bluetooth)
-  const handlePrintOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string } }) => {
+  const handlePrintOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }) => {
     try {
       // First process the order in print mode (generates receipt data, no auto-download)
       await handleProcessOrder(customerDetails, true);
@@ -1122,6 +1122,19 @@ export function POSDashboard() {
                         <span>TOTAL:</span>
                         <span>Rp {receiptData?.summary?.total?.toLocaleString('id-ID')}</span>
                       </div>
+
+                      {receiptData?.summary?.downPayment > 0 && (
+                        <>
+                          <div className="receipt-summary-row" style={{ color: '#10B981', fontWeight: 'bold' }}>
+                            <span>DP (Down Payment):</span>
+                            <span>Rp {receiptData?.summary?.downPayment?.toLocaleString('id-ID')}</span>
+                          </div>
+                          <div className="receipt-summary-row" style={{ color: '#2563EB', fontWeight: 'bold', fontSize: '14px' }}>
+                            <span>SISA BAYAR:</span>
+                            <span>Rp {receiptData?.summary?.remainingBalance?.toLocaleString('id-ID')}</span>
+                          </div>
+                        </>
+                      )}
                     </div>
 
                     {/* Footer */}
