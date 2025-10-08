@@ -83,6 +83,7 @@ interface CartItem {
     dimensionText?: string;
     area?: string;
     customPrice?: number;
+    overridePrice?: number;
   };
 }
 
@@ -104,6 +105,158 @@ export function POSDashboard() {
   const receiptRef = useRef<HTMLDivElement>(null);
   const [bluetoothDevice, setBluetoothDevice] = useState<any>(null);
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
+  const [notificationsShown, setNotificationsShown] = useState<Set<string>>(new Set());
+
+  // Inspiring quotes in Indonesian
+  const morningQuotes = [
+    "Setiap pagi adalah awal yang baru. Semangat bekerja! 💪",
+    "Senyum adalah awal dari kesuksesan. Mulai hari dengan senyuman! 😊",
+    "Hari ini penuh dengan peluang baru. Manfaatkan dengan baik! ✨",
+    "Kebahagiaan dimulai dari diri sendiri. Tetap semangat! 🌟",
+    "Kerja keras hari ini adalah investasi masa depan! 🚀"
+  ];
+
+  const lunchQuotes = [
+    "Jaga kesehatan dengan makan teratur. Selamat makan siang! 🍽️",
+    "Istirahat sejenak untuk mengisi energi kembali. Bon Appétit! 🥗",
+    "Tubuh yang sehat adalah awal dari produktivitas. Nikmati istirahatmu! ☕",
+    "Waktu istirahat adalah hak kamu. Gunakan dengan baik! 🌸"
+  ];
+
+  // Play sound helper
+  const playSound = (soundPath: string) => {
+    try {
+      const audio = new Audio(soundPath);
+      audio.volume = 0.5;
+      audio.play().catch(err => console.log('Audio play failed:', err));
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
+
+  // Time-based notifications
+  useEffect(() => {
+    const checkTimeAndNotify = () => {
+      const now = new Date();
+      const currentHour = now.getHours();
+      const currentMinute = now.getMinutes();
+      const today = now.toDateString();
+      
+      // Create unique key for each notification
+      const notifKey = `${today}-${currentHour}`;
+      
+      // Reset notifications shown at midnight
+      const lastResetDate = localStorage.getItem('lastNotifReset');
+      if (lastResetDate !== today) {
+        setNotificationsShown(new Set());
+        localStorage.setItem('lastNotifReset', today);
+      }
+
+      // Check if notification already shown today
+      if (notificationsShown.has(notifKey)) return;
+
+      // 9 AM - Morning motivation
+      if (currentHour === 9 && currentMinute === 0) {
+        const randomQuote = morningQuotes[Math.floor(Math.random() * morningQuotes.length)];
+        toast.success(
+          <div className="space-y-2">
+            <p className="font-bold text-base">☀️ Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
+            <p className="text-sm">{randomQuote}</p>
+            <div className="text-xs space-y-1 mt-2 border-t pt-2">
+              <p>✨ Sudah senyum hari ini?</p>
+              <p>💪 Bagaimana kondisi kesehatan dan stress level kamu?</p>
+              <p>📝 Apa rencana kamu hari ini?</p>
+            </div>
+          </div>,
+          {
+            position: 'top-center',
+            duration: 15000,
+            style: { marginTop: '60px', minWidth: '350px' }
+          }
+        );
+        playSound('/audio/Bubble.mp3');
+        setNotificationsShown(prev => new Set(prev).add(notifKey));
+      }
+
+      // 12 PM - Lunch break
+      if (currentHour === 12 && currentMinute === 0) {
+        const randomQuote = lunchQuotes[Math.floor(Math.random() * lunchQuotes.length)];
+        toast.info(
+          <div className="space-y-2">
+            <p className="font-bold text-base">🍽️ Waktu Istirahat Makan Siang!</p>
+            <p className="text-sm">{randomQuote}</p>
+            <div className="text-xs space-y-1 mt-2 border-t pt-2">
+              <p>🥗 Siapkan makan siangmu</p>
+              <p>☕ Ambil istirahat sejenak</p>
+              <p>🌸 Jaga kesehatan dan energimu</p>
+            </div>
+          </div>,
+          {
+            position: 'top-center',
+            duration: 15000,
+            style: { marginTop: '60px', minWidth: '350px' }
+          }
+        );
+        playSound('/audio/bell-church.mp3');
+        setNotificationsShown(prev => new Set(prev).add(notifKey));
+      }
+
+      // 3 PM - Afternoon check
+      if (currentHour === 15 && currentMinute === 0) {
+        toast.warning(
+          <div className="space-y-2">
+            <p className="font-bold text-base">📦 Cek Pesanan Sore Hari</p>
+            <div className="text-sm space-y-1 mt-2">
+              <p>✅ Periksa pesanan yang masuk hari ini</p>
+              <p>📋 Siapkan untuk penutupan</p>
+              <p>🔍 Pastikan semua tercatat dengan baik</p>
+              <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan! 💪</p>
+            </div>
+          </div>,
+          {
+            position: 'top-center',
+            duration: 12000,
+            style: { marginTop: '60px', minWidth: '350px' }
+          }
+        );
+        playSound('/audio/Bubble 2.mp3');
+        setNotificationsShown(prev => new Set(prev).add(notifKey));
+      }
+
+      // 5 PM - Closing time
+      if (currentHour === 17 && currentMinute === 0) {
+        toast.success(
+          <div className="space-y-2">
+            <p className="font-bold text-base">🏠 Waktu Penutupan Toko!</p>
+            <div className="text-sm space-y-1 mt-2">
+              <p>📦 Siapkan barang-barang kamu</p>
+              <p>🔒 Pastikan semua sudah tersimpan dengan aman</p>
+              <p>✨ Bersiaplah untuk pulang</p>
+            </div>
+            <div className="text-sm font-semibold mt-3 pt-2 border-t text-center">
+              <p>🌟 Selamat beristirahat!</p>
+              <p>👋 Sampai jumpa besok!</p>
+            </div>
+          </div>,
+          {
+            position: 'top-center',
+            duration: 15000,
+            style: { marginTop: '60px', minWidth: '350px' }
+          }
+        );
+        playSound('/audio/Tidurlah Grafika.mp3');
+        setNotificationsShown(prev => new Set(prev).add(notifKey));
+      }
+    };
+
+    // Check immediately when component mounts
+    checkTimeAndNotify();
+
+    // Check every minute
+    const interval = setInterval(checkTimeAndNotify, 60000);
+
+    return () => clearInterval(interval);
+  }, [cashierName, notificationsShown]);
 
   // Load products from JSON file
   useEffect(() => {
@@ -364,6 +517,11 @@ export function POSDashboard() {
 
   // Calculate applicable price for cart items (same logic as Cart component)
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Check for override price first (highest priority)
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
+    }
+
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -670,6 +828,32 @@ export function POSDashboard() {
     }
   };
 
+  // Generate invoice ID with customer name and order details
+  const generateInvoiceId = (customerName: string, itemCount: number): string => {
+    // Extract initials from customer name (max 3 characters)
+    const words = customerName.trim().split(/\s+/);
+    let initials = '';
+    
+    if (words.length === 1) {
+      // Single name: take first 3 characters
+      initials = words[0].substring(0, 3).toUpperCase();
+    } else {
+      // Multiple names: take first letter of each word (max 3)
+      initials = words
+        .slice(0, 3)
+        .map(word => word[0])
+        .join('')
+        .toUpperCase();
+    }
+    
+    // Format: INV-{INITIALS}-{YYMMDD}-{HHMMSS}-{ITEMS}
+    const now = new Date();
+    const dateStr = now.toISOString().replace(/[-:T.]/g, '').slice(2, 8); // YYMMDD
+    const timeStr = now.toISOString().replace(/[-:T.]/g, '').slice(9, 15); // HHMMSS
+    
+    return `INV-${initials}-${dateStr}-${timeStr}-${itemCount}P`;
+  };
+
   // Process order with receipt generation (modified to handle print mode)
   const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }, printMode: boolean = false) => {
     if (cartItems.length === 0) {
@@ -678,8 +862,8 @@ export function POSDashboard() {
     }
 
     try {
-      // Generate receipt data
-      const receiptId = `TRX-${new Date().toISOString().replace(/[-:T.]/g, '').slice(0, 14)}`;
+      // Generate receipt data with customer-specific invoice ID
+      const receiptId = generateInvoiceId(customerDetails.name, cartItems.length);
       const subtotal = cartItems.reduce((total, item) => {
         const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
         return total + (applicablePrice * item.quantity);

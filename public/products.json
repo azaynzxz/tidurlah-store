@@ -637,14 +637,14 @@
         "/product-image/Insert Paper 3.jpg"
       ],
       "description": "Tumbler travel custom cetak dengan tutup, cocok untuk minuman panas dan dingin.",
-      "price": 65000,
+      "price": 28000,
       "discountPrice": null,
       "category": "Merchandise",
       "priceThresholds": [
-        { "minQuantity": 1, "price": 65000 },
-        { "minQuantity": 4, "price": 60000 },
-        { "minQuantity": 25, "price": 55000 },
-        { "minQuantity": 100, "price": 50000 }
+        { "minQuantity": 1, "price": 28000 },
+        { "minQuantity": 2, "price": 25000 },
+        { "minQuantity": 25, "price": 23000 },
+        { "minQuantity": 100, "price": 20000 }
       ],
       "time": "3-5 hari",
       "rating": 4.9,

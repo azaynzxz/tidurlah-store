@@ -92,6 +92,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   const [isLayananExpanded, setIsLayananExpanded] = useState(true);
   const [isPelangganExpanded, setIsPelangganExpanded] = useState(true);
   const [downPayment, setDownPayment] = useState<number>(0);
+  const [dpDisplayValue, setDpDisplayValue] = useState<string>('');
 
   // Sync express service checkbox with cart items
   useEffect(() => {
@@ -108,8 +109,18 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     }).format(amount).replace('IDR', 'Rp');
   };
 
+  // Format number with thousand separators
+  const formatNumber = (num: number) => {
+    return new Intl.NumberFormat('id-ID').format(num);
+  };
+
   // Calculate totals with price thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Check for override price first
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
+    }
+
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -296,6 +307,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       // Reset customer details and DP after successful order
       setCustomerDetails({ name: '', phone: '', instansi: '' });
       setDownPayment(0);
+      setDpDisplayValue('');
       setIsExpressSelected(false);
     } catch (error) {
       console.error('Error processing order:', error);
@@ -368,6 +380,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         // Reset customer details and DP after successful print
         setCustomerDetails({ name: '', phone: '', instansi: '' });
         setDownPayment(0);
+        setDpDisplayValue('');
         setIsExpressSelected(false);
       }
     } catch (error) {
@@ -609,16 +622,23 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                 </Label>
                 <Input
                   id="downPayment"
-                  type="number"
-                  placeholder="0"
-                  value={downPayment || ''}
+                  type="text"
+                  placeholder="0 (otomatis x1000)"
+                  value={dpDisplayValue}
                   onChange={(e) => {
-                    const value = parseInt(e.target.value) || 0;
+                    const inputValue = e.target.value.replace(/[^\d]/g, ''); // Remove non-numeric
+                    const numericValue = inputValue === '' ? 0 : parseInt(inputValue);
+                    
+                    // Auto-multiply by 1000
+                    const actualValue = numericValue * 1000;
+                    
                     // Prevent DP from exceeding total
-                    if (value <= finalTotal) {
-                      setDownPayment(value);
+                    if (actualValue <= finalTotal) {
+                      setDownPayment(actualValue);
+                      setDpDisplayValue(inputValue);
                     } else {
                       setDownPayment(finalTotal);
+                      setDpDisplayValue(Math.floor(finalTotal / 1000).toString());
                       toast.warning('DP tidak boleh melebihi total', {
                         position: 'top-center',
                         duration: 2000,
@@ -627,6 +647,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                   }}
                   className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
                 />
+                {dpDisplayValue && (
+                  <p className="text-[10px] text-gray-500 mt-0.5">
+                    = {formatCurrency(downPayment)}
+                  </p>
+                )}
               </div>
 
               {/* Remaining Balance */}

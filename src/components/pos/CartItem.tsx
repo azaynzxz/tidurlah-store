@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Minus, Plus, Trash2, Settings } from "lucide-react";
+import { Minus, Plus, Trash2, Settings, Edit2, Check, X } from "lucide-react";
 import { calculateBannerPrice } from "@/utils/product";
+import { toast } from "sonner";
 
 interface Product {
   id: number;
@@ -44,6 +45,7 @@ interface CartItemType {
     dimensionText?: string;
     area?: string;
     customPrice?: number;
+    overridePrice?: number;
   };
 }
 
@@ -56,6 +58,8 @@ interface CartItemProps {
 
 export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: CartItemProps) {
   const [showOptions, setShowOptions] = useState(false);
+  const [isEditingPrice, setIsEditingPrice] = useState(false);
+  const [customPriceInput, setCustomPriceInput] = useState('');
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -111,6 +115,11 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
 
   // Calculate applicable price based on quantity thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
+    // Check for override price first
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
+    }
+
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -152,6 +161,46 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
     if (item.quantity > 1) {
       onUpdateQuantity(item.product.id, item.quantity - 1);
     }
+  };
+
+  const handleEditPrice = () => {
+    const currentPrice = item.options?.overridePrice || price;
+    setCustomPriceInput(currentPrice.toString());
+    setIsEditingPrice(true);
+  };
+
+  const handleSavePrice = () => {
+    const newPrice = parseInt(customPriceInput) || 0;
+    if (newPrice > 0) {
+      handleOptionUpdate('overridePrice', newPrice);
+      setIsEditingPrice(false);
+      toast.success('Harga custom berhasil diterapkan', {
+        position: 'top-center',
+        duration: 2000,
+      });
+    } else {
+      toast.error('Harga harus lebih dari 0', {
+        position: 'top-center',
+        duration: 2000,
+      });
+    }
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditingPrice(false);
+    setCustomPriceInput('');
+  };
+
+  const handleResetPrice = () => {
+    const updatedOptions = { ...item.options };
+    delete updatedOptions.overridePrice;
+    onUpdateOptions(item.product.id, updatedOptions);
+    setIsEditingPrice(false);
+    setCustomPriceInput('');
+    toast.success('Harga dikembalikan ke default', {
+      position: 'top-center',
+      duration: 2000,
+    });
   };
 
   return (
@@ -343,8 +392,68 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
         </div>
       </div>
 
-      <div className="text-sm font-semibold text-[#FF5E01]">
-        {formatCurrency(subtotal)}
+      <div className="flex flex-col items-end gap-1">
+        <div className="flex items-center gap-1">
+          {!isEditingPrice ? (
+            <>
+              <div className="text-sm font-semibold text-[#FF5E01]">
+                {formatCurrency(subtotal)}
+              </div>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-gray-500 hover:text-[#FF5E01] hover:bg-[#FF5E01]/10"
+                onClick={handleEditPrice}
+                title="Edit harga"
+              >
+                <Edit2 className="w-3 h-3" />
+              </Button>
+            </>
+          ) : (
+            <div className="flex items-center gap-1">
+              <Input
+                type="number"
+                value={customPriceInput}
+                onChange={(e) => setCustomPriceInput(e.target.value)}
+                className="h-7 w-24 text-xs"
+                placeholder="Harga custom"
+                autoFocus
+              />
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
+                onClick={handleSavePrice}
+                title="Simpan"
+              >
+                <Check className="w-3 h-3" />
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-6 w-6 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
+                onClick={handleCancelEdit}
+                title="Batal"
+              >
+                <X className="w-3 h-3" />
+              </Button>
+            </div>
+          )}
+        </div>
+        {item.options?.overridePrice && !isEditingPrice && (
+          <div className="flex items-center gap-1">
+            <span className="text-[10px] text-blue-600 font-medium">Custom</span>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-4 px-1 text-[10px] text-gray-500 hover:text-red-500"
+              onClick={handleResetPrice}
+              title="Reset ke harga default"
+            >
+              Reset
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

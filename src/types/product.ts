@@ -48,6 +48,7 @@ export interface CartItem extends Product {
   isDimensionalProduct?: boolean;
   dimensionText?: string;
   area?: string;
+  overridePrice?: number;
 }
 
 export interface OrderData {

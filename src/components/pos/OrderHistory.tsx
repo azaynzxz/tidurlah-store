@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, Trash2, Download, X } from "lucide-react";
+import { ArrowLeft, Eye, Trash2, Download, X, MessageCircle } from "lucide-react";
 import { convertImageToBase64 } from "@/utils/product";
 
 interface ReceiptData {
@@ -58,6 +58,75 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       currency: 'IDR',
       minimumFractionDigits: 0,
     }).format(amount).replace('IDR', 'Rp');
+  };
+
+  // Format phone number for WhatsApp (Indonesian format)
+  const formatPhoneNumberForWhatsApp = (phone: string): string => {
+    // Remove all non-numeric characters
+    let cleaned = phone.replace(/\D/g, '');
+    
+    // If starts with 08, replace with 62
+    if (cleaned.startsWith('08')) {
+      return '62' + cleaned.substring(1);
+    }
+    
+    // If already starts with 62, leave as is
+    if (cleaned.startsWith('62')) {
+      return cleaned;
+    }
+    
+    // If starts with 8 (without 0), add 62
+    if (cleaned.startsWith('8')) {
+      return '62' + cleaned;
+    }
+    
+    // Default: add 62 prefix
+    return '62' + cleaned;
+  };
+
+  // Generate WhatsApp message for customer
+  const generateWhatsAppMessage = (order: ReceiptData): string => {
+    const customerName = order.customer?.name || 'Pelanggan';
+    const hasShipping = !!order.shipping;
+    
+    let message = `Halo kak ${customerName}, pesanan kakak dengan nomor invoice ${order.receiptId} sudah selesai di proses.`;
+    
+    if (hasShipping) {
+      // Message for orders with shipping info
+      message += ` Untuk pengiriman, akan kami proses segera pada alamat yang diberikan ya kak.
+
+Dimohon untuk melakukan pelunasan terlebih dahulu sebelum paket dikirimkan (abaikan jika sudah lunas). Cek kembali pesanan kakak dan rekam video unboxing, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
+    } else {
+      // Message for pickup orders (no shipping)
+      message += ` Pengambilan bisa di toko, lihat alamat google maps kami di sini: tidurlah.com/hello
+
+dan boleh konfirmasi ke admin jika ingin dibantu pengiriman melalui gojek/maxim.
+
+Dimohon untuk konfirmasi kapan ingin mengambil, dan melakukan pelunasan terlebih dahulu sebelum mengambil. Cek kembali pesanan kakak, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
+    }
+    
+    message += `
+
+Salam,
+ID Card lampung, 
+Tidurlah Grafika`;
+    
+    return encodeURIComponent(message);
+  };
+
+  // Handle WhatsApp chat with customer
+  const handleChatCustomer = (order: ReceiptData) => {
+    if (!order.customer || !order.customer.phone) {
+      alert('Nomor telepon pelanggan tidak tersedia');
+      return;
+    }
+
+    const formattedPhone = formatPhoneNumberForWhatsApp(order.customer.phone);
+    const message = generateWhatsAppMessage(order);
+    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${message}`;
+    
+    // Open WhatsApp in new tab
+    window.open(whatsappUrl, '_blank');
   };
 
   useEffect(() => {
@@ -247,6 +316,17 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                         <Eye className="w-4 h-4 mr-1" />
                         Lihat
                       </Button>
+                      {order.customer && order.customer.phone && (
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleChatCustomer(order)}
+                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
+                          title="Chat pelanggan via WhatsApp"
+                        >
+                          <MessageCircle className="w-4 h-4" />
+                        </Button>
+                      )}
                       <Button
                         size="sm"
                         variant="outline"
