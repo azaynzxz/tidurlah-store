@@ -61,7 +61,7 @@
         }
 
         .store-info {
-            font-size: 12px;
+            font-size: 13px;
             color: #666;
             margin-bottom: 4px;
         }
@@ -72,12 +72,34 @@
         }
 
         .receipt-meta {
-            font-size: 12px;
+            font-size: 13px;
             margin-bottom: 15px;
         }
 
         .receipt-meta div {
             margin-bottom: 4px;
+        }
+
+        .customer-info {
+            background: #f8f8f8;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 10px 0;
+        }
+
+        .customer-info-title {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 8px;
+            text-align: center;
+            color: #333;
+        }
+
+        .customer-info div {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #222;
         }
 
         .items-list {
@@ -86,7 +108,7 @@
 
         .item {
             margin-bottom: 12px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .item-name {
@@ -103,7 +125,7 @@
 
         .summary {
             margin-top: 15px;
-            font-size: 12px;
+            font-size: 13px;
         }
 
         .summary-row {
@@ -114,22 +136,64 @@
 
         .total-row {
             font-weight: bold;
-            font-size: 14px;
+            font-size: 15px;
             border-top: 1px solid #333;
             padding-top: 8px;
             margin-top: 8px;
         }
 
+        .survey-section {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f8f8;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .survey-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #333;
+        }
+
+        .survey-text {
+            font-size: 12px;
+            color: #555;
+            margin-bottom: 12px;
+            line-height: 1.6;
+        }
+
+        .survey-qr {
+            margin: 15px auto;
+            max-width: 150px;
+        }
+
+        .survey-qr img {
+            width: 100%;
+            height: auto;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .survey-url {
+            font-size: 13px;
+            font-weight: bold;
+            color: #ff6b35;
+            margin-top: 10px;
+        }
+
         .footer {
             text-align: center;
             margin-top: 20px;
-            font-size: 11px;
+            font-size: 12px;
             color: #666;
         }
 
         .footer-message {
             margin-bottom: 8px;
             font-weight: bold;
+            font-size: 13px;
         }
 
         .no-data {
@@ -166,6 +230,16 @@
             .separator {
                 border-top: 1px solid #333;
             }
+
+            .customer-info {
+                background: none;
+                border: 1px solid #333;
+            }
+
+            .survey-section {
+                background: none;
+                border: 1px solid #333;
+            }
         }
 
         @media (max-width: 480px) {
@@ -177,7 +251,7 @@
     </style>
 </head>
 <body>
-    <button class="print-button" onclick="printReceipt()">📄 Cetak Struk</button>
+    <button class="print-button" onclick="printReceipt()">Cetak Struk</button>
     
     <div class="receipt-container" id="receiptContainer">
         <div id="receiptContent">
@@ -214,7 +288,7 @@
         function showNoDataMessage() {
             document.getElementById('receiptContent').innerHTML = `
                 <div class="no-data">
-                    <h3>❌ Tidak ada data pesanan</h3>
+                    <h3>Tidak ada data pesanan</h3>
                     <p>Tidak ada data pesanan untuk ditampilkan</p>
                     <p style="margin-top: 10px; font-size: 12px;">
                         Silakan lakukan pemesanan terlebih dahulu melalui kasir.
@@ -227,14 +301,14 @@
             const content = `
                 <div class="receipt-header">
             <div style="margin-bottom: 8px;">
-                <div class="store-logo">🖨️ TIDURLAH GRAFIKA</div>
-                <div class="store-info" style="font-size: 10px; margin-bottom: 2px;">"Cetak apa aja, Tidurlah Grafika!"</div>
-                <div class="store-info" style="font-size: 10px; margin-bottom: 2px;">Perum. Korpri Raya, Blok D3. No. 3</div>
-                <div class="store-info" style="font-size: 10px;">Sukarame, Bandar Lampung</div>
+                <div class="store-logo">TIDURLAH GRAFIKA</div>
+                <div class="store-info" style="font-size: 12px; margin-bottom: 2px;">"Cetak apa aja, Tidurlah Grafika!"</div>
+                <div class="store-info" style="font-size: 12px; margin-bottom: 2px;">Perum. Korpri Raya, Blok D3. No. 3</div>
+                <div class="store-info" style="font-size: 12px;">Sukarame, Bandar Lampung</div>
             </div>
             <div class="separator"></div>
-            <div class="store-info" style="font-size: 10px;">WhatsApp: 085172157808</div>
-            <div class="store-info" style="font-size: 10px;">Instagram: @tidurlah_grafika</div>
+            <div class="store-info" style="font-size: 12px;">WhatsApp: 085172157808</div>
+            <div class="store-info" style="font-size: 12px;">Instagram: @tidurlah_grafika</div>
         </div>
 
         <div class="separator"></div>
@@ -248,12 +322,12 @@
         ${data.shipping ? `
         <div class="separator"></div>
         
-        <div class="receipt-meta">
-            <div style="font-weight: bold; margin-bottom: 8px; text-align: center;">INFORMASI PENGIRIMAN</div>
+        <div class="customer-info">
+            <div class="customer-info-title">INFORMASI PENGIRIMAN</div>
             <div><strong>Nama:</strong> ${data.shipping.customerName}</div>
             <div><strong>Telp:</strong> ${data.shipping.customerPhone}</div>
             <div><strong>Alamat:</strong> ${data.shipping.address}</div>
-            <div>${data.shipping.city} ${data.shipping.postalCode}</div>
+            <div><strong>Kota:</strong> ${data.shipping.city} ${data.shipping.postalCode}</div>
             ${data.shipping.notes ? `<div><strong>Catatan:</strong> ${data.shipping.notes}</div>` : ''}
         </div>
         ` : ''}
@@ -265,10 +339,10 @@
             ${data.items.map(item => `
                 <div class="item">
                     <div class="item-name">${item.name}</div>
-                    ${item.width && item.height ? `<div class="store-info" style="font-size: 10px; margin-bottom: 2px;">Ukuran: ${item.width}m x ${item.height}m</div>` : ''}
-                    ${item.modelCode ? `<div class="store-info" style="font-size: 10px; margin-bottom: 2px;">Model: ${item.modelCode}</div>` : ''}
-                    ${item.caseVariant ? `<div class="store-info" style="font-size: 10px; margin-bottom: 2px;">Casing: ${item.caseVariant}</div>` : ''}
-                    ${item.laminationVariant ? `<div class="store-info" style="font-size: 10px; margin-bottom: 2px;">Laminasi: ${item.laminationVariant}</div>` : ''}
+                    ${item.width && item.height ? `<div class="store-info" style="font-size: 12px; margin-bottom: 2px;">Ukuran: ${item.width}m x ${item.height}m</div>` : ''}
+                    ${item.modelCode ? `<div class="store-info" style="font-size: 12px; margin-bottom: 2px;">Model: ${item.modelCode}</div>` : ''}
+                    ${item.caseVariant ? `<div class="store-info" style="font-size: 12px; margin-bottom: 2px;">Casing: ${item.caseVariant}</div>` : ''}
+                    ${item.laminationVariant ? `<div class="store-info" style="font-size: 12px; margin-bottom: 2px;">Laminasi: ${item.laminationVariant}</div>` : ''}
                     <div class="item-details">
                         <span>${item.quantity} x ${formatCurrency(item.price)}</span>
                         <span>${formatCurrency(item.subtotal)}</span>
@@ -298,14 +372,28 @@
 
         <div class="separator"></div>
 
+        <div class="survey-section">
+            <div class="survey-title">Seberapa baikkah pelayanan kami?</div>
+            <div class="survey-text">
+                Kami sangat ingin mendengar pendapat Anda tentang kami.<br/>
+                Pindai kode QR ini dengan ponsel Anda atau kunjungi:
+            </div>
+            <div class="survey-qr">
+                <img src="/survey-qr.png" onerror="this.src='/product-image/survey-qr.png'" alt="Survey QR Code" />
+            </div>
+            <div class="survey-url">tidurlah.com/survey</div>
+        </div>
+
+        <div class="separator"></div>
+
         <div class="footer">
-            <div class="footer-message">✨ Terima kasih telah berbelanja! ✨</div>
-            <div style="font-size: 10px; color: #666;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #333; font-size: 9px; color: #888; font-style: italic; text-align: center;">
+            <div class="footer-message">Terima kasih telah berbelanja!</div>
+            <div style="font-size: 11px; color: #666;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+            <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #333; font-size: 10px; color: #888; font-style: italic; text-align: center;">
                 Struk ini dibuat untuk kemudahan estimasi biaya.<br/>
                 Tidak dapat digunakan sebagai bukti pembayaran.
             </div>
-            <div style="font-size: 9px; color: #666; margin-top: 8px;">
+            <div style="font-size: 10px; color: #666; margin-top: 8px;">
                 Struk ini dibuat secara otomatis pada ${new Date().toLocaleString('id-ID')}
             </div>
         </div>

@@ -187,41 +187,56 @@ Tidurlah Grafika`;
 
         document.body.appendChild(receiptDiv);
 
-        // Use html2canvas to convert to image
-        import('html2canvas').then((html2canvas) => {
-          html2canvas.default(receiptDiv, {
-            backgroundColor: '#ffffff',
-            scale: 3,
-            width: 350,
-            height: receiptDiv.scrollHeight,
-            useCORS: true,
-            allowTaint: true,
-            logging: false,
-            removeContainer: true,
-            imageTimeout: 0,
-            foreignObjectRendering: false,
-          }).then((canvas) => {
-            // Convert to blob and download
-            canvas.toBlob((blob) => {
-              if (blob) {
-                const url = URL.createObjectURL(blob);
-                const link = document.createElement('a');
-                link.href = url;
-                link.download = `receipt-${order.receiptId}.jpg`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                URL.revokeObjectURL(url);
-              }
-
-              // Clean up
-              document.body.removeChild(receiptDiv);
-              resolve(true);
-            });
-          }).catch((error) => {
-            document.body.removeChild(receiptDiv);
-            reject(error);
+        // Wait for all images (especially QR code) to load
+        const images = receiptDiv.querySelectorAll('img');
+        const imagePromises = Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(true);
           });
+        });
+
+        Promise.all(imagePromises).then(() => {
+          // Small delay to ensure layout is fully rendered
+          setTimeout(() => {
+            // Use html2canvas to convert to image
+            import('html2canvas').then((html2canvas) => {
+              html2canvas.default(receiptDiv, {
+                backgroundColor: '#ffffff',
+                scale: 3,
+                width: 350,
+                height: receiptDiv.scrollHeight,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                removeContainer: true,
+                imageTimeout: 15000,
+                foreignObjectRendering: false,
+              }).then((canvas) => {
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                  if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `receipt-${order.receiptId}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                  }
+
+                  // Clean up
+                  document.body.removeChild(receiptDiv);
+                  resolve(true);
+                });
+              }).catch((error) => {
+                document.body.removeChild(receiptDiv);
+                reject(error);
+              });
+            });
+          }, 200);
         });
       } else {
         reject(new Error('Receipt content not found'));
@@ -427,8 +442,8 @@ Tidurlah Grafika`;
                 <div
                   className="receipt-content"
                   style={{
-                    fontSize: '12px',
-                    lineHeight: '1.4',
+                    fontSize: '13px',
+                    lineHeight: '1.3',
                     width: '100%',
                     maxWidth: '350px',
                     margin: '0 auto',
@@ -438,7 +453,7 @@ Tidurlah Grafika`;
                     overflow: 'visible',
                     wordWrap: 'break-word',
                     backgroundColor: 'white',
-                    padding: '16px 12px',
+                    padding: '8px 6px',
                     boxSizing: 'border-box'
                   }}
                 >
@@ -490,7 +505,7 @@ Tidurlah Grafika`;
                         <div className="receipt-separator"></div>
                         <div className="receipt-meta-row">
                           <span>Pelanggan:</span>
-                          <span>{selectedOrder.customer.name}</span>
+                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{selectedOrder.customer.name}</span>
                         </div>
                         <div className="receipt-meta-row">
                           <span>Telepon:</span>
@@ -507,10 +522,10 @@ Tidurlah Grafika`;
                     {selectedOrder.shipping && (
                       <>
                         <div className="receipt-separator"></div>
-                        <div className="receipt-shipping-title">INFORMASI PENGIRIMAN</div>
+                        <div className="receipt-shipping-title" style={{ fontWeight: '900', textAlign: 'center', fontSize: '13px', marginBottom: '2px' }}>INFORMASI PENGIRIMAN</div>
                         <div className="receipt-meta-row">
                           <span>Nama:</span>
-                          <span>{selectedOrder.shipping.customerName}</span>
+                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{selectedOrder.shipping.customerName}</span>
                         </div>
                         <div className="receipt-meta-row">
                           <span>Telp:</span>
@@ -577,6 +592,32 @@ Tidurlah Grafika`;
                       <span>Rp {selectedOrder.summary.total.toLocaleString('id-ID')}</span>
                     </div>
                   </div>
+
+                  {/* Survey Section */}
+                  <div className="receipt-separator"></div>
+                  <div style={{ padding: '6px 4px', backgroundColor: '#f8f8f8', marginTop: '6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ flexShrink: 0 }}>
+                      <img 
+                        src="/product-image/survey-qr.png" 
+                        alt="Survey QR Code" 
+                        style={{ width: '70px', height: '70px', border: '1px solid #ddd', borderRadius: '4px' }}
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px', color: '#333', lineHeight: '1.2' }}>
+                        Seberapa baikkah pelayanan kami?
+                      </div>
+                      <div style={{ fontSize: '10px', lineHeight: '1.3', marginBottom: '3px', color: '#555' }}>
+                        Kami ingin mendengar pendapat Anda. Pindai QR atau kunjungi:
+                      </div>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#ff6b35' }}>
+                        tidurlah.com/survey
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="receipt-separator"></div>
 
                   {/* Footer */}
                   <div className="receipt-footer">

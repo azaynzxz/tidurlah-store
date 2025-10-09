@@ -72,7 +72,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   const receiptGenerator = new ReceiptGenerator();
 
 
-  const handleProcessOrder = () => {
+  const handleProcessOrder = async () => {
     if (items.length === 0) {
       toast({
         title: "Keranjang Kosong",
@@ -125,7 +125,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
     // Auto-download receipt as JPG
     try {
-      receiptGenerator.downloadReceipt(receiptData);
+      await receiptGenerator.downloadReceipt(receiptData);
       
       toast({
         title: "Pesanan Berhasil Diproses!",

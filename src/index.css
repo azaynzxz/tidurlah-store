@@ -559,43 +559,11 @@
     letter-spacing: 2px;
   }
 
-  /* Create additional smaller watermarks within receipt bounds */
-  .receipt-paper::before {
-    content: "DRAFT";
-    position: absolute;
-    top: 25%;
-    left: 20%;
-    transform: rotate(15deg);
-    font-size: 16px;
-    font-weight: bold;
-    color: rgba(255, 0, 0, 0.06);
-    pointer-events: none;
-    z-index: 2;
-    white-space: nowrap;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 2px;
-  }
-
-  .receipt-paper::after {
-    content: "ESTIMASI";
-    position: absolute;
-    top: 75%;
-    right: 20%;
-    transform: rotate(-15deg);
-    font-size: 14px;
-    font-weight: bold;
-    color: rgba(255, 165, 0, 0.07);
-    pointer-events: none;
-    z-index: 3;
-    white-space: nowrap;
-    font-family: 'Courier New', monospace;
-    letter-spacing: 1px;
-  }
 
   /* Receipt Layout Components */
   .receipt-header {
     text-align: center;
-    border-bottom: 1px dashed #333;
+    border-bottom: none;
     padding-bottom: 12px;
     margin-bottom: 12px;
     position: relative;
@@ -629,7 +597,7 @@
   }
 
   .receipt-separator {
-    border-bottom: 1px dashed #333;
+    border-bottom: none;
     margin: 8px 0;
     position: relative;
     z-index: 10;
@@ -683,8 +651,8 @@
     text-align: center;
     margin: 8px 0 12px 0;
     padding: 4px 0;
-    border-top: 1px dashed #333;
-    border-bottom: 1px dashed #333;
+    border-top: none;
+    border-bottom: none;
     color: #000;
     letter-spacing: 1px;
   }
@@ -748,7 +716,7 @@
   .receipt-summary {
     margin: 12px 0;
     font-size: 11px;
-    border-top: 1px dashed #333;
+    border-top: none;
     padding-top: 8px;
     position: relative;
     z-index: 10;
@@ -777,8 +745,8 @@
   .receipt-total {
     font-size: 13px;
     font-weight: bold;
-    border-top: 1px solid #333;
-    border-bottom: 1px solid #333;
+    border-top: none;
+    border-bottom: none;
     padding: 6px 0;
     margin: 8px 0;
   }
@@ -814,7 +782,7 @@
     margin: 12px 0;
     padding: 8px;
     background: rgba(255, 255, 255, 0.8);
-    border: 1px dashed #ccc;
+    border: none;
     border-radius: 4px;
     position: relative;
     z-index: 10;

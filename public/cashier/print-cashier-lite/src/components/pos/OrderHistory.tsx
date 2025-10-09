@@ -67,9 +67,9 @@ export function OrderHistory({ onBack }: OrderHistoryProps) {
     }
   };
 
-  const handleDownloadReceipt = (order: ReceiptData) => {
+  const handleDownloadReceipt = async (order: ReceiptData) => {
     try {
-      receiptGenerator.downloadReceipt(order);
+      await receiptGenerator.downloadReceipt(order);
       toast({
         title: "Struk Diunduh",
         description: `Struk ${order.receiptId} berhasil diunduh`,
@@ -85,7 +85,11 @@ export function OrderHistory({ onBack }: OrderHistoryProps) {
 
   const handleViewReceipt = (order: ReceiptData) => {
     localStorage.setItem('lastOrderReceipt', JSON.stringify(order));
-    window.open('/receipt.html', '_blank');
+    // Use relative path to work in both standalone and embedded modes
+    const basePath = window.location.pathname.includes('/cashier/print-cashier-lite') 
+      ? '/cashier/print-cashier-lite' 
+      : '';
+    window.open(`${basePath}/receipt.html`, '_blank');
   };
 
   const handleDeleteOrder = (receiptId: string) => {
