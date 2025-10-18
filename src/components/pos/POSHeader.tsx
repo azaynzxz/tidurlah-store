@@ -53,8 +53,86 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
 
   return (
     <header className="bg-[#FF5E01] text-white">
-      <div className="px-4 py-2">
-        <div className="grid grid-cols-3 items-center">
+      <div className="px-2 md:px-4 py-2">
+        {/* Mobile Layout - Stacked */}
+        <div className="md:hidden space-y-2">
+          {/* Top Row: Logo + Time + History */}
+          <div className="flex items-center justify-between">
+            <a 
+              href="/"
+              className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+              title="Kembali ke website utama"
+            >
+              <img
+                src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
+                alt="TIDURLAH GRAFIKA"
+                className="h-6 w-6 object-contain bg-white rounded p-0.5"
+                onError={(e) => {
+                  e.currentTarget.style.display = 'none';
+                }}
+              />
+              <div>
+                <h1 className="text-sm font-bold text-white leading-tight">TIDURLAH GRAFIKA</h1>
+                <p className="text-[10px] text-orange-100 leading-tight">POS System</p>
+              </div>
+            </a>
+
+            <div className="flex items-center gap-2">
+              {/* Compact Time */}
+              <div className="bg-black bg-opacity-20 rounded px-1.5 py-0.5">
+                <div className="flex items-center gap-1 text-xs text-white font-mono">
+                  <Clock className="w-3 h-3" />
+                  <span className="font-bold">
+                    {new Date().toLocaleTimeString('id-ID', {
+                      hour: '2-digit',
+                      minute: '2-digit',
+                      hour12: false
+                    })}
+                  </span>
+                </div>
+              </div>
+
+              {/* Compact History Button */}
+              {onShowOrderHistory && (
+                <Button 
+                  variant="secondary" 
+                  size="sm" 
+                  className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2" 
+                  onClick={onShowOrderHistory}
+                >
+                  <History className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Row: Search */}
+          {onSearch && (
+            <div className="relative">
+              <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
+              <Input
+                type="text"
+                placeholder="Cari produk..."
+                value={internalSearchTerm}
+                onChange={handleSearchChange}
+                className="pl-7 pr-8 h-8 w-full bg-white text-gray-900 border-white placeholder-gray-500 focus:ring-1 focus:ring-white text-xs"
+              />
+              {internalSearchTerm && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="absolute right-0.5 top-1/2 transform -translate-y-1/2 h-7 w-7 p-0 text-gray-400 hover:text-gray-600"
+                  onClick={clearSearch}
+                >
+                  <X className="w-3 h-3" />
+                </Button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Desktop Layout - Original Grid */}
+        <div className="hidden md:grid grid-cols-3 items-center">
           {/* Left section - Logo and Title */}
           <div className="flex items-center gap-3">
             <a 

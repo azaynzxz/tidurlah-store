@@ -61,6 +61,8 @@ interface CartProps {
   onAddExpressService: () => void;
   onAddOngkir: (price: number) => void;
   isBluetoothSupported?: boolean;
+  isMobile?: boolean;
+  onClose?: () => void;
 }
 
 interface DeliveryInfo {
@@ -77,7 +79,7 @@ interface CustomerDetails {
   downPayment?: number;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported }: CartProps) {
+export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
@@ -309,6 +311,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       setDownPayment(0);
       setDpDisplayValue('');
       setIsExpressSelected(false);
+      
+      // Close mobile modal if in mobile mode
+      if (isMobile && onClose) {
+        setTimeout(() => onClose(), 500);
+      }
     } catch (error) {
       console.error('Error processing order:', error);
       toast.error('Terjadi kesalahan saat memproses pesanan.', {
@@ -382,6 +389,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         setDownPayment(0);
         setDpDisplayValue('');
         setIsExpressSelected(false);
+        
+        // Close mobile modal if in mobile mode
+        if (isMobile && onClose) {
+          setTimeout(() => onClose(), 500);
+        }
       }
     } catch (error) {
       console.error('Error printing receipt:', error);
@@ -398,9 +410,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
   return (
     <>
-      <div className="flex flex-col h-full">
+      <div className={isMobile ? "flex flex-col" : "flex flex-col h-full"}>
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50">
+      <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
         <h2 className="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
         <Button
           variant="ghost"
@@ -413,8 +425,8 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         </Button>
       </div>
 
-      {/* Cart Items - Larger scrollable area */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50">
+      {/* Cart Items - Scrollable on desktop, natural height on mobile */}
+      <div className={isMobile ? "p-3 space-y-3 bg-gray-50" : "flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50"}>
         {items.length === 0 ? (
           <div className="text-center text-gray-500 py-8">
             <p>Belum ada produk dalam keranjang</p>
@@ -432,7 +444,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         )}
       </div>
 
-      {/* Customer Details & Summary - Fixed at bottom */}
+      {/* Customer Details & Summary */}
       {items.length > 0 && (
         <div className="border-t bg-white">
           {/* Service Options Section */}
@@ -664,7 +676,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-2 mt-2">
+            <div className={`flex gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
               <Button
                 className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
                 onClick={handleProcessOrder}

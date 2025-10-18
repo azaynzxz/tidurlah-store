@@ -50,7 +50,7 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
 
   return (
     <div
-      className={`relative p-4 bg-white rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-lg group ${
+      className={`relative bg-white rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-lg group ${
         !product.is_available
           ? 'opacity-50 cursor-not-allowed'
           : isSelected
@@ -60,12 +60,79 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
       onClick={handleClick}
     >
       {!product.is_available && (
-        <Badge variant="destructive" className="absolute top-2 right-2 text-xs">
+        <Badge variant="destructive" className="absolute top-1 right-1 text-xs z-10">
           Habis
         </Badge>
       )}
 
-      <div className="space-y-3">
+      {/* Mobile: Simplified vertical layout */}
+      <div className="md:hidden flex flex-col">
+        {/* Image */}
+        <div className="relative w-full aspect-square">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="w-full h-full object-cover rounded-t-lg"
+          />
+          {product.is_available && (
+            <div className="absolute bottom-2 right-2">
+              <div className={`rounded-full p-2 shadow-lg ${
+                isSelected
+                  ? "bg-[#FF5E01] text-white"
+                  : "bg-white text-[#FF5E01]"
+              }`}>
+                <Plus className="w-4 h-4" />
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Product Info */}
+        <div className="p-2 space-y-1">
+          <h3 className="font-semibold text-gray-800 text-xs leading-tight line-clamp-2 min-h-[2.5rem]">
+            {product.name}
+          </h3>
+          
+          <div className="flex items-baseline gap-1">
+            {product.discountPrice ? (
+              <>
+                <span className="text-sm font-bold text-[#FF5E01]">
+                  {formatCurrency(product.discountPrice)}
+                </span>
+                <span className="text-[10px] text-gray-400 line-through">
+                  {formatCurrency(product.price)}
+                </span>
+              </>
+            ) : (
+              <span className="text-sm font-bold text-[#FF5E01]">
+                {formatCurrency(product.price)}
+              </span>
+            )}
+          </div>
+
+          {/* Special indicators - compact */}
+          <div className="flex items-center gap-0.5 flex-wrap">
+            {product.pricingMethod === "dimensional" && (
+              <div className="w-4 h-4 rounded-full bg-orange-100 flex items-center justify-center" title="Dimensional">
+                <Ruler className="w-2.5 h-2.5 text-orange-700" />
+              </div>
+            )}
+            {product.models && product.models.length > 0 && (
+              <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center" title="Model">
+                <Package className="w-2.5 h-2.5 text-blue-700" />
+              </div>
+            )}
+            {(product.id === 1 || product.id === 2 || product.id === 6 || product.id === 7 || product.id === 8) && (
+              <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center" title="Casing">
+                <Layers className="w-2.5 h-2.5 text-green-700" />
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Desktop: Original layout */}
+      <div className="hidden md:block p-4 space-y-3">
         <div className="flex items-start gap-3">
           <img
             src={product.image}

@@ -106,6 +106,7 @@ export function POSDashboard() {
   const [bluetoothDevice, setBluetoothDevice] = useState<any>(null);
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
   const [notificationsShown, setNotificationsShown] = useState<Set<string>>(new Set());
+  const [showMobileCart, setShowMobileCart] = useState(false);
 
   // Inspiring quotes in Indonesian
   const morningQuotes = [
@@ -1106,12 +1107,12 @@ export function POSDashboard() {
         onCashierNameChange={handleCashierNameChange}
       />
 
-      {/* Main Content Area - Full Screen */}
+      {/* Main Content Area - Responsive Layout */}
       <div className="flex-1 flex overflow-hidden">
-        {/* Left side - Products (65%) */}
-        <div className="flex-1 flex flex-col p-4 overflow-hidden">
+        {/* Products Section - Full width on mobile, 65% on desktop */}
+        <div className="flex-1 flex flex-col p-2 md:p-4 overflow-hidden">
           {/* Category Tabs */}
-          <div className="mb-4">
+          <div className="mb-2 md:mb-4">
             <CategoryTabs
               categories={categories}
               activeCategory={activeCategory}
@@ -1129,8 +1130,8 @@ export function POSDashboard() {
           </div>
         </div>
 
-        {/* Right side - Cart (35%) */}
-        <div className="w-[420px] bg-white border-l border-gray-200 flex flex-col">
+        {/* Desktop Cart - Hidden on mobile */}
+        <div className="hidden md:flex w-[420px] bg-white border-l border-gray-200 flex-col">
           <Cart
             items={cartItems}
             onUpdateQuantity={handleUpdateQuantity}
@@ -1146,6 +1147,69 @@ export function POSDashboard() {
           />
         </div>
       </div>
+
+      {/* Mobile Cart - Floating Action Button */}
+      <div className="md:hidden fixed bottom-4 right-4 z-40">
+        <button
+          onClick={() => setShowMobileCart(true)}
+          className="relative bg-[#FF5E01] hover:bg-[#e54d00] text-white rounded-full p-4 shadow-lg transition-all duration-200 active:scale-95"
+          aria-label="Open Cart"
+        >
+          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+          </svg>
+          {cartItems.length > 0 && (
+            <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-bold rounded-full h-6 w-6 flex items-center justify-center">
+              {cartItems.length}
+            </span>
+          )}
+        </button>
+      </div>
+
+      {/* Mobile Cart Modal */}
+      {showMobileCart && (
+        <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowMobileCart(false)}>
+          <div 
+            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col animate-slide-up"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drag Handle */}
+            <div className="flex justify-center pt-3 pb-2 shrink-0">
+              <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
+            </div>
+            
+            {/* Close Button */}
+            <button
+              onClick={() => setShowMobileCart(false)}
+              className="absolute top-4 right-4 text-gray-500 hover:text-gray-700 z-10"
+              aria-label="Close Cart"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Cart Content - Fully Scrollable */}
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <Cart
+                items={cartItems}
+                onUpdateQuantity={handleUpdateQuantity}
+                onRemoveItem={handleRemoveItem}
+                onClearAll={handleClearAll}
+                onProcessOrder={handleProcessOrder}
+                onUpdateOptions={handleUpdateOptions}
+                onPrintOrder={handlePrintOrder}
+                onAddDesignService={handleAddDesignService}
+                onAddExpressService={handleAddExpressService}
+                onAddOngkir={handleAddOngkir}
+                isBluetoothSupported={isBluetoothSupported()}
+                isMobile={true}
+                onClose={() => setShowMobileCart(false)}
+              />
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Hidden Receipt Content for JPG Generation */}
       <div className="fixed -left-[9999px] -top-[9999px] opacity-0 pointer-events-none">
