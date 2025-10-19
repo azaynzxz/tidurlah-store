@@ -829,4 +829,263 @@
       font-size: 12px;
     }
   }
+
+  /* ========================================= */
+  /* RECEIPT VERSION 2 - BIGGER FONTS FOR PDF */
+  /* Enhanced readability for printed receipts */
+  /* ========================================= */
+
+  .receipt-content-v2 {
+    position: relative;
+    font-family: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
+    background: 
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 1px,
+        rgba(0,0,0,0.02) 1px,
+        rgba(0,0,0,0.02) 2px
+      ),
+      white;
+    font-size: 15px !important;
+    line-height: 1.5 !important;
+  }
+
+  .receipt-content-v2::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+    background-size: 4px 4px;
+    pointer-events: none;
+    opacity: 0.3;
+    z-index: 0;
+  }
+
+  .receipt-content-v2::after {
+    content: "BELUM DIBAYAR";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(-45deg);
+    font-size: 28px;
+    font-weight: bold;
+    color: rgba(255, 0, 0, 0.08);
+    pointer-events: none;
+    z-index: 1;
+    white-space: nowrap;
+    font-family: 'Courier New', monospace;
+    letter-spacing: 2px;
+  }
+
+  .receipt-store-title-v2 {
+    font-size: 20px !important;
+    font-weight: bold;
+    margin: 8px 0 4px 0;
+    color: #000;
+    letter-spacing: 1.5px;
+  }
+
+  .receipt-slogan-v2 {
+    font-size: 13px !important;
+    font-style: italic;
+    margin: 4px 0;
+    color: #333;
+  }
+
+  .receipt-address-v2 {
+    font-size: 12px !important;
+    margin: 3px 0;
+    color: #333;
+    line-height: 1.4;
+  }
+
+  .receipt-contact-v2 {
+    font-size: 12px !important;
+    text-align: center;
+    margin: 8px 0;
+    color: #333;
+    position: relative;
+    z-index: 10;
+  }
+
+  .receipt-contact-v2 p {
+    margin: 3px 0;
+  }
+
+  .receipt-meta-v2 {
+    margin: 14px 0;
+    font-size: 14px !important;
+    position: relative;
+    z-index: 10;
+  }
+
+  .receipt-meta-row-v2 {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    line-height: 1.5;
+  }
+
+  .receipt-meta-row-v2 span:first-child {
+    color: #555;
+  }
+
+  .receipt-meta-row-v2 span:last-child {
+    font-weight: 600;
+    color: #000;
+  }
+
+  .receipt-items-v2 {
+    margin: 14px 0;
+    position: relative;
+    z-index: 10;
+  }
+
+  .receipt-items-title-v2 {
+    font-size: 15px !important;
+    font-weight: bold;
+    text-align: center;
+    margin: 10px 0 14px 0;
+    padding: 5px 0;
+    border-top: none;
+    border-bottom: none;
+    color: #000;
+    letter-spacing: 1.5px;
+  }
+
+  .receipt-items-list-v2 {
+    font-size: 13px !important;
+  }
+
+  .receipt-item-v2 {
+    margin: 10px 0;
+    padding: 5px 0;
+    border-bottom: 1px dotted #ccc;
+  }
+
+  .receipt-item-v2:last-child {
+    border-bottom: none;
+  }
+
+  .receipt-item-name-v2 {
+    font-weight: 600;
+    font-size: 13px !important;
+    color: #000;
+    margin-bottom: 3px;
+    line-height: 1.4;
+  }
+
+  .receipt-item-dimension-v2 {
+    font-weight: normal;
+    color: #555;
+    font-size: 11px !important;
+  }
+
+  .receipt-item-model-v2 {
+    font-weight: normal;
+    color: #666;
+    font-size: 11px !important;
+  }
+
+  .receipt-item-detail-v2 {
+    font-size: 11px !important;
+    color: #666;
+    margin: 2px 0;
+    padding-left: 4px;
+  }
+
+  .receipt-item-pricing-v2 {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4px;
+    font-size: 13px !important;
+  }
+
+  .receipt-item-pricing-v2 span:first-child {
+    color: #555;
+  }
+
+  .receipt-item-pricing-v2 span:last-child {
+    font-weight: 700;
+    color: #000;
+  }
+
+  .receipt-summary-v2 {
+    margin: 14px 0;
+    font-size: 14px !important;
+    border-top: none;
+    padding-top: 10px;
+    position: relative;
+    z-index: 10;
+  }
+
+  .receipt-summary-row-v2 {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    line-height: 1.5;
+  }
+
+  .receipt-summary-row-v2 span:first-child {
+    color: #555;
+  }
+
+  .receipt-summary-row-v2 span:last-child {
+    font-weight: 600;
+    color: #000;
+  }
+
+  .receipt-total-v2 {
+    font-size: 16px !important;
+    font-weight: bold;
+    border-top: none;
+    border-bottom: none;
+    padding: 8px 0;
+    margin: 10px 0;
+  }
+
+  .receipt-total-v2 span {
+    color: #000 !important;
+    font-weight: bold;
+  }
+
+  .receipt-footer-v2 {
+    margin-top: 14px;
+    text-align: center;
+    font-size: 12px !important;
+    position: relative;
+    z-index: 10;
+  }
+
+  .receipt-thank-you-v2 {
+    font-size: 14px !important;
+    font-weight: bold;
+    margin: 10px 0;
+    color: #000;
+  }
+
+  .receipt-disclaimer-v2 {
+    font-size: 11px !important;
+    color: #666;
+    margin: 7px 0;
+    font-style: italic;
+  }
+
+  .receipt-timestamp-v2 {
+    font-size: 10px !important;
+    color: #aaa;
+    margin-top: 10px;
+    border-top: 1px dotted #ddd;
+    padding-top: 7px;
+  }
+
+  .receipt-content-v2 > * {
+    position: relative;
+    z-index: 10;
+  }
 }

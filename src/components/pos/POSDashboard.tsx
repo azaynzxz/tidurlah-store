@@ -7,7 +7,10 @@ import { Cart } from "./Cart";
 import { OrderHistory } from "./OrderHistory";
 import { toast } from "sonner";
 import { convertImageToBase64, calculateBannerPrice } from "@/utils/product";
-import { submitPOSOrder, POSOrderData } from "@/utils/api";
+import { submitPOSOrder } from "@/utils/api";
+import type { POSOrderData } from "@/utils/api";
+import { exportReceiptToPDF } from "@/utils/receiptPDF";
+import { generateReceiptHTML } from "@/utils/receiptTemplate";
 
 // Web Bluetooth API type declarations
 declare global {
@@ -100,6 +103,7 @@ export function POSDashboard() {
   const [showReceipt, setShowReceipt] = useState(false);
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
   const [logoBase64, setLogoBase64] = useState<string>("");
+  const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
   const [receiptData, setReceiptData] = useState<any>(null);
   const [cashierName, setCashierName] = useState<string>("");
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -289,17 +293,23 @@ export function POSDashboard() {
 
   // Load logo as base64 for html2canvas compatibility
   useEffect(() => {
-    const loadLogo = async () => {
+    const loadImages = async () => {
       try {
-        const base64Logo = await convertImageToBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+        // Load horizontal logo for PDF
+        const base64Logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
         setLogoBase64(base64Logo);
+        
+        // Load survey QR code
+        const base64SurveyQR = await convertImageToBase64('/product-image/survey-qr.png');
+        setSurveyQRBase64(base64SurveyQR);
       } catch (error) {
-        console.error('Failed to load logo:', error);
-        // Fallback to original image path if conversion fails
-        setLogoBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+        console.error('Failed to load images:', error);
+        // Fallback to original image paths if conversion fails
+        setLogoBase64('/product-image/Tidurlah Logo Horizontal.png');
+        setSurveyQRBase64('/product-image/survey-qr.png');
       }
     };
-    loadLogo();
+    loadImages();
   }, []);
 
   // Load cashier name from localStorage on component mount
@@ -580,20 +590,20 @@ export function POSDashboard() {
 
 
   // Generate receipt as JPG instantly
-  const generateReceiptJPG = async () => {
+  const generateReceiptJPG = async (dataToRender?: any) => {
     return new Promise((resolve, reject) => {
-      // Generate receipt immediately without animation delay
-      if (receiptRef.current) {
-          // Clone the receipt content to avoid modifying the original
-          const receiptContent = receiptRef.current.cloneNode(true) as HTMLElement;
-
-          // Remove any animations or transitions for clean JPG output
-          receiptContent.style.animation = 'none';
-          receiptContent.style.transform = 'none';
-
+      // Use passed data or fall back to state
+      const data = dataToRender || receiptData;
+      
+      // Generate receipt using shared template
+      if (data) {
           // Create a temporary div to render the receipt
           const receiptDiv = document.createElement('div');
-          receiptDiv.innerHTML = receiptContent.outerHTML;
+          receiptDiv.innerHTML = generateReceiptHTML(
+            data,
+            logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
+            surveyQRBase64 || '/product-image/survey-qr.png'
+          );
           receiptDiv.style.position = 'absolute';
           receiptDiv.style.left = '-9999px';
           receiptDiv.style.top = '-9999px';
@@ -961,6 +971,8 @@ export function POSDashboard() {
         subtotal,
         discount: 0,
         total: subtotal,
+        downPayment: customerDetails.downPayment || 0,
+        remainingBalance: subtotal - (customerDetails.downPayment || 0),
         paymentMethod: 'Cash'
       };
 
@@ -983,7 +995,7 @@ export function POSDashboard() {
         // Auto-generate and download receipt instantly (original behavior)
         setTimeout(async () => {
           try {
-            await generateReceiptJPG();
+            await generateReceiptJPG(receiptData);
             toast.success("Pesanan berhasil diproses! Struk telah diunduh", {
               position: 'top-center',
               duration: 3000,
@@ -1056,6 +1068,18 @@ export function POSDashboard() {
       const printSuccess = await printReceiptBluetooth();
       
       if (printSuccess) {
+        // Generate JPG receipt after successful Bluetooth print
+        try {
+          await generateReceiptJPG();
+          toast.success("Pesanan berhasil dicetak! Struk JPG telah diunduh", {
+            position: 'top-center',
+            duration: 3000,
+          });
+        } catch (error) {
+          console.error('Error generating JPG after print:', error);
+          // Don't fail the entire operation if JPG generation fails
+        }
+        
         // Clear cart after successful print
         setCartItems([]);
         setSelectedProducts(new Set());
@@ -1066,6 +1090,76 @@ export function POSDashboard() {
     } catch (error) {
       console.error('Error in print order:', error);
       toast.error("Gagal mencetak pesanan via Bluetooth");
+      return false;
+    }
+  };
+
+  // Handle PDF export with V2 template (bigger fonts)
+  const handleExportPDF = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }) => {
+    try {
+      // First process the order to generate receipt data (but don't submit to sheets yet)
+      const receiptId = generateInvoiceId(customerDetails.name, cartItems.length);
+      const subtotal = cartItems.reduce((total, item) => {
+        const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
+        return total + (applicablePrice * item.quantity);
+      }, 0);
+      
+      const pdfReceiptData = {
+        receiptId,
+        timestamp: new Date().toLocaleDateString('id-ID', {
+          day: '2-digit',
+          month: 'short',
+          year: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit',
+          second: '2-digit',
+          hour12: false
+        }),
+        cashier: cashierName || "POS Kasir",
+        customer: customerDetails,
+        items: cartItems.map(item => {
+          const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
+          return {
+            name: item.product.name,
+            quantity: item.quantity,
+            price: applicablePrice,
+            subtotal: applicablePrice * item.quantity,
+            modelCode: item.options?.modelCode,
+            caseVariant: item.options?.caseVariant,
+            laminationVariant: item.options?.laminationVariant,
+            width: item.options?.width,
+            height: item.options?.height,
+            dimensionText: item.options?.dimensionText,
+            area: item.options?.area
+          };
+        }),
+        summary: {
+          subtotal,
+          discount: 0,
+          tax: 0,
+          total: subtotal,
+          downPayment: customerDetails.downPayment || 0,
+          remainingBalance: subtotal - (customerDetails.downPayment || 0)
+        }
+      };
+      
+      // Export to PDF using V2 template (bigger fonts)
+      const exportSuccess = await exportReceiptToPDF(pdfReceiptData, logoBase64, surveyQRBase64);
+      
+      if (exportSuccess) {
+        // Now submit the order to Google Sheets
+        await handleProcessOrder(customerDetails, false);
+        
+        // Clear cart after successful export
+        setCartItems([]);
+        setSelectedProducts(new Set());
+        setShowReceipt(false);
+      }
+      
+      return exportSuccess;
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      toast.error("Gagal membuat PDF");
       return false;
     }
   };
@@ -1140,6 +1234,7 @@ export function POSDashboard() {
             onProcessOrder={handleProcessOrder}
             onUpdateOptions={handleUpdateOptions}
             onPrintOrder={handlePrintOrder}
+            onExportPDF={handleExportPDF}
             onAddDesignService={handleAddDesignService}
             onAddExpressService={handleAddExpressService}
             onAddOngkir={handleAddOngkir}
@@ -1199,6 +1294,7 @@ export function POSDashboard() {
                 onProcessOrder={handleProcessOrder}
                 onUpdateOptions={handleUpdateOptions}
                 onPrintOrder={handlePrintOrder}
+                onExportPDF={handleExportPDF}
                 onAddDesignService={handleAddDesignService}
                 onAddExpressService={handleAddExpressService}
                 onAddOngkir={handleAddOngkir}

@@ -30,6 +30,8 @@ export interface POSOrderData {
   subtotal: number;
   discount: number;
   total: number;
+  downPayment?: number;
+  remainingBalance?: number;
   paymentMethod?: string;
 }
 

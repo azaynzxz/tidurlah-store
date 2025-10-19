@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ArrowLeft, Eye, Trash2, Download, X, MessageCircle } from "lucide-react";
 import { convertImageToBase64 } from "@/utils/product";
+import { generateReceiptHTML } from "@/utils/receiptTemplate";
 
 interface ReceiptData {
   receiptId: string;
@@ -49,6 +50,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [selectedOrder, setSelectedOrder] = useState<ReceiptData | null>(null);
   const [showReceiptModal, setShowReceiptModal] = useState(false);
   const [logoBase64, setLogoBase64] = useState<string>("");
+  const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
   const receiptRef = useRef<HTMLDivElement>(null);
 
@@ -134,15 +136,19 @@ Tidurlah Grafika`;
     loadLogo();
   }, []);
 
-  // Load logo as base64 for html2canvas compatibility
+  // Load logo and survey QR as base64 for html2canvas compatibility
   const loadLogo = async () => {
     try {
-      const base64Logo = await convertImageToBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+      const base64Logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
       setLogoBase64(base64Logo);
+      
+      const base64SurveyQR = await convertImageToBase64('/product-image/survey-qr.png');
+      setSurveyQRBase64(base64SurveyQR);
     } catch (error) {
-      console.error('Failed to load logo:', error);
-      // Fallback to original image path if conversion fails
-      setLogoBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
+      console.error('Failed to load images:', error);
+      // Fallback to original image paths if conversion fails
+      setLogoBase64('/product-image/Tidurlah Logo Horizontal.png');
+      setSurveyQRBase64('/product-image/survey-qr.png');
     }
   };
 
@@ -163,19 +169,16 @@ Tidurlah Grafika`;
     setShowReceiptModal(true);
   };
 
-  // Generate receipt as JPG
+  // Generate receipt as JPG using shared template
   const generateReceiptJPG = async (order: ReceiptData) => {
     return new Promise((resolve, reject) => {
-      if (receiptRef.current) {
-        const receiptContent = receiptRef.current.cloneNode(true) as HTMLElement;
-
-        // Remove any animations or transitions for clean JPG output
-        receiptContent.style.animation = 'none';
-        receiptContent.style.transform = 'none';
-
         // Create a temporary div to render the receipt
         const receiptDiv = document.createElement('div');
-        receiptDiv.innerHTML = receiptContent.outerHTML;
+      receiptDiv.innerHTML = generateReceiptHTML(
+        order,
+        logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
+        surveyQRBase64 || '/product-image/survey-qr.png'
+      );
         receiptDiv.style.position = 'absolute';
         receiptDiv.style.left = '-9999px';
         receiptDiv.style.top = '-9999px';
@@ -238,9 +241,6 @@ Tidurlah Grafika`;
             });
           }, 200);
         });
-      } else {
-        reject(new Error('Receipt content not found'));
-      }
     });
   };
 
@@ -438,199 +438,14 @@ Tidurlah Grafika`;
                 ref={receiptRef}
                 className="receipt-paper"
                 style={{ animation: 'none', transform: 'none' }}
-              >
-                <div
-                  className="receipt-content"
-                  style={{
-                    fontSize: '13px',
-                    lineHeight: '1.3',
-                    width: '100%',
-                    maxWidth: '350px',
-                    margin: '0 auto',
-                    minWidth: '300px',
-                    fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
-                    color: '#000000',
-                    overflow: 'visible',
-                    wordWrap: 'break-word',
-                    backgroundColor: 'white',
-                    padding: '8px 6px',
-                    boxSizing: 'border-box'
-                  }}
-                >
-                  {/* Store Header */}
-                  <div className="receipt-header">
-                    <div className="receipt-logo-section">
-                      <div className="flex justify-center items-center mb-2">
-                        {logoBase64 ? (
-                          <img
-                            src={logoBase64}
-                            alt="TIDURLAH GRAFIKA"
-                            className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
-                            crossOrigin="anonymous"
-                          />
-                        ) : (
-                          <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
-                            <span className="text-xs text-gray-500">Loading...</span>
-                          </div>
-                        )}
-                      </div>
-                      <h2 className="receipt-store-title">TIDURLAH GRAFIKA</h2>
-                      <p className="receipt-slogan">"Cetak apa aja, Tidurlah Grafika!"</p>
-                      <p className="receipt-address">Perum. Korpri Raya, Blok D3. No. 3</p>
-                      <p className="receipt-address">Sukarame, Bandar Lampung</p>
-                    </div>
-                    <div className="receipt-separator"></div>
-                    <div className="receipt-contact">
-                      <p>WhatsApp: 085172157808</p>
-                      <p>Instagram: @tidurlah_grafika</p>
-                    </div>
-                  </div>
-
-                  {/* Transaction Details */}
-                  <div className="receipt-meta">
-                    <div className="receipt-meta-row">
-                      <span>No. Transaksi:</span>
-                      <span className="font-bold">{selectedOrder.receiptId}</span>
-                    </div>
-                    <div className="receipt-meta-row">
-                      <span>Tanggal:</span>
-                      <span>{selectedOrder.timestamp}</span>
-                    </div>
-                    <div className="receipt-meta-row">
-                      <span>Kasir:</span>
-                      <span>{selectedOrder.cashier}</span>
-                    </div>
-                    {selectedOrder.customer && (
-                      <>
-                        <div className="receipt-separator"></div>
-                        <div className="receipt-meta-row">
-                          <span>Pelanggan:</span>
-                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{selectedOrder.customer.name}</span>
-                        </div>
-                        <div className="receipt-meta-row">
-                          <span>Telepon:</span>
-                          <span>{selectedOrder.customer.phone}</span>
-                        </div>
-                        {selectedOrder.customer.instansi && (
-                          <div className="receipt-meta-row">
-                            <span>Instansi:</span>
-                            <span>{selectedOrder.customer.instansi}</span>
-                          </div>
-                        )}
-                      </>
-                    )}
-                    {selectedOrder.shipping && (
-                      <>
-                        <div className="receipt-separator"></div>
-                        <div className="receipt-shipping-title" style={{ fontWeight: '900', textAlign: 'center', fontSize: '13px', marginBottom: '2px' }}>INFORMASI PENGIRIMAN</div>
-                        <div className="receipt-meta-row">
-                          <span>Nama:</span>
-                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{selectedOrder.shipping.customerName}</span>
-                        </div>
-                        <div className="receipt-meta-row">
-                          <span>Telp:</span>
-                          <span>{selectedOrder.shipping.customerPhone}</span>
-                        </div>
-                        <div className="receipt-meta-row">
-                          <span>Alamat:</span>
-                          <span>{selectedOrder.shipping.address}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Items */}
-                  <div className="receipt-items">
-                    <div className="receipt-items-title">DETAIL PEMBELIAN</div>
-                    <div className="receipt-items-list">
-                      {selectedOrder.items.map((item, index) => (
-                        <div key={index} className="receipt-item">
-                          <div className="receipt-item-name">
-                            {item.name}
-                            {item.width && item.height && (
-                              <span className="receipt-item-dimension"> ({item.width}m x {item.height}m)</span>
-                            )}
-                            {item.modelCode && (
-                              <span className="receipt-item-model"> [{item.modelCode}]</span>
-                            )}
-                          </div>
-                          {item.caseVariant && (
-                            <div className="receipt-item-detail">
-                              Casing: {item.caseVariant}
-                            </div>
-                          )}
-                          {item.laminationVariant && (
-                            <div className="receipt-item-detail">
-                              Laminasi: {item.laminationVariant}
-                            </div>
-                          )}
-                          <div className="receipt-item-pricing">
-                            <span>{item.quantity} x Rp {item.price.toLocaleString('id-ID')}</span>
-                            <span>Rp {item.subtotal.toLocaleString('id-ID')}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Totals */}
-                  <div className="receipt-summary">
-                    <div className="receipt-summary-row">
-                      <span>Subtotal:</span>
-                      <span>Rp {selectedOrder.summary.subtotal.toLocaleString('id-ID')}</span>
-                    </div>
-
-                    {selectedOrder.summary.discount > 0 && (
-                      <div className="receipt-summary-row receipt-discount">
-                        <span>Diskon:</span>
-                        <span>-Rp {selectedOrder.summary.discount.toLocaleString('id-ID')}</span>
-                      </div>
-                    )}
-
-                    <div className="receipt-summary-row receipt-total">
-                      <span>TOTAL:</span>
-                      <span>Rp {selectedOrder.summary.total.toLocaleString('id-ID')}</span>
-                    </div>
-                  </div>
-
-                  {/* Survey Section */}
-                  <div className="receipt-separator"></div>
-                  <div style={{ padding: '6px 4px', backgroundColor: '#f8f8f8', marginTop: '6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ flexShrink: 0 }}>
-                      <img 
-                        src="/product-image/survey-qr.png" 
-                        alt="Survey QR Code" 
-                        style={{ width: '70px', height: '70px', border: '1px solid #ddd', borderRadius: '4px' }}
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                    <div style={{ flex: 1, textAlign: 'left' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px', color: '#333', lineHeight: '1.2' }}>
-                        Seberapa baikkah pelayanan kami?
-                      </div>
-                      <div style={{ fontSize: '10px', lineHeight: '1.3', marginBottom: '3px', color: '#555' }}>
-                        Kami ingin mendengar pendapat Anda. Pindai QR atau kunjungi:
-                      </div>
-                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#ff6b35' }}>
-                        tidurlah.com/survey
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="receipt-separator"></div>
-
-                  {/* Footer */}
-                  <div className="receipt-footer">
-                    <div className="receipt-thank-you">Terima kasih telah berbelanja!</div>
-                    <div className="receipt-disclaimer">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-
-
-                    <div className="receipt-timestamp">
-                      Struk ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
-                    </div>
-                  </div>
-                </div>
-              </div>
+                dangerouslySetInnerHTML={{
+                  __html: generateReceiptHTML(
+                    selectedOrder,
+                    logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
+                    surveyQRBase64 || '/product-image/survey-qr.png'
+                  )
+                }}
+              />
             </div>
           </div>
         </div>

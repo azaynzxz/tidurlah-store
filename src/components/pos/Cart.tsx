@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check, ChevronDown, ChevronUp, Star } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Star, FileText } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { calculateBannerPrice } from "@/utils/product";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
+import { exportReceiptToPDF } from "@/utils/receiptPDF";
 
 interface Product {
   id: number;
@@ -57,6 +58,7 @@ interface CartProps {
   onProcessOrder: (customerDetails: CustomerDetails) => void;
   onUpdateOptions: (productId: number, options: any) => void;
   onPrintOrder?: (customerDetails: CustomerDetails) => Promise<boolean>;
+  onExportPDF?: (customerDetails: CustomerDetails) => Promise<boolean>;
   onAddDesignService: () => void;
   onAddExpressService: () => void;
   onAddOngkir: (price: number) => void;
@@ -79,7 +81,7 @@ interface CustomerDetails {
   downPayment?: number;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
+export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
@@ -87,6 +89,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [isDesignServiceSelected, setIsDesignServiceSelected] = useState(false);
   const [isDeliverySelected, setIsDeliverySelected] = useState(false);
   const [isExpressSelected, setIsExpressSelected] = useState(false);
@@ -406,6 +409,85 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     }
   };
 
+  const handleExportPDF = async () => {
+    if (!onExportPDF) {
+      toast.error("Fungsi export PDF tidak tersedia", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
+    if (items.length === 0) {
+      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
+    if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
+      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
+    // Validate required options for each item
+    const idCardWithCaseIds = [1, 2, 6, 7, 8];
+    const stikerWithLaminationIds = [15];
+    
+    for (const item of items) {
+      const needsCase = idCardWithCaseIds.includes(item.product.id);
+      const needsLamination = stikerWithLaminationIds.includes(item.product.id);
+      
+      if (needsCase && !item.options?.caseVariant) {
+        toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
+          position: 'top-center',
+          style: { marginTop: '60px' }
+        });
+        return;
+      }
+      
+      if (needsLamination && !item.options?.laminationVariant) {
+        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
+          position: 'top-center',
+          style: { marginTop: '60px' }
+        });
+        return;
+      }
+    }
+
+    setIsExportingPDF(true);
+
+    try {
+      // Call the PDF export handler which handles everything
+      const exportSuccess = await onExportPDF({ ...customerDetails, downPayment });
+      
+      if (exportSuccess) {
+        // Reset customer details and DP after successful export
+        setCustomerDetails({ name: '', phone: '', instansi: '' });
+        setDownPayment(0);
+        setDpDisplayValue('');
+        setIsExpressSelected(false);
+        
+        // Close mobile modal if in mobile mode
+        if (isMobile && onClose) {
+          setTimeout(() => onClose(), 500);
+        }
+      }
+    } catch (error) {
+      console.error('Error exporting PDF:', error);
+      toast.error('Terjadi kesalahan saat membuat PDF.', {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+    } finally {
+      setIsExportingPDF(false);
+    }
+  };
+
 
 
   return (
@@ -676,23 +758,36 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
             </div>
 
             {/* Action Buttons */}
-            <div className={`flex gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
-              <Button
-                className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
-                onClick={handleProcessOrder}
-                disabled={items.length === 0 || isProcessing || isPrinting || !customerDetails.name.trim() || !customerDetails.phone.trim()}
-              >
-                {isProcessing ? "Memproses..." : "Proses Pesanan"}
-              </Button>
-              
-              {isBluetoothSupported && onPrintOrder && (
+            <div className={`flex flex-col gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
+              <div className="flex gap-2">
                 <Button
-                  className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
-                  onClick={handlePrintReceipt}
-                  disabled={items.length === 0 || isProcessing || isPrinting || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                  className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
+                  onClick={handleProcessOrder}
+                  disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
                 >
-                  <span className="material-icons text-lg">bluetooth</span>
-                  {isPrinting ? "Mencetak..." : "Cetak"}
+                  {isProcessing ? "Memproses..." : "Proses Pesanan"}
+                </Button>
+                
+                {isBluetoothSupported && onPrintOrder && (
+                  <Button
+                    className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
+                    onClick={handlePrintReceipt}
+                    disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                  >
+                    <span className="material-icons text-lg">bluetooth</span>
+                    {isPrinting ? "Mencetak..." : "Cetak"}
+                  </Button>
+                )}
+              </div>
+              
+              {onExportPDF && (
+                <Button
+                  className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
+                  onClick={handleExportPDF}
+                  disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                >
+                  <FileText className="h-4 w-4" />
+                  {isExportingPDF ? "Membuat PDF..." : "PDF"}
                 </Button>
               )}
             </div>

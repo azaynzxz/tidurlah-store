@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { generateReceiptHTML } from '@/utils/receiptTemplate';
 
 const Receipt = () => {
   const navigate = useNavigate();
@@ -43,15 +44,19 @@ const Receipt = () => {
     return new Promise((resolve, reject) => {
       // Create a temporary div to render the receipt
       const receiptDiv = document.createElement('div');
-      receiptDiv.innerHTML = generateReceiptHTML(receiptData);
+      receiptDiv.innerHTML = generateReceiptHTML(
+        receiptData,
+        '/product-image/Tidurlah Logo Horizontal.png',
+        '/product-image/survey-qr.png'
+      );
       receiptDiv.style.position = 'absolute';
       receiptDiv.style.left = '-9999px';
       receiptDiv.style.top = '-9999px';
       receiptDiv.style.width = '350px';
       receiptDiv.style.background = 'white';
-      receiptDiv.style.fontFamily = 'Courier New, monospace';
-      receiptDiv.style.fontSize = '12px';
-      receiptDiv.style.padding = '20px';
+      receiptDiv.style.fontFamily = 'Roboto, Arial, Helvetica, sans-serif';
+      receiptDiv.style.fontSize = '15px';
+      receiptDiv.style.padding = '10px 8px';
 
       document.body.appendChild(receiptDiv);
 
@@ -86,150 +91,6 @@ const Receipt = () => {
         });
       });
     });
-  };
-
-  const generateReceiptHTML = (data: any) => {
-    return `
-      <div style="font-family: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace; font-size: 12px; line-height: 1.4; max-width: 350px; background: white; color: #000000;">
-        <!-- Store Header -->
-        <div style="text-align: center; border-bottom: 1px dashed #374151; padding-bottom: 12px; margin-bottom: 12px;">
-          <div style="margin-bottom: 8px;">
-            <h2 style="font-size: 18px; font-weight: bold; margin-bottom: 4px;">TIDURLAH GRAFIKA</h2>
-            <p style="font-size: 10px; color: #6b7280; margin-bottom: 2px; font-style: italic;">"Cetak apa aja, Tidurlah Grafika!"</p>
-            <p style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">Perum. Korpri Raya, Blok D3. No. 3</p>
-            <p style="font-size: 10px; color: #6b7280;">Sukarame, Bandar Lampung</p>
-          </div>
-          <div style="border-bottom: 1px dashed #374151; margin: 8px 0;"></div>
-          <p style="font-size: 10px; color: #6b7280;">WhatsApp: 085172157808</p>
-          <p style="font-size: 10px; color: #6b7280;">Instagram: @tidurlah_grafika</p>
-        </div>
-
-        <!-- Customer Details -->
-        ${data.customer ? `
-          <div style="border-bottom: 1px dashed #374151; padding-bottom: 12px; margin-bottom: 12px;">
-            <div style="display: table; width: 100%; margin-bottom: 4px;">
-              <div style="display: table-row;">
-                <span style="display: table-cell; padding-right: 8px;">Pelanggan:</span>
-                <span style="display: table-cell; font-weight: bold;">${data.customer.name}</span>
-              </div>
-            </div>
-            <div style="display: table; width: 100%; margin-bottom: 4px;">
-              <div style="display: table-row;">
-                <span style="display: table-cell; padding-right: 8px;">Telepon:</span>
-                <span style="display: table-cell;">${data.customer.phone}</span>
-              </div>
-            </div>
-            ${data.customer.instansi ? `
-              <div style="display: table; width: 100%;">
-                <div style="display: table-row;">
-                  <span style="display: table-cell; padding-right: 8px;">Instansi:</span>
-                  <span style="display: table-cell;">${data.customer.instansi}</span>
-                </div>
-              </div>
-            ` : ''}
-          </div>
-        ` : ''}
-
-        <!-- Transaction Details -->
-        <div style="border-bottom: 1px dashed #374151; padding-bottom: 12px; margin-bottom: 12px;">
-          <div style="display: table; width: 100%; margin-bottom: 4px;">
-            <div style="display: table-row;">
-              <span style="display: table-cell; padding-right: 8px;">No. Transaksi:</span>
-              <span style="display: table-cell; font-weight: bold;">${data.receiptId}</span>
-            </div>
-          </div>
-          <div style="display: table; width: 100%; margin-bottom: 4px;">
-            <div style="display: table-row;">
-              <span style="display: table-cell; padding-right: 8px;">Tanggal:</span>
-              <span style="display: table-cell;">${data.timestamp}</span>
-            </div>
-          </div>
-          <div style="display: table; width: 100%;">
-            <div style="display: table-row;">
-              <span style="display: table-cell; padding-right: 8px;">Kasir:</span>
-              <span style="display: table-cell;">${data.cashier}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Items -->
-        <div style="border-bottom: 1px dashed #374151; padding-bottom: 12px; margin-bottom: 12px;">
-          <div style="text-align: center; font-weight: bold; margin-bottom: 8px;">DETAIL PEMBELIAN</div>
-          <div>
-            ${data.items.map((item: any) => `
-              <div style="margin-bottom: 8px;">
-                <div style="font-weight: bold; margin-bottom: 2px; break-inside: avoid;">${item.name}</div>
-                ${item.width && item.height ? `<div style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">Ukuran: ${item.width}m x ${item.height}m</div>` : ''}
-                ${item.modelCode ? `<div style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">Model: ${item.modelCode}</div>` : ''}
-                ${item.caseVariant ? `<div style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">Casing: ${item.caseVariant}</div>` : ''}
-                ${item.laminationVariant ? `<div style="font-size: 10px; color: #6b7280; margin-bottom: 2px;">Laminasi: ${item.laminationVariant}</div>` : ''}
-                <div style="display: table; width: 100%;">
-                  <div style="display: table-row;">
-                    <span style="display: table-cell; padding-right: 8px; font-size: 10px;">
-                      ${item.quantity} x Rp ${item.price.toLocaleString('id-ID')}
-                    </span>
-                    <span style="display: table-cell; text-align: right; font-size: 10px; white-space: nowrap;">
-                      Rp ${item.subtotal.toLocaleString('id-ID')}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-
-        <!-- Totals -->
-        <div style="border-bottom: 1px dashed #374151; padding-bottom: 12px; margin-bottom: 12px;">
-          <div style="display: table; width: 100%; margin-bottom: 4px;">
-            <div style="display: table-row;">
-              <span style="display: table-cell; padding-right: 8px;">Subtotal:</span>
-              <span style="display: table-cell; text-align: right; white-space: nowrap;">
-                Rp ${data.summary.subtotal.toLocaleString('id-ID')}
-              </span>
-            </div>
-          </div>
-
-          ${data.summary.discount > 0 ? `
-            <div style="display: table; width: 100%; margin-bottom: 4px; color: #16a34a;">
-              <div style="display: table-row;">
-                <span style="display: table-cell; padding-right: 8px;">Diskon:</span>
-                <span style="display: table-cell; text-align: right; white-space: nowrap;">
-                  - Rp ${data.summary.discount.toLocaleString('id-ID')}
-                </span>
-              </div>
-            </div>
-          ` : ''}
-
-          <div style="border-top: 1px dashed #374151; margin-top: 8px; padding-top: 8px;">
-            <div style="display: table; width: 100%; font-weight: bold; font-size: 14px;">
-              <div style="display: table-row;">
-                <span style="display: table-cell; padding-right: 8px;">TOTAL:</span>
-                <span style="display: table-cell; text-align: right; white-space: nowrap;">
-                  Rp ${data.summary.total.toLocaleString('id-ID')}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Footer -->
-        <div style="text-align: center; padding-top: 12px; border-top: 1px dashed #374151;">
-          <p style="font-weight: bold; margin-bottom: 4px;">Terima kasih telah berbelanja!</p>
-          <p style="font-size: 10px; color: #6b7280;">Barang yang sudah dibeli tidak dapat dikembalikan</p>
-
-          <div style="margin-top: 8px; padding-top: 8px; border-top: 1px dashed #374151;">
-            <p style="font-size: 9px; color: #9ca3af; font-style: italic;">
-              Struk ini dibuat untuk kemudahan estimasi biaya.<br/>
-              Tidak dapat digunakan sebagai bukti pembayaran.
-            </p>
-          </div>
-
-          <p style="margin-top: 8px; font-size: 9px; color: #6b7280;">
-            Struk ini dibuat secara otomatis pada ${new Date().toLocaleString('id-ID')}
-          </p>
-        </div>
-      </div>
-    `;
   };
 
   const handlePrint = async () => {
