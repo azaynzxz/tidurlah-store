@@ -14,7 +14,7 @@ export interface FlyingBubble {
 // Flying animation function
 export const triggerFlyingAnimation = (
   sourceElement?: HTMLElement,
-  setFlyingBubbles: React.Dispatch<React.SetStateAction<FlyingBubble[]>>
+  setFlyingBubbles?: React.Dispatch<React.SetStateAction<FlyingBubble[]>>
 ) => {
   // Get source position (product location)
   let startX = window.innerWidth / 2; // Default to center
@@ -41,7 +41,9 @@ export const triggerFlyingAnimation = (
   const bubbleId = Date.now().toString();
   const newBubble = { id: bubbleId, startX, startY, endX, endY };
 
-  setFlyingBubbles(prev => [...prev, newBubble]);
+  if (setFlyingBubbles) {
+    setFlyingBubbles(prev => [...prev, newBubble]);
+  }
 
   // Trigger cart bounce effect
   if (cartIcon) {
@@ -52,9 +54,11 @@ export const triggerFlyingAnimation = (
   }
 
   // Remove bubble after animation completes
-  setTimeout(() => {
-    setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-  }, 1200);
+  if (setFlyingBubbles) {
+    setTimeout(() => {
+      setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
+    }, 1200);
+  }
 };
 
 // Add to cart function
@@ -97,7 +101,7 @@ export const addToCart = (
   // Check if this product already exists in cart with a case variant
   const existingCartItem = cartItems.find(item =>
     item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
+    (!product.models || item.modelCode === selectedModel) &&
     (!idCardWithCaseIds.includes(product.id) || item.caseVariant) &&
     (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant)
   );
@@ -184,9 +188,9 @@ export const addToCart = (
 
   const existingItem = cartItems.find(item =>
     item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
-    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
-    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
+    (!product.models || item.modelCode === selectedModel) &&
+    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
   );
 
   if (existingItem) {
@@ -196,9 +200,9 @@ export const addToCart = (
     setCartItems(
       cartItems.map(item =>
         item.id === product.id &&
-        (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
-        (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
-        (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
+        (!product.models || item.modelCode === selectedModel) &&
+        (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+        (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
           ? {
               ...item,
               quantity: newQuantity,
@@ -222,7 +226,7 @@ export const addToCart = (
 
     // Trigger flying animation only on successful add
     if (sourceElement) {
-      triggerFlyingAnimation(sourceElement, (prev) => setCartItems(prevItems => prevItems)); // This needs to be fixed
+      triggerFlyingAnimation(sourceElement);
     }
   } else {
     const newItem: CartItem = {
@@ -230,9 +234,9 @@ export const addToCart = (
       quantity: quantity,
       appliedPrice: getApplicablePrice(product, quantity),
       savings: calculateSavings(product, quantity),
-      modelCode: product.models ? (selectedModel || product.modelCode) : undefined,
-      caseVariant: idCardWithCaseIds.includes(product.id) ? (selectedCase || product.caseVariant) : undefined,
-      laminationVariant: stikerWithLaminationIds.includes(product.id) ? (selectedLamination || product.laminationVariant) : undefined
+      modelCode: product.models ? (selectedModel || undefined) : undefined,
+      caseVariant: idCardWithCaseIds.includes(product.id) ? (selectedCase || undefined) : undefined,
+      laminationVariant: stikerWithLaminationIds.includes(product.id) ? (selectedLamination || undefined) : undefined
     };
     setCartItems([...cartItems, newItem]);
     toast.success(`${product.name} ditambahkan ${quantity}× ke keranjang`, {
@@ -249,7 +253,7 @@ export const addToCart = (
 
     // Trigger flying animation only on successful add
     if (sourceElement) {
-      triggerFlyingAnimation(sourceElement, (prev) => setCartItems(prevItems => prevItems));
+      triggerFlyingAnimation(sourceElement);
     }
   }
 };
