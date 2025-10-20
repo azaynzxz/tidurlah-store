@@ -672,6 +672,70 @@ export function POSDashboard() {
     });
   };
 
+  // Generate receipt as Blob (PNG) for sharing via Web Share API
+  const generateReceiptBlob = async (dataToRender?: any): Promise<Blob> => {
+    return new Promise((resolve, reject) => {
+      const data = dataToRender || receiptData;
+      if (!data) return reject(new Error('Receipt content not found'));
+
+      const receiptDiv = document.createElement('div');
+      receiptDiv.innerHTML = generateReceiptHTML(
+        data,
+        logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
+        surveyQRBase64 || '/product-image/survey-qr.png'
+      );
+      receiptDiv.style.position = 'absolute';
+      receiptDiv.style.left = '-9999px';
+      receiptDiv.style.top = '-9999px';
+      receiptDiv.style.width = '350px';
+      receiptDiv.style.background = 'white';
+      receiptDiv.style.padding = '0';
+      receiptDiv.style.margin = '0';
+      receiptDiv.style.boxSizing = 'border-box';
+
+      document.body.appendChild(receiptDiv);
+
+      const images = receiptDiv.querySelectorAll('img');
+      const imagePromises = Array.from(images).map(img => {
+        if (img.complete) return Promise.resolve(true);
+        return new Promise(resolve => {
+          img.onload = () => resolve(true);
+          img.onerror = () => resolve(true);
+        });
+      });
+
+      Promise.all(imagePromises).then(() => {
+        setTimeout(() => {
+          import('html2canvas').then((html2canvas) => {
+            html2canvas.default(receiptDiv, {
+              backgroundColor: '#ffffff',
+              scale: 3,
+              width: 350,
+              height: receiptDiv.scrollHeight,
+              useCORS: true,
+              allowTaint: true,
+              logging: false,
+              removeContainer: true,
+              imageTimeout: 15000,
+              foreignObjectRendering: false,
+            }).then((canvas) => {
+              canvas.toBlob((blob) => {
+                try {
+                  document.body.removeChild(receiptDiv);
+                } catch {}
+                if (blob) return resolve(blob);
+                return reject(new Error('Failed generating receipt blob'));
+              }, 'image/png');
+            }).catch((error) => {
+              try { document.body.removeChild(receiptDiv); } catch {}
+              reject(error);
+            });
+          });
+        }, 200);
+      });
+    });
+  };
+
   // Check if Web Bluetooth is supported
   // Note: Web Bluetooth requires HTTPS and user gesture to work
   const isBluetoothSupported = () => {
@@ -990,11 +1054,39 @@ export function POSDashboard() {
       setReceiptData(receiptData);
       setShowReceipt(true);
       
-      // Handle different modes: auto-download vs print mode
+      // Handle different modes: auto-download/share vs print mode
       if (!printMode) {
-        // Auto-generate and download receipt instantly (original behavior)
-        setTimeout(async () => {
-          try {
+        // Try Web Share API with image file first (mobile native share)
+        try {
+          const blob = await generateReceiptBlob(receiptData);
+          const fileName = `receipt-${receiptId}.png`;
+          const file = new File([blob], fileName, { type: 'image/png' });
+
+          const canShareFiles = typeof navigator !== 'undefined' &&
+            (navigator as any).share && (navigator as any).canShare && (navigator as any).canShare({ files: [file] });
+
+          if (canShareFiles) {
+            await (navigator as any).share({
+              title: 'Struk Pembayaran',
+              text: `Struk ${receiptId}`,
+              files: [file]
+            });
+
+            toast.success("Pesanan berhasil diproses! Struk dibagikan", {
+              position: 'top-center',
+              duration: 3000,
+              style: {
+                backgroundColor: '#10B981',
+                color: 'white',
+                fontSize: '14px',
+                padding: '12px 16px',
+                minHeight: '48px',
+                maxWidth: '320px',
+                lineHeight: '1.4'
+              }
+            });
+          } else {
+            // Fallback: auto-download JPG as before
             await generateReceiptJPG(receiptData);
             toast.success("Pesanan berhasil diproses! Struk telah diunduh", {
               position: 'top-center',
@@ -1009,17 +1101,21 @@ export function POSDashboard() {
                 lineHeight: '1.4'
               }
             });
-
-            // Clear cart and close modal
-            setCartItems([]);
-            setSelectedProducts(new Set());
-            setShowReceipt(false);
-          } catch (error) {
-            console.error('Error generating receipt:', error);
-            toast.error('Gagal membuat struk. Silakan coba lagi.');
-            setShowReceipt(false);
           }
-        }, 100);
+
+          // Clear cart and close modal
+          setCartItems([]);
+          setSelectedProducts(new Set());
+          setShowReceipt(false);
+        } catch (error) {
+          console.error('Error sharing/downloading receipt:', error);
+          // Fallback to JPG download if share failed for any reason
+          try {
+            await generateReceiptJPG(receiptData);
+            toast.success("Struk telah diunduh", { position: 'top-center', duration: 2500 });
+          } catch {}
+          setShowReceipt(false);
+        }
       } else {
         // Print mode: just generate receipt data, don't auto-download
         setTimeout(() => {

@@ -88,8 +88,8 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
         </div>
 
         {/* Product Info */}
-        <div className="p-2 space-y-1">
-          <h3 className="font-semibold text-gray-800 text-xs leading-tight line-clamp-2 min-h-[2.5rem]">
+        <div className="p-1.5 space-y-0.5">
+          <h3 className="font-semibold text-gray-800 text-xs leading-snug line-clamp-2 min-h-[1.75rem]">
             {product.name}
           </h3>
           
@@ -111,7 +111,7 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
           </div>
 
           {/* Special indicators - compact */}
-          <div className="flex items-center gap-0.5 flex-wrap">
+          <div className="flex items-center gap-0.5 flex-wrap mt-0.5">
             {product.pricingMethod === "dimensional" && (
               <div className="w-4 h-4 rounded-full bg-orange-100 flex items-center justify-center" title="Dimensional">
                 <Ruler className="w-2.5 h-2.5 text-orange-700" />
