@@ -19,6 +19,10 @@ export default {
 			}
 		},
 		extend: {
+			fontFamily: {
+				inter: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+				lato: ['Lato', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+			},
 			fontSize: {
 				'xxs': '0.625rem', // 10px
 			},
