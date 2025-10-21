@@ -357,6 +357,23 @@
       "rating": 4.8,
       "unit": "pcs",
       "is_available": true
+    },
+    {
+      "id": 34,
+      "name": "Que Card",
+      "image": "/product-image/que-card.jpg",
+      "additionalImages": [],
+      "description": "Que Card dengan ukuran A5 ISO (14.8 x 21.0 cm), kualitas premium.",
+      "price": 15000,
+      "discountPrice": null,
+      "category": "ID Card & Lanyard",
+      "priceThresholds": [
+        { "minQuantity": 1, "price": 15000 }
+      ],
+      "time": "2-3 hari",
+      "rating": 4.7,
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Media Promosi": [
