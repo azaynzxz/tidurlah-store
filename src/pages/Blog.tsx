@@ -256,6 +256,18 @@ const blogPosts: BlogPost[] = [
     views: 890,
     image: "/blog-thumbnail/4_result.webp",
     slug: "panduan-desain"
+  },
+  {
+    id: 20,
+    title: "Program Sponsorship ID Card Lampung - Wujudkan Event Impianmu!",
+    subtitle: "Ajukan permohonan sponsorship untuk acara, event kampus, atau kegiatan komunitas Anda",
+    author: "ID Card Lampung",
+    date: "2024-02-05",
+    tags: ["Sponsorship", "Partnership", "Event", "Kampus", "Komunitas"],
+    readTime: "5 menit",
+    views: 0,
+    image: "/blog-thumbnail/Sponsorship-tidurlah-grafika.gif",
+    slug: "sponsorship"
   }
 ];
 

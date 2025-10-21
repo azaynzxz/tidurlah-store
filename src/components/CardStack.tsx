@@ -14,6 +14,14 @@ interface Card {
 
 const cards: Card[] = [
   {
+    id: "whatsapp",
+    title: "WhatsApp",
+    description: "Chat dengan kami sekarang",
+    icon: MessageCircle,
+    gradient: "bg-gradient-to-br from-green-500 via-green-600 to-emerald-600",
+    link: "https://wa.me/6285172157808"
+  },
+  {
     id: "visit-stores",
     title: "Kunjungi toko kami",
     description: "Pilih cabang terdekat",
@@ -28,14 +36,6 @@ const cards: Card[] = [
     icon: Store,
     gradient: "bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600",
     link: "/"
-  },
-  {
-    id: "whatsapp",
-    title: "WhatsApp",
-    description: "Chat dengan kami sekarang",
-    icon: MessageCircle,
-    gradient: "bg-gradient-to-br from-green-500 via-green-600 to-emerald-600",
-    link: "https://wa.me/6285172157808"
   },
   {
     id: "instagram",
