@@ -14,8 +14,7 @@ const BlogLayout = ({ children, showBackButton = true, onSearch, showSearch = fa
     <div className="min-h-screen bg-white notranslate flex flex-col" translate="no">
       <div className="w-full bg-white flex-1 flex flex-col">
         <Header 
-          showBackButton={showBackButton} 
-          backButtonText="Kembali ke Toko"
+          showBackButton={showBackButton}
           onSearch={onSearch}
           showSearch={showSearch}
         />

@@ -2,13 +2,13 @@ import { useNavigate } from "react-router-dom";
 import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin } from "lucide-react";
 import MusicPlayer from "@/components/MusicPlayer";
 import SearchBar from "@/components/SearchBar";
+import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 interface HeaderProps {
   cartItemsCount?: number;
   onCartClick?: () => void;
   showBackButton?: boolean;
-  backButtonText?: string;
   onSearch?: (term: string) => void;
   showSearch?: boolean;
 }
@@ -17,11 +17,11 @@ const Header = ({
   cartItemsCount = 0, 
   onCartClick, 
   showBackButton = false,
-  backButtonText = "Kembali ke Toko",
   onSearch,
   showSearch = false
 }: HeaderProps) => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
 
@@ -66,14 +66,14 @@ const Header = ({
         {/* Center Search Bar - Mobile */}
         {showSearch && onSearch && (
           <div className="flex-1 max-w-md mx-2 md:hidden">
-            <SearchBar onSearch={onSearch} />
+            <SearchBar onSearch={onSearch} placeholder={location.pathname.startsWith('/blog') ? 'Cari Artikel' : 'Search products'} />
           </div>
         )}
         
         {/* Center Search Bar - Desktop - Absolutely Centered */}
         {showSearch && onSearch && (
           <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-80 max-w-md">
-            <SearchBar onSearch={onSearch} />
+            <SearchBar onSearch={onSearch} placeholder={location.pathname.startsWith('/blog') ? 'Cari Artikel' : 'Search products'} />
           </div>
         )}
         
@@ -88,7 +88,7 @@ const Header = ({
             <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
             </svg>
-            <span className="hidden lg:inline">{backButtonText}</span>
+            <span className="hidden lg:inline">Kembali ke Toko</span>
           </button>
         )}
         
@@ -173,7 +173,7 @@ const Header = ({
               </button>
               <button 
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
-                onClick={() => { handleCloseMenu(); navigate('/blog/design-guide'); }}
+                onClick={() => { handleCloseMenu(); navigate('/blog/panduan-desain'); }}
                 style={{ animationDelay: '0.2s' }}
               >
                 <FileText className="h-4 w-4 mr-3" />
@@ -181,7 +181,7 @@ const Header = ({
               </button>
               <button 
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
-                onClick={() => { handleCloseMenu(); navigate('/blog/privacy-policy'); }}
+                onClick={() => { handleCloseMenu(); navigate('/blog/kebijakan-privasi'); }}
                 style={{ animationDelay: '0.25s' }}
               >
                 <Shield className="h-4 w-4 mr-3" />
@@ -189,7 +189,7 @@ const Header = ({
               </button>
               <button 
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
-                onClick={() => { handleCloseMenu(); navigate('/blog/return-policy'); }}
+                onClick={() => { handleCloseMenu(); navigate('/blog/syarat-ketentuan-pengembalian'); }}
                 style={{ animationDelay: '0.3s' }}
               >
                 <RotateCcw className="h-4 w-4 mr-3" />

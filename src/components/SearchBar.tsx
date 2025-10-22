@@ -3,9 +3,10 @@ import { useState } from "react";
 
 interface SearchBarProps {
   onSearch: (term: string) => void;
+  placeholder?: string;
 }
 
-const SearchBar = ({ onSearch }: SearchBarProps) => {
+const SearchBar = ({ onSearch, placeholder = "Search products" }: SearchBarProps) => {
   const [searchTerm, setSearchTerm] = useState("");
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -20,7 +21,7 @@ const SearchBar = ({ onSearch }: SearchBarProps) => {
         <Search className="text-[#FF5E01] h-4 w-4 ml-1" />
         <input
           type="text"
-          placeholder="Search products"
+          placeholder={placeholder}
           className="w-full bg-transparent border-none outline-none pl-1.5 text-gray-700 text-sm"
           value={searchTerm}
           onChange={handleSearch}
