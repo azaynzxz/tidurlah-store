@@ -27,7 +27,7 @@ const jobs: Job[] = [
     title: "Desainer Grafis",
     location: "Remote",
     workHours: "8 jam/hari (fleksibel)",
-    education: "SMA/SLTA Sederajat atau S1 semua bidang",
+    education: "SMA/SLTA Sederajat",
     workType: "Full-time",
     description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, mulai dari aset media sosial hingga desain pesanan klien. Ini adalah posisi remote (jarak jauh).",
     responsibilities: [
@@ -50,7 +50,7 @@ const jobs: Job[] = [
     title: "Admin Toko",
     location: "Lampung",
     workHours: "8 jam/hari (09.00 - 17.00)",
-    education: "SMA/SLTA Sederajat atau S1 semua bidang",
+    education: "SMA/SLTA Sederajat",
     workType: "Full-time",
     description: "Anda akan menjadi wajah dan suara dari Tidurlah Store. Posisi ini bertanggung jawab mengelola pesanan, komunikasi dengan pelanggan, dan administrasi umum.",
     responsibilities: [
@@ -73,7 +73,7 @@ const jobs: Job[] = [
     title: "Bagian Produksi",
     location: "Lampung",
     workHours: "8 jam/hari (09.00 - 17.00)",
-    education: "SMA/SLTA Sederajat atau S1 semua bidang",
+    education: "SMA/SLTA Sederajat",
     workType: "Full-time",
     description: "Posisi ini adalah jantung dari bisnis kami. Anda bertanggung jawab untuk mencetak, memotong, dan mengemas semua pesanan ID card dan merchandise sesuai standar kualitas.",
     responsibilities: [
@@ -96,7 +96,7 @@ const jobs: Job[] = [
     title: "Reseller",
     location: "Fleksibel - Remote/Anywhere",
     workHours: "Fleksibel (tidak terikat waktu)",
-    education: "SMA/SLTA Sederajat atau S1 semua bidang",
+    education: "SMA/SLTA Sederajat",
     workType: "Komisi & Insentif",
     description: "Jadilah mitra bisnis kami dan dapatkan penghasilan tambahan dengan menjual produk-produk Tidurlah Grafika. Cocok untuk mahasiswa, ibu rumah tangga, atau siapa saja yang ingin mendapat penghasilan fleksibel.",
     responsibilities: [
