@@ -27,7 +27,7 @@ const jobs: Job[] = [
     title: "Desainer Grafis",
     location: "Remote",
     workHours: "8 jam/hari (fleksibel)",
-    education: "SMA/SLTA Sederajat",
+    education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, mulai dari aset media sosial hingga desain pesanan klien. Ini adalah posisi remote (jarak jauh).",
     responsibilities: [
@@ -50,7 +50,7 @@ const jobs: Job[] = [
     title: "Admin Toko",
     location: "Lampung",
     workHours: "8 jam/hari (09.00 - 17.00)",
-    education: "SMA/SLTA Sederajat",
+    education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Anda akan menjadi wajah dan suara dari Tidurlah Store. Posisi ini bertanggung jawab mengelola pesanan, komunikasi dengan pelanggan, dan administrasi umum.",
     responsibilities: [
@@ -73,7 +73,7 @@ const jobs: Job[] = [
     title: "Bagian Produksi",
     location: "Lampung",
     workHours: "8 jam/hari (09.00 - 17.00)",
-    education: "SMA/SLTA Sederajat",
+    education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Posisi ini adalah jantung dari bisnis kami. Anda bertanggung jawab untuk mencetak, memotong, dan mengemas semua pesanan ID card dan merchandise sesuai standar kualitas.",
     responsibilities: [
@@ -96,7 +96,7 @@ const jobs: Job[] = [
     title: "Reseller",
     location: "Fleksibel - Remote/Anywhere",
     workHours: "Fleksibel (tidak terikat waktu)",
-    education: "SMA/SLTA Sederajat",
+    education: "SMA/SMK Sederajat",
     workType: "Komisi & Insentif",
     description: "Jadilah mitra bisnis kami dan dapatkan penghasilan tambahan dengan menjual produk-produk Tidurlah Grafika. Cocok untuk mahasiswa, ibu rumah tangga, atau siapa saja yang ingin mendapat penghasilan fleksibel.",
     responsibilities: [
@@ -129,6 +129,22 @@ const jobs: Job[] = [
 const Loker = () => {
   const navigate = useNavigate();
   const { jobSlug } = useParams();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [locationFilter, setLocationFilter] = useState("");
+
+  // Filter jobs based on search query and location
+  const filteredJobs = jobs.filter(job => {
+    const matchesSearch = searchQuery === "" || 
+      job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.responsibilities.some(resp => resp.toLowerCase().includes(searchQuery.toLowerCase())) ||
+      job.qualifications.some(qual => qual.toLowerCase().includes(searchQuery.toLowerCase()));
+    
+    const matchesLocation = locationFilter === "" || 
+      job.location.toLowerCase().includes(locationFilter.toLowerCase());
+    
+    return matchesSearch && matchesLocation;
+  });
 
   // Handle individual job view
   if (jobSlug) {
@@ -174,7 +190,7 @@ const Loker = () => {
                   Temui <span className="text-[#FF5E01]">Peluang!</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-                Kami mencari talenta kreatif sepertimu untuk berkembang bersama.
+                Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, dan teliti untuk bergabung dengan tim kami.
                 </p>
               </div>
 
@@ -191,6 +207,8 @@ const Loker = () => {
                       <input
                         type="text"
                         placeholder="Judul pekerjaan atau kata kunci"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF5E01] focus:border-transparent outline-none"
                       />
                     </div>
@@ -206,6 +224,8 @@ const Loker = () => {
                       <input
                         type="text"
                         placeholder="Semua Lokasi"
+                        value={locationFilter}
+                        onChange={(e) => setLocationFilter(e.target.value)}
                         className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF5E01] focus:border-transparent outline-none"
                       />
                     </div>
@@ -267,25 +287,20 @@ const Loker = () => {
       </div>
 
       <div className="flex-1">
-        <div className="container mx-auto max-w-7xl px-4 py-16">
-          {/* Section Header */}
-          <div className="text-center mb-16">
-            <div className="inline-block bg-[#FF5E01] text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
-              LOWONGAN KERJA
-            </div>
-            <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-              Bergabung dengan <span className="text-[#FF5E01]">Tim Kami!</span>
+        <div className="container mx-auto max-w-7xl px-4 pt-4 pb-16">
+          {/* Section Header for Job Listings */}
+          <div className="text-center mb-8">
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">
+              Pekerjaan yang tersedia
             </h2>
-            <p className="text-lg text-gray-600 max-w-3xl mx-auto leading-relaxed">
-              Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. 
-              Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, 
-              dan teliti untuk bergabung dengan tim kami.
-            </p>
+            <div className="relative w-48 h-1 mx-auto rounded-full overflow-hidden">
+              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-pink-500 to-orange-400 animate-gradient-x"></div>
+            </div>
           </div>
 
           {/* Job Cards Grid - 3 Columns */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
-            {jobs.map((job) => (
+            {filteredJobs.map((job) => (
               <div 
                 key={job.id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
@@ -348,6 +363,32 @@ const Loker = () => {
               </div>
             ))}
           </div>
+
+          {/* No Results Message */}
+          {filteredJobs.length === 0 && (
+            <div className="text-center py-12 mb-16">
+              <div className="bg-gray-50 rounded-2xl p-8 max-w-md mx-auto">
+                <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
+                  <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Tidak ada lowongan ditemukan</h3>
+                <p className="text-gray-600 mb-4">
+                  Coba gunakan kata kunci lain atau filter lokasi yang berbeda
+                </p>
+                <button
+                  onClick={() => {
+                    setSearchQuery("");
+                    setLocationFilter("");
+                  }}
+                  className="bg-[#FF5E01] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#e54d00] transition-colors"
+                >
+                  Reset Filter
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Call to Action */}
           <div className="bg-gradient-to-r from-[#FF5E01] to-[#e54d00] rounded-2xl p-8 text-center text-white">
@@ -412,7 +453,7 @@ const JobDetailPage = ({ job }: { job: Job }) => {
           <nav className="mb-4 md:mb-6">
             <span className="text-gray-500 text-xs md:text-sm">
               <button onClick={() => navigate('/')} className="hover:text-[#FF5E01]">Home</button> / 
-              <button onClick={() => navigate('/loker')} className="hover:text-[#FF5E01] ml-1"> Karir</button> / 
+              <button onClick={() => navigate('/loker')} className="hover:text-[#FF5E01] ml-1"> Loker</button> / 
               <span className="text-gray-700 ml-1">{job.title}</span>
             </span>
           </nav>

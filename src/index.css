@@ -140,16 +140,30 @@
     overflow: hidden;
   }
 
-  /* Hero section responsive aspect ratios */
-  .hero-section {
-    min-height: 50vh; /* 50% viewport height on mobile */
-  }
+/* Hero section responsive aspect ratios */
+.hero-section {
+  min-height: 50vh; /* 50% viewport height on mobile */
+}
 
-  @media (min-width: 1024px) {
-    .hero-section {
-      min-height: 50vh; /* 50% viewport height on desktop */
-    }
+@media (min-width: 1024px) {
+  .hero-section {
+    min-height: 50vh; /* 50% viewport height on desktop */
   }
+}
+
+/* Animated gradient line */
+@keyframes gradient-x {
+  0%, 100% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(100%);
+  }
+}
+
+.animate-gradient-x {
+  animation: gradient-x 3s ease infinite;
+}
 
   /* Angry wiggling animation for case selection */
   .angry-wiggle {

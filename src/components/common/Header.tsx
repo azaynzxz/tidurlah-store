@@ -188,16 +188,6 @@ const Header = ({
                 <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                 Hello Page
               </button>
-              {onCartClick && (
-                <button 
-                  className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                  onClick={() => { setDesktopDropdownOpen(false); onCartClick(); }}
-                  style={{ animationDelay: '350ms' }}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                  Cart {cartItemsCount > 0 ? `(${cartItemsCount})` : ''}
-                </button>
-              )}
             </div>
           )}
         </div>
