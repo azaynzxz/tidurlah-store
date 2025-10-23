@@ -29,7 +29,7 @@ const BlogPost = () => {
 
   if (!blogPost) {
     return (
-      <BlogLayout showBackButton={true}>
+      <BlogLayout>
         <div className="min-h-screen bg-gray-50">
           <div className="container mx-auto max-w-4xl bg-white min-h-screen">
             <div className="text-center py-12">
@@ -58,7 +58,7 @@ const BlogPost = () => {
   };
 
   return (
-    <BlogLayout showBackButton={true}>
+    <BlogLayout>
       <div className="min-h-screen bg-gray-50">
         <div className="container mx-auto max-w-4xl bg-white min-h-screen">
           {/* Main Content */}

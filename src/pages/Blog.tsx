@@ -96,7 +96,6 @@ const Blog = () => {
 
   return (
     <BlogLayout 
-      showBackButton={true} 
       onSearch={handleSearch}
       showSearch={true}
     >

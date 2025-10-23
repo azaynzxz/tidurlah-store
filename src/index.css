@@ -131,6 +131,26 @@
     background-color: #f3f4f6;
   }
 
+  /* Line clamp utilities */
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Hero section responsive aspect ratios */
+  .hero-section {
+    min-height: 50vh; /* 50% viewport height on mobile */
+  }
+
+  @media (min-width: 1024px) {
+    .hero-section {
+      min-height: 50vh; /* 50% viewport height on desktop */
+    }
+  }
+
   /* Angry wiggling animation for case selection */
   .angry-wiggle {
     animation: angry-shake 0.4s ease-in-out infinite;

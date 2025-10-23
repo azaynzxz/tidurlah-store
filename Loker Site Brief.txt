@@ -1,0 +1,72 @@
+﻿Project Brief: Halaman Karir (Loker) - tidurlah store
+Proyek: Pembuatan halaman karir baru (/loker) untuk website "tidurlah store".
+Tujuan: Memberikan informasi lowongan kerja yang jelas dan menyediakan cara mudah bagi kandidat untuk melamar melalui email yang sudah di-format sebelumnya.
+Prioritas: Fungsionalitas, Kejelasan, dan Desain Responsif (Desktop & Mobile).
+Dasar Desain: Mengikuti "Ide 1" (Simple & Jelas).
+1. Struktur Halaman (/loker)
+Halaman ini harus memiliki tata letak yang bersih dan profesional. Berikut adalah urutan elemen dari atas ke bawah:
+Bagian 1: Judul Halaman
+* Judul Utama (H1): "Karir di Tidurlah Store"
+Bagian 2: Perkenalan Singkat
+* Satu paragraf singkat yang menjelaskan tentang "tidurlah store" dan siapa yang dicari.
+* Konten Teks: "Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, dan teliti untuk bergabung dengan tim kami. Lihat posisi yang sedang kami buka di bawah ini."
+Bagian 3: Posisi yang Tersedia
+* Ini adalah bagian utama. Tampilkan setiap lowongan sebagai "kartu" (card) atau bagian yang terpisah agar mudah dibaca.
+* Setiap kartu lowongan harus berisi informasi berikut:
+Kartu 1: Desainer Grafis (Remote)
+* Deskripsi: Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis "tidurlah store", mulai dari aset media sosial hingga desain pesanan klien. Ini adalah posisi remote (jarak jauh).
+* Tanggung Jawab:
+   * Membuat desain materi promosi untuk media sosial (IG, TikTok, dll.).
+   * Menyiapkan dan mengedit file desain dari klien agar siap cetak.
+   * Mengembangkan mockup produk baru.
+   * Berkolaborasi dengan tim admin untuk memahami kebutuhan klien.
+* Kualifikasi:
+   * Portofolio desain grafis yang kuat (wajib dilampirkan).
+   * Mahir menggunakan Adobe Illustrator, Photoshop, atau CorelDRAW.
+   * Kreatif, komunikatif, dan dapat bekerja sesuai deadline.
+   * Memiliki laptop/PC pribadi dan koneksi internet yang stabil.
+* Tombol Lamaran: (Gunakan Komponen ApplyButton di bawah)
+Kartu 2: Admin Toko (Lokasi: Lampung)
+* Deskripsi: Anda akan menjadi wajah dan suara dari "tidurlah store". Posisi ini bertanggung jawab mengelola pesanan, komunikasi dengan pelanggan, dan administrasi umum.
+* Tanggung Jawab:
+   * Menerima dan membalas chat/DM/email dari pelanggan dengan ramah dan cepat.
+   * Mencatat dan merekap data pesanan harian.
+   * Berkoordinasi dengan tim produksi mengenai antrian pesanan.
+   * Mengelola stok barang dan bahan baku.
+* Kualifikasi:
+   * Teliti, terorganisir, dan rapi dalam administrasi.
+   * Dapat berkomunikasi dengan baik dan sopan.
+   * Biasa menggunakan WhatsApp Business, Instagram, dan Spreadsheet (Google Sheets/Excel).
+   * Jujur dan bertanggung jawab.
+   * Berdomisili di Lampung.
+* Tombol Lamaran: (Gunakan Komponen ApplyButton di bawah)
+Kartu 3: Bagian Produksi (Lokasi: Lampung)
+* Deskripsi: Posisi ini adalah jantung dari bisnis kami. Anda bertanggung jawab untuk mencetak, memotong, dan mengemas semua pesanan ID card dan merchandise sesuai standar kualitas.
+* Tanggung Jawab:
+   * Mengoperasikan mesin cetak, press, dan mesin potong (akan ada training).
+   * Melakukan quality control (pengecekan kualitas) pada setiap produk.
+   * Mengemas (packing) pesanan dengan rapi dan aman.
+   * Memastikan area kerja selalu bersih dan terawat.
+* Kualifikasi:
+   * Sangat teliti dan memperhatikan detail.
+   * Mau belajar mengoperasikan mesin.
+   * Dapat bekerja dengan target dan gesit.
+   * Rajin, jujur, dan memiliki fisik yang sehat.
+   * Berdomisili di Lampung.
+* Tombol Lamaran: (Gunakan Komponen ApplyButton di bawah)
+2. Spesifikasi Teknis: Tombol Lamaran
+Tolong buatkan komponen React (detail di file ApplyButton.jsx) yang berfungsi sebagai berikut:
+1. Nama Komponen: ApplyButton
+2. Props (Properti): Komponen ini harus menerima satu prop: posisi (String).
+3. Fungsi:
+   * Saat diklik, tombol ini harus memicu mailto:.
+   * Alamat email tujuan: idcardlampung@tidurlah.com
+   * Subjek Email: Harus terisi otomatis dengan format "Lamaran Kerja: [Nama Posisi]". (Contoh: "Lamaran Kerja: Desainer Grafis").
+4. Tampilan: Tombol standar yang menarik (misal: warna primer website, rounded corners, dll) dengan teks "Lamar Posisi Ini".
+5. Penerapan di Halaman Loker:
+   * Di bawah Kartu 1: <ApplyButton posisi="Desainer Grafis" />
+   * Di bawah Kartu 2: <ApplyButton posisi="Admin Toko" />
+   * Di bawah Kartu 3: <ApplyButton posisi="Bagian Produksi" />
+3. Lain-lain
+* Desain Responsif: Pastikan halaman dan semua elemen (terutama kartu lowongan) tampil baik di desktop maupun di perangkat mobile (Android/iOS).
+* Styling: Harap sesuaikan font, warna, dan gaya tombol dengan branding "tidurlah store" yang sudah ada.

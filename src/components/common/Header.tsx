@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin } from "lucide-react";
+import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin, Briefcase } from "lucide-react";
 import MusicPlayer from "@/components/MusicPlayer";
 import SearchBar from "@/components/SearchBar";
 import { useLocation } from "react-router-dom";
@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 interface HeaderProps {
   cartItemsCount?: number;
   onCartClick?: () => void;
-  showBackButton?: boolean;
   onSearch?: (term: string) => void;
   showSearch?: boolean;
 }
@@ -16,7 +15,6 @@ interface HeaderProps {
 const Header = ({ 
   cartItemsCount = 0, 
   onCartClick, 
-  showBackButton = false,
   onSearch,
   showSearch = false
 }: HeaderProps) => {
@@ -24,11 +22,29 @@ const Header = ({
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
+
+  // Close desktop dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (desktopDropdownOpen) {
+        const target = event.target as Element;
+        if (!target.closest('.desktop-dropdown')) {
+          setDesktopDropdownOpen(false);
+        }
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [desktopDropdownOpen]);
 
   const handleCloseMenu = () => {
     setIsClosing(true);
@@ -41,6 +57,15 @@ const Header = ({
   const handleOpenMenu = () => {
     setMobileOpen(true);
     setIsClosing(false);
+  };
+
+  const handleDesktopDropdownToggle = () => {
+    setDesktopDropdownOpen(!desktopDropdownOpen);
+  };
+
+  const handleDesktopMenuClick = (path: string) => {
+    setDesktopDropdownOpen(false);
+    navigate(path);
   };
 
 
@@ -80,17 +105,6 @@ const Header = ({
         <div className="flex items-center space-x-2 lg:space-x-4">
         <MusicPlayer />
         
-        {showBackButton && (
-          <button
-            onClick={() => navigate('/')}
-            className="text-[#FF5E01] hover:text-[#FF5E01]/80 flex items-center space-x-2 text-xs font-medium p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
-          >
-            <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-            </svg>
-            <span className="hidden lg:inline">Kembali ke Toko</span>
-          </button>
-        )}
         
         <button 
           onClick={() => navigate('/blog')}
@@ -98,6 +112,95 @@ const Header = ({
         >
           <Newspaper className="h-5 w-5 lg:h-6 lg:w-6" />
         </button>
+        
+        <button 
+          onClick={() => navigate('/loker')}
+          className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
+        >
+          <Briefcase className="h-5 w-5 lg:h-6 lg:w-6" />
+        </button>
+        
+        {/* Desktop Dropdown Menu */}
+        <div className="relative hidden md:block desktop-dropdown">
+          <button
+            onClick={handleDesktopDropdownToggle}
+            className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-all duration-200"
+          >
+            <Menu className={`h-5 w-5 lg:h-6 lg:w-6 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-90' : ''}`} />
+          </button>
+          
+          {/* Dropdown Content */}
+          {desktopDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/')}
+                style={{ animationDelay: '0ms' }}
+              >
+                <Home className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Home
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/blog')}
+                style={{ animationDelay: '50ms' }}
+              >
+                <Newspaper className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Blog
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/loker')}
+                style={{ animationDelay: '100ms' }}
+              >
+                <Briefcase className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Loker
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/blog/panduan-desain')}
+                style={{ animationDelay: '150ms' }}
+              >
+                <FileText className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Panduan Desain
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/blog/kebijakan-privasi')}
+                style={{ animationDelay: '200ms' }}
+              >
+                <Shield className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Privacy Policy
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/blog/syarat-ketentuan-pengembalian')}
+                style={{ animationDelay: '250ms' }}
+              >
+                <RotateCcw className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Return Policy
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/hello')}
+                style={{ animationDelay: '300ms' }}
+              >
+                <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Hello Page
+              </button>
+              {onCartClick && (
+                <button 
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => { setDesktopDropdownOpen(false); onCartClick(); }}
+                  style={{ animationDelay: '350ms' }}
+                >
+                  <ShoppingCart className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Cart {cartItemsCount > 0 ? `(${cartItemsCount})` : ''}
+                </button>
+              )}
+            </div>
+          )}
+        </div>
         
         {onCartClick && (
           <button 
@@ -138,13 +241,7 @@ const Header = ({
             }`} 
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between">
-              <img 
-                src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
-                alt="TIDURLAH STORE"
-                className="h-8 w-8 object-contain"
-                onClick={() => { setMobileOpen(false); navigate('/'); }}
-              />
+            <div className="flex items-center justify-end">
               <button 
                 className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200" 
                 onClick={handleCloseMenu} 
@@ -170,6 +267,14 @@ const Header = ({
               >
                 <Newspaper className="h-4 w-4 mr-3" />
                 Blog
+              </button>
+              <button 
+                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                onClick={() => { handleCloseMenu(); navigate('/loker'); }}
+                style={{ animationDelay: '0.16s' }}
+              >
+                <Briefcase className="h-4 w-4 mr-3" />
+                Loker
               </button>
               <button 
                 className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
@@ -203,16 +308,6 @@ const Header = ({
                 <MapPin className="h-4 w-4 mr-3" />
                 Hello Page
               </button>
-              {onCartClick && (
-                <button 
-                  className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
-                  onClick={() => { handleCloseMenu(); onCartClick(); }}
-                  style={{ animationDelay: '0.4s' }}
-                >
-                  <ShoppingCart className="h-4 w-4 mr-3" />
-                  Cart {cartItemsCount > 0 ? `(${cartItemsCount})` : ''}
-                </button>
-              )}
             </nav>
           </div>
         </div>

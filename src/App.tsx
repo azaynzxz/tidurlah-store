@@ -11,6 +11,7 @@ import BlogPost from '@/pages/BlogPost';
 import Spotlight from './pages/Spotlight';
 import Cashier from "./pages/Cashier";
 import Receipt from "./pages/Receipt";
+import Loker from "./pages/Loker";
 
 const queryClient = new QueryClient();
 
@@ -29,6 +30,8 @@ const App = () => (
           <Route path="/hello" element={<Spotlight />} />
           <Route path="/cashier" element={<Cashier />} />
           <Route path="/receipt" element={<Receipt />} />
+          <Route path="/loker" element={<Loker />} />
+          <Route path="/loker/:jobSlug" element={<Loker />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
