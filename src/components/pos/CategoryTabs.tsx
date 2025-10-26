@@ -17,7 +17,7 @@ export function CategoryTabs({ categories, activeCategory, onCategoryChange }: C
           className={`shrink-0 transition-all duration-200 ${
             activeCategory === category
               ? "bg-[#FF5E01] text-white shadow-md hover:bg-[#e54d00]"
-              : "bg-white text-gray-700 hover:bg-orange-50 border border-gray-200"
+              : "bg-background text-foreground hover:bg-orange-50 border border-gray-200"
           }`}
           onClick={() => onCategoryChange(category)}
         >

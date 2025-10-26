@@ -128,6 +128,538 @@ body.loaded {
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
+
+  /* Halloween Mode - Dark theme with Halloween decorations */
+  .halloween-mode {
+    --background: 222.2 84% 4.9%;
+    --foreground: 210 40% 98%;
+
+    --card: 222.2 84% 4.9%;
+    --card-foreground: 210 40% 98%;
+
+    --popover: 222.2 84% 4.9%;
+    --popover-foreground: 210 40% 98%;
+
+    --primary: 210 40% 98%;
+    --primary-foreground: 222.2 47.4% 11.2%;
+
+    --secondary: 217.2 32.6% 17.5%;
+    --secondary-foreground: 210 40% 98%;
+
+    --muted: 217.2 32.6% 17.5%;
+    --muted-foreground: 215 20.2% 65.1%;
+
+    --accent: 217.2 32.6% 17.5%;
+    --accent-foreground: 210 40% 98%;
+
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 217.2 32.6% 17.5%;
+    --input: 217.2 32.6% 17.5%;
+    --ring: 212.7 26.8% 83.9%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  /* Halloween decorations for Header and Footer only */
+  .halloween-mode .halloween-decorations {
+    position: relative;
+    overflow: visible;
+  }
+
+  .halloween-mode .halloween-decorations::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+      radial-gradient(circle at 20% 20%, rgba(255, 94, 1, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 80% 80%, rgba(255, 94, 1, 0.1) 0%, transparent 50%),
+      radial-gradient(circle at 40% 60%, rgba(255, 94, 1, 0.05) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  /* Ensure header dropdown stays on top of all elements */
+  .header-dropdown {
+    z-index: 99999 !important;
+    position: relative;
+  }
+
+  .header-dropdown > * {
+    z-index: 99999 !important;
+  }
+
+  /* Ensure desktop dropdown menu stays on top */
+  .desktop-dropdown {
+    z-index: 99999 !important;
+  }
+
+  .desktop-dropdown .absolute {
+    z-index: 99999 !important;
+  }
+
+  /* Force header dropdown to be above everything */
+  .halloween-mode .desktop-dropdown .absolute {
+    z-index: 999999 !important;
+    position: relative;
+  }
+
+  /* Ensure header container is above main content */
+  .halloween-mode header,
+  .halloween-mode .sticky {
+    z-index: 999999 !important;
+  }
+
+  /* Fix hamburger menu positioning in Halloween mode */
+  .halloween-mode .desktop-dropdown {
+    overflow: visible !important;
+  }
+
+  .halloween-mode .desktop-dropdown .absolute {
+    position: absolute !important;
+    top: 100% !important;
+    right: 0 !important;
+    margin-top: 0.5rem !important;
+  }
+
+  /* Ensure header doesn't expand in Halloween mode */
+  .halloween-mode .bg-background {
+    overflow: visible !important;
+  }
+
+  /* Universal background adaptation for Halloween mode */
+  .halloween-mode .bg-gray-50,
+  .halloween-mode .bg-gray-100,
+  .halloween-mode .bg-gray-200,
+  .halloween-mode .bg-gray-300,
+  .halloween-mode .bg-gray-400,
+  .halloween-mode .bg-gray-500,
+  .halloween-mode .bg-gray-600,
+  .halloween-mode .bg-gray-700,
+  .halloween-mode .bg-gray-800,
+  .halloween-mode .bg-gray-900 {
+    background-color: hsl(var(--muted)) !important;
+  }
+
+  /* Universal text color adaptation for Halloween mode */
+  .halloween-mode h1,
+  .halloween-mode h2,
+  .halloween-mode h3,
+  .halloween-mode h4,
+  .halloween-mode h5,
+  .halloween-mode h6 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .halloween-mode p,
+  .halloween-mode span,
+  .halloween-mode div {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .halloween-mode .text-gray-900,
+  .halloween-mode .text-gray-800,
+  .halloween-mode .text-gray-700,
+  .halloween-mode .text-gray-600,
+  .halloween-mode .text-gray-500 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Apply sepia and reduce brightness to product images in Halloween mode */
+  .halloween-mode img {
+    filter: brightness(0.85) sepia(0.15);
+  }
+
+  /* Don't apply filters to Halloween decorations */
+  .halloween-mode .fixed.pointer-events-none img {
+    filter: none;
+  }
+
+  /* Force dark text on light colored backgrounds for visibility */
+  .halloween-mode .bg-green-100,
+  .halloween-mode .bg-green-50,
+  .halloween-mode .bg-green-200,
+  .halloween-mode .bg-green-300 {
+    color: #166534 !important; /* Dark green for light green backgrounds */
+  }
+
+  .halloween-mode .bg-orange-50,
+  .halloween-mode .bg-orange-100,
+  .halloween-mode .bg-orange-200,
+  .halloween-mode .bg-orange-300 {
+    color: #c2410c !important; /* Dark orange for light orange backgrounds */
+  }
+
+  .halloween-mode .bg-blue-50,
+  .halloween-mode .bg-blue-100,
+  .halloween-mode .bg-blue-200,
+  .halloween-mode .bg-blue-300 {
+    color: #1e40af !important; /* Dark blue for light blue backgrounds */
+  }
+
+  .halloween-mode .bg-yellow-50,
+  .halloween-mode .bg-yellow-100,
+  .halloween-mode .bg-yellow-200,
+  .halloween-mode .bg-yellow-300 {
+    color: #a16207 !important; /* Dark yellow for light yellow backgrounds */
+  }
+
+  .halloween-mode .bg-purple-50,
+  .halloween-mode .bg-purple-100,
+  .halloween-mode .bg-purple-200,
+  .halloween-mode .bg-purple-300 {
+    color: #7c3aed !important; /* Dark purple for light purple backgrounds */
+  }
+
+  .halloween-mode .bg-pink-50,
+  .halloween-mode .bg-pink-100,
+  .halloween-mode .bg-pink-200,
+  .halloween-mode .bg-pink-300 {
+    color: #be185d !important; /* Dark pink for light pink backgrounds */
+  }
+
+  /* Ensure nested elements and SVG icons also get the proper color */
+  .halloween-mode .bg-green-100 *,
+  .halloween-mode .bg-green-50 *,
+  .halloween-mode .bg-orange-50 *,
+  .halloween-mode .bg-orange-100 *,
+  .halloween-mode .bg-blue-50 *,
+  .halloween-mode .bg-blue-100 *,
+  .halloween-mode .bg-yellow-50 *,
+  .halloween-mode .bg-yellow-100 *,
+  .halloween-mode .bg-purple-50 *,
+  .halloween-mode .bg-purple-100 *,
+  .halloween-mode .bg-pink-50 *,
+  .halloween-mode .bg-pink-100 * {
+    color: inherit !important;
+  }
+
+  /* SVG icons inside colored backgrounds */
+  .halloween-mode .bg-green-100 svg,
+  .halloween-mode .bg-green-50 svg,
+  .halloween-mode .bg-orange-50 svg,
+  .halloween-mode .bg-orange-100 svg {
+    stroke: currentColor !important;
+  }
+}
+
+/* Christmas Mode - Red and green theme */
+.christmas-mode {
+  --background: 0 0% 8%; /* Very dark background */
+  --foreground: 0 0% 98%; /* White text */
+  --card: 0 0% 8%;
+  --card-foreground: 0 0% 98%;
+  --popover: 0 0% 8%;
+  --popover-foreground: 0 0% 98%;
+  --primary: 0 0% 98%;
+  --primary-foreground: 0 0% 8%;
+  --secondary: 0 0% 15%;
+  --secondary-foreground: 0 0% 98%;
+  --muted: 0 0% 15%;
+  --muted-foreground: 0 0% 70%;
+  --accent: 0 0% 15%;
+  --accent-foreground: 0 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 0 0% 98%;
+  --border: 0 0% 15%;
+  --input: 0 0% 15%;
+  --ring: 0 0% 83.9%;
+  --sidebar-background: 0 0% 5%;
+  --sidebar-foreground: 0 0% 95.9%;
+  --sidebar-primary: 0 0% 48%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 0 0% 15.9%;
+  --sidebar-accent-foreground: 0 0% 95.9%;
+  --sidebar-border: 0 0% 15.9%;
+  --sidebar-ring: 0 0% 59.8%;
+}
+
+/* Eid Mode - Gold and green theme */
+.eid-mode {
+  --background: 120 20% 8%; /* Dark green background */
+  --foreground: 60 0% 98%; /* White text */
+  --card: 120 20% 8%;
+  --card-foreground: 60 0% 98%;
+  --popover: 120 20% 8%;
+  --popover-foreground: 60 0% 98%;
+  --primary: 60 0% 98%;
+  --primary-foreground: 120 20% 8%;
+  --secondary: 120 20% 15%;
+  --secondary-foreground: 60 0% 98%;
+  --muted: 120 20% 15%;
+  --muted-foreground: 60 0% 70%;
+  --accent: 120 20% 15%;
+  --accent-foreground: 60 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 60 0% 98%;
+  --border: 120 20% 15%;
+  --input: 120 20% 15%;
+  --ring: 60 0% 83.9%;
+  --sidebar-background: 120 20% 5%;
+  --sidebar-foreground: 60 0% 95.9%;
+  --sidebar-primary: 45 100% 48%;
+  --sidebar-primary-foreground: 120 20% 8%;
+  --sidebar-accent: 120 20% 15.9%;
+  --sidebar-accent-foreground: 60 0% 95.9%;
+  --sidebar-border: 120 20% 15.9%;
+  --sidebar-ring: 45 100% 59.8%;
+}
+
+/* Ramadan Mode - Purple and gold theme */
+.ramadan-mode {
+  --background: 270 20% 8%; /* Dark purple background */
+  --foreground: 60 0% 98%; /* White text */
+  --card: 270 20% 8%;
+  --card-foreground: 60 0% 98%;
+  --popover: 270 20% 8%;
+  --popover-foreground: 60 0% 98%;
+  --primary: 60 0% 98%;
+  --primary-foreground: 270 20% 8%;
+  --secondary: 270 20% 15%;
+  --secondary-foreground: 60 0% 98%;
+  --muted: 270 20% 15%;
+  --muted-foreground: 60 0% 70%;
+  --accent: 270 20% 15%;
+  --accent-foreground: 60 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 60 0% 98%;
+  --border: 270 20% 15%;
+  --input: 270 20% 15%;
+  --ring: 60 0% 83.9%;
+  --sidebar-background: 270 20% 5%;
+  --sidebar-foreground: 60 0% 95.9%;
+  --sidebar-primary: 45 100% 48%;
+  --sidebar-primary-foreground: 270 20% 8%;
+  --sidebar-accent: 270 20% 15.9%;
+  --sidebar-accent-foreground: 60 0% 95.9%;
+  --sidebar-border: 270 20% 15.9%;
+  --sidebar-ring: 45 100% 59.8%;
+}
+
+/* Diwali Mode - Orange and gold theme */
+.diwali-mode {
+  --background: 30 20% 8%; /* Dark orange background */
+  --foreground: 60 0% 98%; /* White text */
+  --card: 30 20% 8%;
+  --card-foreground: 60 0% 98%;
+  --popover: 30 20% 8%;
+  --popover-foreground: 60 0% 98%;
+  --primary: 60 0% 98%;
+  --primary-foreground: 30 20% 8%;
+  --secondary: 30 20% 15%;
+  --secondary-foreground: 60 0% 98%;
+  --muted: 30 20% 15%;
+  --muted-foreground: 60 0% 70%;
+  --accent: 30 20% 15%;
+  --accent-foreground: 60 0% 98%;
+  --destructive: 0 62.8% 30.6%;
+  --destructive-foreground: 60 0% 98%;
+  --border: 30 20% 15%;
+  --input: 30 20% 15%;
+  --ring: 60 0% 83.9%;
+  --sidebar-background: 30 20% 5%;
+  --sidebar-foreground: 60 0% 95.9%;
+  --sidebar-primary: 45 100% 48%;
+  --sidebar-primary-foreground: 30 20% 8%;
+  --sidebar-accent: 30 20% 15.9%;
+  --sidebar-accent-foreground: 60 0% 95.9%;
+  --sidebar-border: 30 20% 15.9%;
+  --sidebar-ring: 45 100% 59.8%;
+}
+
+/* Dynamic Text Color System - Automatically adapts based on container background */
+.christmas-mode,
+.eid-mode,
+.ramadan-mode,
+.diwali-mode {
+  /* Universal background adaptation for all themes */
+  .bg-gray-50,
+  .bg-gray-100,
+  .bg-gray-200,
+  .bg-gray-300,
+  .bg-gray-400,
+  .bg-gray-500,
+  .bg-gray-600,
+  .bg-gray-700,
+  .bg-gray-800,
+  .bg-gray-900 {
+    background-color: hsl(var(--muted)) !important;
+  }
+
+  /* Universal text color adaptation for all themes */
+  h1, h2, h3, h4, h5, h6 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  p, span, div {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  .text-gray-900,
+  .text-gray-800,
+  .text-gray-700,
+  .text-gray-600,
+  .text-gray-500 {
+    color: hsl(var(--foreground)) !important;
+  }
+
+  /* Force dark text on colored backgrounds for visibility in all theme modes */
+  .bg-green-100,
+  .bg-green-50,
+  .bg-green-200,
+  .bg-green-300 {
+    color: #166534 !important; /* Dark green for light green backgrounds */
+  }
+
+  .bg-orange-50,
+  .bg-orange-100,
+  .bg-orange-200,
+  .bg-orange-300 {
+    color: #c2410c !important; /* Dark orange for light orange backgrounds */
+  }
+
+  .bg-blue-50,
+  .bg-blue-100,
+  .bg-blue-200,
+  .bg-blue-300 {
+    color: #1e40af !important; /* Dark blue for light blue backgrounds */
+  }
+
+  .bg-yellow-50,
+  .bg-yellow-100,
+  .bg-yellow-200,
+  .bg-yellow-300 {
+    color: #a16207 !important; /* Dark yellow for light yellow backgrounds */
+  }
+
+  .bg-red-50,
+  .bg-red-100,
+  .bg-red-200,
+  .bg-red-300 {
+    color: #dc2626 !important; /* Dark red for light red backgrounds */
+  }
+
+  .bg-purple-50,
+  .bg-purple-100,
+  .bg-purple-200,
+  .bg-purple-300 {
+    color: #7c3aed !important; /* Dark purple for light purple backgrounds */
+  }
+
+  .bg-pink-50,
+  .bg-pink-100,
+  .bg-pink-200,
+  .bg-pink-300 {
+    color: #be185d !important; /* Dark pink for light pink backgrounds */
+  }
+
+  .bg-indigo-50,
+  .bg-indigo-100,
+  .bg-indigo-200,
+  .bg-indigo-300 {
+    color: #3730a3 !important; /* Dark indigo for light indigo backgrounds */
+  }
+
+  .bg-teal-50,
+  .bg-teal-100,
+  .bg-teal-200,
+  .bg-teal-300 {
+    color: #0f766e !important; /* Dark teal for light teal backgrounds */
+  }
+
+  .bg-cyan-50,
+  .bg-cyan-100,
+  .bg-cyan-200,
+  .bg-cyan-300 {
+    color: #0891b2 !important; /* Dark cyan for light cyan backgrounds */
+  }
+
+  .bg-emerald-50,
+  .bg-emerald-100,
+  .bg-emerald-200,
+  .bg-emerald-300 {
+    color: #047857 !important; /* Dark emerald for light emerald backgrounds */
+  }
+
+  .bg-lime-50,
+  .bg-lime-100,
+  .bg-lime-200,
+  .bg-lime-300 {
+    color: #65a30d !important; /* Dark lime for light lime backgrounds */
+  }
+
+  .bg-amber-50,
+  .bg-amber-100,
+  .bg-amber-200,
+  .bg-amber-300 {
+    color: #d97706 !important; /* Dark amber for light amber backgrounds */
+  }
+
+  .bg-sky-50,
+  .bg-sky-100,
+  .bg-sky-200,
+  .bg-sky-300 {
+    color: #0369a1 !important; /* Dark sky for light sky backgrounds */
+  }
+
+  .bg-violet-50,
+  .bg-violet-100,
+  .bg-violet-200,
+  .bg-violet-300 {
+    color: #7c2d12 !important; /* Dark violet for light violet backgrounds */
+  }
+
+  .bg-fuchsia-50,
+  .bg-fuchsia-100,
+  .bg-fuchsia-200,
+  .bg-fuchsia-300 {
+    color: #a21caf !important; /* Dark fuchsia for light fuchsia backgrounds */
+  }
+
+  .bg-rose-50,
+  .bg-rose-100,
+  .bg-rose-200,
+  .bg-rose-300 {
+    color: #be123c !important; /* Dark rose for light rose backgrounds */
+  }
+
+  .bg-slate-50,
+  .bg-slate-100,
+  .bg-slate-200,
+  .bg-slate-300 {
+    color: #334155 !important; /* Dark slate for light slate backgrounds */
+  }
+
+  .bg-zinc-50,
+  .bg-zinc-100,
+  .bg-zinc-200,
+  .bg-zinc-300 {
+    color: #3f3f46 !important; /* Dark zinc for light zinc backgrounds */
+  }
+
+  .bg-neutral-50,
+  .bg-neutral-100,
+  .bg-neutral-200,
+  .bg-neutral-300 {
+    color: #404040 !important; /* Dark neutral for light neutral backgrounds */
+  }
+
+  .bg-stone-50,
+  .bg-stone-100,
+  .bg-stone-200,
+  .bg-stone-300 {
+    color: #44403c !important; /* Dark stone for light stone backgrounds */
+  }
 }
 
 @layer base {

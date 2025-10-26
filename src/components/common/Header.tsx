@@ -4,6 +4,8 @@ import MusicPlayer from "@/components/MusicPlayer";
 import SearchBar from "@/components/SearchBar";
 import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
+import { useDialog } from "@/contexts/DialogContext";
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -20,6 +22,8 @@ const Header = ({
 }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { isHalloweenMode, toggleHalloweenMode } = useHalloweenTheme();
+  const { isDialogOpen } = useDialog();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [startY, setStartY] = useState(0);
@@ -147,8 +151,8 @@ const Header = ({
 
 
   return (
-    <div className="bg-white shadow-sm p-3 lg:p-4 sticky top-0 z-[9999] w-full">
-      <div className="flex justify-between items-center">
+    <div className={`bg-background shadow-sm p-3 lg:p-4 sticky top-0 z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`}>
+      <div className="flex justify-between items-center relative z-10">
         {/* Mobile Logo */}
         <img 
           src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
@@ -162,6 +166,7 @@ const Header = ({
           src="/product-image/Tidurlah Logo Horizontal.png"
           alt="TIDURLAH STORE"
           className="h-8 lg:h-10 object-contain cursor-pointer hidden lg:block"
+          style={isHalloweenMode ? { filter: 'brightness(0) invert(1)' } : {}}
           onClick={() => navigateWithScrollToTop('/')}
         />
         
@@ -198,7 +203,7 @@ const Header = ({
         </button>
         
         {/* Desktop Dropdown Menu */}
-        <div className="relative hidden md:block desktop-dropdown">
+        <div className="relative hidden md:block desktop-dropdown header-dropdown">
           <button
             onClick={handleDesktopDropdownToggle}
             className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-all duration-200"
@@ -208,9 +213,9 @@ const Header = ({
           
           {/* Dropdown Content */}
           {desktopDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[9998] animate-in slide-in-from-top-2 fade-in duration-200">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-background rounded-lg shadow-lg border border-gray-200 py-2 z-[999999] animate-in slide-in-from-top-2 fade-in duration-200">
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/')}
                 style={{ animationDelay: '0ms' }}
               >
@@ -218,7 +223,7 @@ const Header = ({
                 Home
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/blog')}
                 style={{ animationDelay: '50ms' }}
               >
@@ -226,7 +231,7 @@ const Header = ({
                 Blog
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/loker')}
                 style={{ animationDelay: '100ms' }}
               >
@@ -234,7 +239,7 @@ const Header = ({
                 Loker
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/blog/panduan-desain')}
                 style={{ animationDelay: '150ms' }}
               >
@@ -242,7 +247,7 @@ const Header = ({
                 Panduan Desain
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/blog/kebijakan-privasi')}
                 style={{ animationDelay: '200ms' }}
               >
@@ -250,7 +255,7 @@ const Header = ({
                 Privacy Policy
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/blog/syarat-ketentuan-pengembalian')}
                 style={{ animationDelay: '250ms' }}
               >
@@ -258,12 +263,20 @@ const Header = ({
                 Return Policy
               </button>
               <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/hello')}
                 style={{ animationDelay: '300ms' }}
               >
                 <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                 Hello Page
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={toggleHalloweenMode}
+                style={{ animationDelay: '350ms' }}
+              >
+                <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
+                Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
               </button>
             </div>
           )}
@@ -304,7 +317,7 @@ const Header = ({
         >
           {/* Bottom Sheet Container */}
           <div 
-            className={`fixed bottom-0 left-0 right-0 md:hidden bg-white rounded-t-3xl shadow-2xl transform transition-all duration-300 ease-out ${
+            className={`fixed bottom-0 left-0 right-0 md:hidden bg-background rounded-t-3xl shadow-2xl transform transition-all duration-300 ease-out ${
               isClosing ? 'translate-y-full' : 'translate-y-0'
             }`}
             style={{ 
@@ -335,13 +348,13 @@ const Header = ({
               }}
             >
               <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-gray-900">Menu</h2>
+                <h2 className="text-base font-semibold text-foreground">Menu</h2>
                 <button 
                   className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200" 
                   onClick={handleCloseMenu}
                   aria-label="Close menu"
                 >
-                  <X className="h-4 w-4 text-gray-500" />
+                  <X className="h-4 w-4 text-muted-foreground" />
                 </button>
               </div>
             </div>
@@ -437,6 +450,19 @@ const Header = ({
               >
                 <MapPin className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Hello Page
+              </button>
+              
+              <button 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
+                onClick={() => { handleCloseMenu(); toggleHalloweenMode(); }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
+              >
+                <span className="h-4 w-4 mr-3 text-[#FF5E01]">🎃</span>
+                Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
               </button>
             </div>
             

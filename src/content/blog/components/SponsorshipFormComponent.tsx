@@ -75,10 +75,10 @@ const SponsorshipFormComponent = () => {
     <div className="space-y-8">
       {/* Introduction */}
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Program Sponsorship ID Card Lampung</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4">Program Sponsorship ID Card Lampung</h1>
         <div className="space-y-4">
-          <p className="text-gray-700 leading-relaxed">Selamat datang di Program Sponsorship ID Card Lampung! Kami membuka peluang kerjasama sponsorship untuk berbagai acara, event kampus, kegiatan komunitas, dan organisasi di seluruh Lampung.</p>
-          <p className="text-gray-700 leading-relaxed">Sebagai bagian dari Tidurlah Grafika, kami berkomitmen untuk mendukung kegiatan-kegiatan positif yang dapat memberikan dampak positif bagi masyarakat Lampung.</p>
+          <p className="text-foreground leading-relaxed">Selamat datang di Program Sponsorship ID Card Lampung! Kami membuka peluang kerjasama sponsorship untuk berbagai acara, event kampus, kegiatan komunitas, dan organisasi di seluruh Lampung.</p>
+          <p className="text-foreground leading-relaxed">Sebagai bagian dari Tidurlah Grafika, kami berkomitmen untuk mendukung kegiatan-kegiatan positif yang dapat memberikan dampak positif bagi masyarakat Lampung.</p>
         </div>
       </div>
 
@@ -178,8 +178,8 @@ const SponsorshipFormComponent = () => {
       </div>
 
       {/* Sponsorship Form */}
-      <div className="bg-white border-2 border-[#FF5E01] rounded-lg p-6 shadow-lg">
-        <h3 className="text-2xl font-bold text-gray-900 mb-6 text-center">Form Permohonan Sponsorship</h3>
+      <div className="bg-background border-2 border-[#FF5E01] rounded-lg p-6 shadow-lg">
+        <h3 className="text-2xl font-bold text-foreground mb-6 text-center">Form Permohonan Sponsorship</h3>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div>

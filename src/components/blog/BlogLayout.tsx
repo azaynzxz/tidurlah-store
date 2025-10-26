@@ -10,8 +10,8 @@ interface BlogLayoutProps {
 
 const BlogLayout = ({ children, onSearch, showSearch = false }: BlogLayoutProps) => {
   return (
-    <div className="min-h-screen bg-white notranslate flex flex-col" translate="no">
-      <div className="w-full bg-white flex-1 flex flex-col">
+    <div className="min-h-screen bg-background notranslate flex flex-col" translate="no">
+      <div className="w-full bg-background flex-1 flex flex-col">
         <Header 
           onSearch={onSearch}
           showSearch={showSearch}

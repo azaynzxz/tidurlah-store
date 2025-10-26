@@ -29,7 +29,7 @@ const Cart = ({ cartItems, removeFromCart, isCartOpen, setIsCartOpen }: CartProp
         className="absolute inset-0 bg-black bg-opacity-50"
         onClick={() => setIsCartOpen(false)}
       ></div>
-      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-white shadow-xl">
+      <div className="absolute right-0 top-0 bottom-0 w-full max-w-md bg-background shadow-xl">
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-xl font-bold">Your Cart</h2>
           <button onClick={() => setIsCartOpen(false)}>

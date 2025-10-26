@@ -1,7 +1,9 @@
 import { useNavigate } from "react-router-dom";
+import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
 
 const Footer = () => {
   const navigate = useNavigate();
+  const { isHalloweenMode } = useHalloweenTheme();
 
   // Navigation helper with scroll to top - optimized for mobile
   const navigateWithScrollToTop = (path: string) => {
@@ -30,7 +32,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="w-screen" style={{ backgroundColor: '#121939' }}>
+    <footer className={`w-screen halloween-decorations ${isHalloweenMode ? 'bg-gray-900' : ''}`} style={{ backgroundColor: isHalloweenMode ? '#0f172a' : '#121939' }}>
       {/* Main Footer Content */}
       <div className="w-full px-4 md:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">

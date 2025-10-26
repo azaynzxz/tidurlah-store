@@ -122,7 +122,7 @@ const BlogSidebarWidgets = () => {
 
       {/* Randomized Two Products */}
       {randomTwo.length > 0 && (
-        <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+        <div className="bg-background rounded-xl p-4 border border-gray-200 shadow-sm">
           <h3 className="text-lg font-bold text-gray-900 mb-4">Lihat Juga</h3>
           <div className="space-y-3">
             {randomTwo.map((p) => (
@@ -149,7 +149,7 @@ const BlogSidebarWidgets = () => {
       )}
 
       {/* Google Maps */}
-      <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+      <div className="bg-background rounded-xl p-4 border border-gray-200 shadow-sm">
         <h3 className="text-lg font-bold text-gray-900 mb-4 flex items-center">
           <MapPin className="h-5 w-5 mr-2 text-[#FF5E01]" />
           Lokasi Toko

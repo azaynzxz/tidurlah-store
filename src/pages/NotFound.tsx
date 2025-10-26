@@ -26,7 +26,7 @@ const NotFound = () => {
         </div>
 
         {/* Main 404 Content */}
-        <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+        <div className="bg-background rounded-2xl shadow-xl p-8 mb-6">
           {/* 404 Custom Illustration */}
           <div className="mb-6">
             <div className="w-48 h-48 mx-auto rounded-2xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#fff6e5' }}>
@@ -68,7 +68,7 @@ const NotFound = () => {
         </div>
 
         {/* Quick Links */}
-        <div className="bg-white rounded-xl shadow-md p-4">
+        <div className="bg-background rounded-xl shadow-md p-4">
           <p className="text-sm text-gray-500 mb-3">Atau kunjungi halaman populer:</p>
           <div className="flex justify-center space-x-4">
             <button

@@ -1225,7 +1225,7 @@ export function POSDashboard() {
         </div>
 
         {/* Desktop Cart - Hidden on mobile */}
-        <div className="hidden md:flex w-[420px] bg-white border-l border-gray-200 flex-col">
+        <div className="hidden md:flex w-[420px] bg-background border-l border-gray-200 flex-col">
           <Cart
             items={cartItems}
             onUpdateQuantity={handleUpdateQuantity}
@@ -1265,7 +1265,7 @@ export function POSDashboard() {
       {showMobileCart && (
         <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowMobileCart(false)}>
           <div 
-            className="absolute bottom-0 left-0 right-0 bg-white rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col animate-slide-up"
+            className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drag Handle */}
@@ -1309,7 +1309,7 @@ export function POSDashboard() {
 
       {/* Hidden Receipt Content for JPG Generation */}
       <div className="fixed -left-[9999px] -top-[9999px] opacity-0 pointer-events-none">
-          <div className="bg-white p-4 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
+          <div className="bg-background p-4 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
 
             {/* Thermal Printer Simulation */}
             <div className={`printer-container ${showReceipt ? 'printer-active' : ''}`}>

@@ -20,10 +20,10 @@ const DesignGuideComponent = () => {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-4">Panduan Desain</h1>
+        <h1 className="text-3xl font-bold text-foreground mb-4">Panduan Desain</h1>
         <div className="space-y-4">
-          <p className="text-gray-700 leading-relaxed">Selamat datang di halaman Panduan Desain! Di sini, kami menyediakan panduan lengkap untuk mendesain produk ID Card, Lanyard, Mug, dan Tumbler.</p>
-          <p className="text-gray-700 leading-relaxed">Panduan ini bertujuan untuk menyesuaikan ukuran desain dengan hasil cetak produk yang diinginkan. Dengan mengikuti panduan desain kami, Anda akan memahami berbagai elemen penting seperti ukuran, format, tata letak, warna, dan tipografi yang ideal untuk setiap produk.</p>
+          <p className="text-foreground leading-relaxed">Selamat datang di halaman Panduan Desain! Di sini, kami menyediakan panduan lengkap untuk mendesain produk ID Card, Lanyard, Mug, dan Tumbler.</p>
+          <p className="text-foreground leading-relaxed">Panduan ini bertujuan untuk menyesuaikan ukuran desain dengan hasil cetak produk yang diinginkan. Dengan mengikuti panduan desain kami, Anda akan memahami berbagai elemen penting seperti ukuran, format, tata letak, warna, dan tipografi yang ideal untuk setiap produk.</p>
         </div>
       </div>
 
@@ -39,9 +39,9 @@ const DesignGuideComponent = () => {
                   alt="ID Card dan Lanyard Icon" 
                   className="w-12 h-12 object-contain mr-4"
                 />
-                <h2 className="text-xl font-bold text-gray-900">Panduan Desain ID Card dan Lanyard</h2>
+                <h2 className="text-xl font-bold text-foreground">Panduan Desain ID Card dan Lanyard</h2>
               </div>
-              <p className="text-gray-600 mb-4">Tips dan panduan untuk menciptakan desain ID Card dan Lanyard yang profesional dengan spesifikasi yang tepat.</p>
+              <p className="text-foreground mb-4">Tips dan panduan untuk menciptakan desain ID Card dan Lanyard yang profesional dengan spesifikasi yang tepat.</p>
               <button 
                 onClick={() => showSection('idcard-lanyard')}
                 className="w-full bg-[#FF5E01] text-white rounded-lg py-2 px-4 font-medium hover:bg-[#e54d00] transition-colors"
@@ -58,9 +58,9 @@ const DesignGuideComponent = () => {
                   alt="Mug dan Tumbler Icon" 
                   className="w-12 h-12 object-contain mr-4"
                 />
-                <h2 className="text-xl font-bold text-gray-900">Panduan Desain Mug & Tumbler</h2>
+                <h2 className="text-xl font-bold text-foreground">Panduan Desain Mug & Tumbler</h2>
               </div>
-              <p className="text-gray-600 mb-4">Panduan lengkap untuk mendesain Mug dan Tumbler dengan layout dan batas aman yang optimal.</p>
+              <p className="text-foreground mb-4">Panduan lengkap untuk mendesain Mug dan Tumbler dengan layout dan batas aman yang optimal.</p>
               <button 
                 onClick={() => showSection('mug-tumbler')}
                 className="w-full bg-[#FF5E01] text-white rounded-lg py-2 px-4 font-medium hover:bg-[#e54d00] transition-colors"
@@ -72,7 +72,7 @@ const DesignGuideComponent = () => {
 
           {/* Quote Section */}
           <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 text-center">
-            <blockquote className="text-xl font-semibold text-gray-800 italic">
+            <blockquote className="text-xl font-semibold text-foreground italic">
               "Not everyone knows design, but everything is designed."
             </blockquote>
           </div>
@@ -89,19 +89,19 @@ const DesignGuideComponent = () => {
             ← Kembali ke Menu Utama
           </button>
           
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Panduan Desain ID Card dan Lanyard</h2>
+          <h2 className="text-3xl font-bold text-foreground mb-4">Panduan Desain ID Card dan Lanyard</h2>
           <div className="space-y-4 mb-8">
-            <p className="text-gray-700 leading-relaxed font-semibold">Tips dan Inspirasi untuk Menciptakan Desain Profesional</p>
-            <p className="text-gray-700 leading-relaxed">Selamat datang di Panduan Desain ID Card dan Lanyard dari ID Card Lampung. Di halaman ini, kami akan memberikan panduan untuk membantu Anda menciptakan desain ID Card dan lanyard yang sesuai dengan standar cetak ID Card dan Lanyard kami.</p>
-            <p className="text-gray-700 leading-relaxed">Apakah Anda mendesain untuk perusahaan, acara, atau organisasi, panduan ini akan memastikan desain Anda sesuai dan memenuhi kebutuhan Anda.</p>
+            <p className="text-foreground leading-relaxed font-semibold">Tips dan Inspirasi untuk Menciptakan Desain Profesional</p>
+            <p className="text-foreground leading-relaxed">Selamat datang di Panduan Desain ID Card dan Lanyard dari ID Card Lampung. Di halaman ini, kami akan memberikan panduan untuk membantu Anda menciptakan desain ID Card dan lanyard yang sesuai dengan standar cetak ID Card dan Lanyard kami.</p>
+            <p className="text-foreground leading-relaxed">Apakah Anda mendesain untuk perusahaan, acara, atau organisasi, panduan ini akan memastikan desain Anda sesuai dan memenuhi kebutuhan Anda.</p>
           </div>
 
           {/* Product Guides */}
           <div className="space-y-8 mb-8">
             {/* ID Card Guide */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Panduan Desain ID Card</h3>
-              <p className="text-gray-600 mb-4">Ukuran: 56 mm x 86 mm</p>
+            <div className="bg-background border border-gray-200 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-foreground mb-2">Panduan Desain ID Card</h3>
+              <p className="text-foreground mb-4">Ukuran: 56 mm x 86 mm</p>
               <div className="text-center">
                 <div 
                   className="cursor-pointer group"
@@ -113,15 +113,15 @@ const DesignGuideComponent = () => {
                     className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
                     style={{maxHeight: '600px'}}
                   />
-                  <p className="text-sm text-gray-600 italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain ID Card</p>
+                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain ID Card</p>
                 </div>
               </div>
             </div>
 
             {/* Lanyard Guide */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Panduan Desain Lanyard</h3>
-              <p className="text-gray-600 mb-4">Ukuran: 90 cm x 2,25 cm</p>
+            <div className="bg-background border border-gray-200 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-foreground mb-2">Panduan Desain Lanyard</h3>
+              <p className="text-foreground mb-4">Ukuran: 90 cm x 2,25 cm</p>
               <div className="text-center">
                 <div 
                   className="cursor-pointer group"
@@ -133,7 +133,7 @@ const DesignGuideComponent = () => {
                     className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
                     style={{maxHeight: '600px'}}
                   />
-                  <p className="text-sm text-gray-600 italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Lanyard</p>
+                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Lanyard</p>
                 </div>
               </div>
             </div>
@@ -141,7 +141,7 @@ const DesignGuideComponent = () => {
 
           {/* Examples Section */}
           <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-gray-900 mb-4">Lihat Contoh Berikut</h3>
+            <h3 className="text-xl font-bold text-foreground mb-4">Lihat Contoh Berikut</h3>
             <div className="flex justify-center">
               <div 
                 className="cursor-pointer group"
@@ -153,7 +153,7 @@ const DesignGuideComponent = () => {
                   className="max-w-full h-auto object-contain rounded-lg shadow-md group-hover:scale-105 transition-transform duration-300"
                   style={{maxHeight: '400px'}}
                 />
-                <p className="text-gray-600 text-sm text-center mt-3 italic hover:text-[#FF5E01]">Klik untuk memperbesar contoh desain lanyard</p>
+                <p className="text-foreground text-sm text-center mt-3 italic hover:text-[#FF5E01]">Klik untuk memperbesar contoh desain lanyard</p>
               </div>
             </div>
           </div>
@@ -170,14 +170,14 @@ const DesignGuideComponent = () => {
             ← Kembali ke Menu Utama
           </button>
           
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Panduan Desain Mug & Tumbler</h2>
-          <p className="text-gray-700 leading-relaxed mb-8">Panduan desain ini ditujukan untuk memastikan desain Mug dan Tumbler Anda sesuai dengan ukuran dan spesifikasi cetak kami. Pastikan Anda mengikuti layout dan batas aman agar hasil cetak optimal.</p>
+          <h2 className="text-3xl font-bold text-foreground mb-4">Panduan Desain Mug & Tumbler</h2>
+          <p className="text-foreground leading-relaxed mb-8">Panduan desain ini ditujukan untuk memastikan desain Mug dan Tumbler Anda sesuai dengan ukuran dan spesifikasi cetak kami. Pastikan Anda mengikuti layout dan batas aman agar hasil cetak optimal.</p>
 
           {/* Product Guides */}
           <div className="space-y-8">
             {/* Mug Guide */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Panduan Desain Mug</h3>
+            <div className="bg-background border border-gray-200 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">Panduan Desain Mug</h3>
               <div className="text-center">
                 <div 
                   className="cursor-pointer group"
@@ -189,14 +189,14 @@ const DesignGuideComponent = () => {
                     className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
                     style={{maxHeight: '600px'}}
                   />
-                  <p className="text-sm text-gray-600 italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Mug</p>
+                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Mug</p>
                 </div>
               </div>
             </div>
 
             {/* Tumbler Guide */}
-            <div className="bg-white border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Panduan Desain Tumbler</h3>
+            <div className="bg-background border border-gray-200 rounded-lg p-6">
+              <h3 className="text-xl font-bold text-foreground mb-4">Panduan Desain Tumbler</h3>
               <div className="text-center">
                 <div 
                   className="cursor-pointer group"
@@ -208,7 +208,7 @@ const DesignGuideComponent = () => {
                     className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
                     style={{maxHeight: '600px'}}
                   />
-                  <p className="text-sm text-gray-600 italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Tumbler</p>
+                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Tumbler</p>
                 </div>
               </div>
             </div>
@@ -226,7 +226,7 @@ const DesignGuideComponent = () => {
           <div className="relative max-w-7xl max-h-full">
             <button
               onClick={closeModal}
-              className="absolute -top-4 -right-4 bg-white rounded-full p-2 shadow-lg hover:bg-gray-100"
+              className="absolute -top-4 -right-4 bg-background rounded-full p-2 shadow-lg hover:bg-gray-100"
               style={{ zIndex: 10000 }}
             >
               <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">

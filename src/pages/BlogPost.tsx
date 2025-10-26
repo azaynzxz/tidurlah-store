@@ -30,8 +30,8 @@ const BlogPost = () => {
   if (!blogPost) {
     return (
       <BlogLayout>
-        <div className="min-h-screen bg-gray-50">
-          <div className="container mx-auto max-w-4xl bg-white min-h-screen">
+        <div className="min-h-screen bg-background">
+          <div className="container mx-auto max-w-4xl bg-background min-h-screen">
             <div className="text-center py-12">
               <h1 className="text-2xl font-bold text-gray-900 mb-4">Blog Post Tidak Ditemukan</h1>
               <p className="text-gray-600 mb-6">Halaman yang Anda cari tidak ditemukan.</p>
@@ -59,8 +59,8 @@ const BlogPost = () => {
 
   return (
     <BlogLayout>
-      <div className="min-h-screen bg-gray-50">
-        <div className="container mx-auto max-w-4xl bg-white min-h-screen">
+      <div className="min-h-screen bg-background">
+        <div className="container mx-auto max-w-4xl bg-background min-h-screen">
           {/* Main Content */}
           <div className="px-4 py-8">
             <div className="max-w-3xl mx-auto">
@@ -135,7 +135,7 @@ const BlogPost = () => {
               </article>
 
               {/* Call to Action */}
-              <div className="bg-gray-50 rounded-xl p-6 text-center border">
+              <div className="bg-muted rounded-xl p-6 text-center border">
                 <h3 className="text-lg font-bold text-gray-900 mb-2">
                   Butuh Konsultasi untuk Proyek ID Card Anda?
                 </h3>

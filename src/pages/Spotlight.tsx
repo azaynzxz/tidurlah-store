@@ -50,7 +50,7 @@ const Spotlight = () => {
   }, [toast]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-white flex flex-col">
+    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col">
       {/* Universal Header */}
       <Header 
         cartItemsCount={0}

@@ -429,7 +429,7 @@ const Index = () => {
 
 
   return (
-    <div key={PRODUCT_VERSION} className="min-h-screen bg-white notranslate flex flex-col" translate="no">
+    <div key={PRODUCT_VERSION} className="min-h-screen bg-background notranslate flex flex-col" translate="no">
       {/* Header - Full Width */}
       <Header 
         cartItemsCount={cartItems.reduce((total, item) => total + item.quantity, 0)}
@@ -438,7 +438,7 @@ const Index = () => {
         showSearch={true}
       />
       
-      <div className="container mx-auto max-w-full md:max-w-full lg:max-w-7xl bg-white flex-1 flex flex-col px-4 md:px-6 lg:px-6">
+      <div className="container mx-auto max-w-full md:max-w-full lg:max-w-7xl bg-background flex-1 flex flex-col px-4 md:px-6 lg:px-6">
 
         {!showOrderForm ? (
           /* Product Listing */
@@ -466,7 +466,7 @@ const Index = () => {
               <div className="mt-6 lg:mt-0 lg:flex-1">
                 <AnimatedElement direction="right" delay={300} duration={300}>
                   <div className="mb-3">
-                    <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center">
+                    <h2 className="text-sm font-bold mb-2 text-foreground flex items-center">
                       <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{fontSize: '16px'}}>category</span>
                       Kategori Produk:
                     </h2>
@@ -547,10 +547,10 @@ const Index = () => {
                                 toast.success("Link produk disalin!", { position: 'top-center', style: { marginTop: '60px' }, duration: 2000 });
                               }
                             }}
-                            className="absolute top-2 right-2 bg-white bg-opacity-80 hover:bg-white p-1.5 rounded-full transition-colors z-[5]"
+                            className="absolute top-2 right-2 bg-background bg-opacity-80 hover:bg-background p-1.5 rounded-full transition-colors z-[5]"
                             title="Bagikan produk"
                           >
-                            <Share2 className="h-3 w-3 text-gray-700" />
+                            <Share2 className="h-3 w-3 text-[#FF5E01]" />
                           </button>
                         </div>
                         <div className="p-2 lg:p-3 flex flex-col flex-grow">
@@ -567,7 +567,7 @@ const Index = () => {
                                 </div>
                               ))}
                               {product.priceThresholds.length > 2 && (
-                                <div className="text-xxs text-gray-500 mt-0.5">
+                                <div className="text-xxs text-muted-foreground mt-0.5">
                                   +{product.priceThresholds.length - 2} lagi
                                 </div>
                               )}
@@ -576,7 +576,7 @@ const Index = () => {
                           <div className="mt-auto pt-1">
                             {product.discountPrice !== null ? (
                               <div className="flex flex-col">
-                                <span className="line-through text-gray-500 text-xxs">
+                                <span className="line-through text-muted-foreground text-xxs">
                                   Rp {product.price.toLocaleString('id-ID')}
                                 </span>
                                 <span className="text-[#FF5E01] font-semibold text-xs">
@@ -656,7 +656,7 @@ const Index = () => {
             
             <div className="flex justify-between items-center mb-3">
               <h2 className="text-lg font-bold">Informasi Pesanan</h2>
-              <p className="text-sm text-gray-600">No. Invoice: {invoiceNumber}</p>
+              <p className="text-sm text-muted-foreground">No. Invoice: {invoiceNumber}</p>
             </div>
             
             {/* Desktop: Two Column Layout, Mobile: Single Column */}
@@ -666,7 +666,7 @@ const Index = () => {
               <div className="space-y-4">
                 <div className="space-y-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nama</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Nama</label>
                 <input
                   type="text"
                   className="w-full rounded-lg border border-gray-300 p-2"
@@ -679,7 +679,7 @@ const Index = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Instansi/Alias</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Instansi/Alias</label>
                 <input
                   type="text"
                   className="w-full rounded-lg border border-gray-300 p-2"
@@ -690,7 +690,7 @@ const Index = () => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Nomor Telepon</label>
+                <label className="block text-sm font-medium text-foreground mb-1">Nomor Telepon</label>
                 <input
                   type="tel"
                   className="w-full rounded-lg border border-gray-300 p-2"
@@ -713,7 +713,7 @@ const Index = () => {
                 />
               </div>
 
-              <div className="space-y-3 p-3 bg-gray-50 rounded-lg">
+              <div className="space-y-3 p-3 bg-muted rounded-lg">
                 <h3 className="text-sm font-medium text-gray-700">Opsi Tambahan</h3>
                 
                 <div className="flex items-start">
@@ -823,7 +823,7 @@ const Index = () => {
             
               {/* Right Column: Order Summary */}
               <div className="space-y-4">
-                <div className="border-t border-b xl:border xl:rounded-lg py-3 xl:p-4 my-3 xl:my-0 xl:bg-gray-50">
+                <div className="border-t border-b xl:border xl:rounded-lg py-3 xl:p-4 my-3 xl:my-0 xl:bg-muted">
                   <h3 className="font-medium mb-3 text-sm">Ringkasan Pesanan</h3>
               {cartItems.map((item) => (
                 <div key={item.id} className="flex justify-between items-center text-sm mb-3">
@@ -971,7 +971,7 @@ const Index = () => {
         {/* Cart Modal */}
         <Dialog open={showCart} onOpenChange={setShowCart}>
           <DialogContent className="sm:max-w-md lg:max-w-2xl max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0">
-            <DialogHeader className="p-4 border-b bg-white">
+            <DialogHeader className="p-4 border-b bg-background">
               <DialogTitle className="font-semibold text-lg">Keranjang Kamu</DialogTitle>
               <DialogDescription>
                 Review produk yang telah ditambahkan ke keranjang belanja Anda.
@@ -1060,7 +1060,7 @@ const Index = () => {
               
               {/* Fixed Footer */}
               {cartItems.length > 0 && (
-                <div className="p-4 border-t bg-white">
+                <div className="p-4 border-t bg-background">
                   <div className="flex justify-between items-center text-sm">
                     <p>Subtotal</p>
                     <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
@@ -1115,7 +1115,7 @@ const Index = () => {
             {selectedProduct && (
               <div className="relative h-full flex flex-col" style={{ maxHeight: "90vh" }}>
                 {/* Fixed Header */}
-                <div className="p-4 border-b bg-white relative">
+                <div className="p-4 border-b bg-background relative">
                   <div className="pr-20">
                     <h2 className="font-semibold text-lg">{selectedProduct.name}</h2>
                     <DialogDescription>
@@ -1169,7 +1169,7 @@ const Index = () => {
                             const prevIndex = currentIndex > 0 ? currentIndex - 1 : selectedProduct.models.length - 1;
                             setSelectedModel(selectedProduct.models[prevIndex].code);
                           } : prevImageCallback}
-                          className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
+                          className="absolute left-1 top-1/2 -translate-y-1/2 bg-background bg-opacity-50 hover:bg-background h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
                         >
                           <ChevronLeft className="h-5 w-5" />
                         </button>
@@ -1179,7 +1179,7 @@ const Index = () => {
                             const nextIndex = currentIndex < selectedProduct.models.length - 1 ? currentIndex + 1 : 0;
                             setSelectedModel(selectedProduct.models[nextIndex].code);
                           } : nextImageCallback}
-                          className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-50 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
+                          className="absolute right-1 top-1/2 -translate-y-1/2 bg-background bg-opacity-50 hover:bg-background h-8 w-8 rounded-full flex items-center justify-center transition-all hover:shadow-md"
                         >
                           <ChevronRight className="h-5 w-5" />
                         </button>
@@ -1215,7 +1215,7 @@ const Index = () => {
                       {selectedProduct.models ? (
                         selectedProduct.models.slice(0, 8).map((model, index) => (
                           <div
-                            key={index}
+                            key={`${model.code}-${index}`}
                             className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
                               model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
                             }`}
@@ -1231,7 +1231,7 @@ const Index = () => {
                       ) : (
                         [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
                           <div
-                            key={index}
+                            key={`img-${index}`}
                             className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
                               index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
                             }`}
@@ -1359,7 +1359,7 @@ const Index = () => {
                         {selectedProduct.priceThresholds.map((threshold: any, idx: number) => (
                           <div 
                             key={idx} 
-                            className="bg-gray-50 p-2 rounded-lg border border-gray-100"
+                            className="bg-muted p-2 rounded-lg border border-gray-100"
                           >
                             <div className="text-xs font-medium text-gray-500">
                               {threshold.minQuantity}+ item
@@ -1373,12 +1373,12 @@ const Index = () => {
                     </div>
                   )}
                   
-                  <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
+                  <div className="flex items-center justify-between bg-muted p-2 rounded-lg">
                     <span className="text-sm">Waktu Pengerjaan:</span>
                     <span className="text-sm text-gray-600">{selectedProduct.time}</span>
                   </div>
                   
-                  <div className="flex items-center justify-between bg-gray-50 p-2 rounded-lg">
+                  <div className="flex items-center justify-between bg-muted p-2 rounded-lg">
                     <span className="text-sm">Rating:</span>
                     <div className="flex items-center gap-1">
                       <div className="flex">
@@ -1459,7 +1459,7 @@ const Index = () => {
                 </div>
 
                 {/* Fixed Footer with Quantity Selector and Action Button */}
-                <div className="border-t bg-white">
+                <div className="border-t bg-background">
                   {/* Quantity Selector */}
                   <div className="p-4 pb-2">
                     {/* Progress Text for Discount - Moved Above */}
@@ -1471,7 +1471,7 @@ const Index = () => {
                       </div>
                     )}
                     
-                    <div className={`bg-gray-50 p-3 rounded-lg transition-all duration-300 ${
+                    <div className={`bg-muted p-3 rounded-lg transition-all duration-300 ${
                       showAngryQuantity ? "angry-wiggle" : ""
                     }`}>
                       <div className="flex items-center justify-between">
@@ -1534,7 +1534,7 @@ const Index = () => {
                               }
                             }}
                             className={`min-w-[3rem] w-16 text-center font-medium border rounded px-1 py-1 transition-all duration-300 ${
-                              showAngryQuantity ? "text-orange-600 font-bold border-orange-300 bg-orange-50" : "border-gray-300 bg-white"
+                              showAngryQuantity ? "text-orange-600 font-bold border-orange-300 bg-orange-50" : "border-gray-300 bg-background"
                             } ${modalQuantity === 0 ? "text-red-500 border-red-300" : ""}`}
                             style={{ fontSize: '14px' }}
                           />

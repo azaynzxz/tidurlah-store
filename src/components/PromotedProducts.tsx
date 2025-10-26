@@ -11,6 +11,15 @@ type PromotedProductProps = {
 const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetails }: PromotedProductProps) => {
   const [timeRemaining, setTimeRemaining] = useState<Record<number, string>>({});
 
+  // Get current month in Indonesian
+  const getCurrentMonth = () => {
+    const months = [
+      'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+      'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+    return months[new Date().getMonth()];
+  };
+
   // Function to calculate the time remaining until the end date
   const calculateTimeRemaining = (endDate: Date) => {
     const now = new Date();
@@ -76,15 +85,15 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
 
   return (
     <div className="mb-3">
-      <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center">
+      <h2 className="text-sm font-bold mb-2 text-foreground flex items-center">
         <Tag className="h-4 w-4 mr-1 text-green-600" />
-        Promo Khusus September Ceria
+        Promo Khusus {getCurrentMonth()} Ceria
       </h2>
       <div className="grid grid-cols-1 gap-2">
         {promotedProductsWithData.map((product: any) => (
           <div 
             key={product.id} 
-            className="border border-green-400 rounded-lg overflow-hidden shadow-sm bg-green-50 cursor-pointer"
+            className="border border-green-400 rounded-lg overflow-hidden shadow-sm bg-background/80 cursor-pointer"
             onClick={() => onOpenDetails(product)}
           >
             <div className="flex items-center p-3">
@@ -98,7 +107,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
               
               <div className="ml-3 flex-1 min-w-0">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="font-medium text-xs text-gray-800 line-clamp-1">
+                  <h3 className="font-medium text-xs text-foreground line-clamp-1">
                     {product.name}
                   </h3>
                   <div className="bg-green-600 text-white px-2 py-0.5 rounded-full text-xs font-bold ml-2 flex-shrink-0">
@@ -113,13 +122,13 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
                     </div>
                     
                     {product.promoInfo.minQuantity && (
-                      <div className="bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs">
+                      <div className="bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-xs">
                         Min. {product.promoInfo.minQuantity} pcs
                       </div>
                     )}
                   </div>
                   
-                  <div className="flex items-center bg-green-100 text-green-700 px-1.5 py-0.5 rounded text-xs flex-shrink-0 ml-2">
+                  <div className="flex items-center bg-green-100 text-green-800 px-1.5 py-0.5 rounded text-xs flex-shrink-0 ml-2">
                     <Clock className="h-3 w-3 mr-1" />
                     <span className="font-medium">{timeRemaining[product.id]}</span>
                   </div>

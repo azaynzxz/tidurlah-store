@@ -106,7 +106,7 @@ const Blog = () => {
           {/* Hero Section - Featured Post */}
           {featuredPost && (
             <div className="mb-16">
-              <div className="bg-white rounded-2xl shadow-lg overflow-hidden group cursor-pointer" onClick={() => navigate(`/blog/${featuredPost.slug}`)}>
+              <div className="bg-background rounded-2xl shadow-lg overflow-hidden group cursor-pointer" onClick={() => navigate(`/blog/${featuredPost.slug}`)}>
                 <div className="md:flex">
                   <div className="md:w-1/2">
                     <div className="relative h-64 md:h-full">
@@ -124,13 +124,13 @@ const Blog = () => {
           </div>
         </div>
                   <div className="md:w-1/2 p-8">
-                  <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 group-hover:text-[#FF5E01] transition-colors font-inter">
+                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 group-hover:text-[#FF5E01] transition-colors font-inter">
                       {featuredPost.title}
               </h1>
-                  <p className="text-lg text-gray-600 mb-6 leading-relaxed font-lato">
+                  <p className="text-lg text-foreground mb-6 leading-relaxed font-lato">
                       {featuredPost.subtitle}
                     </p>
-                    <div className="flex items-center justify-between text-sm text-gray-500 mb-6">
+                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
                       <div className="flex items-center">
                         <User className="h-4 w-4 mr-2" />
                         <span>{featuredPost.author}</span>
@@ -158,7 +158,7 @@ const Blog = () => {
                 className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
                   selectedCategory === "" 
                     ? "bg-[#FF5E01] text-white" 
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                    : "bg-muted text-foreground hover:bg-gray-200"
                 }`}
               >
                 Semua
@@ -170,7 +170,7 @@ const Blog = () => {
                   className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
                     selectedCategory === category 
                       ? "bg-[#FF5E01] text-white" 
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-muted text-foreground hover:bg-gray-200"
                   }`}
                 >
                   {getCategoryDisplayName(category)}
@@ -187,7 +187,7 @@ const Blog = () => {
                   {filteredPosts.map((post) => (
                     <article 
                       key={post.id}
-                      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
+                      className="bg-background rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
                       onClick={() => navigate(`/blog/${post.slug}`)}
                     >
                 <div className="relative h-48 overflow-hidden">
@@ -205,15 +205,15 @@ const Blog = () => {
                         </div>
 
                 <div className="p-6">
-                    <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-[#FF5E01] transition-colors font-inter">
+                    <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-[#FF5E01] transition-colors font-inter">
                           {post.title}
                   </h3>
 
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-2 font-lato">
+                    <p className="text-sm text-foreground mb-4 line-clamp-2 font-lato">
                           {post.subtitle}
                         </p>
 
-                  <div className="flex items-center justify-between text-xs text-gray-500">
+                  <div className="flex items-center justify-between text-xs text-muted-foreground">
                     <div className="flex items-center">
                       <Calendar className="h-3 w-3 mr-1" />
                       <span>{formatDate(post.date)}</span>
@@ -231,8 +231,8 @@ const Blog = () => {
           {/* No Results */}
           {filteredPosts.length === 0 && (
             <div className="text-center py-12">
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Tidak ada artikel ditemukan</h3>
-                  <p className="text-gray-600 mb-4">
+              <h3 className="text-xl font-bold text-foreground mb-2">Tidak ada artikel ditemukan</h3>
+                  <p className="text-foreground mb-4">
                 Coba gunakan kata kunci lain atau pilih kategori yang berbeda
                   </p>
                     <button

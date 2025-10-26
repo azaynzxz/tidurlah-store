@@ -528,7 +528,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
       {/* Customer Details & Summary */}
       {items.length > 0 && (
-        <div className="border-t bg-white">
+        <div className="border-t bg-background">
           {/* Service Options Section */}
           <div className="border-b bg-gray-50">
             {/* Header with Collapse Button */}
@@ -686,7 +686,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
           </div>
 
           {/* Price Summary */}
-          <div className="p-2 space-y-2 bg-white">
+          <div className="p-2 space-y-2 bg-background">
             <h3 className="text-xs font-semibold text-gray-700 mb-1">
               Ringkasan Pembayaran
             </h3>

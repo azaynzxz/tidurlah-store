@@ -146,7 +146,7 @@ const Receipt = () => {
     <div className="min-h-screen bg-gray-100 p-4">
       <div className="max-w-md mx-auto">
 
-        <div className="bg-white p-6 rounded-lg shadow-lg border-2 border-dashed border-gray-300">
+        <div className="bg-background p-6 rounded-lg shadow-lg border-2 border-dashed border-gray-300">
           {/* Receipt Header */}
           <div className="text-center mb-4">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">TIDURLAH GRAFIKA</h1>

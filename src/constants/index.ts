@@ -41,10 +41,10 @@ export const JASA_DESAIN_PRICE = 25000;
 
 // Create an array of categories with their Lucide React icons and colors for the visual display
 export const categories = [
-  { id: "ID Card & Lanyard", name: "ID Card", icon: CreditCard, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-  { id: "Media Promosi", name: "Banner", icon: Megaphone, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-  { id: "Merchandise", name: "Merchandise", icon: Gift, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" },
-  { id: "Papan Bunga", name: "Papan Bunga", icon: Flower, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-gray-100", inactiveText: "text-gray-700" }
+  { id: "ID Card & Lanyard", name: "ID Card", icon: CreditCard, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
+  { id: "Media Promosi", name: "Banner", icon: Megaphone, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
+  { id: "Merchandise", name: "Merchandise", icon: Gift, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
+  { id: "Papan Bunga", name: "Papan Bunga", icon: Flower, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" }
 ];
 
 // Product version for cache busting

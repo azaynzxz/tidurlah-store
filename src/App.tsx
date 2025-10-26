@@ -3,6 +3,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { HalloweenThemeProvider } from "@/contexts/HalloweenThemeContext";
+import { DialogProvider } from "@/contexts/DialogContext";
+import HalloweenDecorations from "@/components/HalloweenDecorations";
+import "@/utils/applyDynamicColors"; // Import to apply dynamic colors
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
 import Survey from "./pages/Survey";
@@ -17,26 +21,31 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/product/:slug" element={<Index />} />
-          <Route path="/survey" element={<Survey />} />
-          <Route path="/blog" element={<Blog />} />
-          <Route path="/blog/:title" element={<BlogPost />} />
-          <Route path="/hello" element={<Spotlight />} />
-          <Route path="/cashier" element={<Cashier />} />
-          <Route path="/receipt" element={<Receipt />} />
-          <Route path="/loker" element={<Loker />} />
-          <Route path="/loker/:jobSlug" element={<Loker />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <HalloweenThemeProvider>
+      <DialogProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <HalloweenDecorations />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/product/:slug" element={<Index />} />
+              <Route path="/survey" element={<Survey />} />
+              <Route path="/blog" element={<Blog />} />
+              <Route path="/blog/:title" element={<BlogPost />} />
+              <Route path="/hello" element={<Spotlight />} />
+              <Route path="/cashier" element={<Cashier />} />
+              <Route path="/receipt" element={<Receipt />} />
+              <Route path="/loker" element={<Loker />} />
+              <Route path="/loker/:jobSlug" element={<Loker />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </TooltipProvider>
+      </DialogProvider>
+    </HalloweenThemeProvider>
   </QueryClientProvider>
 );
 

@@ -7,7 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { CheckCircle, Sparkles, Check, ShoppingCart } from "lucide-react";
-import MusicPlayer from "@/components/MusicPlayer";
+import Header from "@/components/common/Header";
+import Footer from "@/components/common/Footer";
 
 interface SurveyQuestion {
   id: number;
@@ -18,21 +19,6 @@ interface SurveyQuestion {
   scaleLabels?: { min: string; max: string };
 }
 
-// Survey Header Component (same as Index.tsx for consistent branding)
-const SurveyHeader = () => {
-  return (
-    <div className="bg-white shadow-sm p-3 flex justify-between items-center sticky top-0 z-10">
-      <img 
-        src="https://zkreatif.wordpress.com/wp-content/uploads/2025/05/logo-tidurlah-grafika-horizontal.png"
-        alt="TIDURLAH STORE"
-        className="h-8 object-contain"
-      />
-      <div className="flex items-center">
-        <MusicPlayer />
-      </div>
-    </div>
-  );
-};
 
 const surveyQuestions: SurveyQuestion[] = [
   {
@@ -172,7 +158,7 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn px-4">
-      <div className="bg-white rounded-2xl p-6 sm:p-8 max-w-md mx-4 text-center animate-slideUp shadow-2xl">
+      <div className="bg-background rounded-2xl p-6 sm:p-8 max-w-md mx-4 text-center animate-slideUp shadow-2xl">
         <div className="animate-bounce mb-4">
           <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 mx-auto" />
         </div>
@@ -522,10 +508,9 @@ export default function Survey() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="container mx-auto max-w-md bg-white min-h-screen px-4 pb-16">
-        <SurveyHeader />
-        
+    <div className="min-h-screen bg-background">
+      <Header />
+      <div className="container mx-auto max-w-md px-4 py-6 pb-24 min-h-[100vh]">
         <div className="p-3">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2 animate-fadeIn">
@@ -543,7 +528,7 @@ export default function Survey() {
             </p>
           </div>
 
-          <Card className={`p-4 shadow-xl rounded-2xl bg-white transition-all duration-500 transform hover:shadow-2xl ${questionAnswered ? 'animate-shimmer' : ''}`}>
+          <Card className={`p-4 shadow-xl rounded-2xl bg-background transition-all duration-500 transform hover:shadow-2xl ${questionAnswered ? 'animate-shimmer' : ''}`}>
             <div className="space-y-6">
               <div className="mb-4">
                 <h2 className="text-lg font-semibold text-gray-900 mb-2 animate-slideIn leading-snug">
@@ -626,6 +611,7 @@ export default function Survey() {
           .animation-delay-300 { animation-delay: 0.3s; }
         `}</style>
       </div>
+      <Footer />
     </div>
   );
 } 

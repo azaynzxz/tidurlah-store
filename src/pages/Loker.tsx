@@ -176,17 +176,17 @@ const Loker = () => {
   };
 
   return (
-    <div className="min-h-screen bg-white flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
       
       {/* Hero Section */}
-      <div className="relative bg-white overflow-hidden hero-section">
+      <div className="relative bg-background overflow-hidden hero-section">
         <div className="container mx-auto max-w-7xl px-4 py-8 lg:py-12 h-full flex items-center">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
             {/* Left Side - Text Content */}
             <div className="space-y-8">
               <div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 mb-6">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
                   Punya <span className="text-[#FF5E01]">Bakat?</span><br />
                   Temui <span className="text-[#FF5E01]">Peluang!</span>
                 </h1>
@@ -196,7 +196,7 @@ const Loker = () => {
               </div>
 
               {/* Search Bar */}
-              <div className="bg-white rounded-2xl shadow-lg p-6 border border-gray-200">
+              <div className="bg-background rounded-2xl shadow-lg p-6 border border-gray-200">
                 <div className="flex flex-col sm:flex-row gap-4">
                   <div className="flex-1">
                     <div className="relative">
@@ -247,7 +247,7 @@ const Loker = () => {
                 
                 {/* Image Placeholder */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
-                  <div className="bg-white rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
+                  <div className="bg-background rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
                     <div className="text-center">
                       <div className="w-24 h-24 bg-gradient-to-br from-[#FF5E01] to-orange-400 rounded-full mx-auto mb-4 flex items-center justify-center">
                         <Briefcase className="h-12 w-12 text-white" />
@@ -268,7 +268,7 @@ const Loker = () => {
                   </div>
                 </div>
 
-                <div className="absolute bottom-4 left-4 bg-white rounded-lg p-3 shadow-lg">
+                <div className="absolute bottom-4 left-4 bg-background rounded-lg p-3 shadow-lg">
                   <div className="flex items-center gap-2">
                     <div className="flex -space-x-2">
                       <div className="w-6 h-6 bg-blue-400 rounded-full border-2 border-white"></div>
@@ -307,7 +307,7 @@ const Loker = () => {
             {filteredJobs.map((job) => (
               <div 
                 key={job.id}
-                className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
+                className="bg-background rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
                 onClick={() => {
                   // Scroll to top immediately before navigation
                   window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
@@ -407,7 +407,7 @@ const Loker = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
                 href="mailto:idcardlampung@tidurlah.com"
-                className="bg-white text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
+                className="bg-background text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
               >
                 Kirim Email
               </a>
@@ -475,7 +475,7 @@ const JobDetailPage = ({ job }: { job: Job }) => {
           </nav>
 
           {/* Job Detail Card - Compact Design */}
-          <div className="bg-white rounded-xl md:rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-background rounded-xl md:rounded-2xl shadow-lg overflow-hidden">
             {/* Job Header - Compact */}
             <div className="bg-gradient-to-r from-[#FF5E01] to-[#e54d00] p-4 md:p-6 lg:p-8 text-white">
               <div className="flex items-start justify-between mb-3 md:mb-4">
