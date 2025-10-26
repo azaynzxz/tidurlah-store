@@ -1,26 +1,79 @@
+# Robots.txt for TIDURLAH STORE
+# https://tidurlah.com
+
+# Allow all major search engines
 User-agent: Googlebot
 Allow: /
 Allow: /blog
 Allow: /blog/*
+Allow: /survey
+Allow: /hello
+Allow: /loker
+Allow: /loker/*
+Disallow: /cashier
+Disallow: /receipt
 
 User-agent: Bingbot
 Allow: /
 Allow: /blog
 Allow: /blog/*
+Allow: /survey
+Allow: /hello
+Allow: /loker
+Allow: /loker/*
+Disallow: /cashier
+Disallow: /receipt
 
+User-agent: Slurp
+Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /survey
+Allow: /hello
+Allow: /loker
+Allow: /loker/*
+Disallow: /cashier
+Disallow: /receipt
+
+# Social media crawlers
 User-agent: Twitterbot
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /loker
+Allow: /loker/*
 
 User-agent: facebookexternalhit
 Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /loker
+Allow: /loker/*
 
+User-agent: LinkedInBot
+Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /loker
+Allow: /loker/*
+
+# Default rules for all other bots
 User-agent: *
 Allow: /
 Allow: /blog
 Allow: /blog/*
+Allow: /survey
+Allow: /hello
+Allow: /loker
+Allow: /loker/*
+Disallow: /cashier
+Disallow: /receipt
 
-# Sitemaps
+# Sitemap location
 Sitemap: https://tidurlah.com/sitemap.xml
 
-# Crawl-delay to prevent server overload
+# Crawl delay to prevent server overload
 Crawl-delay: 1
+
+# Host directive (optional but recommended)
+Host: https://tidurlah.com

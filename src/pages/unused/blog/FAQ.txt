@@ -1,0 +1,75 @@
+{
+  "identify": "FAQ Page - ID Card & Lanyard",
+  "H1": "Apa yang bisa kami bantu?",
+  "P": "Kami siap membantu Anda menemukan solusi terbaik untuk kebutuhan ID card dan lanyard Anda. Berikut adalah beberapa pertanyaan umum yang sering diajukan pelanggan kami:",
+  "CollapsibleGroups": [
+    {
+      "title": "Tentang Produk",
+      "items": [
+        {
+          "question": "Berapa ukuran ID Card dan Lanyard?",
+          "answer": "Ukuran ID Card (56mm x 86mm) dan Lanyard (90cm x 2,25 cm)"
+        },
+        {
+          "question": "Apa saja jenis ID card yang Anda tawarkan?",
+          "answer": "Kami menyediakan berbagai jenis ID card, termasuk ID card standar, premium, custom."
+        },
+        {
+          "question": "Apakah ada jenis ID Card RFID dan E-Money?",
+          "answer": "Kami menyediakan custome RFID dan E-Money dengan minimum pembelian 100 pcs."
+        },
+        {
+          "question": "Bahan apa bahan yang digunakan untuk pembuatan ID card?",
+          "answer": "Kami menggunakan bahan PVC berkualitas tinggi dengan ketebalan 0.76 mm setara dengan ketebalan KTP/SIM Kitas lainnya."
+        },
+        {
+          "question": "Apa saja pilihan casing ID Card?",
+          "answer": "Kami menawarkan pilihan casing berupa casing standar, transparan, semi transparan, dan premium."
+        },
+        {
+          "question": "Bisakah saya memesan lanyard dengan desain custom?",
+          "answer": "Tentu saja! Kami menerima pesanan lanyard custom dengan desain, ukuran, dan bahan sesuai keinginan Anda."
+        },
+        {
+          "question": "Apa saja aksesoris tambahan yang tersedia untuk lanyard?",
+          "answer": "Kami menawarkan berbagai aksesoris seperti hook, safety breakaway, badge holder, dan yoyo retractable."
+        }
+      ]
+    },
+    {
+      "title": "Tentang Pemesanan",
+      "items": [
+        {
+          "question": "Bagaimana cara memesan ID card atau lanyard?",
+          "answer": "Anda dapat menghubungi kami melalui telepon, WhatsApp, atau email. Tim kami akan memandu Anda melalui proses pemesanan."
+        },
+        {
+          "question": "Berapa lama waktu produksi ID card atau lanyard?",
+          "answer": "Waktu produksi bervariasi tergantung pada jenis produk, jumlah pesanan, dan tingkat kesulitan desain. Kami akan memberikan estimasi waktu produksi saat Anda melakukan pemesanan."
+        },
+        {
+          "question": "Apakah Anda menyediakan layanan pengiriman?",
+          "answer": "Ya, kami menyediakan layanan pengiriman ke seluruh Indonesia, termasuk Bandar Lampung dan sekitarnya."
+        },
+        {
+          "question": "Apa saja metode pembayaran yang diterima?",
+          "answer": "Kami menerima pembayaran melalui transfer bank, dan e-wallet."
+        }
+      ]
+    },
+    {
+      "title": "Lain-lain",
+      "items": [
+        {
+          "question": "Apakah Anda menyediakan jasa desain ID card atau lanyard?",
+          "answer": "Ya, tim desainer kami yang berpengalaman siap membantu Anda menciptakan desain yang sesuai dengan identitas merek Anda."
+        },
+        {
+          "question": "Bisakah saya mendapatkan sampel produk sebelum memesan?",
+          "answer": "Tentu saja! Anda dapat mengunjungi rumah produksi kami di Bandar Lampung untuk melihat contoh produk kami."
+        }
+      ]
+    }
+  ],
+  "P_end": "Jangan ragu untuk menghubungi kami melalui telepon, WhatsApp, atau email. Tim customer service kami siap membantu Anda dengan senang hati."
+}

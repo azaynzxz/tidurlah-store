@@ -5,6 +5,7 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import ApplyButton from "@/components/ApplyButton";
 import { toast } from "sonner";
+import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
 
 // Job data structure
 interface Job {
@@ -299,7 +300,10 @@ const Loker = () => {
           </div>
 
           {/* Job Cards Grid - 3 Columns */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+          <StaggeredContainer 
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
+            staggerDelay={50}
+          >
             {filteredJobs.map((job) => (
               <div 
                 key={job.id}
@@ -362,7 +366,7 @@ const Loker = () => {
                 </div>
               </div>
             ))}
-          </div>
+          </StaggeredContainer>
 
           {/* No Results Message */}
           {filteredJobs.length === 0 && (

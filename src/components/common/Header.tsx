@@ -22,6 +22,9 @@ const Header = ({
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
+  const [startY, setStartY] = useState(0);
+  const [currentY, setCurrentY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
 
   useEffect(() => {
@@ -68,9 +71,36 @@ const Header = ({
     navigate(path);
   };
 
+  // Touch gesture handlers for swipe down
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setStartY(e.touches[0].clientY);
+    setCurrentY(e.touches[0].clientY);
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!isDragging) return;
+    setCurrentY(e.touches[0].clientY);
+  };
+
+  const handleTouchEnd = () => {
+    if (!isDragging) return;
+    
+    const deltaY = currentY - startY;
+    const threshold = 100; // Minimum swipe distance to close
+    
+    if (deltaY > threshold) {
+      handleCloseMenu();
+    }
+    
+    setIsDragging(false);
+    setStartY(0);
+    setCurrentY(0);
+  };
+
 
   return (
-    <div className="bg-white shadow-sm p-3 lg:p-4 sticky top-0 z-50 w-full">
+    <div className="bg-white shadow-sm p-3 lg:p-4 sticky top-0 z-[9999] w-full">
       <div className="flex justify-between items-center">
         {/* Mobile Logo */}
         <img 
@@ -131,7 +161,7 @@ const Header = ({
           
           {/* Dropdown Content */}
           {desktopDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50 animate-in slide-in-from-top-2 fade-in duration-200">
+            <div className="absolute right-0 top-full mt-2 w-64 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-[9998] animate-in slide-in-from-top-2 fade-in duration-200">
               <button 
                 className="w-full text-left px-4 py-2 text-sm font-medium text-gray-700 hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={() => handleDesktopMenuClick('/')}
@@ -216,89 +246,155 @@ const Header = ({
         </button>
       </div>
 
-      {/* Mobile sheet */}
+      {/* iOS-style Bottom Sheet */}
       {(mobileOpen || isClosing) && (
         <div 
-          className={`fixed inset-0 z-[60] bg-black/40 md:hidden transition-opacity duration-300 ease-in-out ${
+          className={`fixed inset-0 bg-black/40 md:hidden transition-opacity duration-300 ease-in-out ${
             isClosing ? 'opacity-0' : 'opacity-100'
           }`} 
+          style={{ zIndex: 99999 }}
           onClick={handleCloseMenu}
         >
+          {/* Bottom Sheet Container */}
           <div 
-            key={mobileOpen ? 'open' : 'closed'}
-            className={`absolute top-0 right-0 h-full w-5/6 max-w-sm bg-white shadow-xl p-4 flex flex-col transform transition-transform duration-300 ease-in-out ${
-              isClosing ? 'translate-x-full' : 'translate-x-0'
-            }`} 
+            className={`fixed bottom-0 left-0 right-0 md:hidden bg-white rounded-t-3xl shadow-2xl transform transition-all duration-300 ease-out ${
+              isClosing ? 'translate-y-full' : 'translate-y-0'
+            }`}
+            style={{ 
+              zIndex: 100000,
+              transform: isDragging ? `translateY(${Math.max(0, currentY - startY)}px)` : undefined,
+              animation: isClosing ? 'none' : 'slideInFromBottomContainer 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both, fadeInShadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both'
+            }}
             onClick={(e) => e.stopPropagation()}
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
           >
-            <div className="flex items-center justify-end">
-              <button 
-                className="p-2 rounded-lg hover:bg-gray-100 transition-colors duration-200" 
-                onClick={handleCloseMenu} 
-                aria-label="Close menu"
-              >
-                <X className="h-6 w-6" />
-              </button>
+            {/* Drag Handle */}
+            <div 
+              className="flex justify-center pt-2 pb-1"
+              style={{ 
+                animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.01s both'
+              }}
+            >
+              <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
             </div>
-
-            <nav className="mt-4 space-y-2 animate-fade-in-up">
+            
+            {/* Header */}
+            <div 
+              className="px-4 pb-2 border-b border-gray-100"
+              style={{ 
+                animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.03s both'
+              }}
+            >
+              <div className="flex items-center justify-between">
+                <h2 className="text-base font-semibold text-gray-900">Menu</h2>
+                <button 
+                  className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200" 
+                  onClick={handleCloseMenu}
+                  aria-label="Close menu"
+                >
+                  <X className="h-4 w-4 text-gray-500" />
+                </button>
+              </div>
+            </div>
+            
+            {/* Navigation Items */}
+            <div className="px-4 py-2 space-y-0.5">
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/'); }}
-                style={{ animationDelay: '0.1s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <Home className="h-4 w-4 mr-3" />
+                <Home className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Home
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/blog'); }}
-                style={{ animationDelay: '0.15s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <Newspaper className="h-4 w-4 mr-3" />
+                <Newspaper className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Blog
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/loker'); }}
-                style={{ animationDelay: '0.16s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <Briefcase className="h-4 w-4 mr-3" />
+                <Briefcase className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Loker
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/blog/panduan-desain'); }}
-                style={{ animationDelay: '0.2s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <FileText className="h-4 w-4 mr-3" />
+                <FileText className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Panduan Desain
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/blog/kebijakan-privasi'); }}
-                style={{ animationDelay: '0.25s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <Shield className="h-4 w-4 mr-3" />
+                <Shield className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Privacy Policy
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/blog/syarat-ketentuan-pengembalian'); }}
-                style={{ animationDelay: '0.3s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <RotateCcw className="h-4 w-4 mr-3" />
+                <RotateCcw className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Return Policy
               </button>
+              
               <button 
-                className="w-full text-left px-3 py-2 rounded-lg hover:bg-orange-50 text-sm font-medium flex items-center transition-all duration-200 hover:scale-[1.02]" 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
                 onClick={() => { handleCloseMenu(); navigate('/hello'); }}
-                style={{ animationDelay: '0.35s' }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
               >
-                <MapPin className="h-4 w-4 mr-3" />
+                <MapPin className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Hello Page
               </button>
-            </nav>
+            </div>
+            
+            {/* Bottom padding for safe area */}
+            <div className="h-3"></div>
           </div>
         </div>
       )}

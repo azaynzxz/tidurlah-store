@@ -1,0 +1,60 @@
+{
+  "identify": "Syarat & Ketentuan Pengembalian Barang",
+  "H1": "Syarat & Ketentuan",
+  "P": "Kami berkomitmen untuk memberikan kepuasan pelanggan terbaik. Jika Anda tidak sepenuhnya puas dengan pembelian Anda, kami menyediakan kebijakan pengembalian barang yang fleksibel dan mudah diikuti. Berikut adalah langkah-langkah dan syarat untuk melakukan pengembalian barang.",
+  "CollapsibleGroups": [
+    {
+      "title": "Barang yang dapat dikembalikan",
+      "list": [
+        "Barang yang rusak atau cacat produksi",
+        "Barang yang tidak sesuai dengan pesanan",
+        "Barang yang tidak sampai ke alamat tujuan"
+      ]
+    },
+    {
+      "title": "Barang yang tidak dapat dikembalikan",
+      "list": [
+        "Barang yang rusak karena kesalahan penggunaan",
+        "Barang yang rusak karena kesalahan desain dari pelanggan",
+        "Barang yang telah digunakan (kecuali ditemukan kerusakan atau cacat produksi)"
+      ]
+    },
+    {
+      "title": "Syarat dan ketentuan pengembalian barang",
+      "list": [
+        "Barang harus dalam keadaan lengkap dan dalam kondisi semula (tidak termasuk kemasan yang dibuka dengan hati-hati)",
+        "Barang harus disertai dengan nota pembelian",
+        "Barang harus dikembalikan dalam waktu maksimal 1 hari setelah diterima",
+        "Untuk barang yang tidak sampai ke alamat tujuan, pelanggan harus melaporkan dalam waktu 24 jam setelah estimasi waktu pengiriman"
+      ]
+    },
+    {
+      "title": "Proses pengembalian barang",
+      "list": [
+        "Pelanggan dapat menghubungi ID Card Lampung melalui email halo.idcardlampung@gmail.com atau WhatsApp +6285172157808 untuk mengajukan pengembalian barang. Mohon sertakan foto barang dan deskripsi masalah",
+        "ID Card Lampung akan memverifikasi keluhan pelanggan dan akan memberikan instruksi selanjutnya dalam waktu 2 hari kerja",
+        "Biaya pengiriman barang yang dikembalikan akan ditanggung oleh ID Card Lampung jika kesalahan ada pada pihak kami (barang rusak, cacat produksi, tidak sesuai pesanan, atau tidak sampai)",
+        "Pelanggan akan mengirimkan barang yang dikembalikan sesuai dengan instruksi dari ID Card Lampung",
+        "ID Card Lampung akan memeriksa barang yang dikembalikan dan akan memberikan keputusan dalam waktu maksimal 7 hari kerja setelah barang diterima"
+      ]
+    },
+    {
+      "title": "Kebijakan pengembalian dana",
+      "list": [
+        "Jika barang yang dikembalikan diterima dan diverifikasi sesuai dengan syarat dan ketentuan, ID Card Lampung akan menawarkan pengembalian dana, penggantian barang, sesuai pilihan pelanggan",
+        "Proses pengembalian dana akan dilakukan dalam waktu maksimal 7 hari kerja setelah keputusan pengembalian diterbitkan"
+      ]
+    },
+    {
+      "title": "Perlindungan data pribadi",
+      "list": [
+        "Semua informasi pribadi yang diberikan oleh pelanggan selama proses pengembalian akan dijaga kerahasiaannya dan hanya digunakan untuk keperluan pengembalian barang",
+        "ID Card Lampung berkomitmen untuk melindungi privasi pelanggan sesuai dengan peraturan yang berlaku"
+      ]
+    }
+  ],
+  "P_end": "Proses Mudah dan Cepat untuk Kebutuhan Cetak Anda",
+  "Note": "Selengkapnya >",
+  "Subheading": "Alur pengembalian barang"
+  
+}

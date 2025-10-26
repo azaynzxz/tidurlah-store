@@ -1,0 +1,98 @@
+link : tidurlah.com/blog/kebijakan-privasi
+
+H1: Komitmen Kami terhadap Privasi Anda 
+
+make the logic ID Card lampung is sub brand of Tidurlah Grafika, this paragraph need to be editted, ensure H1 and title are bold
+
+P: Di ID Card Lampung, kami menghargai privasi Anda dan berkomitmen untuk melindungi informasi pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat Anda menggunakan layanan kami atau mengunjungi situs web kami. Kami ingin Anda merasa aman dan percaya bahwa informasi pribadi Anda diperlakukan dengan hati-hati dan bertanggung jawab. 
+
+Colabsible element, Title : Informasi yang Kami Kumpulkan 
+H1 : Kami dapat mengumpulkan informasi pribadi dari Anda saat Anda memesan ID Card, termasuk: 
+{List}
+Nama
+
+Alamat email
+
+Nomor telepon
+
+Alamat pengiriman
+
+Data pribadi yang tertera di ID Card
+{End List}
+
+H1 : Kami juga mengumpulkan informasi tentang penggunaan Anda terhadap situs web kami, termasuk:
+{List}
+Halaman yang Anda kunjungi
+
+Produk yang Anda lihat
+
+Waktu Anda menggunakan situs web kami
+{End List}
+
+
+Colabsible element: 
+Title :Cara Kami Menggunakan Informasi Anda 
+
+P : Kami menggunakan informasi Anda untuk:
+{list}
+Memproses pesanan Anda
+
+Menawarkan layanan dan dukungan kepada Anda
+
+Meningkatkan pengalaman Anda di situs web kami
+
+Mengirimkan informasi tentang produk dan layanan kami
+
+Menyediakan iklan yang relevan dan informasi promosi, dengan persetujuan Anda
+(end list}
+
+Colabsible element:
+Title : Berbagi Informasi Anda 
+P : Kami tidak akan membagikan informasi pribadi Anda dengan pihak ketiga tanpa izin Anda, kecuali:
+
+{List}
+Kami diwajibkan oleh hukum untuk melakukannya
+
+Kami bekerja sama dengan perusahaan lain untuk menyediakan produk atau layanan kepada Anda, seperti penyedia jasa pengiriman
+
+Kami menggunakan penyedia layanan pihak ketiga untuk membantu kami menjalankan bisnis kami, seperti penyedia hosting atau layanan analitik
+{End List}
+
+Colabsible elemnt :
+title : Keamanan Informasi Anda 
+
+Kami mengambil langkah-langkah untuk melindungi keamanan informasi Anda, termasuk:
+
+{list}
+Menggunakan enkripsi untuk melindungi informasi saat Anda mengirimkannya melalui internet
+
+Menyimpan informasi Anda di drive yang aman dengan akses ketat
+
+Melakukan audit keamanan berkala dan prosedur tanggap insiden
+
+Membatasi akses ke informasi Anda hanya kepada karyawan dan pihak ketiga yang memerlukan akses untuk tujuan operasional
+
+{end list}
+
+Colabsible element
+Title : Hak Anda
+
+P : Anda memiliki hak untuk:
+
+{List}
+Mengakses informasi pribadi Anda yang kami miliki
+
+Mengoreksi informasi pribadi Anda yang tidak akurat atau sudah usang
+
+Menghapus informasi pribadi Anda, kecuali jika kami memiliki kewajiban hukum untuk menyimpannya
+
+Meminta portabilitas data Anda
+
+Menolak pemrosesan data Anda untuk tujuan tertentu
+
+Menarik kembali persetujuan Anda kapan saja tanpa mempengaruhi legalitas pemrosesan berdasarkan persetujuan sebelum penarikannya
+{End List}
+
+Colabsible element title : Perubahan Kebijakan Privasi 
+
+P: Kami dapat mengubah kebijakan privasi ini dari waktu ke waktu. Setiap perubahan akan diposting di situs web kami dan, jika perubahan tersebut signifikan, kami akan memberikan pemberitahuan lebih lanjut, seperti melalui email atau pemberitahuan langsung di situs web kami. 

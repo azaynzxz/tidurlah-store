@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Printer } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -11,6 +11,7 @@ import MusicPlayer from "@/components/MusicPlayer";
 import PromotedProducts from "@/components/PromotedProducts";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
+import { AnimatedElement, StaggeredContainer, LoadingState } from "@/components/animations/AnimatedElement";
 
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
@@ -59,6 +60,7 @@ const Index = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
   const [logoBase64, setLogoBase64] = useState<string>("");
+  const [isProductsLoading, setIsProductsLoading] = useState(true);
   
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -107,9 +109,15 @@ const Index = () => {
         
         setProducts(productsCopy);
         setFilteredProducts(filteredProductsCopy);
+        
+        // Add a small delay for smooth loading animation
+        setTimeout(() => {
+          setIsProductsLoading(false);
+        }, 150);
       } catch (error) {
         console.error("Failed to fetch products:", error);
         toast.error("Gagal memuat produk. Silakan coba lagi nanti.", { position: 'top-center', style: { marginTop: '60px' } });
+        setIsProductsLoading(false);
       }
     };
     fetchProducts();
@@ -211,6 +219,7 @@ const Index = () => {
   useEffect(() => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
+
 
   // Handle search functionality
   const handleSearchCallback = (term: string) => {
@@ -349,26 +358,7 @@ const Index = () => {
       );
 
       // Start receipt generation process
-      generateReceiptDuringProcessing(
-        showReceipt,
-        logoBase64,
-        setShowReceipt,
-        receiptRef,
-        invoiceNumber,
-        cartItems,
-        promoDiscount,
-        requestJasaDesain,
-        isExpressPrint,
-        JASA_DESAIN_PRICE,
-        customerName,
-        instansi,
-        calculateTotalCallback,
-        calculateTotalDiscount,
-        promoCode,
-        setShowOrderSuccess,
-        setIsSubmitting,
-        caseVariants
-      );
+      await generateReceiptDuringProcessingCallback();
 
       return result;
     } catch (error) {
@@ -452,30 +442,35 @@ const Index = () => {
 
         {!showOrderForm ? (
           /* Product Listing */
-          <div className="p-3 flex-1">
+          <div className="p-3 flex-1 mb-8">
             {/* Banner Carousel */}
-            <BannerCarousel />
+            <AnimatedElement direction="up" delay={100} duration={300}>
+              <BannerCarousel />
+            </AnimatedElement>
             
             {/* Desktop: Side by Side Layout | Mobile: Stacked */}
             <div className="mt-6 mb-4 flex flex-col lg:flex-row lg:gap-6 lg:items-start">
               {/* Promoted Products */}
               <div className="lg:w-1/3 lg:flex-shrink-0">
-                <PromotedProducts 
-                  products={products as Record<string, any[]>}
-                  promotedProducts={promotedProducts}
-                  onAddToCart={(product: any) => addToCartCallback(product)}
-                  onOpenDetails={(product: any) => openProductDetailsCallback(product)}
-                />
+                <AnimatedElement direction="left" delay={200} duration={300}>
+                  <PromotedProducts 
+                    products={products as Record<string, any[]>}
+                    promotedProducts={promotedProducts}
+                    onAddToCart={(product: any) => addToCartCallback(product)}
+                    onOpenDetails={(product: any) => openProductDetailsCallback(product)}
+                  />
+                </AnimatedElement>
               </div>
               
               {/* Category Grid */}
               <div className="mt-6 lg:mt-0 lg:flex-1">
-                <div className="mb-3">
-                  <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center">
-                    <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{fontSize: '16px'}}>category</span>
-                    Kategori Produk:
-                  </h2>
-                  <div className="grid grid-cols-4 lg:grid-cols-4 gap-2">
+                <AnimatedElement direction="right" delay={300} duration={300}>
+                  <div className="mb-3">
+                    <h2 className="text-sm font-bold mb-2 text-gray-800 flex items-center">
+                      <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{fontSize: '16px'}}>category</span>
+                      Kategori Produk:
+                    </h2>
+                    <div className="grid grid-cols-4 lg:grid-cols-4 gap-2">
                 {categories.map(category => {
                   const IconComponent = category.icon;
                   return (
@@ -501,17 +496,23 @@ const Index = () => {
                     </div>
                   );
                 })}
+                    </div>
                   </div>
-                </div>
+                </AnimatedElement>
               </div>
             </div>
             
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
+            <AnimatedElement direction="up" delay={400} duration={300}>
+              <Tabs value={activeTab} onValueChange={setActiveTab} className="mt-4">
               {Object.keys(filteredProducts).map(category => (
                 <TabsContent key={category} value={category}>
-                  <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
-                    {filteredProducts[category].map((product: any) => (
-                      <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm flex flex-col h-full hover:shadow-lg transition-shadow duration-200 group">
+                  <LoadingState isLoading={isProductsLoading}>
+                    <StaggeredContainer 
+                      className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4"
+                      staggerDelay={25}
+                    >
+                      {filteredProducts[category].map((product: any) => (
+                        <div key={product.id} className="border rounded-lg overflow-hidden shadow-sm flex flex-col h-full hover:shadow-lg transition-shadow duration-200 group">
                         <div 
                           className="relative cursor-pointer"
                           onClick={() => openProductDetailsCallback(product)}
@@ -634,16 +635,18 @@ const Index = () => {
                           )}
                         </div>
                       </div>
-                    ))}
-                  </div>
+                      ))}
+                    </StaggeredContainer>
+                  </LoadingState>
                 </TabsContent>
               ))}
-            </Tabs>
+              </Tabs>
+            </AnimatedElement>
 
           </div>
         ) : (
           /* Order Form */
-          <div className="p-3 flex-1">
+          <div className="p-3 flex-1 mb-8">
             <button
               onClick={() => setShowOrderForm(false)}
               className="mb-3 text-[#FF5E01] flex items-center"
@@ -1970,19 +1973,13 @@ const Index = () => {
               '--end-y': `${bubble.endY}px`,
               '--start-x': `${bubble.startX}px`,
               '--start-y': `${bubble.startY}px`,
-            } as React.CSSProperties & {
-              '--end-x': string;
-              '--end-y': string;
-              '--start-x': string;
-              '--start-y': string;
-            }}
+            } as any}
           />
         ))}
+      </div>
 
-        </div>
-
-        {/* Footer */}
-        <Footer />
+      {/* Footer - Regular Document Flow */}
+      <Footer />
     </div>
   );
 };

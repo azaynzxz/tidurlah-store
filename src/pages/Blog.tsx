@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import BlogLayout from "@/components/blog/BlogLayout";
 import { getAllBlogPosts, BlogPostData, getTopCategories, getBlogPostsByCategory } from "@/content/blog";
 import BlogSidebarWidgets from "@/components/blog/BlogSidebarWidgets";
+import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
 
 // Extend Window interface for Instagram
 declare global {
@@ -179,11 +180,14 @@ const Blog = () => {
           </div>
 
                 {/* Blog Posts Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <StaggeredContainer 
+                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+                  staggerDelay={50}
+                >
                   {filteredPosts.map((post) => (
                     <article 
                       key={post.id}
-                className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
+                      className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
                       onClick={() => navigate(`/blog/${post.slug}`)}
                     >
                 <div className="relative h-48 overflow-hidden">
@@ -222,7 +226,7 @@ const Blog = () => {
                       </div>
                     </article>
                   ))}
-                </div>
+                </StaggeredContainer>
 
           {/* No Results */}
           {filteredPosts.length === 0 && (

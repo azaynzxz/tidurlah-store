@@ -1,9 +1,46 @@
+/* Google Fonts: Inter (headings) and Lato (paragraphs) */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@400;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* Google Fonts: Inter (headings) and Lato (paragraphs) */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lato:wght@400;700&display=swap');
+/* Smooth animations and transitions */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Prevent flash of unstyled content */
+body {
+  opacity: 0;
+  transition: opacity 0.1s ease-in;
+}
+
+body.loaded {
+  opacity: 1;
+}
+
+/* Optimize animations for better performance */
+.animate-smooth {
+  will-change: transform, opacity;
+}
+
+/* Loading skeleton animation */
+@keyframes shimmer {
+  0% {
+    background-position: -200px 0;
+  }
+  100% {
+    background-position: calc(200px + 100%) 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200px 100%;
+  animation: shimmer 1.5s infinite;
+}
 
 @layer base {
   :root {
@@ -289,6 +326,48 @@
   @keyframes fadeIn {
     from { opacity: 0.99; }
     to { opacity: 1; }
+  }
+
+  @keyframes slideInFromRight {
+    0% { 
+      transform: translateX(100%); 
+      opacity: 0; 
+    }
+    100% { 
+      transform: translateX(0); 
+      opacity: 1; 
+    }
+  }
+
+  @keyframes slideInFromBottom {
+    0% { 
+      transform: translateY(30px); 
+      opacity: 0; 
+    }
+    100% { 
+      transform: translateY(0); 
+      opacity: 1; 
+    }
+  }
+
+  @keyframes slideInFromBottomContainer {
+    0% { 
+      transform: translateY(100%); 
+      opacity: 0; 
+    }
+    100% { 
+      transform: translateY(0); 
+      opacity: 1; 
+    }
+  }
+
+  @keyframes fadeInShadow {
+    0% { 
+      box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    }
+    100% { 
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    }
   }
 
   /* Spotlight-specific animations and styles */
