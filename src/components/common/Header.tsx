@@ -68,7 +68,54 @@ const Header = ({
 
   const handleDesktopMenuClick = (path: string) => {
     setDesktopDropdownOpen(false);
+    // For mobile, we need to be more aggressive with scrolling
+    const scrollToTop = () => {
+      // Try multiple methods to ensure it works on mobile
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Also try smooth scroll as fallback
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 10);
+    };
+    
+    // Scroll immediately
+    scrollToTop();
+    
+    // Navigate
     navigate(path);
+    
+    // Scroll again after navigation (for mobile)
+    setTimeout(scrollToTop, 50);
+    setTimeout(scrollToTop, 200);
+  };
+
+  // Navigation helper with scroll to top - optimized for mobile
+  const navigateWithScrollToTop = (path: string) => {
+    // For mobile, we need to be more aggressive with scrolling
+    const scrollToTop = () => {
+      // Try multiple methods to ensure it works on mobile
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Also try smooth scroll as fallback
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 10);
+    };
+    
+    // Scroll immediately
+    scrollToTop();
+    
+    // Navigate
+    navigate(path);
+    
+    // Scroll again after navigation (for mobile)
+    setTimeout(scrollToTop, 50);
+    setTimeout(scrollToTop, 200);
   };
 
   // Touch gesture handlers for swipe down
@@ -107,7 +154,7 @@ const Header = ({
           src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
           alt="TIDURLAH STORE"
           className="h-8 w-8 object-contain cursor-pointer lg:hidden"
-          onClick={() => navigate('/')}
+          onClick={() => navigateWithScrollToTop('/')}
         />
         
         {/* Desktop Logo */}
@@ -115,7 +162,7 @@ const Header = ({
           src="/product-image/Tidurlah Logo Horizontal.png"
           alt="TIDURLAH STORE"
           className="h-8 lg:h-10 object-contain cursor-pointer hidden lg:block"
-          onClick={() => navigate('/')}
+          onClick={() => navigateWithScrollToTop('/')}
         />
         
         {/* Center Search Bar - Mobile */}
@@ -137,14 +184,14 @@ const Header = ({
         
         
         <button 
-          onClick={() => navigate('/blog')}
+          onClick={() => navigateWithScrollToTop('/blog')}
           className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
         >
           <Newspaper className="h-5 w-5 lg:h-6 lg:w-6" />
         </button>
         
         <button 
-          onClick={() => navigate('/loker')}
+          onClick={() => navigateWithScrollToTop('/loker')}
           className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
         >
           <Briefcase className="h-5 w-5 lg:h-6 lg:w-6" />
@@ -305,7 +352,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -318,7 +365,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/blog'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -331,7 +378,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/loker'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/loker'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -344,7 +391,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/blog/panduan-desain'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/panduan-desain'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -357,7 +404,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/blog/kebijakan-privasi'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/kebijakan-privasi'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -370,7 +417,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/blog/syarat-ketentuan-pengembalian'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}
@@ -383,7 +430,7 @@ const Header = ({
                 className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
                   isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                 }`}
-                onClick={() => { handleCloseMenu(); navigate('/hello'); }}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/hello'); }}
                 style={{ 
                   animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
                 }}

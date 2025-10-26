@@ -308,7 +308,11 @@ const Loker = () => {
               <div 
                 key={job.id}
                 className="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
-                onClick={() => navigate(`/loker/${job.id}`)}
+                onClick={() => {
+                  // Scroll to top immediately before navigation
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                  navigate(`/loker/${job.id}`);
+                }}
               >
                 {/* Job Card Header */}
                 <div className="p-6">
@@ -456,8 +460,16 @@ const JobDetailPage = ({ job }: { job: Job }) => {
           {/* Breadcrumb - Compact on Mobile */}
           <nav className="mb-4 md:mb-6">
             <span className="text-gray-500 text-xs md:text-sm">
-              <button onClick={() => navigate('/')} className="hover:text-[#FF5E01]">Home</button> / 
-              <button onClick={() => navigate('/loker')} className="hover:text-[#FF5E01] ml-1"> Loker</button> / 
+              <button onClick={() => {
+                // Scroll to top immediately before navigation
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                navigate('/');
+              }} className="hover:text-[#FF5E01]">Home</button> / 
+              <button onClick={() => {
+                // Scroll to top immediately before navigation
+                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                navigate('/loker');
+              }} className="hover:text-[#FF5E01] ml-1"> Loker</button> / 
               <span className="text-gray-700 ml-1">{job.title}</span>
             </span>
           </nav>

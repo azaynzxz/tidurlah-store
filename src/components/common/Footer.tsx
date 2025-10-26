@@ -3,6 +3,32 @@ import { useNavigate } from "react-router-dom";
 const Footer = () => {
   const navigate = useNavigate();
 
+  // Navigation helper with scroll to top - optimized for mobile
+  const navigateWithScrollToTop = (path: string) => {
+    // For mobile, we need to be more aggressive with scrolling
+    const scrollToTop = () => {
+      // Try multiple methods to ensure it works on mobile
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
+      
+      // Also try smooth scroll as fallback
+      setTimeout(() => {
+        window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
+      }, 10);
+    };
+    
+    // Scroll immediately
+    scrollToTop();
+    
+    // Navigate
+    navigate(path);
+    
+    // Scroll again after navigation (for mobile)
+    setTimeout(scrollToTop, 50);
+    setTimeout(scrollToTop, 200);
+  };
+
   return (
     <footer className="w-screen" style={{ backgroundColor: '#121939' }}>
       {/* Main Footer Content */}
@@ -25,15 +51,15 @@ const Footer = () => {
             <div className="lg:col-span-1">
               <h4 className="text-lg font-bold text-white mb-4">Navigation</h4>
               <ul className="space-y-2">
-                <li><button onClick={() => navigate('/')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Home</button></li>
-                <li><button onClick={() => navigate('/blog')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Blog</button></li>
-                <li><button onClick={() => navigate('/loker')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Loker</button></li>
-                <li><button onClick={() => navigate('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
-                <li><button onClick={() => navigate('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
-                <li><button onClick={() => navigate('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
-                <li><button onClick={() => navigate('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
-                <li><button onClick={() => navigate('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
-                <li><button onClick={() => navigate('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Home</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/blog')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Blog</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/loker')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Loker</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
+                <li><button onClick={() => navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>
               </ul>
           </div>
 
@@ -80,7 +106,7 @@ const Footer = () => {
                       <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
                     </svg>
           </div>
-                  <button onClick={() => navigate('/survey')} className="text-gray-300 hover:text-[#FF5E01] transition-colors text-sm">
+                  <button onClick={() => navigateWithScrollToTop('/survey')} className="text-gray-300 hover:text-[#FF5E01] transition-colors text-sm">
                     Survei Kepuasan Pelanggan
               </button>
                 </div>
