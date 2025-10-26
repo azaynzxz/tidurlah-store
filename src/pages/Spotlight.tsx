@@ -52,14 +52,12 @@ const Spotlight = () => {
   return (
     <div className="min-h-screen relative overflow-hidden bg-white flex flex-col">
       {/* Universal Header */}
-      <AnimatedElement direction="down" duration={200}>
-        <Header 
-          cartItemsCount={0}
-          onCartClick={() => window.location.href = '/'}
-          onSearch={() => {}}
-          showSearch={false}
-        />
-      </AnimatedElement>
+      <Header 
+        cartItemsCount={0}
+        onCartClick={() => window.location.href = '/'}
+        onSearch={() => {}}
+        showSearch={false}
+      />
 
       {/* Main Content */}
       <div className="flex-1 py-12 px-4">
