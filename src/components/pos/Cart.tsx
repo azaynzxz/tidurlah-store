@@ -330,6 +330,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     }
   };
 
+  // TEMPORARILY DISABLED BUT KEPT FOR FUTURE USE: Bluetooth Print Handler
+  // This function may be beneficial in the future for printing receipts via Bluetooth printers.
+  // Do NOT delete this function. The UI button is hidden but functionality is preserved.
   const handlePrintReceipt = async () => {
     if (!onPrintOrder) {
       toast.error("Fungsi cetak tidak tersedia", {
@@ -409,6 +412,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
     }
   };
 
+  // TEMPORARILY DISABLED BUT KEPT FOR FUTURE USE: PDF Export Handler
+  // This function may be beneficial in the future for exporting receipts as PDF files.
+  // Do NOT delete this function. The UI button is hidden but functionality is preserved.
   const handleExportPDF = async () => {
     if (!onExportPDF) {
       toast.error("Fungsi export PDF tidak tersedia", {
@@ -717,11 +723,20 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                 <Input
                   id="downPayment"
                   type="text"
-                  placeholder="0 (otomatis x1000)"
+                  placeholder="5000 = 5.000.000"
                   value={dpDisplayValue}
                   onChange={(e) => {
-                    const inputValue = e.target.value.replace(/[^\d]/g, ''); // Remove non-numeric
-                    const numericValue = inputValue === '' ? 0 : parseInt(inputValue);
+                    // Allow digits and one decimal point
+                    let inputValue = e.target.value.replace(/[^\d.]/g, '');
+                    
+                    // Prevent multiple decimal points
+                    const parts = inputValue.split('.');
+                    if (parts.length > 2) {
+                      inputValue = parts[0] + '.' + parts.slice(1).join('');
+                    }
+                    
+                    // Parse the numeric value (supports decimals now)
+                    const numericValue = inputValue === '' || inputValue === '.' ? 0 : parseFloat(inputValue);
                     
                     // Auto-multiply by 1000
                     const actualValue = numericValue * 1000;
@@ -732,7 +747,9 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                       setDpDisplayValue(inputValue);
                     } else {
                       setDownPayment(finalTotal);
-                      setDpDisplayValue(Math.floor(finalTotal / 1000).toString());
+                      // Format the display value to show decimal if needed
+                      const displayValue = (finalTotal / 1000).toFixed(1).replace(/\.?0+$/, '');
+                      setDpDisplayValue(displayValue);
                       toast.warning('DP tidak boleh melebihi total', {
                         position: 'top-center',
                         duration: 2000,
@@ -768,7 +785,17 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                   {isProcessing ? "Memproses..." : "Proses Pesanan"}
                 </Button>
                 
-                {isBluetoothSupported && onPrintOrder && (
+                {/* HIDDEN: Bluetooth Print Feature
+                    DO NOT DELETE - This feature may be used in the future for printing receipts via Bluetooth printers.
+                    To re-enable: Change 'false &&' to the original condition below
+                    All related functions (handlePrintReceipt) are preserved.
+                    
+                    To re-enable button, change line below from:
+                    {false && isBluetoothSupported && onPrintOrder && (
+                    To:
+                    {isBluetoothSupported && onPrintOrder && (
+                */}
+                {false && isBluetoothSupported && onPrintOrder && (
                   <Button
                     className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
                     onClick={handlePrintReceipt}
@@ -780,7 +807,17 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
                 )}
               </div>
               
-              {onExportPDF && (
+              {/* HIDDEN: PDF Export Feature
+                  DO NOT DELETE - This feature may be used in the future for exporting receipts as PDF files.
+                  To re-enable: Remove 'false &&' from the line below
+                  All related functions (handleExportPDF) are preserved.
+                  
+                  To re-enable button, change line below from:
+                  {false && onExportPDF && (
+                  To:
+                  {onExportPDF && (
+              */}
+              {false && onExportPDF && (
                 <Button
                   className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
                   onClick={handleExportPDF}

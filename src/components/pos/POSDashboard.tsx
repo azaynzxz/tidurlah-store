@@ -890,9 +890,26 @@ export function POSDashboard() {
     try {
       // Generate receipt data with customer-specific invoice ID
       const receiptId = generateInvoiceId(customerDetails.name, cartItems.length);
+      
+      // Calculate subtotal (with discounts applied through getApplicablePrice)
       const subtotal = cartItems.reduce((total, item) => {
         const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
         return total + (applicablePrice * item.quantity);
+      }, 0);
+      
+      // Calculate total discounts (original price - applicable price)
+      const totalDiscounts = cartItems.reduce((total, item) => {
+        // Skip discount calculation for ongkir (custom price product)
+        if (item.product.id === 2002) {
+          return total;
+        }
+        const originalPrice = item.product.price;
+        const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
+        if (applicablePrice < originalPrice) {
+          const discount = (originalPrice - applicablePrice) * item.quantity;
+          return total + discount;
+        }
+        return total;
       }, 0);
       
       const receiptData = {
@@ -926,9 +943,9 @@ export function POSDashboard() {
         }),
         summary: {
           subtotal,
-          discount: 0,
+          discount: totalDiscounts,
           tax: 0,
-          total: subtotal,
+          total: subtotal, // Subtotal already has discounts applied
           downPayment: customerDetails.downPayment || 0,
           remainingBalance: subtotal - (customerDetails.downPayment || 0)
         },
@@ -969,8 +986,8 @@ export function POSDashboard() {
           };
         }),
         subtotal,
-        discount: 0,
-        total: subtotal,
+        discount: totalDiscounts,
+        total: subtotal, // Subtotal already has discounts applied
         downPayment: customerDetails.downPayment || 0,
         remainingBalance: subtotal - (customerDetails.downPayment || 0),
         paymentMethod: 'Cash'
