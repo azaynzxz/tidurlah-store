@@ -39,6 +39,7 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const bubbleTimeoutRef = useRef<NodeJS.Timeout>();
   const showDelayRef = useRef<NodeJS.Timeout>();
+  const hasPlayedDingRef = useRef(false);
   
   // Play sound helper
   const playSound = (soundPath: string, volume: number = 0.3) => {
@@ -69,8 +70,11 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
     // Wait 2 seconds then show bubble
     showDelayRef.current = setTimeout(() => {
       setShowBubble(true);
-      // Play ding sound when bubble appears
-      playSound('/audio/ding.mp3', 0.4);
+      // Play ding sound only once (on first appearance)
+      if (!hasPlayedDingRef.current) {
+        playSound('/audio/ding.mp3', 0.4);
+        hasPlayedDingRef.current = true;
+      }
       
       // Hide after 5 more seconds
       bubbleTimeoutRef.current = setTimeout(() => {

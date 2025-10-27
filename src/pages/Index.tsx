@@ -83,6 +83,7 @@ const Index = () => {
   const [modalQuantity, setModalQuantity] = useState(1);
   const [showAngryQuantity, setShowAngryQuantity] = useState(false);
   const [flyingBubbles, setFlyingBubbles] = useState<FlyingBubble[]>([]);
+  const [previousCartLength, setPreviousCartLength] = useState(0);
 
   // Tooltip states
   const [showExpressTooltip, setShowExpressTooltip] = useState(false);
@@ -220,6 +221,17 @@ const Index = () => {
     localStorage.setItem('cartItems', JSON.stringify(cartItems));
   }, [cartItems]);
 
+  // Close modal when item is successfully added to cart
+  useEffect(() => {
+    if (cartItems.length > previousCartLength && selectedProduct) {
+      // Item was added successfully - close modal and reset selected state
+      setSelectedProduct(null);
+      setSelectedCase("");
+      setSelectedLamination("");
+      setModalQuantity(1);
+    }
+    setPreviousCartLength(cartItems.length);
+  }, [cartItems.length, previousCartLength, selectedProduct]);
 
   // Handle search functionality
   const handleSearchCallback = (term: string) => {
@@ -1616,23 +1628,12 @@ const Index = () => {
                     ) : (
                       <button
                         onClick={() => {
-                          // Check if case is selected for products that require it
-                          const needsCase = idCardWithCaseIds.includes(selectedProduct.id);
-                          const hasCase = !needsCase || selectedCase;
-                          
-                          // Check if lamination is selected for products that require it
-                          const needsLamination = stikerWithLaminationIds.includes(selectedProduct.id);
-                          const hasLamination = !needsLamination || selectedLamination;
-                          
+                          // addToCart function will validate case/lamination and show angry animations
                           addToCartCallback(selectedProduct, undefined, modalQuantity);
-                          
-                          // Only close modal if all validations passed and quantity is valid
-                          if (hasCase && hasLamination && modalQuantity > 0) {
-                            setSelectedProduct(null);
-                          }
+                          // Don't close modal if validation failed (validation is in addToCart)
+                          // We'll handle closing in useEffect watching the modal state
                         }}
-                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${modalQuantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                        disabled={modalQuantity <= 0}
+                      className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md transition-opacity`}
                       >
                         Tambahkan ke Keranjang ({modalQuantity}×)
                       </button>
