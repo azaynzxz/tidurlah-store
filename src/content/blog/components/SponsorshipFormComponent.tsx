@@ -54,15 +54,29 @@ const SponsorshipFormComponent = () => {
     
     setIsSubmitting(true);
     
-    // Generate WhatsApp message
-    const message = `Halo, nama saya ${formData.name} dari ${formData.institution}. Saya tertarik untuk mengajukan permohonan sponsorship kepada ID Card Lampung. Saya telah membaca syarat dan ketentuan yang berlaku dan ingin berdiskusi lebih lanjut mengenai peluang kerjasama ini. Terima kasih.`;
+    // Generate email subject and body
+    const subject = encodeURIComponent('Permohonan Sponsorship - ID Card Lampung');
+    const body = encodeURIComponent(
+      `Halo Tim ID Card Lampung,
+
+Nama: ${formData.name}
+Email: ${formData.email}
+Instansi/Organisasi: ${formData.institution}
+
+Saya tertarik untuk mengajukan permohonan sponsorship kepada ID Card Lampung. Saya telah membaca syarat dan ketentuan yang berlaku dan ingin berdiskusi lebih lanjut mengenai peluang kerjasama ini.
+
+Terima kasih atas perhatiannya.
+
+Hormat saya,
+${formData.name}`
+    );
     
-    // Encode message for URL
-    const encodedMessage = encodeURIComponent(message);
-    const whatsappUrl = `https://wa.me/6285172157808?text=${encodedMessage}`;
+    // Create mailto link
+    const email = 'partnership@tidurlah.com';
+    const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
     
-    // Open WhatsApp in new tab
-    window.open(whatsappUrl, '_blank');
+    // Open email client
+    window.location.href = mailtoLink;
     
     // Reset form after a short delay
     setTimeout(() => {
@@ -244,10 +258,10 @@ const SponsorshipFormComponent = () => {
                 isSubmitting ? 'animate-pulse' : ''
               }`}
             >
-              {isSubmitting ? 'Mengirim...' : 'Ajukan Permohonan via WhatsApp'}
+              {isSubmitting ? 'Mengirim...' : 'Ajukan Permohonan via Email'}
             </button>
             <p className="mt-2 text-sm text-gray-600">
-              Form akan mengarahkan Anda ke WhatsApp untuk melanjutkan proses
+              Form akan membuka aplikasi email Anda untuk mengirim permohonan
             </p>
           </div>
         </form>
@@ -257,17 +271,17 @@ const SponsorshipFormComponent = () => {
       <div className="bg-gray-50 rounded-lg p-6 text-center">
         <h3 className="text-lg font-bold text-gray-900 mb-2">Butuh Bantuan?</h3>
         <p className="text-gray-600 mb-4">Jika Anda memiliki pertanyaan tentang program sponsorship, jangan ragu untuk menghubungi kami.</p>
-        <a 
-          href="https://wa.me/6285172157808"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="inline-flex items-center bg-[#25D366] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#20b358] transition-colors"
-        >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" className="mr-2">
-            <path d="M17.6 6.31999C16.2 4.91999 14.2 4.09999 12.1 4.09999C7.79995 4.09999 4.29995 7.59999 4.29995 11.9C4.29995 13.3 4.69995 14.7 5.39995 15.9L4.19995 19.9L8.29995 18.7C9.49995 19.3 10.7 19.7 12 19.7C16.3 19.7 19.8 16.2 19.8 11.9C19.8 9.79999 19 7.79999 17.6 6.31999ZM12.1 18.3C10.9 18.3 9.69995 17.9 8.69995 17.2L8.39995 17L5.99995 17.7L6.69995 15.4L6.39995 15.1C5.59995 14 5.19995 13 5.19995 11.9C5.19995 8.09999 8.29995 5.09999 12 5.09999C13.8 5.09999 15.5 5.79999 16.7 6.99999C17.9 8.19999 18.6 9.89999 18.6 11.7C18.8 15.5 15.8 18.3 12.1 18.3ZM15.2 13.2C15 13.1 14.1 12.7 13.9 12.6C13.7 12.5 13.5 12.5 13.4 12.7C13.2 12.9 12.9 13.3 12.8 13.5C12.7 13.7 12.5 13.7 12.3 13.6C11.3 13.1 10.6 12.7 9.89995 11.5C9.89995 11.2 10 11.2 10.3 10.6C10.4 10.4 10.3 10.3 10.2 10.2C10.1 10.1 9.79995 9.19999 9.59995 8.79999C9.39995 8.39999 9.19995 8.39999 8.99995 8.39999C8.89995 8.39999 8.69995 8.39999 8.49995 8.39999C8.29995 8.39999 7.99995 8.49999 7.79995 8.79999C7.59995 9.09999 7.09995 9.49999 7.09995 10.4C7.09995 11.3 7.79995 12.2 7.89995 12.4C8.09995 12.6 9.69995 15 12.1 16C13.2 16.5 13.7 16.5 14.3 16.4C14.7 16.3 15.4 15.9 15.6 15.5C15.8 15.1 15.8 14.7 15.7 14.6C15.6 14.5 15.4 14.4 15.2 14.3L15.2 13.2Z" fill="white"/>
-          </svg>
-          Hubungi WhatsApp
-        </a>
+        <div className="flex justify-center">
+          <a 
+            href="mailto:partnership@tidurlah.com"
+            className="inline-flex items-center bg-[#FF5E01] text-white px-6 py-3 rounded-lg font-medium hover:bg-[#e54d00] transition-colors"
+          >
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+            </svg>
+            partnership@tidurlah.com
+          </a>
+        </div>
       </div>
     </div>
   );

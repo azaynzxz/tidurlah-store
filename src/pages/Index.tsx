@@ -464,7 +464,7 @@ const Index = () => {
             <div className="mt-6 mb-4 flex flex-col lg:flex-row lg:gap-6 lg:items-start">
               {/* Promoted Products */}
               <div className="lg:w-1/3 lg:flex-shrink-0">
-                <AnimatedElement direction="left" delay={200} duration={300}>
+                <AnimatedElement direction="up" delay={200} duration={300}>
                   <PromotedProducts 
                     products={products as Record<string, any[]>}
                     promotedProducts={promotedProducts}
@@ -476,7 +476,7 @@ const Index = () => {
               
               {/* Category Grid */}
               <div className="mt-6 lg:mt-0 lg:flex-1">
-                <AnimatedElement direction="right" delay={300} duration={300}>
+                <AnimatedElement direction="up" delay={300} duration={300}>
                   <div className="mb-3">
                     <h2 className="text-sm font-bold mb-2 text-foreground flex items-center">
                       <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{fontSize: '16px'}}>category</span>
@@ -889,7 +889,7 @@ const Index = () => {
                             );
                           }
                         }}
-                        className="w-12 text-center border rounded p-1"
+                        className="w-12 text-center border border-input bg-background text-foreground rounded p-1"
                       />
                       <button
                         onClick={() => addToCartCallback(item)}
@@ -1042,7 +1042,7 @@ const Index = () => {
                                   );
                                 }
                               }}
-                              className="w-12 text-center border rounded p-1"
+                              className="w-12 text-center border border-input bg-background text-foreground rounded p-1"
                             />
                             <button
                               onClick={() => addToCartCallback(item)}
@@ -1546,7 +1546,7 @@ const Index = () => {
                               }
                             }}
                             className={`min-w-[3rem] w-16 text-center font-medium border rounded px-1 py-1 transition-all duration-300 ${
-                              showAngryQuantity ? "text-orange-600 font-bold border-orange-300 bg-orange-50" : "border-gray-300 bg-background"
+                              showAngryQuantity ? "text-orange-600 font-bold border-orange-300 bg-orange-50" : "border-input bg-background text-foreground"
                             } ${modalQuantity === 0 ? "text-red-500 border-red-300" : ""}`}
                             style={{ fontSize: '14px' }}
                           />

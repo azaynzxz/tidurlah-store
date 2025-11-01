@@ -4,6 +4,7 @@ import { Briefcase, MapPin, Clock, GraduationCap, CheckCircle, XCircle, Share2, 
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import ApplyButton from "@/components/ApplyButton";
+import ApplicationRequirements from "@/components/ApplicationRequirements";
 import { toast } from "sonner";
 import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
 
@@ -406,7 +407,7 @@ const Loker = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a 
-                href="mailto:idcardlampung@tidurlah.com"
+                href="mailto:hrd@tidurlah.com"
                 className="bg-background text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
               >
                 Kirim Email
@@ -584,6 +585,9 @@ const JobDetailPage = ({ job }: { job: Job }) => {
                   </ul>
                 </div>
               )}
+
+              {/* Application Requirements */}
+              <ApplicationRequirements jobId={job.id} />
 
               {/* Action Buttons - Compact */}
               <div className="pt-4 md:pt-6 border-t border-gray-200">

@@ -3,7 +3,6 @@ import { Calendar, User, Tag, Clock, Eye, ArrowRight, MapPin, Instagram } from "
 import { useNavigate } from "react-router-dom";
 import BlogLayout from "@/components/blog/BlogLayout";
 import { getAllBlogPosts, BlogPostData, getTopCategories, getBlogPostsByCategory } from "@/content/blog";
-import BlogSidebarWidgets from "@/components/blog/BlogSidebarWidgets";
 import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
 
 // Extend Window interface for Instagram
@@ -100,9 +99,9 @@ const Blog = () => {
       onSearch={handleSearch}
       showSearch={true}
     >
-      <div className="flex">
+      <div>
         {/* Main Content */}
-        <div className="flex-1 container mx-auto max-w-7xl px-4 py-8">
+        <div className="container mx-auto max-w-7xl px-4 py-8">
           {/* Hero Section - Featured Post */}
           {featuredPost && (
             <div className="mb-16">
@@ -246,13 +245,6 @@ const Blog = () => {
                     </button>
                   </div>
           )}
-              </div>
-
-        {/* Separate Sticky Sidebar */}
-        <div className="hidden lg:block w-80 flex-shrink-0 p-6">
-          <div className="sticky top-24">
-            <BlogSidebarWidgets />
-                </div>
               </div>
             </div>
     </BlogLayout>

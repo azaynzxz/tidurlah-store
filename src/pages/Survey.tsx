@@ -6,9 +6,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
-import { CheckCircle, Sparkles, Check, ShoppingCart } from "lucide-react";
+import { CheckCircle, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
 
 interface SurveyQuestion {
   id: number;
@@ -18,7 +17,6 @@ interface SurveyQuestion {
   required?: boolean;
   scaleLabels?: { min: string; max: string };
 }
-
 
 const surveyQuestions: SurveyQuestion[] = [
   {
@@ -104,14 +102,12 @@ const surveyQuestions: SurveyQuestion[] = [
   },
 ];
 
-// Custom Completion Popup Component with Confetti
+// Completion Popup Component
 const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
   useEffect(() => {
-    // Load and trigger confetti
     const script = document.createElement('script');
     script.src = '/confetti.min.js';
     script.onload = () => {
-      // Create a temporary element for confetti
       const confettiDiv = document.createElement('div');
       confettiDiv.id = 'confetti-trigger';
       confettiDiv.style.position = 'fixed';
@@ -132,12 +128,10 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
         confetti.setFade(false);
         confetti.destroyTarget(false);
         
-        // Trigger confetti multiple times for better effect
         setTimeout(() => confettiDiv.click(), 100);
         setTimeout(() => confettiDiv.click(), 300);
         setTimeout(() => confettiDiv.click(), 500);
         
-        // Clean up
         setTimeout(() => {
           document.body.removeChild(confettiDiv);
         }, 3000);
@@ -151,23 +145,24 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
     
     return () => {
       clearTimeout(timer);
-      // Clean up script
-      document.head.removeChild(script);
+      if (document.head.contains(script)) {
+        document.head.removeChild(script);
+      }
     };
   }, [onClose]);
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 animate-fadeIn px-4">
-      <div className="bg-background rounded-2xl p-6 sm:p-8 max-w-md mx-4 text-center animate-slideUp shadow-2xl">
+    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 px-4 animate-fadeIn">
+      <div className="bg-background rounded-2xl p-6 sm:p-8 lg:p-10 max-w-md mx-auto text-center animate-slideUp shadow-2xl border border-gray-200">
         <div className="animate-bounce mb-4">
-          <CheckCircle className="h-12 w-12 sm:h-16 sm:w-16 text-green-500 mx-auto" />
+          <CheckCircle className="h-16 w-16 sm:h-20 sm:w-20 text-green-500 mx-auto" />
         </div>
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Terima Kasih! 🎉</h2>
-        <p className="text-sm sm:text-base text-gray-600 mb-4">
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Terima Kasih! 🎉</h2>
+        <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
           Survei Anda telah berhasil disimpan. Masukan Anda sangat berharga untuk kami!
         </p>
         <div className="flex justify-center">
-          <Sparkles className="h-5 w-5 text-orange-500 animate-pulse" />
+          <Sparkles className="h-6 w-6 text-[#FF5E01] animate-pulse" />
         </div>
       </div>
     </div>
@@ -187,28 +182,28 @@ const LinearScale = ({ value, onChange, min = 1, max = 5, minLabel, maxLabel, on
   const [hoveredValue, setHoveredValue] = useState<number | null>(null);
 
   return (
-    <div className="space-y-4">
-      <div className="flex justify-between text-xs sm:text-sm text-gray-600 mb-2">
+    <div className="space-y-4 lg:space-y-6">
+      <div className="flex justify-between text-xs sm:text-sm text-muted-foreground mb-2 lg:mb-4">
         <span className="text-left max-w-[45%]">{minLabel}</span>
         <span className="text-right max-w-[45%]">{maxLabel}</span>
       </div>
-      <div className="flex justify-between items-center gap-1 sm:gap-2">
+      <div className="flex justify-between items-center gap-2 sm:gap-3 lg:gap-4">
         {Array.from({ length: max - min + 1 }, (_, i) => min + i).map((num) => (
           <button
             key={num}
             type="button"
             onClick={() => {
               onChange(num);
-              onSound(); // Use the passed sound function
+              onSound();
             }}
             onMouseEnter={() => setHoveredValue(num)}
             onMouseLeave={() => setHoveredValue(null)}
-            className={`w-12 h-12 sm:w-16 sm:h-16 rounded-full border-2 transition-all duration-200 flex items-center justify-center font-bold text-sm sm:text-lg
+            className={`w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 rounded-full border-2 transition-all duration-200 flex items-center justify-center font-bold text-sm sm:text-base lg:text-lg
               ${value === num 
-                ? 'bg-orange-500 border-orange-500 text-white scale-110 shadow-lg' 
+                ? 'bg-[#FF5E01] border-[#FF5E01] text-white scale-110 shadow-lg shadow-[#FF5E01]/30' 
                 : hoveredValue === num
-                ? 'border-orange-300 bg-orange-50 scale-105'
-                : 'border-gray-300 hover:border-orange-200 hover:bg-orange-25'
+                ? 'border-[#FF5E01]/50 bg-[#FF5E01]/10 scale-105'
+                : 'border-border hover:border-[#FF5E01]/30 hover:bg-muted'
               }`}
           >
             {num}
@@ -228,7 +223,7 @@ const CardAnswers = ({ options, value, onChange, multiple = false, onSound }: {
   onSound: () => void;
 }) => {
   const handleCardClick = (option: string) => {
-    onSound(); // Use the passed sound function
+    onSound();
     
     if (multiple) {
       const currentValues = Array.isArray(value) ? value : [];
@@ -243,7 +238,7 @@ const CardAnswers = ({ options, value, onChange, multiple = false, onSound }: {
   };
 
   return (
-    <div className="grid grid-cols-1 gap-3">
+    <div className={`grid gap-3 ${options.length <= 4 ? 'grid-cols-1 sm:grid-cols-2' : 'grid-cols-1'} lg:grid-cols-2`}>
       {options.map((option) => {
         const isSelected = multiple 
           ? Array.isArray(value) && value.includes(option)
@@ -253,18 +248,18 @@ const CardAnswers = ({ options, value, onChange, multiple = false, onSound }: {
           <div
             key={option}
             onClick={() => handleCardClick(option)}
-            className={`p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 relative overflow-hidden
+            className={`p-4 lg:p-5 rounded-xl border-2 cursor-pointer transition-all duration-200 relative overflow-hidden
               ${isSelected 
                 ? multiple
-                  ? 'border-orange-400 bg-gradient-to-r from-orange-50 to-orange-100 shadow-md scale-[1.02]'
-                  : 'border-orange-500 bg-orange-50 shadow-md scale-[1.02]'
-                : 'border-gray-200 hover:border-orange-300 hover:bg-orange-25 hover:scale-[1.01]'
+                  ? 'border-[#FF5E01] bg-gradient-to-br from-[#FF5E01]/10 to-[#FF5E01]/5 shadow-md shadow-[#FF5E01]/20 scale-[1.02]'
+                  : 'border-[#FF5E01] bg-[#FF5E01]/10 shadow-md shadow-[#FF5E01]/20 scale-[1.02]'
+                : 'border-border hover:border-[#FF5E01]/50 hover:bg-muted hover:scale-[1.01]'
               }`}
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm sm:text-base font-medium text-gray-800">{option}</span>
+              <span className="text-sm sm:text-base lg:text-lg font-medium text-foreground pr-2">{option}</span>
               {multiple && isSelected && (
-                <div className="w-6 h-6 bg-orange-500 rounded-full flex items-center justify-center animate-bounce">
+                <div className="w-6 h-6 bg-[#FF5E01] rounded-full flex items-center justify-center flex-shrink-0 animate-bounce">
                   <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
@@ -272,7 +267,7 @@ const CardAnswers = ({ options, value, onChange, multiple = false, onSound }: {
               )}
             </div>
             {isSelected && !multiple && (
-              <div className="absolute inset-0 bg-orange-500 opacity-10 animate-pulse"></div>
+              <div className="absolute inset-0 bg-[#FF5E01] opacity-10 animate-pulse rounded-xl"></div>
             )}
           </div>
         );
@@ -288,23 +283,11 @@ export default function Survey() {
   const [questionAnswered, setQuestionAnswered] = useState(false);
   const progress = ((currentStep + 1) / surveyQuestions.length) * 100;
 
-  // Unified sound effect function - prioritizes Bubble.mp3 with 70% chance
+  // Unified sound effect function - uses only Bubble.mp3
   const playSound = () => {
-    const random = Math.random();
-    let soundFile;
-    
-    if (random < 0.7) {
-      // 70% chance to play the satisfying Bubble.mp3
-      soundFile = '/audio/Bubble.mp3';
-    } else {
-      // 30% chance for variety with other sounds
-      const otherSounds = ['/audio/Bubble 2.mp3', '/audio/Bubble 3.mp3', '/audio/Bubble 4.mp3'];
-      soundFile = otherSounds[Math.floor(Math.random() * otherSounds.length)];
-    }
-    
-    const audio = new Audio(soundFile);
+    const audio = new Audio('/audio/Bubble.mp3');
     audio.volume = 0.3;
-    audio.play().catch(() => {}); // Ignore errors if audio fails
+    audio.play().catch(() => {});
   };
 
   const handleAnswer = (questionId: number, answer: any) => {
@@ -312,34 +295,30 @@ export default function Survey() {
     if (!questionAnswered) {
       setQuestionAnswered(true);
     }
-    playSound(); // Play sound for every answer interaction
+    playSound();
   };
 
-  // Silent handlers for components that handle their own sound
   const handleAnswerSilent = (questionId: number, answer: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
     if (!questionAnswered) {
       setQuestionAnswered(true);
     }
-    // No sound - component handles it
   };
 
   const handleCheckboxAnswerSilent = (questionId: number, answer: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
-    // No sound - component handles it
   };
 
-  // Special handler for checkboxes to play sound on every interaction
   const handleCheckboxAnswer = (questionId: number, answer: any) => {
     setAnswers(prev => ({ ...prev, [questionId]: answer }));
-    playSound(); // Always play sound for checkbox interactions
+    playSound();
   };
 
   const handleNext = () => {
     if (currentStep < surveyQuestions.length - 1) {
       setCurrentStep(prev => prev + 1);
       setQuestionAnswered(false);
-      playSound(); // Play sound when navigating
+      playSound();
     }
   };
 
@@ -347,19 +326,13 @@ export default function Survey() {
     if (currentStep > 0) {
       setCurrentStep(prev => prev - 1);
       setQuestionAnswered(false);
-      playSound(); // Play sound when navigating
+      playSound();
     }
   };
 
   const handleSubmit = async () => {
-    playSound(); // Play sound when submitting
+    playSound();
     try {
-      // Debug: Log all answers before processing
-      console.log('All answers:', answers);
-      console.log('Answer 9 (UsefulFeatures):', answers[9]);
-      console.log('Is answer 9 an array?', Array.isArray(answers[9]));
-      
-      // Transform answers into the expected format with exact column names
       const formattedData = {
         Name: answers[1] || 'Anonymous',
         FoundThrough: answers[2] || '',
@@ -375,24 +348,14 @@ export default function Survey() {
         ImprovementSuggestions: answers[12] || ''
       };
 
-      // Debug: Log formatted data
-      console.log('Formatted data:', formattedData);
-      console.log('UsefulFeatures value:', formattedData.UsefulFeatures);
-
-      // Your Google Apps Script Web App URL
       const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeEysy_pAP8Fofda7quz07j6OIxPcptmb6NxLq0nGpuC5mDyTGCQNBSaSP7fjB1Gu2/exec';
       
-      // Create URL-encoded form data
       const formData = new URLSearchParams();
       Object.entries(formattedData).forEach(([key, value]) => {
         formData.append(key, String(value));
       });
 
-      // Debug: Log form data
-      console.log('Form data string:', formData.toString());
-
-      // Send as form data with no-cors mode
-      const response = await fetch(SCRIPT_URL, {
+      await fetch(SCRIPT_URL, {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -401,7 +364,6 @@ export default function Survey() {
         body: formData.toString()
       });
 
-      // Show custom completion popup instead of alert
       setShowCompletion(true);
       
     } catch (error) {
@@ -421,28 +383,25 @@ export default function Survey() {
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswerSilent(currentQuestion.id, e.target.value)}
             placeholder={currentQuestion.id === 1 ? "Contoh: Budi, PT. Tidurlah" : "Ketik jawaban Anda di sini"}
-            className="w-full transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
+            className="w-full transition-all duration-200 focus:scale-[1.01] text-sm sm:text-base"
           />
         );
       case 'radio':
         return (
           <RadioGroup
             value={answers[currentQuestion.id] || ''}
-            onValueChange={(value) => {
-              handleAnswer(currentQuestion.id, value);
-            }}
+            onValueChange={(value) => handleAnswer(currentQuestion.id, value)}
             className="space-y-3"
           >
             {currentQuestion.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-200">
-                <RadioGroupItem value={option} id={option} className="text-orange-500" />
+              <div key={option} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors duration-200">
+                <RadioGroupItem value={option} id={option} className="text-[#FF5E01]" />
                 <Label htmlFor={option} className="cursor-pointer flex-1 text-sm sm:text-base">{option}</Label>
               </div>
             ))}
           </RadioGroup>
         );
       case 'card':
-        // Check if this is question 9 (multiple selection) or others (single selection)
         const isMultiple = currentQuestion.id === 9;
         return (
           <CardAnswers
@@ -473,7 +432,7 @@ export default function Survey() {
         return (
           <div className="space-y-3">
             {currentQuestion.options?.map((option) => (
-              <div key={option} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-orange-50 transition-colors duration-200">
+              <div key={option} className="flex items-center space-x-3 p-3 rounded-lg hover:bg-muted transition-colors duration-200">
                 <input
                   type="checkbox"
                   id={option}
@@ -486,7 +445,7 @@ export default function Survey() {
                       handleCheckboxAnswer(currentQuestion.id, currentAnswers.filter((item: string) => item !== option));
                     }
                   }}
-                  className="w-4 h-4 text-orange-500 border-gray-300 rounded focus:ring-orange-500"
+                  className="w-4 h-4 text-[#FF5E01] border-border rounded focus:ring-[#FF5E01]"
                 />
                 <Label htmlFor={option} className="cursor-pointer flex-1 text-sm sm:text-base">{option}</Label>
               </div>
@@ -499,7 +458,7 @@ export default function Survey() {
             value={answers[currentQuestion.id] || ''}
             onChange={(e) => handleAnswerSilent(currentQuestion.id, e.target.value)}
             placeholder="Ketik jawaban Anda di sini"
-            className="w-full h-24 sm:h-32 transition-all duration-200 focus:scale-[1.02] text-sm sm:text-base"
+            className="w-full h-24 sm:h-32 lg:h-40 transition-all duration-200 focus:scale-[1.01] text-sm sm:text-base resize-none"
           />
         );
       default:
@@ -508,35 +467,44 @@ export default function Survey() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="min-h-screen bg-background flex flex-col">
       <Header />
-      <div className="container mx-auto max-w-md px-4 py-6 pb-24 min-h-[100vh]">
-        <div className="p-3">
-          <div className="text-center mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2 animate-fadeIn">
+      <div className="flex-1 min-h-0">
+        <div className="container mx-auto max-w-md lg:max-w-3xl xl:max-w-4xl px-4 py-6 lg:py-12 pb-6 lg:pb-8">
+          {/* Header Section */}
+          <div className="text-center mb-6 lg:mb-8">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 animate-fadeIn">
               Survei Kepuasan Pelanggan
             </h1>
-            <p className="text-sm text-gray-600 animate-fadeIn animation-delay-200">
+            <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-2xl mx-auto animate-fadeIn animation-delay-200">
               Bantu kami meningkatkan layanan dengan mengisi survei singkat ini. Isi survei dengan jujur dan sesuai keadaan Anda.
             </p>
           </div>
 
-          <div className="mb-6">
-            <Progress value={progress} className="w-full h-2 transition-all duration-500" />
-            <p className="text-xs text-gray-500 mt-2 text-center">
-              Pertanyaan {currentStep + 1} dari {surveyQuestions.length}
-            </p>
+          {/* Progress Section */}
+          <div className="mb-6 lg:mb-8">
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+                Pertanyaan {currentStep + 1} dari {surveyQuestions.length}
+              </span>
+              <span className="text-xs sm:text-sm text-muted-foreground font-medium">
+                {Math.round(progress)}%
+              </span>
+            </div>
+            <Progress value={progress} className="w-full h-2.5 lg:h-3 transition-all duration-500" />
           </div>
 
-          <Card className={`p-4 shadow-xl rounded-2xl bg-background transition-all duration-500 transform hover:shadow-2xl ${questionAnswered ? 'animate-shimmer' : ''}`}>
-            <div className="space-y-6">
-              <div className="mb-4">
-                <h2 className="text-lg font-semibold text-gray-900 mb-2 animate-slideIn leading-snug">
+          {/* Question Card */}
+          <Card className={`p-4 sm:p-6 lg:p-8 shadow-lg rounded-2xl bg-card border transition-all duration-500 flex flex-col ${questionAnswered ? 'animate-shimmer' : ''}`} style={{ height: '600px' }}>
+            <div className="flex-1 flex flex-col min-h-0">
+              <div className="flex-1 overflow-y-auto mb-6 lg:mb-8 pr-2">
+                <h2 className="text-lg sm:text-xl lg:text-2xl font-semibold text-foreground mb-4 lg:mb-6 animate-slideIn leading-relaxed">
                   {currentQuestion.question}
                 </h2>
                 {currentQuestion.id === 9 && (
-                  <p className="text-sm text-orange-500 font-medium mb-4">
-                    (Boleh pilih lebih dari 1)
+                  <p className="text-sm sm:text-base text-[#FF5E01] font-medium mb-4 lg:mb-6 inline-flex items-center gap-2 px-3 py-1.5 bg-[#FF5E01]/10 rounded-lg">
+                    <Sparkles className="h-4 w-4" />
+                    Boleh pilih lebih dari 1
                   </p>
                 )}
                 <div className="animate-fadeIn animation-delay-300">
@@ -544,74 +512,76 @@ export default function Survey() {
                 </div>
               </div>
 
-              <div className="flex flex-col gap-4 pt-4">
+              {/* Navigation Buttons - Fixed at bottom */}
+              <div className="flex flex-col sm:flex-row gap-3 lg:gap-4 pt-4 lg:pt-6 border-t border-border flex-shrink-0">
                 <Button
                   onClick={handlePrevious}
                   disabled={currentStep === 0}
                   variant="outline"
-                  className="transition-all duration-200 hover:scale-105 active:scale-95 w-full text-sm"
+                  className="transition-all duration-200 hover:scale-105 active:scale-95 w-full sm:w-auto sm:flex-1 text-sm sm:text-base disabled:opacity-50"
                 >
+                  <ChevronLeft className="h-4 w-4 mr-2" />
                   Sebelumnya
                 </Button>
                 
                 {currentStep === surveyQuestions.length - 1 ? (
                   <Button
                     onClick={handleSubmit}
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg w-full text-sm"
+                    className="bg-[#FF5E01] hover:bg-[#e54d00] text-white transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-[#FF5E01]/30 w-full sm:w-auto sm:flex-1 text-sm sm:text-base"
                   >
-                    Kirim Survei ✨
+                    Kirim Survei
+                    <Sparkles className="h-4 w-4 ml-2" />
                   </Button>
                 ) : (
                   <Button
                     onClick={handleNext}
-                    className="bg-gradient-to-r from-orange-500 to-orange-600 hover:from-orange-600 hover:to-orange-700 text-white transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg w-full text-sm"
+                    className="bg-[#FF5E01] hover:bg-[#e54d00] text-white transition-all duration-200 hover:scale-105 active:scale-95 shadow-lg shadow-[#FF5E01]/30 w-full sm:w-auto sm:flex-1 text-sm sm:text-base"
                   >
                     Selanjutnya
+                    <ChevronRight className="h-4 w-4 ml-2" />
                   </Button>
                 )}
               </div>
             </div>
           </Card>
         </div>
-
-        {showCompletion && (
-          <CompletionPopup onClose={() => {
-            setShowCompletion(false);
-            window.location.href = '/';
-          }} />
-        )}
-
-        <style>{`
-          @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-          }
-          
-          @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-          }
-          
-          @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.9); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-          }
-          
-          @keyframes shimmer {
-            0% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4); }
-            50% { box-shadow: 0 0 20px 10px rgba(251, 146, 60, 0.2); }
-            100% { box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4); }
-          }
-          
-          .animate-fadeIn { animation: fadeIn 0.6s ease-out; }
-          .animate-slideIn { animation: slideIn 0.6s ease-out; }
-          .animate-slideUp { animation: slideUp 0.4s ease-out; }
-          .animate-shimmer { animation: shimmer 1s ease-in-out; }
-          .animation-delay-200 { animation-delay: 0.2s; }
-          .animation-delay-300 { animation-delay: 0.3s; }
-        `}</style>
       </div>
-      <Footer />
+
+      {showCompletion && (
+        <CompletionPopup onClose={() => {
+          setShowCompletion(false);
+          window.location.href = '/';
+        }} />
+      )}
+
+      <style>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        
+        @keyframes slideIn {
+          from { opacity: 0; transform: translateX(-20px); }
+          to { opacity: 1; transform: translateX(0); }
+        }
+        
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px) scale(0.95); }
+          to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        
+        @keyframes shimmer {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(255, 94, 1, 0.4); }
+          50% { box-shadow: 0 0 20px 10px rgba(255, 94, 1, 0.2); }
+        }
+        
+        .animate-fadeIn { animation: fadeIn 0.6s ease-out; }
+        .animate-slideIn { animation: slideIn 0.6s ease-out; }
+        .animate-slideUp { animation: slideUp 0.4s ease-out; }
+        .animate-shimmer { animation: shimmer 2s ease-in-out infinite; }
+        .animation-delay-200 { animation-delay: 0.2s; }
+        .animation-delay-300 { animation-delay: 0.3s; }
+      `}</style>
     </div>
   );
-} 
+}

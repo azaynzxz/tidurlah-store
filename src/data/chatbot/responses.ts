@@ -46,10 +46,10 @@ export const responseData = {
   "awet plakat": "Plakat akrilik kami terbuat dari bahan berkualitas tinggi yang tidak akan menguning atau rusak seiring waktu. Dengan perawatan yang tepat (menghindari sinar matahari langsung dan panas ekstrem), mereka akan mempertahankan penampilannya selama bertahun-tahun.",
   
   // Design Service
-  "jasa desain": "Layanan desain grafis profesional untuk semua kebutuhan Anda tersedia dengan harga Rp 200.000. Waktu pengerjaan 3-7 hari tergantung kompleksitas.",
+  "jasa desain": "Layanan desain grafis profesional untuk semua kebutuhan Anda tersedia dengan harga Rp 25.000. Waktu pengerjaan 3-4 hari tergantung kompleksitas.",
   "desain logo": "Ya, desain logo termasuk dalam layanan desain kami. Kami akan bekerja sama dengan Anda untuk memahami brand Anda dan menciptakan logo profesional dan unik yang merepresentasikan identitas bisnis Anda.",
   "revisi desain": "Paket standar kami mencakup hingga 3 putaran revisi. Revisi tambahan dapat diatur dengan biaya tambahan.",
-  "layanan desain": "Layanan desain kami (Rp 200.000) mencakup pekerjaan desain grafis profesional yang disesuaikan dengan kebutuhan Anda. Ini mencakup pembuatan konsep, hingga 3 putaran revisi, dan file akhir yang dikirimkan dalam format yang sesuai dengan penggunaan yang Anda inginkan.",
+  "layanan desain": "Layanan desain kami (Rp 25.000) mencakup pekerjaan desain grafis profesional yang disesuaikan dengan kebutuhan Anda. Ini mencakup pembuatan konsep, hingga 3 putaran revisi, dan file akhir yang dikirimkan dalam format yang sesuai dengan penggunaan yang Anda inginkan.",
   
   // Order related
   "promo": `Contoh kode promo yang bisa dicoba:
