@@ -160,7 +160,7 @@ export const submitToGoogleSheet = async (orderData: OrderData) => {
   }
 };
 
-// WhatsApp redirection function with integrated receipt generation
+// WhatsApp redirection function
 export const handleWhatsAppRedirect = async (
   orderData: OrderData,
   cartItems: any[],
@@ -177,7 +177,6 @@ export const handleWhatsAppRedirect = async (
   designNote: string,
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>,
   setWhatsAppUrl: React.Dispatch<React.SetStateAction<string>>,
-  setShowReceipt: React.Dispatch<React.SetStateAction<boolean>>,
   setShowOrderSuccess: React.Dispatch<React.SetStateAction<boolean>>,
   calculateTotal: (cartItems: any[], promoCode: string) => number,
   calculateTotalSavings: (cartItems: any[]) => number,
@@ -250,8 +249,10 @@ Total: Rp ${(calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DE
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
 
-    // Store the WhatsApp URL in state
+    // Store the WhatsApp URL in state and show success dialog
     setWhatsAppUrl(whatsappUrl);
+    setIsSubmitting(false);
+    setShowOrderSuccess(true);
 
     return { success: true, whatsappUrl };
   } catch (error) {

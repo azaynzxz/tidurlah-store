@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Printer } from "lucide-react";
+import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2 } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -16,11 +16,10 @@ import { AnimatedElement, StaggeredContainer, LoadingState } from "@/components/
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
-import { convertImageToBase64, findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
+import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
 import { submitToGoogleSheet, handleWhatsAppRedirect } from "@/utils/api";
 import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, prevImage, generateInvoiceNumber, handleSearch } from "@/utils/form";
-import { generateReceiptDuringProcessing } from "@/utils/receipt";
 
 // Set document title and load Google Fonts
 if (typeof document !== 'undefined') {
@@ -57,9 +56,6 @@ const Index = () => {
   const [bannerWidth, setBannerWidth] = useState(1);
   const [bannerHeight, setBannerHeight] = useState(1);
   const [whatsAppUrl, setWhatsAppUrl] = useState("");
-  const [showReceipt, setShowReceipt] = useState(false);
-  const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
-  const [logoBase64, setLogoBase64] = useState<string>("");
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   
   // Form state
@@ -90,7 +86,6 @@ const Index = () => {
   const [showShippingTooltip, setShowShippingTooltip] = useState(false);
   const [showJasaDesainTooltip, setShowJasaDesainTooltip] = useState(false);
 
-  const receiptRef = useRef<HTMLDivElement>(null);
 
   // Generate invoice number when component mounts
   useEffect(() => {
@@ -124,20 +119,6 @@ const Index = () => {
     fetchProducts();
   }, []);
 
-  // Load logo as base64 for html2canvas compatibility
-  useEffect(() => {
-    const loadLogo = async () => {
-      try {
-        const base64Logo = await convertImageToBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
-        setLogoBase64(base64Logo);
-      } catch (error) {
-        console.error('Failed to load logo:', error);
-        // Fallback to original image path if conversion fails
-        setLogoBase64('/product-image/Logo Tidurlah and ID Card Lampung.png');
-      }
-    };
-    loadLogo();
-  }, []);
 
   // Handle product URL deep linking
   useEffect(() => {
@@ -362,20 +343,15 @@ const Index = () => {
         designNote,
         setIsSubmitting,
         setWhatsAppUrl,
-        setShowReceipt,
         setShowOrderSuccess,
         calculateTotalCallback,
         calculateTotalSavingsCallback,
         caseVariants
       );
 
-      // Start receipt generation process
-      await generateReceiptDuringProcessingCallback();
-
       return result;
     } catch (error) {
       setIsSubmitting(false);
-      setShowReceipt(false);
       toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.", { position: 'top-center', style: { marginTop: '60px' } });
       console.error(error);
     }
@@ -415,29 +391,6 @@ const Index = () => {
     return calculateTotalDiscount(cartItems, promoCode);
   };
 
-  // Generate receipt as JPG during order processing using extracted logic
-  const generateReceiptDuringProcessingCallback = async () => {
-    await generateReceiptDuringProcessing(
-      showReceipt,
-      logoBase64,
-      setShowReceipt,
-      receiptRef,
-      invoiceNumber,
-      cartItems,
-      promoDiscount,
-      requestJasaDesain,
-      isExpressPrint,
-      JASA_DESAIN_PRICE,
-      customerName,
-      instansi,
-      calculateTotalCallback,
-      calculateTotalDiscountCallback,
-      promoCode,
-      setShowOrderSuccess,
-      setIsSubmitting,
-      caseVariants
-    );
-  };
 
 
   return (
@@ -1660,7 +1613,7 @@ const Index = () => {
                 <>
                   <Check className="h-12 w-12 text-green-500 mx-auto mb-3" />
                   <h3 className="text-lg font-medium mb-2">Pesanan Berhasil!</h3>
-                  <DialogDescription>Nota telah dicetak dan diunduh. Silakan lanjutkan ke WhatsApp untuk konfirmasi dengan admin kami.</DialogDescription>
+                  <DialogDescription>Data pesanan telah tersimpan. Silakan lanjutkan ke WhatsApp untuk konfirmasi dengan admin kami.</DialogDescription>
 
                   <a
                     href={whatsAppUrl}
@@ -1681,283 +1634,6 @@ const Index = () => {
           </DialogContent>
         </Dialog>
 
-        {/* Receipt Modal */}
-        <Dialog open={showReceipt} onOpenChange={setShowReceipt}>
-          <DialogContent className="sm:max-w-lg max-w-[calc(100%-2rem)] mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0">
-            <DialogTitle className="sr-only">Nota Pesanan</DialogTitle>
-            <div className="p-4">
-              <div className="text-center mb-4">
-                <h3 className="text-lg font-medium flex items-center justify-center gap-2">
-                  Mencetak Nota Pembelian
-                  <div className="loading-dots">
-                    <div className="loading-dot"></div>
-                    <div className="loading-dot"></div>
-                    <div className="loading-dot"></div>
-                  </div>
-                </h3>
-                <DialogDescription className="text-sm text-gray-600">Silakan tunggu, nota sedang dicetak</DialogDescription>
-              </div>
-              
-              {/* Thermal Printer Simulation */}
-              <div className={`printer-container ${showReceipt ? 'printer-active' : ''}`}>
-                {/* Printer LED Indicator */}
-                <div className="printer-indicator"></div>
-                
-                {/* Printer Slot */}
-                <div className="printer-slot"></div>
-                
-                {/* Receipt Sliding Area */}
-                <div className="receipt-slide-container">
-                  <div 
-                    ref={receiptRef}
-                    className={`receipt-paper ${showReceipt ? 'receipt-sliding' : ''}`}
-                  >
-                    <div 
-                      className="receipt-content p-3 sm:p-4 md:p-6"
-                      style={{ 
-                        fontSize: '12px',
-                        lineHeight: '1.4',
-                        width: '100%',
-                        maxWidth: 'min(350px, calc(100vw - 100px))',
-                        margin: '0 auto',
-                        minWidth: '250px',
-                        fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
-                        color: '#000000',
-                        overflow: 'visible',
-                        wordWrap: 'break-word'
-                      }}
-                    >
-                                      {/* Store Header */}
-                      <div className="text-center border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
-                        <div className="flex justify-center items-center mb-2">
-                          {logoBase64 ? (
-                            <img 
-                              src={logoBase64}
-                              alt="TIDURLAH GRAFIKA"
-                              className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
-                              crossOrigin="anonymous"
-                            />
-                          ) : (
-                            <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
-                              <span className="text-xs text-gray-500">Loading...</span>
-                            </div>
-                          )}
-                        </div>
-                        <h2 className="text-base sm:text-lg font-bold tracking-wider">TIDURLAH GRAFIKA</h2>
-                        <p className="text-xs italic">"Cetak apa aja, Tidurlah Grafika!"</p>
-                        
-                        <p className="text-xs mt-1">Perum. Korpri Raya, Blok D3. No. 3</p>
-                          <p className="text-xs">Sukarame, Bandar Lampung</p>
-                          <div className="border-b border-dashed border-gray-400 my-2"></div>
-                          <p className="text-xs">WhatsApp: 085172157808</p>
-                          <p className="text-xs">Instagram: @tidurlah_grafika</p>
-                      </div>
-
-                      {/* Transaction Details */}
-                      <div className="border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
-                        <div className="flex justify-between text-xs sm:text-sm">
-                          <span>No. Estimasi:</span>
-                          <span className="font-bold">{invoiceNumber}</span>
-                        </div>
-                        <div className="flex justify-between text-xs sm:text-sm">
-                          <span>Tanggal:</span>
-                          <span>{new Date().toLocaleDateString('id-ID', { 
-                            day: '2-digit', 
-                            month: '2-digit', 
-                            year: 'numeric' 
-                          })}</span>
-                        </div>
-                        <div className="flex justify-between text-xs sm:text-sm">
-                          <span>Waktu:</span>
-                          <span>{new Date().toLocaleTimeString('id-ID', { 
-                            hour: '2-digit', 
-                            minute: '2-digit' 
-                          })}</span>
-                        </div>
-                        {customerName && (
-                          <div className="flex justify-between text-xs sm:text-sm">
-                            <span>Pelanggan:</span>
-                            <span className="font-medium break-words">{customerName}</span>
-                          </div>
-                        )}
-                        {instansi && (
-                          <div className="flex justify-between text-xs sm:text-sm">
-                            <span>Instansi:</span>
-                            <span className="break-words">{instansi}</span>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Items */}
-                      <div className="border-b border-dashed border-gray-400 pb-3 sm:pb-4 mb-3 sm:mb-4">
-                        <div className="text-center font-bold mb-2 text-xs sm:text-sm">DETAIL PEMBELIAN</div>
-                        <div className="text-xs">
-                          {cartItems.map((item, index) => (
-                            <div key={index} className="mb-2 sm:mb-3">
-                              <div className="font-medium text-xs break-words">
-                                {item.name}
-                                {item.width && item.height && (
-                                  <span className="text-xs"> ({item.width}m x {item.height}m)</span>
-                                )}
-                                {item.modelCode && (
-                                  <span className="text-xs"> [{item.modelCode}]</span>
-                                )}
-                                {item.caseVariant && (
-                                  <div className="text-xs text-gray-600">
-                                    Casing: {caseVariants.find(c => c.code === item.caseVariant)?.name}
-                                  </div>
-                                )}
-                                {item.laminationVariant && (
-                                  <div className="text-xs text-gray-600">
-                                    Laminasi: {item.laminationVariant}
-                                  </div>
-                                )}
-                              </div>
-                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
-                                <div style={{ display: 'table-row' }}>
-                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
-                                    {item.quantity} x Rp {item.appliedPrice.toLocaleString('id-ID')}
-                                  </span>
-                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                    Rp {(item.appliedPrice * item.quantity).toLocaleString('id-ID')}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                          
-                          {requestJasaDesain && (
-                            <div className="mb-2 sm:mb-3">
-                              <div className="font-medium text-xs">Jasa Desain</div>
-                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
-                                <div style={{ display: 'table-row' }}>
-                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
-                                    1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                                  </span>
-                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                    Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                          
-                          {isExpressPrint && (
-                            <div className="mb-2 sm:mb-3">
-                              <div className="font-medium text-xs">Cetak Express</div>
-                              <div className="text-xs" style={{ display: 'table', width: '100%' }}>
-                                <div style={{ display: 'table-row' }}>
-                                  <span style={{ display: 'table-cell', paddingRight: '8px' }}>
-                                    1 x Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                                  </span>
-                                  <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                                    Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Totals */}
-                      <div className="text-xs sm:text-sm" style={{ display: 'table', width: '100%' }}>
-                        <div style={{ display: 'table-row' }}>
-                          <span style={{ display: 'table-cell', paddingRight: '8px' }}>Subtotal:</span>
-                          <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                            Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}
-                          </span>
-                        </div>
-                        
-                        {promoDiscount > 0 && (
-                          <div style={{ display: 'table-row', color: '#16a34a' }}>
-                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Diskon ({promoDiscount}%):</span>
-                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                              -Rp {calculateTotalDiscountCallback().toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {requestJasaDesain && (
-                          <div style={{ display: 'table-row' }}>
-                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Jasa Desain:</span>
-                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                              Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        )}
-                        
-                        {isExpressPrint && (
-                          <div style={{ display: 'table-row' }}>
-                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>Cetak Express:</span>
-                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                              Rp {JASA_DESAIN_PRICE.toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        )}
-                        
-                        <div className="border-t border-dashed border-gray-400 mt-2 pt-2">
-                          <div style={{ display: 'table-row', fontWeight: 'bold', fontSize: '14px' }}>
-                            <span style={{ display: 'table-cell', paddingRight: '8px' }}>TOTAL:</span>
-                            <span style={{ display: 'table-cell', textAlign: 'right', whiteSpace: 'nowrap' }}>
-                              Rp {(calculateTotalCallback() + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Footer */}
-                      <div className="text-center text-xs mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-dashed border-gray-400">
-                        {/* Payment Status Warning */}
-                        <div className="bg-yellow-100 border border-yellow-400 rounded" style={{ 
-                          padding: '8px', 
-                          margin: '0 0 12px 0',
-                          display: 'flex',
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          minHeight: '60px'
-                        }}>
-                          <p className="text-xs font-bold text-yellow-800 flex items-center justify-center gap-1" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>
-                            <span className="material-icons text-yellow-800" style={{fontSize: '14px'}}>description</span>
-                            NOTA PERKIRAAN
-                          </p>
-                          <p className="text-xxs text-yellow-700" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>Silakan bayar melalui WhatsApp<br/>untuk konfirmasi pesanan</p>
-                          <p className="text-xxs text-yellow-700 flex items-center justify-center gap-1" style={{ margin: 0, padding: 0, lineHeight: 1.2 }}>
-                            <span className="material-icons text-yellow-700" style={{fontSize: '12px'}}>pending</span>
-                            Status: MENUNGGU PEMBAYARAN
-                          </p>
-                        </div>
-                        
-                        <p>Terima kasih atas kepercayaan Anda!</p>
-                        <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
-                        
-                        {/* Watermark disclaimer */}
-                        <div className="mt-2 pt-2 border-t border-dashed border-gray-400">
-                          <p className="text-xxs text-gray-500 italic">
-                            Nota ini dibuat untuk kemudahan estimasi biaya.<br/>
-                            Tidak dapat digunakan sebagai bukti pembayaran.
-                          </p>
-                        </div>
-                        
-                        <p className="mt-2 text-gray-600">
-                          Nota ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-               
-               <div className="text-center mt-4">
-                 <div className="flex items-center justify-center text-sm text-gray-500">
-                   <Printer className="h-4 w-4 mr-2" />
-                   <span>Nota akan tertutup otomatis setelah selesai dicetak</span>
-                 </div>
-               </div>
-            </div>
-          </DialogContent>
-        </Dialog>
 
         {/* ChatBot component */}
         <ChatBot />
