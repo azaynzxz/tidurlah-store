@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin, Briefcase } from "lucide-react";
+import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin, Briefcase, Image } from "lucide-react";
 import MusicPlayer from "@/components/MusicPlayer";
 import SearchBar from "@/components/SearchBar";
 import { useLocation } from "react-router-dom";
@@ -264,8 +264,16 @@ const Header = ({
               </button>
               <button 
                 className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/hello')}
+                onClick={() => handleDesktopMenuClick('/twibbon-hut-3-id-card-lampung')}
                 style={{ animationDelay: '300ms' }}
+              >
+                <Image className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Twibbon HUT 3 th ID Card Lampung
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/hello')}
+                style={{ animationDelay: '350ms' }}
               >
                 <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                 Hello Page
@@ -273,7 +281,7 @@ const Header = ({
               <button 
                 className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={toggleHalloweenMode}
-                style={{ animationDelay: '350ms' }}
+                style={{ animationDelay: '400ms' }}
               >
                 <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
                 Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
@@ -437,6 +445,19 @@ const Header = ({
               >
                 <RotateCcw className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Return Policy
+              </button>
+              
+              <button 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung'); }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
+              >
+                <Image className="h-4 w-4 mr-3 text-[#FF5E01]" />
+                Twibbon HUT 3 th ID Card Lampung
               </button>
               
               <button 

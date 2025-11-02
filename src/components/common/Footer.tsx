@@ -70,6 +70,7 @@ const Footer = () => {
                   <li><button onClick={() => navigateWithScrollToTop('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
+                  <li><button onClick={() => navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Twibbon HUT 3 th ID Card Lampung</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>
@@ -91,6 +92,7 @@ const Footer = () => {
                         <li><button onClick={() => navigateWithScrollToTop('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
+                        <li><button onClick={() => navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Twibbon HUT 3 th ID Card Lampung</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>

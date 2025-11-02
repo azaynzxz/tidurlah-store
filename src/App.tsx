@@ -16,6 +16,7 @@ import Spotlight from './pages/Spotlight';
 import Cashier from "./pages/Cashier";
 import Receipt from "./pages/Receipt";
 import Loker from "./pages/Loker";
+import TwibbonMaker from "./pages/TwibbonMaker";
 
 const queryClient = new QueryClient();
 
@@ -39,6 +40,7 @@ const App = () => (
               <Route path="/receipt" element={<Receipt />} />
               <Route path="/loker" element={<Loker />} />
               <Route path="/loker/:jobSlug" element={<Loker />} />
+              <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
