@@ -33,9 +33,9 @@ const jobs: Job[] = [
     workType: "Full-time",
     description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, mulai dari aset media sosial hingga desain pesanan klien. Ini adalah posisi remote (jarak jauh).",
     responsibilities: [
-      "Membuat desain materi promosi untuk media sosial (IG, TikTok, dll.)",
+      "Membuat desain ID Card dan Merchandise (Ganci, Gelas Mug, Tumbler, Banner dll.)",
       "Menyiapkan dan mengedit file desain dari klien agar siap cetak",
-      "Mengembangkan mockup produk baru",
+      "Memasukkan desain ke dalam mockup untuk approval",
       "Berkolaborasi dengan tim admin untuk memahami kebutuhan klien"
     ],
     qualifications: [
