@@ -407,21 +407,20 @@
     },
     {
       "id": 27,
-      "name": "ID Card Yoyo (Dengan Stiker)",
+      "name": "Stiker ID Card Yoyo Saja",
       "image": "/product-image/New Product/IDC-YOYO-REG-STIKER.webp",
-      "additionalImages": [],
+      "additionalImages": [
+        "/product-image/New Product/IDC-YOYO-PREM-AK-STIKER.webp",
+        "/product-image/New Product/IDC-YOYO-PREM-SEMI-STIKER.webp"
+      ],
       "description": "ID card yoyo custom dengan stiker logo Anda.",
-      "price": 30000,
+      "price": 10000,
       "discountPrice": null,
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
           "minQuantity": 1,
-          "price": 30000
-        },
-        {
-          "minQuantity": 10,
-          "price": 25000
+          "price": 10000
         }
       ],
       "time": "2-3 hari",
@@ -454,26 +453,6 @@
       "is_available": true
     },
     {
-      "id": 29,
-      "name": "ID Card Yoyo Premium Akrilik (Dengan Stiker)",
-      "image": "/product-image/New Product/IDC-YOYO-PREM-AK-STIKER.webp",
-      "additionalImages": [],
-      "description": "Yoyo dengan case premium akrilik transparan dan stiker custom.",
-      "price": 38000,
-      "discountPrice": null,
-      "category": "ID Card & Lanyard",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 38000
-        }
-      ],
-      "time": "2-3 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
       "id": 30,
       "name": "ID Card Yoyo Premium Semi Transparan (Tanpa Stiker)",
       "image": "/product-image/New Product/IDC-YOYO-PREM-SEMI.webp",
@@ -490,26 +469,6 @@
         {
           "minQuantity": 10,
           "price": 23000
-        }
-      ],
-      "time": "2-3 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
-      "id": 31,
-      "name": "ID Card Yoyo Premium Semi Transparan (Dengan Stiker)",
-      "image": "/product-image/New Product/IDC-YOYO-PREM-SEMI-STIKER.webp",
-      "additionalImages": [],
-      "description": "Yoyo premium dengan case semi transparan dan stiker custom.",
-      "price": 35000,
-      "discountPrice": null,
-      "category": "ID Card & Lanyard",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 35000
         }
       ],
       "time": "2-3 hari",
@@ -1199,6 +1158,38 @@
       ],
       "time": "5-7 hari",
       "rating": 4.7,
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 105,
+      "name": "Baju PDH",
+      "image": "/product-image/Merch/baju-pdh.webp",
+      "additionalImages": [],
+      "description": "Baju PDH custom berkualitas untuk keperluan organisasi/komunitas.",
+      "price": 120000,
+      "discountPrice": null,
+      "category": "Merchandise",
+      "priceThresholds": [
+        {
+          "minQuantity": 1,
+          "price": 120000
+        },
+        {
+          "minQuantity": 51,
+          "price": 115000
+        },
+        {
+          "minQuantity": 100,
+          "price": 110000
+        },
+        {
+          "minQuantity": 300,
+          "price": 105000
+        }
+      ],
+      "time": "2-4 Minggu",
+      "rating": 4.8,
       "unit": "pcs",
       "is_available": true
     }

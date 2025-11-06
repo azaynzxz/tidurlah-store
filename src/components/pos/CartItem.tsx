@@ -4,7 +4,6 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Minus, Plus, Trash2, Settings, Edit2, Check, X } from "lucide-react";
-import { calculateBannerPrice } from "@/utils/product";
 import { toast } from "sonner";
 
 interface Product {
@@ -33,6 +32,7 @@ interface Product {
 }
 
 interface CartItemType {
+  cartItemId: string;
   product: Product;
   quantity: number;
   options?: {
@@ -51,12 +51,12 @@ interface CartItemType {
 
 interface CartItemProps {
   item: CartItemType;
-  onUpdateQuantity: (productId: number, quantity: number) => void;
-  onRemove: (productId: number) => void;
-  onUpdateOptions: (productId: number, options: any) => void;
+  onUpdateQuantityById: (cartItemId: string, quantity: number) => void;
+  onRemoveById: (cartItemId: string) => void;
+  onUpdateOptionsById: (cartItemId: string, options: any) => void;
 }
 
-export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: CartItemProps) {
+export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOptionsById }: CartItemProps) {
   const [showOptions, setShowOptions] = useState(false);
   const [isEditingPrice, setIsEditingPrice] = useState(false);
   const [customPriceInput, setCustomPriceInput] = useState('');
@@ -110,16 +110,11 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
       updatedOptions.area = `${width * height} m²`;
     }
     
-    onUpdateOptions(item.product.id, updatedOptions);
+    onUpdateOptionsById(item.cartItemId, updatedOptions);
   };
 
   // Calculate applicable price based on quantity thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
-    // Check for override price first
-    if (options?.overridePrice && options.overridePrice > 0) {
-      return options.overridePrice;
-    }
-
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -127,7 +122,19 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height, quantity);
+      // Determine base price per m²: prefer custom per m² if provided
+      const customPerSqm = (options.customPricePerSqm ?? options.overridePrice) as number | undefined;
+      const basePerSqm = (customPerSqm && customPerSqm > 0)
+        ? customPerSqm
+        : (product.basePricePerSqm || product.price);
+      const area = options.width * options.height;
+      const perItem = basePerSqm * area;
+      return perItem;
+    }
+
+    // For non-dimensional products, allow manual override price
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
     }
 
     // Handle regular price thresholds
@@ -150,29 +157,37 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
 
   const handleQuantityChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = Math.max(1, parseInt(e.target.value) || 1);
-    onUpdateQuantity(item.product.id, newQuantity);
+    onUpdateQuantityById(item.cartItemId, newQuantity);
   };
 
   const increaseQuantity = () => {
-    onUpdateQuantity(item.product.id, item.quantity + 1);
+    onUpdateQuantityById(item.cartItemId, item.quantity + 1);
   };
 
   const decreaseQuantity = () => {
     if (item.quantity > 1) {
-      onUpdateQuantity(item.product.id, item.quantity - 1);
+      onUpdateQuantityById(item.cartItemId, item.quantity - 1);
     }
   };
 
   const handleEditPrice = () => {
-    const currentPrice = item.options?.overridePrice || price;
+    const isDimensional = item.product.pricingMethod === 'dimensional';
+    const currentPrice = isDimensional
+      ? (item.options?.customPricePerSqm ?? item.options?.overridePrice ?? item.product.basePricePerSqm ?? item.product.price)
+      : (item.options?.overridePrice || price);
     setCustomPriceInput(currentPrice.toString());
     setIsEditingPrice(true);
   };
 
   const handleSavePrice = () => {
-    const newPrice = parseInt(customPriceInput) || 0;
+    const isDimensional = item.product.pricingMethod === 'dimensional';
+    const newPrice = parseFloat(customPriceInput) || 0;
     if (newPrice > 0) {
-      handleOptionUpdate('overridePrice', newPrice);
+      if (isDimensional) {
+        handleOptionUpdate('customPricePerSqm', newPrice);
+      } else {
+        handleOptionUpdate('overridePrice', newPrice);
+      }
       setIsEditingPrice(false);
       toast.success('Harga custom berhasil diterapkan', {
         position: 'top-center',
@@ -194,7 +209,8 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
   const handleResetPrice = () => {
     const updatedOptions = { ...item.options };
     delete updatedOptions.overridePrice;
-    onUpdateOptions(item.product.id, updatedOptions);
+    delete updatedOptions.customPricePerSqm;
+    onUpdateOptionsById(item.cartItemId, updatedOptions);
     setIsEditingPrice(false);
     setCustomPriceInput('');
     toast.success('Harga dikembalikan ke default', {
@@ -345,6 +361,11 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
             {item.options.width && item.options.height && (
               <div>Ukuran: {item.options.width}m × {item.options.height}m ({item.options.area})</div>
             )}
+            {item.product.pricingMethod === 'dimensional' && (
+              <div>
+                Harga/m²: {formatCurrency((item.options?.customPricePerSqm ?? item.options?.overridePrice ?? item.product.basePricePerSqm ?? item.product.price) as number)}
+              </div>
+            )}
             {item.options.caseVariant && (
               <div>Casing: {caseVariants.find(c => c.code === item.options.caseVariant)?.name || item.options.caseVariant}</div>
             )}
@@ -385,7 +406,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
             size="sm"
             variant="ghost"
             className="h-7 w-7 p-0 text-red-500 hover:text-red-700 hover:bg-red-50"
-            onClick={() => onRemove(item.product.id)}
+            onClick={() => onRemoveById(item.cartItemId)}
           >
             <Trash2 className="w-3 h-3" />
           </Button>
@@ -404,7 +425,7 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
                 variant="ghost"
                 className="h-6 w-6 p-0 text-gray-500 hover:text-[#FF5E01] hover:bg-[#FF5E01]/10"
                 onClick={handleEditPrice}
-                title="Edit harga"
+                title={item.product.pricingMethod === 'dimensional' ? 'Edit harga per m²' : 'Edit harga'}
               >
                 <Edit2 className="w-3 h-3" />
               </Button>
@@ -415,8 +436,8 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
                 type="number"
                 value={customPriceInput}
                 onChange={(e) => setCustomPriceInput(e.target.value)}
-                className="h-7 w-24 text-xs"
-                placeholder="Harga custom"
+                className="h-7 w-28 text-xs"
+                placeholder={item.product.pricingMethod === 'dimensional' ? 'Harga/m²' : 'Harga custom'}
                 autoFocus
               />
               <Button
@@ -440,9 +461,9 @@ export function CartItem({ item, onUpdateQuantity, onRemove, onUpdateOptions }: 
             </div>
           )}
         </div>
-        {item.options?.overridePrice && !isEditingPrice && (
+        {(item.options?.overridePrice || item.options?.customPricePerSqm) && !isEditingPrice && (
           <div className="flex items-center gap-1">
-            <span className="text-[10px] text-blue-600 font-medium">Custom</span>
+            <span className="text-[10px] text-blue-600 font-medium">{item.product.pricingMethod === 'dimensional' ? 'Custom/m²' : 'Custom'}</span>
             <Button
               size="sm"
               variant="ghost"

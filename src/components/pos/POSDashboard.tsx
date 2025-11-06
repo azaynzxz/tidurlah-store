@@ -6,7 +6,7 @@ import { ProductGrid } from "./ProductGrid";
 import { Cart } from "./Cart";
 import { OrderHistory } from "./OrderHistory";
 import { toast } from "sonner";
-import { convertImageToBase64, calculateBannerPrice } from "@/utils/product";
+import { convertImageToBase64 } from "@/utils/product";
 import { submitPOSOrder } from "@/utils/api";
 import type { POSOrderData } from "@/utils/api";
 import { exportReceiptToPDF } from "@/utils/receiptPDF";
@@ -74,6 +74,7 @@ interface Product {
 }
 
 interface CartItem {
+  cartItemId: string;
   product: Product;
   quantity: number;
   options?: {
@@ -111,6 +112,9 @@ export function POSDashboard() {
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
   const [notificationsShown, setNotificationsShown] = useState<Set<string>>(new Set());
   const [showMobileCart, setShowMobileCart] = useState(false);
+
+  // Helper to determine if a product should be treated as a banner/dimensional
+  const isBanner = (product: Product) => product.pricingMethod === "dimensional";
 
   // Inspiring quotes in Indonesian
   const morningQuotes = [
@@ -350,23 +354,38 @@ export function POSDashboard() {
 
   // Auto-add product to cart when clicked
   const handleAddProductToCart = (product: Product) => {
-    // Check if product is already in cart
-    const existingItem = cartItems.find(item => item.product.id === product.id);
-    
-    if (existingItem) {
-      // If exists, increase quantity
-      handleUpdateQuantity(product.id, existingItem.quantity + 1);
-    } else {
-      // Add new item with default options
+    // For dimensional products (banners), always add as a new separate line item
+    if (isBanner(product)) {
       const newItem: CartItem = {
+        cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         product,
         quantity: 1,
         options: getDefaultOptions(product)
       };
-      
       setCartItems(prev => [...prev, newItem]);
       setSelectedProducts(prev => new Set([...prev, product.id]));
+      toast.success(`${product.name} ditambahkan sebagai item baru`, {
+        position: 'top-center',
+        duration: 2000,
+      });
+      return;
     }
+
+    // Non-dimensional: merge by product id (increase quantity)
+    const existingItem = cartItems.find(item => item.product.id === product.id);
+    if (existingItem) {
+      handleUpdateQuantityById(existingItem.cartItemId, existingItem.quantity + 1);
+      return;
+    }
+
+    const newItem: CartItem = {
+      cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      product,
+      quantity: 1,
+      options: getDefaultOptions(product)
+    };
+    setCartItems(prev => [...prev, newItem]);
+    setSelectedProducts(prev => new Set([...prev, product.id]));
     
     toast.success(`${product.name} ditambahkan ke keranjang`, {
       position: 'top-center',
@@ -410,17 +429,32 @@ export function POSDashboard() {
   // Enhanced add to cart with options
   const handleAddToCartWithOptions = (product: Product, quantity: number, options?: any) => {
     setCartItems(prevItems => {
-      const existingItem = prevItems.find(item => item.product.id === product.id);
+      // For dimensional products, only merge if dimensions match; otherwise add new line
+      if (isBanner(product)) {
+        const indexWithSameDims = prevItems.findIndex(item =>
+          item.product.id === product.id &&
+          item.options?.width === options?.width &&
+          item.options?.height === options?.height
+        );
+        if (indexWithSameDims !== -1) {
+          const updated = [...prevItems];
+          const existing = updated[indexWithSameDims];
+          updated[indexWithSameDims] = { ...existing, quantity: existing.quantity + quantity };
+          return updated;
+        }
+        return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
+      }
 
+      // Non-dimensional: merge by product id
+      const existingItem = prevItems.find(item => item.product.id === product.id);
       if (existingItem) {
         return prevItems.map(item =>
           item.product.id === product.id
             ? { ...item, quantity: item.quantity + quantity }
             : item
         );
-      } else {
-        return [...prevItems, { product, quantity, options }];
       }
+      return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
     });
 
     // Show toast notification
@@ -453,11 +487,11 @@ export function POSDashboard() {
     handleAddToCartWithOptions(product, 1);
   };
 
-  // Update cart item quantity
-  const handleUpdateQuantity = (productId: number, quantity: number) => {
+  // Update cart item quantity (by cart item id)
+  const handleUpdateQuantityById = (cartItemId: string, quantity: number) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.product.id === productId
+        item.cartItemId === cartItemId
           ? { ...item, quantity }
           : item
       )
@@ -465,17 +499,17 @@ export function POSDashboard() {
   };
 
   // Handle updating item options
-  const handleUpdateOptions = (productId: number, options: any) => {
+  const handleUpdateOptionsById = (cartItemId: string, options: any) => {
     setCartItems(prevItems =>
       prevItems.map(item =>
-        item.product.id === productId ? { ...item, options } : item
+        item.cartItemId === cartItemId ? { ...item, options } : item
       )
     );
   };
 
   // Remove item from cart
-  const handleRemoveItem = (productId: number) => {
-    setCartItems(prevItems => prevItems.filter(item => item.product.id !== productId));
+  const handleRemoveItemById = (cartItemId: string) => {
+    setCartItems(prevItems => prevItems.filter(item => item.cartItemId !== cartItemId));
   };
 
   // Clear all cart items
@@ -528,11 +562,6 @@ export function POSDashboard() {
 
   // Calculate applicable price for cart items (same logic as Cart component)
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
-    // Check for override price first (highest priority)
-    if (options?.overridePrice && options.overridePrice > 0) {
-      return options.overridePrice;
-    }
-
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -540,7 +569,17 @@ export function POSDashboard() {
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height, quantity);
+      const customPerSqm = (options.customPricePerSqm ?? options.overridePrice) as number | undefined;
+      const basePerSqm = (customPerSqm && customPerSqm > 0)
+        ? customPerSqm
+        : (product.basePricePerSqm || product.price);
+      const area = options.width * options.height;
+      return basePerSqm * area;
+    }
+
+    // For non-dimensional products, allow manual override price
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
     }
 
     // Handle regular price thresholds
@@ -1245,11 +1284,11 @@ export function POSDashboard() {
         <div className="hidden md:flex w-[420px] bg-background border-l border-gray-200 flex-col">
           <Cart
             items={cartItems}
-            onUpdateQuantity={handleUpdateQuantity}
-            onRemoveItem={handleRemoveItem}
+            onUpdateQuantityById={handleUpdateQuantityById}
+            onRemoveItemById={handleRemoveItemById}
             onClearAll={handleClearAll}
             onProcessOrder={handleProcessOrder}
-            onUpdateOptions={handleUpdateOptions}
+            onUpdateOptionsById={handleUpdateOptionsById}
             onPrintOrder={handlePrintOrder}
             onExportPDF={handleExportPDF}
             onAddDesignService={handleAddDesignService}
@@ -1305,11 +1344,11 @@ export function POSDashboard() {
             <div className="flex-1 overflow-y-auto min-h-0">
               <Cart
                 items={cartItems}
-                onUpdateQuantity={handleUpdateQuantity}
-                onRemoveItem={handleRemoveItem}
+                onUpdateQuantityById={handleUpdateQuantityById}
+                onRemoveItemById={handleRemoveItemById}
                 onClearAll={handleClearAll}
                 onProcessOrder={handleProcessOrder}
-                onUpdateOptions={handleUpdateOptions}
+                onUpdateOptionsById={handleUpdateOptionsById}
                 onPrintOrder={handlePrintOrder}
                 onExportPDF={handleExportPDF}
                 onAddDesignService={handleAddDesignService}

@@ -6,7 +6,6 @@ import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
 import { Check, ChevronDown, ChevronUp, Star, FileText } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
-import { calculateBannerPrice } from "@/utils/product";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
 import { exportReceiptToPDF } from "@/utils/receiptPDF";
 
@@ -36,6 +35,7 @@ interface Product {
 }
 
 interface CartItemType {
+  cartItemId: string;
   product: Product;
   quantity: number;
   options?: {
@@ -52,11 +52,11 @@ interface CartItemType {
 
 interface CartProps {
   items: CartItemType[];
-  onUpdateQuantity: (productId: number, quantity: number) => void;
-  onRemoveItem: (productId: number) => void;
+  onUpdateQuantityById: (cartItemId: string, quantity: number) => void;
+  onRemoveItemById: (cartItemId: string) => void;
   onClearAll: () => void;
   onProcessOrder: (customerDetails: CustomerDetails) => void;
-  onUpdateOptions: (productId: number, options: any) => void;
+  onUpdateOptionsById: (cartItemId: string, options: any) => void;
   onPrintOrder?: (customerDetails: CustomerDetails) => Promise<boolean>;
   onExportPDF?: (customerDetails: CustomerDetails) => Promise<boolean>;
   onAddDesignService: () => void;
@@ -81,7 +81,7 @@ interface CustomerDetails {
   downPayment?: number;
 }
 
-export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProcessOrder, onUpdateOptions, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
+export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll, onProcessOrder, onUpdateOptionsById, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
@@ -121,11 +121,6 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
   // Calculate totals with price thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
-    // Check for override price first
-    if (options?.overridePrice && options.overridePrice > 0) {
-      return options.overridePrice;
-    }
-
     // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
@@ -133,7 +128,17 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
 
     // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
-      return calculateBannerPrice(product, options.width, options.height, quantity);
+      const customPerSqm = (options.customPricePerSqm ?? options.overridePrice) as number | undefined;
+      const basePerSqm = (customPerSqm && customPerSqm > 0)
+        ? customPerSqm
+        : (product.basePricePerSqm || product.price);
+      const area = options.width * options.height;
+      return basePerSqm * area;
+    }
+
+    // For non-dimensional products, allow manual override price
+    if (options?.overridePrice && options.overridePrice > 0) {
+      return options.overridePrice;
     }
 
     // Handle regular price thresholds
@@ -196,7 +201,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       setCustomerDetails(prev => ({ ...prev, delivery: undefined }));
       const ongkirItem = items.find(item => item.product.id === 2002);
       if (ongkirItem) {
-        onRemoveItem(2002);
+        onRemoveItemById(ongkirItem.cartItemId);
       }
     }
   };
@@ -214,7 +219,7 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
       // Remove express service from cart when unchecked
       const expressServiceItem = items.find(item => item.product.id === 2001);
       if (expressServiceItem) {
-        onRemoveItem(2001);
+        onRemoveItemById(expressServiceItem.cartItemId);
         toast.success("Jasa Express dihapus dari keranjang", {
           position: 'top-center',
           duration: 2000,
@@ -522,11 +527,11 @@ export function Cart({ items, onUpdateQuantity, onRemoveItem, onClearAll, onProc
         ) : (
           items.map((item) => (
             <CartItem
-              key={item.product.id}
+              key={item.cartItemId}
               item={item}
-              onUpdateQuantity={onUpdateQuantity}
-              onRemove={onRemoveItem}
-              onUpdateOptions={onUpdateOptions}
+              onUpdateQuantityById={onUpdateQuantityById}
+              onRemoveById={onRemoveItemById}
+              onUpdateOptionsById={onUpdateOptionsById}
             />
           ))
         )}
