@@ -9,6 +9,7 @@ import HalloweenDecorations from "@/components/HalloweenDecorations";
 import "@/utils/applyDynamicColors"; // Import to apply dynamic colors
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import LoginBlocked from "./pages/LoginBlocked";
 import Survey from "./pages/Survey";
 import Blog from '@/pages/Blog';
 import BlogPost from '@/pages/BlogPost';
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/loker/:jobSlug" element={<Loker />} />
               <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
               <Route path="/layout" element={<Layout />} />
+              <Route path="/login-blocked" element={<LoginBlocked />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
             </Routes>
