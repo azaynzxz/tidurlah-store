@@ -8,6 +8,7 @@ import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
 import { exportReceiptToPDF } from "@/utils/receiptPDF";
+import newOrderSound from "@/components/new-order.mp3";
 
 interface Product {
   id: number;
@@ -313,6 +314,16 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     try {
       // Call the parent's onProcessOrder with customer details including DP
       await onProcessOrder({ ...customerDetails, downPayment });
+      
+      // Play new order sound on successful order
+      try {
+        const audio = new Audio(newOrderSound);
+        audio.play().catch(err => {
+          console.log('Could not play sound:', err);
+        });
+      } catch (err) {
+        console.log('Error playing sound:', err);
+      }
       
       // Reset customer details and DP after successful order
       setCustomerDetails({ name: '', phone: '', instansi: '' });

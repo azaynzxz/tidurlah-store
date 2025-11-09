@@ -172,15 +172,16 @@ export async function generateLayoutKananKiriBeda(frontFiles, backFiles, setProg
   const totalFrontFiles = frontFiles.length
   const totalPages = Math.ceil(totalFrontFiles / 5)
   
-  // Sort files alphabetically
+  // Sort front files alphabetically
   const sortedFrontFiles = [...frontFiles].sort((a, b) => a.name.localeCompare(b.name))
-  const sortedBackFiles = [...backFiles].sort((a, b) => a.name.localeCompare(b.name))
+  // Use backFiles in the order provided (user can reorder them via UI)
+  const orderedBackFiles = [...backFiles]
   
   // If only one back file, reuse it for all
-  const hasSingleBackFile = sortedBackFiles.length === 1
+  const hasSingleBackFile = orderedBackFiles.length === 1
   let singleBackImage = null
   if (hasSingleBackFile) {
-    singleBackImage = await loadAndProcessImage(sortedBackFiles[0], 90)  // Back: 90° clockwise
+    singleBackImage = await loadAndProcessImage(orderedBackFiles[0], 90)  // Back: 90° clockwise
   }
   
   let frontIndex = 0
@@ -213,8 +214,8 @@ export async function generateLayoutKananKiriBeda(frontFiles, backFiles, setProg
         // Back (right): rotate 90° clockwise
         if (hasSingleBackFile && singleBackImage) {
           ctx.drawImage(singleBackImage, rightBox[0], rightBox[1])
-        } else if (backIndex < sortedBackFiles.length) {
-          const backImg = await loadAndProcessImage(sortedBackFiles[backIndex], 90)
+        } else if (backIndex < orderedBackFiles.length) {
+          const backImg = await loadAndProcessImage(orderedBackFiles[backIndex], 90)
           ctx.drawImage(backImg, rightBox[0], rightBox[1])
           backIndex++
         }

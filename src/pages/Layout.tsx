@@ -33,7 +33,7 @@ const Layout = () => {
       />
 
       {/* Main Content */}
-      <div className="flex-1 py-12 px-4">
+      <div className="flex-1 pt-4 pb-12 px-4">
         {/* Animated gradient background */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
