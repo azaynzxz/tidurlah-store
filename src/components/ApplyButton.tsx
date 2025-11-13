@@ -138,7 +138,8 @@ ${name}`;
       const emailSubject = encodeURIComponent(`Lamaran Kerja: ${posisi}`);
       const emailBodyEncoded = encodeURIComponent(emailBody);
       const emailTo = 'hr@tidurlah.com';
-      const mailtoLink = `mailto:${emailTo}?subject=${emailSubject}&body=${emailBodyEncoded}`;
+      const emailCc = 'ceo@tidurlah.com';
+      const mailtoLink = `mailto:${emailTo}?cc=${emailCc}&subject=${emailSubject}&body=${emailBodyEncoded}`;
 
       // Show success toast
       toast.success(
