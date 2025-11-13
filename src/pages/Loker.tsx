@@ -27,11 +27,11 @@ const jobs: Job[] = [
   {
     id: "desainer-grafis",
     title: "Desainer Grafis",
-    location: "Remote",
-    workHours: "8 jam/hari (fleksibel)",
+    location: "Lampung",
+    workHours: "8 jam/hari (09.00 - 17.00)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
-    description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, mulai dari aset media sosial hingga desain pesanan klien. Ini adalah posisi remote (jarak jauh).",
+    description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, khususnya desain layout cetak dan print media untuk ID Card, Merchandise, dan produk cetak lainnya. Posisi Full Time on-site di Lampung.",
     responsibilities: [
       "Membuat desain ID Card dan Merchandise (Ganci, Gelas Mug, Tumbler, Banner dll.)",
       "Menyiapkan dan mengedit file desain dari klien agar siap cetak",
@@ -43,6 +43,7 @@ const jobs: Job[] = [
       "Memahami color theory untuk keperluan printing",
       "Mahir menggunakan CorelDRAW, Canva, dan/atau Photoshop",
       "Kreatif, komunikatif, dan dapat bekerja sesuai deadline",
+      "Berdomisili di Lampung",
       "Memiliki laptop/PC pribadi dan koneksi internet yang stabil"
     ],
     isAvailable: true

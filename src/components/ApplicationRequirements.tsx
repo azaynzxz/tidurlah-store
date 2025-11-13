@@ -25,13 +25,13 @@ const ApplicationRequirements = ({ jobId }: ApplicationRequirementsProps) => {
             <li className="flex items-start gap-2 md:gap-3">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
               <span className="text-xs md:text-sm text-gray-700 leading-relaxed">
-                <strong>Portofolio:</strong> <span className="text-red-600 font-semibold">Wajib dilampirkan!</span> Kirim portofolio desain Anda yang menunjukkan kemampuan layout design. Format: PDF, Link Google Drive/Behance/Dribbble, atau file gambar (JPG/PNG)
+                <strong>Portofolio:</strong> <span className="text-red-600 font-semibold">Wajib dilampirkan!</span> Kirim portofolio desain Anda yang menunjukkan kemampuan layout design. <span className="font-semibold">Portfolio layout cetak dan print media, lebih diutamakan. Tidak perlu menyertakan postingan media sosial.</span> Format: PDF, Link Google Drive/Behance/Dribbble, atau file gambar (JPG/PNG)
               </span>
             </li>
             <li className="flex items-start gap-2 md:gap-3">
               <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-blue-500 rounded-full mt-2 flex-shrink-0" />
               <span className="text-xs md:text-sm text-gray-700 leading-relaxed">
-                <strong>Catatan:</strong> Pastikan portofolio mudah diakses dan menampilkan contoh karya terbaik Anda
+                <strong>Catatan:</strong> Pastikan portofolio mudah diakses dan menampilkan contoh karya terbaik Anda, khususnya desain layout cetak dan print media
               </span>
             </li>
           </>

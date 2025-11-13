@@ -233,16 +233,23 @@ const ApplicationForm = ({ position, isOpen, onClose, onSubmit }: ApplicationFor
             />
 
             {isDesignPosition() && (
-              <FileUploader
-                label="Portfolio"
-                accept=".pdf,.doc,.docx,.zip,.rar"
-                maxSize={20}
-                required={false}
-                value={portfolioFile}
-                onChange={setPortfolioFile}
-                error={errors.portfolio}
-                description="Upload portfolio Anda (PDF, DOC, DOCX, atau ZIP/RAR untuk multiple files)"
-              />
+              <>
+                <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg mb-2">
+                  <p className="text-xs text-gray-700 leading-relaxed">
+                    <strong className="text-blue-700">Catatan Portfolio:</strong> Portfolio layout cetak dan print media, lebih diutamakan. Tidak perlu menyertakan postingan media sosial.
+                  </p>
+                </div>
+                <FileUploader
+                  label="Portfolio"
+                  accept=".pdf,.doc,.docx,.zip,.rar"
+                  maxSize={20}
+                  required={false}
+                  value={portfolioFile}
+                  onChange={setPortfolioFile}
+                  error={errors.portfolio}
+                  description="Upload portfolio Anda (PDF, DOC, DOCX, atau ZIP/RAR untuk multiple files)"
+                />
+              </>
             )}
           </div>
 
