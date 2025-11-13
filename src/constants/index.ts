@@ -56,5 +56,8 @@ export const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw7Ht5
 // POS Google Sheets submission URL
 export const POS_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbycXaK6zr-fHedGBcGFo04C7-AndbCJ74yB45c-9gD9s_zP01Uejq5yYob09fG7-hA/exec';
 
+// Loker (Job Application) Google Sheets submission URL
+export const LOKER_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzuEkPrBkPbhKZDwD5AtnNdx-_oxiElFcNP5LfKNdmu7AzMBeGcwqXwuoRenSHNRq0u/exec';
+
 // WhatsApp number
 export const WHATSAPP_NUMBER = '6285172157808';

@@ -1,5 +1,5 @@
 import type { OrderData, BannerDetails } from '@/types/product';
-import { JASA_DESAIN_PRICE, GOOGLE_SHEETS_URL, POS_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
+import { JASA_DESAIN_PRICE, GOOGLE_SHEETS_URL, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
 import { caseVariants } from '@/constants';
 
 // POS Order Data interface
@@ -280,6 +280,190 @@ export const submitPOSOrder = async (posOrderData: POSOrderData) => {
   } catch (error) {
     console.error('Error submitting POS order:', error);
     throw new Error(`Error sending POS order to Google Sheets: ${error.message}`);
+  }
+};
+
+// Job Application Data interface
+export interface JobApplicationData {
+  nama: string;
+  email: string;
+  nomor: string;
+  source: string;
+  alamat: string;
+  cv?: File | null;
+  portfolio?: File | null;
+}
+
+// Progress callback type
+export type ProgressCallback = (progress: number, message: string) => void;
+
+// Helper function to convert File to base64 (simplified, no progress tracking)
+const fileToBase64 = (file: File): Promise<string> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      // Remove the data URL prefix (data:mime/type;base64,)
+      const base64String = (reader.result as string).split(',')[1];
+      resolve(base64String);
+    };
+    reader.onerror = (error) => reject(error);
+  });
+};
+
+/**
+ * Job Application submission function with progress tracking
+ * Submits job application data to Google Apps Script API
+ */
+export const submitJobApplication = async (
+  applicationData: JobApplicationData,
+  onProgress?: ProgressCallback
+): Promise<{ success: boolean }> => {
+  try {
+    // Start smooth fake progress bar
+    let currentProgress = 0;
+    let progressInterval: ReturnType<typeof setInterval> | null = null;
+    
+    const startProgress = () => {
+      progressInterval = setInterval(() => {
+        if (onProgress && currentProgress < 98) {
+          // Smooth progress: slower at start, faster in middle, slower at end
+          let increment = 0;
+          if (currentProgress < 20) {
+            increment = 0.5; // Slow start
+          } else if (currentProgress < 60) {
+            increment = 1.0; // Medium-fast middle
+          } else if (currentProgress < 85) {
+            increment = 0.8; // Medium
+          } else {
+            increment = 0.4; // Slow near end
+          }
+          
+          currentProgress = Math.min(currentProgress + increment, 98);
+          onProgress(Math.round(currentProgress), 'Mengirim berkas lamaran');
+        } else {
+          if (progressInterval) {
+            clearInterval(progressInterval);
+            progressInterval = null;
+          }
+        }
+      }, 80); // Update every 80ms for smoother, slower animation
+    };
+    
+    startProgress();
+
+    // Convert CV file to base64 if provided
+    let cvBase64 = '';
+    let cvMimeType = '';
+    let cvFileName = '';
+    
+    if (applicationData.cv) {
+      cvBase64 = await fileToBase64(applicationData.cv);
+      cvMimeType = applicationData.cv.type;
+      cvFileName = applicationData.cv.name;
+    } else {
+      if (progressInterval) {
+        clearInterval(progressInterval);
+      }
+      throw new Error('CV/Resume wajib diupload');
+    }
+
+    // Convert Portfolio file to base64 if provided
+    let fileBase64 = '';
+    let fileMimeType = '';
+    let fileName = '';
+    
+    if (applicationData.portfolio) {
+      fileBase64 = await fileToBase64(applicationData.portfolio);
+      fileMimeType = applicationData.portfolio.type;
+      fileName = applicationData.portfolio.name;
+    }
+    
+    // Prepare data for Google Apps Script
+    const payload: any = {
+      nama: applicationData.nama,
+      email: applicationData.email,
+      nomor: applicationData.nomor,
+      source: applicationData.source || '',
+      alamat: applicationData.alamat || '',
+      cvBase64: cvBase64,
+      cvMimeType: cvMimeType,
+      cvFileName: cvFileName
+    };
+
+    // Only include portfolio fields if portfolio file exists
+    if (applicationData.portfolio && fileBase64) {
+      payload.fileBase64 = fileBase64;
+      payload.fileMimeType = fileMimeType;
+      payload.fileName = fileName;
+    } else {
+      // Send empty strings if no portfolio (Apps Script expects these fields)
+      payload.fileBase64 = '';
+      payload.fileMimeType = '';
+      payload.fileName = '';
+    }
+    
+    // Send as POST request with JSON body
+    // Note: Using 'no-cors' mode because Google Apps Script handles CORS
+    // However, this means we can't read the response status
+    try {
+      // Start the actual fetch
+      const fetchPromise = fetch(LOKER_GOOGLE_SHEETS_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+        mode: 'no-cors'
+      });
+
+      // Wait for fetch to complete
+      await fetchPromise;
+
+      // Complete the progress bar smoothly to 100%
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+      
+      // Smooth finish to 100%
+      if (onProgress) {
+        const finishProgress = () => {
+          if (currentProgress < 100) {
+            currentProgress = Math.min(currentProgress + 0.5, 100);
+            onProgress(Math.round(currentProgress), 'Mengirim berkas lamaran');
+            
+            if (currentProgress < 100) {
+              setTimeout(finishProgress, 50);
+            }
+          }
+        };
+        finishProgress();
+      }
+      
+      // Wait a bit for the progress to reach 100%
+      await new Promise(resolve => setTimeout(resolve, 800));
+
+      // With 'no-cors' mode, we can't read the response,
+      // but if the fetch succeeds, we assume it's successful
+      return { success: true };
+    } catch (fetchError: any) {
+      console.error('Fetch error:', fetchError);
+      
+      // Check for specific error types
+      if (fetchError.message?.includes('403') || fetchError.message?.includes('Forbidden')) {
+        throw new Error('Akses ditolak. Pastikan Google Apps Script sudah di-deploy dengan pengaturan "Who has access: Anyone"');
+      }
+      
+      if (fetchError.message?.includes('Failed to fetch') || fetchError.message?.includes('NetworkError')) {
+        throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau URL API.');
+      }
+      
+      throw new Error(`Gagal mengirim lamaran: ${fetchError.message || 'Terjadi kesalahan tidak diketahui'}`);
+    }
+  } catch (error: any) {
+    console.error('Error submitting job application:', error);
+    throw error; // Re-throw to preserve the error message
   }
 };
 
