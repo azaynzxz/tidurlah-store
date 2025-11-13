@@ -25,6 +25,7 @@ export type PromoCodeType = {
   discount: number;
   productIds: number[] | null;
   minQuantity?: number;
+  overridePrices?: Record<number, number>;
 };
 
 export type PromotedProductType = {

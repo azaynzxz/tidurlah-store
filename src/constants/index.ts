@@ -7,18 +7,32 @@ export const validPromoCodes: Record<string, PromoCodeType> = {
   "SAVE15": { discount: 15, productIds: null },
   "PROMO20": { discount: 20, productIds: null },
   "KKN15": { discount: 15, productIds: [8], minQuantity: 7 }, // only applies to product ID 8 with minimum 7 pcs
-  "IDCARD15": { discount: 15, productIds: [2] } // only applies to ID Card 2S
+  "IDCARD15": { discount: 15, productIds: [2] }, // only applies to ID Card 2S
+  "HUT3TH": {
+    discount: 0,
+    productIds: [8, 7],
+    overridePrices: {
+      8: 15000,
+      7: 13000
+    }
+  }
 };
 
 // Define promoted products with end dates
 export const promotedProducts: PromotedProductType[] = [
   {
     id: 8,
-    discount: 15,
-    endDate: new Date('2025-09-30'),
-    promoCode: "SEPTEMBERCERIA",
-    minQuantity: 7,
-    description: "Promo spesial untuk mahasiswa KKN! Diskon 15% untuk pembelian minimal 7 pcs. Tunjukkan ID mahasiswa saat pengambilan."
+    discount: 40,
+    endDate: new Date('2025-11-25T23:59:59'),
+    promoCode: "HUT3TH",
+    description: "Promo ulang tahun 3 tahun! Berlaku 20-25 November untuk Paket IDC LYD 2S."
+  },
+  {
+    id: 7,
+    discount: 35,
+    endDate: new Date('2025-11-25T23:59:59'),
+    promoCode: "HUT3TH",
+    description: "Promo ulang tahun 3 tahun! Berlaku 20-25 November untuk Paket IDC LYD 1S."
   }
 ];
 

@@ -290,6 +290,7 @@ export interface JobApplicationData {
   nomor: string;
   source: string;
   alamat: string;
+  posisi: string;
   cv?: File | null;
   portfolio?: File | null;
 }
@@ -386,6 +387,7 @@ export const submitJobApplication = async (
       nomor: applicationData.nomor,
       source: applicationData.source || '',
       alamat: applicationData.alamat || '',
+      posisi: applicationData.posisi || '',
       cvBase64: cvBase64,
       cvMimeType: cvMimeType,
       cvFileName: cvFileName

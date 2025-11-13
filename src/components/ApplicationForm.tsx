@@ -236,7 +236,7 @@ const ApplicationForm = ({ position, isOpen, onClose, onSubmit }: ApplicationFor
               <>
                 <div className="bg-blue-50 border-l-4 border-blue-500 p-3 rounded-lg mb-2">
                   <p className="text-xs text-gray-700 leading-relaxed">
-                    <strong className="text-blue-700">Catatan Portfolio:</strong> Portfolio layout cetak dan print media, lebih diutamakan. Tidak perlu menyertakan postingan media sosial.
+                    <strong className="text-blue-700">Catatan Portfolio:</strong> Portfolio layout cetak dan print media, lebih diutamakan.
                   </p>
                 </div>
                 <FileUploader

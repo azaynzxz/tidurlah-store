@@ -28,7 +28,7 @@ const jobs: Job[] = [
     id: "desainer-grafis",
     title: "Desainer Grafis",
     location: "Lampung",
-    workHours: "8 jam/hari (09.00 - 17.00)",
+    workHours: "8 jam/hari\n(09.00 - 17.00)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, khususnya desain layout cetak dan print media untuk ID Card, Merchandise, dan produk cetak lainnya. Posisi Full Time on-site di Lampung.",
@@ -52,7 +52,7 @@ const jobs: Job[] = [
     id: "admin-toko",
     title: "Admin Toko",
     location: "Lampung",
-    workHours: "8 jam/hari (09.00 - 17.00)",
+    workHours: "8 jam/hari\n(09.00 - 17.00)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Anda akan menjadi wajah dan suara dari Tidurlah Store. Posisi ini bertanggung jawab mengelola pesanan, komunikasi dengan pelanggan, dan administrasi umum.",
@@ -69,13 +69,13 @@ const jobs: Job[] = [
       "Jujur dan bertanggung jawab",
       "Berdomisili di Lampung"
     ],
-    isAvailable: true
+    isAvailable: false
   },
   {
     id: "bagian-produksi",
     title: "Bagian Produksi",
     location: "Lampung",
-    workHours: "8 jam/hari (09.00 - 17.00)",
+    workHours: "8 jam/hari\n(09.00 - 17.00)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
     description: "Posisi ini adalah jantung dari bisnis kami. Anda bertanggung jawab untuk mencetak, memotong, dan mengemas semua pesanan ID card dan merchandise sesuai standar kualitas.",
@@ -97,8 +97,8 @@ const jobs: Job[] = [
   {
     id: "reseller",
     title: "Reseller",
-    location: "Fleksibel - Remote/Anywhere",
-    workHours: "Fleksibel (tidak terikat waktu)",
+    location: "Fleksibel\nRemote/Anywhere",
+    workHours: "Fleksibel\n(tidak terikat waktu)",
     education: "SMA/SMK Sederajat",
     workType: "Komisi & Insentif",
     description: "Jadilah mitra bisnis kami dan dapatkan penghasilan tambahan dengan menjual produk-produk Tidurlah Grafika. Cocok untuk mahasiswa, ibu rumah tangga, atau siapa saja yang ingin mendapat penghasilan fleksibel.",
@@ -340,13 +340,30 @@ const Loker = () => {
                         {job.title}
                       </h3>
                       <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                        <div className="flex items-center gap-1">
-                          <MapPin className="h-4 w-4" />
-                          <span>{job.location}</span>
+                        <div className="flex items-center gap-1 relative group/location">
+                          <MapPin className="h-4 w-4 flex-shrink-0" />
+                          <span className="cursor-help">{job.location.split('\n')[0]}</span>
+                          {job.location.includes('\n') ? (
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                              {job.location}
+                            </div>
+                          ) : job.location === "Lampung" && (
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 z-30 whitespace-pre-line min-w-max pointer-events-none">
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                              Bersedia full-time{'\n'}di ruko
+                            </div>
+                          )}
                         </div>
-                        <div className="flex items-center gap-1">
-                          <Clock className="h-4 w-4" />
-                          <span>{job.workHours}</span>
+                        <div className="flex items-center gap-1 relative group/hours">
+                          <Clock className="h-4 w-4 flex-shrink-0" />
+                          <span className="cursor-help">{job.workHours.split('\n')[0]}</span>
+                          {job.workHours.includes('\n') && (
+                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/hours:opacity-100 group-hover/hours:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                              {job.workHours}
+                            </div>
+                          )}
                         </div>
                       </div>
                     </div>
@@ -500,13 +517,30 @@ const JobDetailPage = ({ job }: { job: Job }) => {
                   </div>
                   <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3">{job.title}</h1>
                   <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm md:text-base">
-                    <div className="flex items-center gap-1">
-                      <MapPin className="h-4 w-4" />
-                      <span>{job.location}</span>
+                    <div className="flex items-center gap-1 relative group/location">
+                      <MapPin className="h-4 w-4 flex-shrink-0" />
+                      <span className="cursor-help">{job.location.split('\n')[0]}</span>
+                      {job.location.includes('\n') ? (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                          {job.location}
+                        </div>
+                      ) : job.location === "Lampung" && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 z-30 whitespace-pre-line min-w-max pointer-events-none">
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                          Bersedia full-time{'\n'}di ruko
+                        </div>
+                      )}
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Clock className="h-4 w-4" />
-                      <span>{job.workHours}</span>
+                    <div className="flex items-center gap-1 relative group/hours">
+                      <Clock className="h-4 w-4 flex-shrink-0" />
+                      <span className="cursor-help">{job.workHours.split('\n')[0]}</span>
+                      {job.workHours.includes('\n') && (
+                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/hours:opacity-100 group-hover/hours:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
+                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
+                          {job.workHours}
+                        </div>
+                      )}
                     </div>
                   </div>
                 </div>

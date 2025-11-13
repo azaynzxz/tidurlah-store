@@ -755,6 +755,7 @@ body.loaded {
     font-weight: 600;
   }
 
+
   /* Angry pulse effect */
   .angry-pulse {
     animation: angry-pulse 1s infinite;

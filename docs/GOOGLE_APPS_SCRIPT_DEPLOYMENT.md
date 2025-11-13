@@ -66,3 +66,4 @@ curl -X POST https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec \
 - Always test with a small payload first
 - Check execution logs in Apps Script for detailed error messages
 
+

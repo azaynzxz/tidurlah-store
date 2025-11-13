@@ -13,8 +13,37 @@ interface ApplyButtonProps {
 const ApplyButton = ({ posisi, isAvailable, onShare }: ApplyButtonProps) => {
   const [showForm, setShowForm] = useState(false);
 
+  // Function to determine position category from job title
+  const getPositionCategory = (jobTitle: string): string => {
+    const titleLower = jobTitle.toLowerCase();
+    if (titleLower.includes('desain') || titleLower.includes('design') || titleLower.includes('grafis') || titleLower.includes('graphic') || titleLower.includes('visual')) {
+      return 'Design';
+    } else if (titleLower.includes('admin')) {
+      return 'Admin';
+    } else if (titleLower.includes('produksi') || titleLower.includes('production')) {
+      return 'Produksi';
+    } else if (titleLower.includes('reseller')) {
+      return 'Reseller';
+    }
+    // Default fallback
+    return jobTitle;
+  };
+
   const handleApply = () => {
-    if (!isAvailable) return;
+    if (!isAvailable) {
+      toast.error(
+        <div className="space-y-1">
+          <p className="font-semibold">Lowongan tidak tersedia</p>
+          <p className="text-sm">Lowongan kerja <strong>{posisi}</strong> tidak tersedia.</p>
+        </div>,
+        {
+          position: 'top-center',
+          duration: 5000,
+          style: { marginTop: '60px', minWidth: '350px' }
+        }
+      );
+      return;
+    }
     setShowForm(true);
   };
 
@@ -62,12 +91,14 @@ ${name}`;
     
     try {
       // Prepare application data
+      const positionCategory = getPositionCategory(posisi);
       const applicationData: JobApplicationData = {
         nama: data.name,
         email: data.email,
         nomor: data.phone,
         source: data.infoSource || '',
         alamat: data.alamat || '',
+        posisi: positionCategory,
         cv: data.cv,
         portfolio: data.portfolio
       };
