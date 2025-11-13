@@ -29,6 +29,16 @@ const ApplicationForm = ({ position, isOpen, onClose, onSubmit }: ApplicationFor
   const [portfolioFile, setPortfolioFile] = useState<File | null>(null);
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
+  // Check if position is design-related
+  const isDesignPosition = () => {
+    const positionLower = position.toLowerCase();
+    return positionLower.includes('design') || 
+           positionLower.includes('desain') || 
+           positionLower.includes('grafis') || 
+           positionLower.includes('graphic') ||
+           positionLower.includes('visual');
+  };
+
   const validateEmail = (email: string) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
@@ -87,7 +97,7 @@ const ApplicationForm = ({ position, isOpen, onClose, onSubmit }: ApplicationFor
     onSubmit({
       ...formData,
       cv: cvFile,
-      portfolio: portfolioFile
+      portfolio: isDesignPosition() ? portfolioFile : null
     });
     setFormData({ name: '', email: '', phone: '', infoSource: '', alamat: '' });
     setCvFile(null);
@@ -222,16 +232,18 @@ const ApplicationForm = ({ position, isOpen, onClose, onSubmit }: ApplicationFor
               description="Upload CV atau Resume Anda dalam format PDF, DOC, atau DOCX"
             />
 
-            <FileUploader
-              label="Portfolio"
-              accept=".pdf,.doc,.docx,.zip,.rar"
-              maxSize={20}
-              required={false}
-              value={portfolioFile}
-              onChange={setPortfolioFile}
-              error={errors.portfolio}
-              description="Upload portfolio Anda (PDF, DOC, DOCX, atau ZIP/RAR untuk multiple files)"
-            />
+            {isDesignPosition() && (
+              <FileUploader
+                label="Portfolio"
+                accept=".pdf,.doc,.docx,.zip,.rar"
+                maxSize={20}
+                required={false}
+                value={portfolioFile}
+                onChange={setPortfolioFile}
+                error={errors.portfolio}
+                description="Upload portfolio Anda (PDF, DOC, DOCX, atau ZIP/RAR untuk multiple files)"
+              />
+            )}
           </div>
 
           <div className="pt-2">
