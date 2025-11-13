@@ -11,6 +11,7 @@ import MusicPlayer from "@/components/MusicPlayer";
 import PromotedProducts from "@/components/PromotedProducts";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
+import TutorialPopup from "@/components/TutorialPopup";
 import { AnimatedElement, StaggeredContainer, LoadingState } from "@/components/animations/AnimatedElement";
 
 // Import extracted modules
@@ -1634,6 +1635,9 @@ const Index = () => {
           </DialogContent>
         </Dialog>
 
+
+        {/* Tutorial Popup - Shows on first visit */}
+        <TutorialPopup />
 
         {/* ChatBot component */}
         <ChatBot />

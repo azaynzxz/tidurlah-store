@@ -124,13 +124,8 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
     const interval = setInterval(() => {
       setActiveIndex((prev) => {
         const next = (prev + 1) % promoCount;
-        const child = container.children[next] as HTMLElement | undefined;
-        if (child) {
-          child.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-        } else {
-          const itemHeight = container.clientHeight;
-          container.scrollTo({ top: next * itemHeight, behavior: 'smooth' });
-        }
+        const itemHeight = container.clientHeight;
+        container.scrollTo({ top: next * itemHeight, behavior: 'smooth' });
         return next;
       });
     }, 2500);

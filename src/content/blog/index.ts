@@ -1,6 +1,7 @@
 // Import all blog posts
 import { blogPost as smaArRaihan } from "./case-studies/sma-ar-raihan";
 import { blogPost as lanyardCareTips } from "./tutorials/lanyard-care-tips";
+import { blogPost as tutorialCaraOrder } from "./tutorials/tutorial-cara-order";
 import { blogPost as sponsorship } from "./special/sponsorship";
 import { blogPost as designGuide } from "./special/design-guide";
 import { blogPost as faq } from "./special/faq";
@@ -34,6 +35,7 @@ export interface BlogPostData {
 export const blogPosts: BlogPostData[] = [
   smaArRaihan,
   lanyardCareTips,
+  tutorialCaraOrder,
   sponsorship,
   designGuide,
   faq,
