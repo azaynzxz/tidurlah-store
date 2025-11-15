@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ShoppingCart, ShoppingBag, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2 } from "lucide-react";
+import { ShoppingCart, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Star } from "lucide-react";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -56,6 +56,8 @@ const Index = () => {
   const [promoDiscount, setPromoDiscount] = useState(0);
   const [bannerWidth, setBannerWidth] = useState(1);
   const [bannerHeight, setBannerHeight] = useState(1);
+  const [bannerWidthInput, setBannerWidthInput] = useState<string | null>(null);
+  const [bannerHeightInput, setBannerHeightInput] = useState<string | null>(null);
   const [whatsAppUrl, setWhatsAppUrl] = useState("");
   const [isProductsLoading, setIsProductsLoading] = useState(true);
   
@@ -214,6 +216,19 @@ const Index = () => {
     }
     setPreviousCartLength(cartItems.length);
   }, [cartItems.length, previousCartLength, selectedProduct]);
+
+  // Initialize banner input values when dimensional product is selected
+  useEffect(() => {
+    if (selectedProduct && selectedProduct.pricingMethod === "dimensional") {
+      // Initialize input strings with current numeric values
+      setBannerWidthInput(bannerWidth.toString());
+      setBannerHeightInput(bannerHeight.toString());
+    } else {
+      // Reset input strings when not a dimensional product
+      setBannerWidthInput(null);
+      setBannerHeightInput(null);
+    }
+  }, [selectedProduct?.id]); // Only re-run when product ID changes
 
   // Handle search functionality
   const handleSearchCallback = (term: string) => {
@@ -404,7 +419,7 @@ const Index = () => {
         showSearch={true}
       />
       
-      <div className="container mx-auto max-w-full md:max-w-full lg:max-w-7xl bg-background flex-1 flex flex-col px-4 md:px-6 lg:px-6">
+      <div className="container mx-auto max-w-full md:max-w-full lg:max-w-7xl bg-background flex-1 flex flex-col px-2">
 
         {!showOrderForm ? (
           /* Product Listing */
@@ -520,85 +535,48 @@ const Index = () => {
                           </button>
                         </div>
                         <div className="p-2 lg:p-3 flex flex-col flex-grow">
-                          <h3 className="font-medium text-xs lg:text-sm line-clamp-2">{product.name}</h3>
-                          {product.priceThresholds && (
-                            <div className="flex flex-wrap gap-1 mt-1">
-                              {product.priceThresholds.slice(0, 2).map((threshold: any, idx: number) => (
-                                <div 
-                                  key={idx}
-                                  className="px-1.5 py-0.5 bg-[#FF5E01] bg-opacity-10 rounded-full text-[#FF5E01] text-xxs font-medium"
-                                >
-                                  {threshold.minQuantity}
-                                  {idx < product.priceThresholds.length - 1 ? '-' + (product.priceThresholds[idx + 1].minQuantity - 1) : '+'} : Rp {threshold.price.toLocaleString('id-ID')}
-                                </div>
-                              ))}
-                              {product.priceThresholds.length > 2 && (
-                                <div className="text-xxs text-muted-foreground mt-0.5">
-                                  +{product.priceThresholds.length - 2} lagi
-                                </div>
-                              )}
-                            </div>
-                          )}
+                          <h3 className="font-medium text-xs lg:text-sm line-clamp-2 mb-1">{product.name}</h3>
+                          
                           <div className="mt-auto pt-1">
                             {product.discountPrice !== null ? (
-                              <div className="flex flex-col">
-                                <span className="line-through text-muted-foreground text-xxs">
-                                  Rp {product.price.toLocaleString('id-ID')}
-                                </span>
-                                <span className="text-[#FF5E01] font-semibold text-xs">
-                                  Rp {product.discountPrice.toLocaleString('id-ID')}
-                                </span>
-                                <span className="text-xxs text-green-500">
-                                  Hemat Rp {(product.price - product.discountPrice).toLocaleString('id-ID')}
-                                </span>
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
+                                    Rp {product.discountPrice.toLocaleString('id-ID')}
+                                  </span>
+                                  {product.rating && (
+                                    <div className="flex items-center gap-1">
+                                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                  <span className="line-through text-muted-foreground text-xxs">
+                                    Rp {product.price.toLocaleString('id-ID')}
+                                  </span>
+                                  <span className="text-xxs text-green-600 font-medium">
+                                    Hemat Rp {(product.price - product.discountPrice).toLocaleString('id-ID')}
+                                  </span>
+                                </div>
                               </div>
                             ) : (
-                              <span className="font-semibold text-xs">
-                                Rp {product.price.toLocaleString('id-ID')}
-                              </span>
+                              <div className="flex flex-col gap-0.5">
+                                <div className="flex items-center justify-between">
+                                  <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
+                                    Rp {product.price.toLocaleString('id-ID')}
+                                  </span>
+                                  {product.rating && (
+                                    <div className="flex items-center gap-1">
+                                      <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                      <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+                                    </div>
+                                  )}
+                                </div>
+                                <div className="h-4"></div>
+                              </div>
                             )}
                           </div>
-                          {product.pricingMethod === "dimensional" ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openProductDetailsCallback(product);
-                              }}
-                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center hover:bg-[#e54d00] transition-colors"
-                            >
-                              <ShoppingBag className="h-3 w-3 lg:h-4 lg:w-4 mr-1" /> Masukkan Ukuran
-                            </button>
-                          ) : idCardWithCaseIds.includes(product.id) ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openProductDetailsCallback(product);
-                              }}
-                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center hover:bg-[#e54d00] transition-colors"
-                            >
-                              <ShoppingBag className="h-3 w-3 lg:h-4 lg:w-4 mr-1" /> Pilih Casing
-                            </button>
-                          ) : stikerWithLaminationIds.includes(product.id) ? (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openProductDetailsCallback(product);
-                              }}
-                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center hover:bg-[#e54d00] transition-colors"
-                            >
-                              <ShoppingBag className="h-3 w-3 lg:h-4 lg:w-4 mr-1" /> Pilih Laminasi
-                            </button>
-                          ) : (
-                            <button
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                openProductDetailsCallback(product);
-                              }}
-                              className="mt-1 w-full bg-[#FF5E01] text-white rounded-full py-1 lg:py-2 px-2 lg:px-4 text-xs lg:text-sm flex items-center justify-center hover:bg-[#e54d00] transition-colors"
-                            >
-                              <ShoppingBag className="h-3 w-3 lg:h-4 lg:w-4 mr-1" /> Pilih Jumlah
-                            </button>
-                          )}
                         </div>
                       </div>
                       ))}
@@ -1380,15 +1358,45 @@ const Index = () => {
                             min={selectedProduct.minWidth}
                             max={selectedProduct.maxWidth}
                             step="0.5"
-                            value={bannerWidth}
+                            value={bannerWidthInput !== null ? bannerWidthInput : bannerWidth}
                             onChange={(e) => {
-                              let val = parseFloat(e.target.value) || selectedProduct.minWidth;
-                              val = Math.round(val * 2) / 2;
-                              if (val < selectedProduct.minWidth) val = selectedProduct.minWidth;
-                              if (val > selectedProduct.maxWidth) val = selectedProduct.maxWidth;
-                              setBannerWidth(val);
+                              const inputValue = e.target.value;
+                              // Allow empty input for easier editing on mobile
+                              setBannerWidthInput(inputValue);
+                              // Only update numeric state if we have a valid number
+                              if (inputValue !== '' && inputValue !== null && inputValue !== undefined) {
+                                const val = parseFloat(inputValue);
+                                if (!isNaN(val)) {
+                                  let roundedVal = Math.round(val * 2) / 2;
+                                  if (roundedVal < selectedProduct.minWidth) roundedVal = selectedProduct.minWidth;
+                                  if (roundedVal > selectedProduct.maxWidth) roundedVal = selectedProduct.maxWidth;
+                                  setBannerWidth(roundedVal);
+                                }
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (isNaN(val) || e.target.value === '' || val < selectedProduct.minWidth) {
+                                setBannerWidth(selectedProduct.minWidth);
+                                setBannerWidthInput(selectedProduct.minWidth.toString());
+                              } else if (val > selectedProduct.maxWidth) {
+                                setBannerWidth(selectedProduct.maxWidth);
+                                setBannerWidthInput(selectedProduct.maxWidth.toString());
+                              } else {
+                                const roundedVal = Math.round(val * 2) / 2;
+                                setBannerWidth(roundedVal);
+                                setBannerWidthInput(roundedVal.toString());
+                              }
+                            }}
+                            onFocus={(e) => {
+                              // Initialize input string when focused if not initialized
+                              if (bannerWidthInput === null) {
+                                setBannerWidthInput(bannerWidth.toString());
+                                e.target.select(); // Select all text for easy replacement
+                              }
                             }}
                             className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                            placeholder={`Min: ${selectedProduct.minWidth}m`}
                           />
                         </div>
                         <div>
@@ -1398,15 +1406,45 @@ const Index = () => {
                             min={selectedProduct.minHeight}
                             max={selectedProduct.maxHeight}
                             step="0.5"
-                            value={bannerHeight}
+                            value={bannerHeightInput !== null ? bannerHeightInput : bannerHeight}
                             onChange={(e) => {
-                              let val = parseFloat(e.target.value) || selectedProduct.minHeight;
-                              val = Math.round(val * 2) / 2;
-                              if (val < selectedProduct.minHeight) val = selectedProduct.minHeight;
-                              if (val > selectedProduct.maxHeight) val = selectedProduct.maxHeight;
-                              setBannerHeight(val);
+                              const inputValue = e.target.value;
+                              // Allow empty input for easier editing on mobile
+                              setBannerHeightInput(inputValue);
+                              // Only update numeric state if we have a valid number
+                              if (inputValue !== '' && inputValue !== null && inputValue !== undefined) {
+                                const val = parseFloat(inputValue);
+                                if (!isNaN(val)) {
+                                  let roundedVal = Math.round(val * 2) / 2;
+                                  if (roundedVal < selectedProduct.minHeight) roundedVal = selectedProduct.minHeight;
+                                  if (roundedVal > selectedProduct.maxHeight) roundedVal = selectedProduct.maxHeight;
+                                  setBannerHeight(roundedVal);
+                                }
+                              }
+                            }}
+                            onBlur={(e) => {
+                              const val = parseFloat(e.target.value);
+                              if (isNaN(val) || e.target.value === '' || val < selectedProduct.minHeight) {
+                                setBannerHeight(selectedProduct.minHeight);
+                                setBannerHeightInput(selectedProduct.minHeight.toString());
+                              } else if (val > selectedProduct.maxHeight) {
+                                setBannerHeight(selectedProduct.maxHeight);
+                                setBannerHeightInput(selectedProduct.maxHeight.toString());
+                              } else {
+                                const roundedVal = Math.round(val * 2) / 2;
+                                setBannerHeight(roundedVal);
+                                setBannerHeightInput(roundedVal.toString());
+                              }
+                            }}
+                            onFocus={(e) => {
+                              // Initialize input string when focused if not initialized
+                              if (bannerHeightInput === null) {
+                                setBannerHeightInput(bannerHeight.toString());
+                                e.target.select(); // Select all text for easy replacement
+                              }
                             }}
                             className="w-full rounded-lg border border-gray-300 p-2 text-sm"
+                            placeholder={`Min: ${selectedProduct.minHeight}m`}
                           />
                         </div>
                       </div>

@@ -104,7 +104,7 @@ const BannerCarousel = () => {
     <div className="relative mb-2 lg:mb-3 z-0">
       <Carousel
         setApi={setApi}
-        className="w-full max-w-6xl mx-auto"
+        className="w-full mx-auto"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
         opts={{

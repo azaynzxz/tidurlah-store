@@ -60,9 +60,9 @@ const BlogPost = () => {
   return (
     <BlogLayout>
       <div className="min-h-screen bg-background">
-        <div className="container mx-auto max-w-4xl bg-background min-h-screen">
+        <div className="container mx-auto max-w-4xl bg-background min-h-screen px-2">
           {/* Main Content */}
-          <div className="px-4 py-8">
+          <div className="px-4 pt-2 pb-8">
             <div className="max-w-3xl mx-auto">
               {/* Breadcrumb */}
               <nav className="mb-6">

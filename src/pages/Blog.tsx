@@ -101,7 +101,7 @@ const Blog = () => {
     >
       <div>
         {/* Main Content */}
-        <div className="container mx-auto max-w-7xl px-4 py-8">
+        <div className="container mx-auto max-w-7xl px-2 py-8">
           {/* Hero Section - Featured Post */}
           {featuredPost && (
             <div className="mb-16">
