@@ -1,0 +1,90 @@
+{
+  "images": [
+    {
+      "id": 1,
+      "src": "/katalog/placeholder-1.webp",
+      "title": "ID Card Design 1",
+      "category": "ID Card",
+      "description": "Sample ID card design"
+    },
+    {
+      "id": 2,
+      "src": "/katalog/placeholder-2.webp",
+      "title": "Lanyard Design 2",
+      "category": "Lanyard",
+      "description": "Sample lanyard design"
+    },
+    {
+      "id": 3,
+      "src": "/katalog/placeholder-3.webp",
+      "title": "Banner Design 3",
+      "category": "Banner",
+      "description": "Sample banner design"
+    },
+    {
+      "id": 4,
+      "src": "/katalog/placeholder-4.webp",
+      "title": "Merchandise Design 4",
+      "category": "Merchandise",
+      "description": "Sample merchandise design"
+    },
+    {
+      "id": 5,
+      "src": "/katalog/placeholder-5.webp",
+      "title": "ID Card Design 5",
+      "category": "ID Card",
+      "description": "Sample ID card design"
+    },
+    {
+      "id": 6,
+      "src": "/katalog/placeholder-6.webp",
+      "title": "Lanyard Design 6",
+      "category": "Lanyard",
+      "description": "Sample lanyard design"
+    },
+    {
+      "id": 7,
+      "src": "/katalog/placeholder-7.webp",
+      "title": "Banner Design 7",
+      "category": "Banner",
+      "description": "Sample banner design"
+    },
+    {
+      "id": 8,
+      "src": "/katalog/placeholder-8.webp",
+      "title": "Merchandise Design 8",
+      "category": "Merchandise",
+      "description": "Sample merchandise design"
+    },
+    {
+      "id": 9,
+      "src": "/katalog/placeholder-9.webp",
+      "title": "ID Card Design 9",
+      "category": "ID Card",
+      "description": "Sample ID card design"
+    },
+    {
+      "id": 10,
+      "src": "/katalog/placeholder-10.webp",
+      "title": "Lanyard Design 10",
+      "category": "Lanyard",
+      "description": "Sample lanyard design"
+    },
+    {
+      "id": 11,
+      "src": "/katalog/placeholder-11.webp",
+      "title": "Banner Design 11",
+      "category": "Banner",
+      "description": "Sample banner design"
+    },
+    {
+      "id": 12,
+      "src": "/katalog/placeholder-12.webp",
+      "title": "Merchandise Design 12",
+      "category": "Merchandise",
+      "description": "Sample merchandise design"
+    }
+  ]
+}
+
+

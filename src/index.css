@@ -1042,6 +1042,56 @@ body.loaded {
     max-width: 260px;
   }
 
+  /* Card shine sweep animation */
+  @keyframes shine-sweep {
+    0% {
+      transform: translateX(-100%) skewX(-15deg);
+    }
+    50% {
+      transform: translateX(200%) skewX(-15deg);
+    }
+    100% {
+      transform: translateX(200%) skewX(-15deg);
+    }
+  }
+
+  @keyframes border-shine {
+    0%, 75% {
+      border-color: rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+    37.5% {
+      border-color: rgba(255, 255, 255, 0.9);
+      box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
+    }
+  }
+
+  .card-shine {
+    position: relative;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    animation: border-shine 3s cubic-bezier(0.86, 0, 0.07, 1) infinite;
+  }
+
+  .card-shine::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.5),
+      transparent
+    );
+    animation: shine-sweep 3s cubic-bezier(0.86, 0, 0.07, 1) infinite;
+    animation-delay: var(--shine-delay, 0s);
+    pointer-events: none;
+    z-index: 1;
+  }
+
   /* Printer Container - simulates thermal printer */
   .printer-container {
     background: linear-gradient(145deg, #2c3e50, #34495e);

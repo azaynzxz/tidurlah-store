@@ -272,8 +272,16 @@ const Header = ({
               </button>
               <button 
                 className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/hello')}
+                onClick={() => handleDesktopMenuClick('/katalog')}
                 style={{ animationDelay: '350ms' }}
+              >
+                <Image className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                Katalog Desain
+              </button>
+              <button 
+                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                onClick={() => handleDesktopMenuClick('/hello')}
+                style={{ animationDelay: '400ms' }}
               >
                 <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                 Hello Page
@@ -281,7 +289,7 @@ const Header = ({
               <button 
                 className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                 onClick={toggleHalloweenMode}
-                style={{ animationDelay: '400ms' }}
+                style={{ animationDelay: '450ms' }}
               >
                 <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
                 Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
@@ -458,6 +466,19 @@ const Header = ({
               >
                 <Image className="h-4 w-4 mr-3 text-[#FF5E01]" />
                 Twibbon HUT 3 th ID Card Lampung
+              </button>
+              
+              <button 
+                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
+                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                }`}
+                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/katalog'); }}
+                style={{ 
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                }}
+              >
+                <Image className="h-4 w-4 mr-3 text-[#FF5E01]" />
+                Katalog Desain
               </button>
               
               <button 

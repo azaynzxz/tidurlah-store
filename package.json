@@ -9,7 +9,8 @@
     "build:dev": "vite build --mode development",
     "lint": "eslint .",
     "preview": "vite preview",
-    "optimize:images": "node scripts/optimize-images.mjs --update-products"
+    "optimize:images": "node scripts/optimize-images.mjs --update-products",
+    "generate-katalog": "node scripts/generate-katalog.js"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.4.0",
