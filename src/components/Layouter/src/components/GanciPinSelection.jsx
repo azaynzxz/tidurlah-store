@@ -1,17 +1,18 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowLeft, ArrowRight, Cloud, Download, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Search, X, Check, ArrowUpDown, Building2, Calendar, Edit } from 'lucide-react'
-import { generateLayout1S, generateLayout2SSama, generateLayoutKananKiriBeda } from '../utils/pdfGenerator'
+import { ArrowLeft, Cloud, Download, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Search, X, Check, Edit, Crop, Building2, Calendar } from 'lucide-react'
+import { generateLayoutGanciPin } from '../utils/pdfGenerator'
 import ProgressBar from './ProgressBar'
-import BackFileReorder from './BackFileReorder'
+import ImageCropper from './ImageCropper'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import processCompleteSound from '@/components/process-complete.mp3'
 import './FileSelection.css'
+import './ImageCropper.css'
 
-function FileSelection({ layout, onBack }) {
+function GanciPinSelection({ onBack }) {
   const [files, setFiles] = useState([])
-  const [backFiles, setBackFiles] = useState([])
+  const [diameterCm, setDiameterCm] = useState(3) // 3cm or 5cm
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -24,15 +25,14 @@ function FileSelection({ layout, onBack }) {
   const [customerSearchTerm, setCustomerSearchTerm] = useState('')
   const [showCustomerSelector, setShowCustomerSelector] = useState(false)
   const [isFileListExpanded, setIsFileListExpanded] = useState(false)
-  const [isBackFileListExpanded, setIsBackFileListExpanded] = useState(false)
-  const [showReorderDialog, setShowReorderDialog] = useState(false)
-  const [orderedBackFiles, setOrderedBackFiles] = useState([])
+  const [currentCropFile, setCurrentCropFile] = useState(null)
+  const [pendingFiles, setPendingFiles] = useState([])
+  const [croppedFileMap, setCroppedFileMap] = useState(new Map()) // Track original files for cropped files
+  const [editingFileIndex, setEditingFileIndex] = useState(null) // Track which file is being edited
   const [imagePreviews, setImagePreviews] = useState({}) // Store preview URLs by file name
-  const [backImagePreviews, setBackImagePreviews] = useState({}) // Store preview URLs for back files
-  const frontInputRef = useRef(null)
-  const backInputRef = useRef(null)
+  const inputRef = useRef(null)
 
-  // Load customers from order history
+  // Load customers from order history (same as FileSelection)
   useEffect(() => {
     const loadCustomers = () => {
       try {
@@ -115,42 +115,23 @@ function FileSelection({ layout, onBack }) {
     setFilteredCustomers(filtered)
   }, [customerSearchTerm, customers])
 
-  // Sync orderedBackFiles with backFiles when backFiles change
-  useEffect(() => {
-    if (backFiles.length > 0) {
-      setOrderedBackFiles([...backFiles])
-    } else {
-      setOrderedBackFiles([])
-    }
-  }, [backFiles])
-
-  // Handle customer selection
   const handleCustomerSelect = (customerId) => {
     setSelectedCustomerId(customerId)
     const selectedCustomer = customers.find(c => c.id === customerId)
     if (selectedCustomer) {
       setCustomerName(selectedCustomer.name)
       setInstansi(selectedCustomer.instansi)
-      setCustomerNameError('') // Clear any errors
-      setCustomerSearchTerm('') // Clear search after selection
+      setCustomerNameError('')
+      setCustomerSearchTerm('')
     }
   }
 
-  // Handle confirm customer info from dialog
   const handleConfirmCustomerInfo = () => {
     if (!validateCustomerInfo()) {
       return
     }
     setShowCustomerSelector(false)
     processWithCustomerInfo()
-  }
-
-  // Clear customer selection
-  const handleClearCustomerSelection = () => {
-    setSelectedCustomerId('')
-    setCustomerName('')
-    setInstansi('')
-    setCustomerSearchTerm('')
   }
 
   const formatFileSize = (bytes) => {
@@ -169,16 +150,19 @@ function FileSelection({ layout, onBack }) {
     return 'FILE'
   }
 
-  const handleFileChange = (e, isBack = false) => {
+  const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files)
     const imageFiles = selectedFiles.filter(file => 
       file.type.startsWith('image/') && 
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    if (isBack) {
-      setBackFiles(prev => [...prev, ...imageFiles])
-    } else {
-      setFiles(prev => [...prev, ...imageFiles])
+    
+    // Always queue files for cropping
+    if (imageFiles.length > 0) {
+      setPendingFiles(prev => [...prev, ...imageFiles])
+      if (!currentCropFile) {
+        setCurrentCropFile(imageFiles[0])
+      }
     }
   }
 
@@ -206,30 +190,6 @@ function FileSelection({ layout, onBack }) {
     }
   }, [files])
 
-  // Load image previews when backFiles change
-  useEffect(() => {
-    const loadPreviews = () => {
-      backFiles.forEach(file => {
-        setBackImagePreviews(prev => {
-          // Skip if already loaded
-          if (prev[file.name]) {
-            return prev
-          }
-          // Load preview
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            setBackImagePreviews(current => ({ ...current, [file.name]: e.target.result }))
-          }
-          reader.readAsDataURL(file)
-          return prev
-        })
-      })
-    }
-    if (backFiles.length > 0) {
-      loadPreviews()
-    }
-  }, [backFiles])
-
   // Clean up preview URLs when files are removed
   useEffect(() => {
     const fileNames = new Set(files.map(file => file.name))
@@ -244,50 +204,18 @@ function FileSelection({ layout, onBack }) {
     })
   }, [files])
 
-  // Clean up preview URLs when backFiles are removed
-  useEffect(() => {
-    const fileNames = new Set(backFiles.map(file => file.name))
-    setBackImagePreviews(prev => {
-      const updated = {}
-      Object.keys(prev).forEach(key => {
-        if (fileNames.has(key)) {
-          updated[key] = prev[key]
-        }
+  const handleRemoveFile = (index) => {
+    const fileToRemove = files[index]
+    // Clean up preview URL
+    if (imagePreviews[fileToRemove.name]) {
+      URL.revokeObjectURL(imagePreviews[fileToRemove.name])
+      setImagePreviews(prev => {
+        const updated = { ...prev }
+        delete updated[fileToRemove.name]
+        return updated
       })
-      return updated
-    })
-  }, [backFiles])
-
-  const handleRemoveFile = (index, isBack = false) => {
-    if (isBack) {
-      const fileToRemove = backFiles[index]
-      // Clean up preview URL
-      if (backImagePreviews[fileToRemove.name]) {
-        setBackImagePreviews(prev => {
-          const updated = { ...prev }
-          delete updated[fileToRemove.name]
-          return updated
-        })
-      }
-      setBackFiles(prev => prev.filter((_, i) => i !== index))
-      setOrderedBackFiles(prev => prev.filter((_, i) => i !== index))
-    } else {
-      const fileToRemove = files[index]
-      // Clean up preview URL
-      if (imagePreviews[fileToRemove.name]) {
-        setImagePreviews(prev => {
-          const updated = { ...prev }
-          delete updated[fileToRemove.name]
-          return updated
-        })
-      }
-      setFiles(prev => prev.filter((_, i) => i !== index))
     }
-  }
-
-  const handleSaveBackFileOrder = (orderedFiles) => {
-    setOrderedBackFiles(orderedFiles)
-    setBackFiles(orderedFiles) // Also update the original backFiles to keep them in sync
+    setFiles(prev => prev.filter((_, i) => i !== index))
   }
 
   const handleDragOver = (e) => {
@@ -300,7 +228,7 @@ function FileSelection({ layout, onBack }) {
     setIsDragging(false)
   }
 
-  const handleDrop = (e, isBack = false) => {
+  const handleDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
     const droppedFiles = Array.from(e.dataTransfer.files)
@@ -308,10 +236,91 @@ function FileSelection({ layout, onBack }) {
       file.type.startsWith('image/') && 
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    if (isBack) {
-      setBackFiles(prev => [...prev, ...imageFiles])
+    
+    // Always queue files for cropping
+    if (imageFiles.length > 0) {
+      setPendingFiles(prev => [...prev, ...imageFiles])
+      if (!currentCropFile) {
+        setCurrentCropFile(imageFiles[0])
+      }
+    }
+  }
+
+  const handleCropSave = (croppedFile) => {
+    const fileToUse = currentCropFile
+    
+    // If editing existing cropped file, replace it
+    if (editingFileIndex !== null) {
+      setFiles(prev => prev.map((f, idx) => {
+        if (idx === editingFileIndex) {
+          return croppedFile
+        }
+        return f
+      }))
+      // Update the mapping
+      setCroppedFileMap(prev => {
+        const newMap = new Map(prev)
+        newMap.set(croppedFile.name, fileToUse)
+        return newMap
+      })
+      setCurrentCropFile(null)
+      setEditingFileIndex(null)
+      return
+    }
+    
+    // Add cropped file to files list
+    setFiles(prev => [...prev, croppedFile])
+    
+    // Store mapping of cropped file to original file
+    setCroppedFileMap(prev => {
+      const newMap = new Map(prev)
+      newMap.set(croppedFile.name, fileToUse)
+      return newMap
+    })
+    
+    // Find and remove current file from pending
+    const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
+    const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
+    setPendingFiles(remaining)
+    
+    // Show next file or close cropper
+    if (remaining.length > 0) {
+      setCurrentCropFile(remaining[0])
     } else {
-      setFiles(prev => [...prev, ...imageFiles])
+      setCurrentCropFile(null)
+    }
+  }
+
+  const handleEditCrop = (file, index) => {
+    // Find original file if it was cropped
+    const originalFile = croppedFileMap.get(file.name)
+    setEditingFileIndex(index) // Store the index of file being edited
+    if (originalFile) {
+      setCurrentCropFile(originalFile)
+    } else {
+      // If no original file, use the current file
+      setCurrentCropFile(file)
+    }
+  }
+
+  const handleCropCancel = () => {
+    // If editing, just close
+    if (editingFileIndex !== null) {
+      setCurrentCropFile(null)
+      setEditingFileIndex(null)
+      return
+    }
+    
+    // Find and remove current file from pending
+    const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
+    const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
+    setPendingFiles(remaining)
+    
+    // Show next file or close cropper
+    if (remaining.length > 0) {
+      setCurrentCropFile(remaining[0])
+    } else {
+      setCurrentCropFile(null)
     }
   }
 
@@ -331,7 +340,6 @@ function FileSelection({ layout, onBack }) {
   }
 
   const handleLanjut = () => {
-    // Open customer selector dialog
     setShowCustomerSelector(true)
   }
 
@@ -341,24 +349,16 @@ function FileSelection({ layout, onBack }) {
       return
     }
 
-    if (layout === 'kanan-kiri-beda' && backFiles.length === 0) {
-      alert('Silakan pilih file gambar belakang')
-      return
-    }
-
-    // Customer must be selected before processing
     if (!customerName.trim()) {
       setShowCustomerSelector(true)
       return
     }
 
-    // If customer info exists but invalid, show popup
     if (!validateCustomerInfo()) {
       setShowCustomerSelector(true)
       return
     }
 
-    // Proceed with processing
     await processWithCustomerInfo()
   }
 
@@ -373,15 +373,7 @@ function FileSelection({ layout, onBack }) {
         instansi: instansi.trim() || 'N/A'
       }
 
-      if (layout === '1s') {
-        await generateLayout1S(files, setProgress, customerInfo)
-      } else if (layout === '2s-sama') {
-        await generateLayout2SSama(files, setProgress, customerInfo)
-      } else if (layout === 'kanan-kiri-beda') {
-        // Use orderedBackFiles if available, otherwise use backFiles
-        const backFilesToUse = orderedBackFiles.length > 0 ? orderedBackFiles : backFiles
-        await generateLayoutKananKiriBeda(files, backFilesToUse, setProgress, customerInfo)
-      }
+      await generateLayoutGanciPin(files, setProgress, customerInfo, diameterCm)
       success = true
     } catch (error) {
       console.error('Error generating PDF:', error)
@@ -391,7 +383,6 @@ function FileSelection({ layout, onBack }) {
       setIsProcessing(false)
       setProgress(0)
       
-      // Play completion sound if processing was successful
       if (success) {
         try {
           const audio = new Audio(processCompleteSound)
@@ -405,122 +396,58 @@ function FileSelection({ layout, onBack }) {
     }
   }
 
-  const getLayoutName = () => {
-    if (layout === '1s') return 'IDC 1S'
-    if (layout === '2s-sama') return 'IDC 2S (Sama Sisi)'
-    if (layout === 'kanan-kiri-beda') return 'IDC 2S (Sisi Berbeda)'
-    return 'Layout Tidak Dikenal'
-  }
-
-  const renderFileUploadArea = (title, fileList, isBack = false) => {
-    const inputRef = isBack ? backInputRef : frontInputRef
-
-    return (
-      <div className="upload-section">
-        <div className="upload-section-header">
-          <div className="upload-section-header-left">
-            <h3 className="upload-section-title">{title}</h3>
-            <p className="upload-section-subtitle">
-              {layout === 'kanan-kiri-beda' && isBack 
-                ? 'Unggah gambar sisi belakang Anda' 
-                : 'Unggah gambar ID card Anda'}
-            </p>
-          </div>
-          {isBack && fileList.length > 1 && (
-            <div className="upload-section-header-right">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowReorderDialog(true)}
-                disabled={isProcessing}
-                className="file-reorder-button-header"
-              >
-                <ArrowUpDown className="w-4 h-4 mr-2" />
-                Atur Urutan ID Card Belakang
-              </Button>
-            </div>
-          )}
-        </div>
-
-        <div
-          className={`drop-zone ${isDragging ? 'dragging' : ''}`}
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e, isBack)}
-          onClick={() => inputRef.current?.click()}
-        >
-          <Cloud className="drop-zone-icon" />
-          <p className="drop-zone-text">Jatuhkan file Anda di sini atau jelajahi</p>
-          <p className="drop-zone-hint">Ukuran file maksimal hingga 1 GB</p>
-          <input
-            ref={inputRef}
-            type="file"
-            multiple
-            accept="image/png,image/jpeg,image/jpg"
-            onChange={(e) => handleFileChange(e, isBack)}
-            disabled={isProcessing}
-            className="file-input"
-          />
-        </div>
-
-        {fileList.length > 0 && (
-          <div className="file-list-container">
-            <button
-              className="file-list-header"
-              onClick={() => isBack ? setIsBackFileListExpanded(!isBackFileListExpanded) : setIsFileListExpanded(!isFileListExpanded)}
-            >
-              <span className="file-list-count">{fileList.length} file dipilih</span>
-              {isBack ? (
-                isBackFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-              ) : (
-                isFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-              )}
-            </button>
-            {(isBack ? isBackFileListExpanded : isFileListExpanded) && (
-              <>
-                <div className="file-list-grid">
-                  {fileList.map((file, index) => (
-                    <div key={`${file.name}-${index}`} className="file-item">
-                      {(isBack ? backImagePreviews[file.name] : imagePreviews[file.name]) && (
-                        <img 
-                          src={isBack ? backImagePreviews[file.name] : imagePreviews[file.name]} 
-                          alt={file.name}
-                          className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
-                        />
-                      )}
-                      <div className="file-info">
-                        <p className="file-name">{file.name}</p>
-                        <p className="file-size">{formatFileSize(file.size)}</p>
-                      </div>
-                      <button
-                        className="file-delete-btn"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleRemoveFile(index, isBack)
-                        }}
-                        disabled={isProcessing}
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </>
-            )}
-          </div>
-        )}
-      </div>
-    )
-  }
-
   return (
     <div className="file-selection">
       <div className="file-selection-header">
-        <h2 className="file-selection-title">{getLayoutName()}</h2>
-        <p className="file-selection-subtitle">Unggah gambar ID card Anda untuk menghasilkan layout PDF</p>
+        <h2 className="file-selection-title">Layout Ganci/Pin</h2>
+        <p className="file-selection-subtitle">Unggah gambar untuk menghasilkan layout PDF ganci/pin</p>
       </div>
 
-      {/* Customer Info Dialog */}
+      {/* Options Row */}
+      <div className="mb-6 space-y-4">
+        {/* Diameter Selector */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-3">
+            Pilih Diameter Ganci/Pin
+          </label>
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => setDiameterCm(3)}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${diameterCm === 3 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              3cm
+            </button>
+            <button
+              type="button"
+              onClick={() => setDiameterCm(5)}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${diameterCm === 5 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              5cm
+            </button>
+          </div>
+          <p className="text-xs text-gray-500 mt-2">
+            {diameterCm === 3 ? 'Grid: 4x5 (20 item per halaman)' : 'Grid: 3x5 (15 item per halaman)'}
+          </p>
+        </div>
+
+      </div>
+
+      {/* Customer Info Dialog - Same as FileSelection */}
       <Dialog open={showCustomerSelector} onOpenChange={setShowCustomerSelector}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-4 md:p-6">
           <DialogHeader className="px-0 md:px-0">
@@ -544,17 +471,8 @@ function FileSelection({ layout, onBack }) {
                     value={customerName}
                     onChange={(e) => {
                       setCustomerName(e.target.value)
-                      setSelectedCustomerId('') // Clear selection when manually editing
+                      setSelectedCustomerId('')
                       if (customerNameError) {
-                        setCustomerNameError('')
-                      }
-                    }}
-                    onBlur={() => {
-                      if (!customerName.trim()) {
-                        setCustomerNameError('Nama pelanggan wajib diisi')
-                      } else if (customerName.trim().length < 2) {
-                        setCustomerNameError('Nama pelanggan minimal 2 karakter')
-                      } else {
                         setCustomerNameError('')
                       }
                     }}
@@ -577,7 +495,7 @@ function FileSelection({ layout, onBack }) {
                     value={instansi}
                     onChange={(e) => {
                       setInstansi(e.target.value)
-                      setSelectedCustomerId('') // Clear selection when manually editing
+                      setSelectedCustomerId('')
                     }}
                     placeholder="Masukkan instansi (opsional)"
                     disabled={isProcessing}
@@ -681,7 +599,6 @@ function FileSelection({ layout, onBack }) {
               </div>
             )}
 
-            {/* Action Buttons */}
             <div className="flex justify-end gap-3 pt-4 border-t">
               <Button
                 variant="outline"
@@ -702,14 +619,92 @@ function FileSelection({ layout, onBack }) {
         </DialogContent>
       </Dialog>
 
+      {/* File Upload Area */}
       <div className="file-upload-container">
-        {renderFileUploadArea(
-          layout === 'kanan-kiri-beda' ? 'Gambar Depan' : 'Pilih Gambar',
-          files,
-          false
-        )}
+        <div className="upload-section">
+          <div className="upload-section-header">
+            <div className="upload-section-header-left">
+              <h3 className="upload-section-title">Pilih Gambar</h3>
+              <p className="upload-section-subtitle">Unggah gambar untuk ganci/pin</p>
+            </div>
+          </div>
 
-        {layout === 'kanan-kiri-beda' && renderFileUploadArea('Gambar Belakang', backFiles, true)}
+          <div
+            className={`drop-zone ${isDragging ? 'dragging' : ''}`}
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => inputRef.current?.click()}
+          >
+            <Cloud className="drop-zone-icon" />
+            <p className="drop-zone-text">Jatuhkan file Anda di sini atau jelajahi</p>
+            <p className="drop-zone-hint">Ukuran file maksimal hingga 1 GB</p>
+            <input
+              ref={inputRef}
+              type="file"
+              multiple
+              accept="image/png,image/jpeg,image/jpg"
+              onChange={handleFileChange}
+              disabled={isProcessing}
+              className="file-input"
+            />
+          </div>
+
+          {files.length > 0 && (
+            <div className="file-list-container">
+              <button
+                className="file-list-header"
+                onClick={() => setIsFileListExpanded(!isFileListExpanded)}
+              >
+                <span className="file-list-count">{files.length} file dipilih</span>
+                {isFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+              </button>
+              {isFileListExpanded && (
+                <div className="file-list-grid">
+                  {files.map((file, index) => (
+                    <div key={`${file.name}-${index}`} className="file-item">
+                      {imagePreviews[file.name] && (
+                        <img 
+                          src={imagePreviews[file.name]} 
+                          alt={file.name}
+                          className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
+                        />
+                      )}
+                      <div className="file-info">
+                        <p className="file-name">{file.name}</p>
+                        <p className="file-size">{formatFileSize(file.size)}</p>
+                      </div>
+                      <div className="flex gap-1">
+                        <button
+                          className="file-delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEditCrop(file, index)
+                          }}
+                          disabled={isProcessing}
+                          title="Edit crop"
+                        >
+                          <Crop className="w-4 h-4" />
+                        </button>
+                        <button
+                          className="file-delete-btn"
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleRemoveFile(index)
+                          }}
+                          disabled={isProcessing}
+                          title="Hapus file"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
       </div>
 
       {isProcessing && (
@@ -718,13 +713,13 @@ function FileSelection({ layout, onBack }) {
         </div>
       )}
 
-      {/* Back File Reorder Dialog */}
-      {showReorderDialog && layout === 'kanan-kiri-beda' && backFiles.length > 1 && (
-        <BackFileReorder
-          files={backFiles}
-          frontFiles={files}
-          onClose={() => setShowReorderDialog(false)}
-          onSave={handleSaveBackFileOrder}
+      {/* Image Cropper */}
+      {currentCropFile && (
+        <ImageCropper
+          file={currentCropFile}
+          diameter={diameterCm}
+          onSave={handleCropSave}
+          onCancel={handleCropCancel}
         />
       )}
 
@@ -745,7 +740,7 @@ function FileSelection({ layout, onBack }) {
               <Button
                 className="floating-action-btn-process"
                 onClick={customerName ? handleProcess : handleLanjut}
-                disabled={isProcessing || files.length === 0 || (layout === 'kanan-kiri-beda' && backFiles.length === 0)}
+                disabled={isProcessing || files.length === 0}
                 size="lg"
               >
                 {isProcessing ? (
@@ -757,7 +752,6 @@ function FileSelection({ layout, onBack }) {
                   </>
                 ) : (
                   <>
-                    <ArrowRight className="mr-1 md:mr-2 h-4 w-4" />
                     <span className="text-sm md:text-base">Lanjut</span>
                   </>
                 )}
@@ -780,5 +774,5 @@ function FileSelection({ layout, onBack }) {
   )
 }
 
-export default FileSelection
+export default GanciPinSelection
 

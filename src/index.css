@@ -1820,3 +1820,26 @@ body.loaded {
     z-index: 10;
   }
 }
+
+/* Chat message bubble animation */
+@keyframes chatBubbleSlideUp {
+  0% {
+    transform: translateY(10px);
+    opacity: 0;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.chat-message-bubble {
+  animation: chatBubbleSlideUp 0.4s ease-out forwards;
+  opacity: 0; /* Start invisible, animation will make it visible */
+  animation-fill-mode: both;
+}
+
+/* Ensure animation triggers on new messages */
+.chat-message-bubble:last-child {
+  animation: chatBubbleSlideUp 0.4s ease-out forwards;
+}

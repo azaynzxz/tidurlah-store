@@ -40,6 +40,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
   const bubbleTimeoutRef = useRef<NodeJS.Timeout>();
   const showDelayRef = useRef<NodeJS.Timeout>();
   const hasPlayedDingRef = useRef(false);
+  const inactivityTimeoutRef = useRef<NodeJS.Timeout>();
+  const countdownIntervalRef = useRef<NodeJS.Timeout>();
   
   // Play sound helper
   const playSound = (soundPath: string, volume: number = 0.3) => {
@@ -97,6 +99,39 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
+  // Track user inactivity and show follow-up message after 1 minute
+  const resetInactivityTimer = () => {
+    // Clear existing timer
+    if (inactivityTimeoutRef.current) {
+      clearTimeout(inactivityTimeoutRef.current);
+      inactivityTimeoutRef.current = undefined;
+    }
+    
+    // Set new timer for 1 minute (60 seconds)
+    inactivityTimeoutRef.current = setTimeout(() => {
+      // Check if chat is still open
+      if (!isOpen) return;
+      
+      // Check if the last message is not already the follow-up message
+      setMessages(prevMessages => {
+        const lastMessage = prevMessages[prevMessages.length - 1];
+        const isFollowUpMessage = lastMessage?.text === "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.";
+        
+        if (!isFollowUpMessage && !lastMessage?.isTyping) {
+          return [
+            ...prevMessages,
+            { 
+              text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
+              isBot: true,
+              showSuggestions: true 
+            }
+          ];
+        }
+        return prevMessages;
+      });
+    }, 60000); // 1 minute = 60000ms
+  };
+
   // Show welcome suggestions after initial greeting
   useEffect(() => {
     if (messages.length === 1 && isOpen) {
@@ -121,6 +156,9 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
   // Handle sending a message
   const handleSendMessage = () => {
     if (!inputText.trim()) return;
+    
+    // Reset inactivity timer on user interaction
+    resetInactivityTimer();
     
     // Play sound when user sends a message
     playSound('/audio/sent-message.mp3', 0.25);
@@ -191,17 +229,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
         // Play sound when bot responds
         playSound('/audio/incoming-message.mp3', 0.25);
         
-        // After a brief delay, show suggestions again
-        setTimeout(() => {
-          setMessages(prevMessages => [
-            ...prevMessages,
-            { 
-              text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-              isBot: true,
-              showSuggestions: true 
-            }
-          ]);
-        }, 7000);
+        // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+        resetInactivityTimer();
       }, 1500);
       
       return;
@@ -247,17 +276,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
           // Play sound when bot responds
           playSound('/audio/incoming-message.mp3', 0.25);
           
-          // After a brief delay, add follow-up message asking to pick another topic
-          setTimeout(() => {
-            setMessages(prevMessages => [
-              ...prevMessages,
-              { 
-                text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-                isBot: true,
-                showSuggestions: true 
-              }
-            ]);
-          }, 7000);
+          // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+          resetInactivityTimer();
           
           foundResponse = true;
           break;
@@ -278,17 +298,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
         // Play sound when bot responds
         playSound('/audio/incoming-message.mp3', 0.25);
         
-        // After a brief delay, add follow-up message asking to pick another topic
-        setTimeout(() => {
-          setMessages(prevMessages => [
-            ...prevMessages,
-            { 
-              text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-              isBot: true,
-              showSuggestions: true 
-            }
-          ]);
-        }, 7000);
+        // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+        resetInactivityTimer();
       }
       
       setInputText("");
@@ -297,6 +308,61 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
 
   // Handle suggestion click
   const handleSuggestionClick = (keyword: string) => {
+    // Reset inactivity timer on user interaction
+    resetInactivityTimer();
+    
+    // Special case for "cara order" - show countdown message then redirect
+    if (keyword === "cara order") {
+      // Clear any existing countdown
+      if (countdownIntervalRef.current) {
+        clearInterval(countdownIntervalRef.current);
+      }
+      
+      // Add user message
+      setMessages(prevMessages => [...prevMessages, { text: "Cara Order?", isBot: false }]);
+      
+      // Add confirmation message
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { text: "Anda akan dialihkan untuk melihat video tutorial", isBot: true }
+      ]);
+      
+      // Add countdown message bubble (will be updated)
+      setMessages(prevMessages => [
+        ...prevMessages,
+        { text: "5", isBot: true }
+      ]);
+      
+      // Start countdown - update the countdown bubble
+      let countdown = 4;
+      countdownIntervalRef.current = setInterval(() => {
+        if (countdown > 0) {
+          // Update the last countdown message
+          setMessages(prevMessages => {
+            const newMessages = [...prevMessages];
+            // Find and update the last countdown message (the one that's just a number)
+            for (let i = newMessages.length - 1; i >= 0; i--) {
+              if (newMessages[i].isBot && /^\d+$/.test(newMessages[i].text)) {
+                newMessages[i] = { ...newMessages[i], text: `${countdown}` };
+                break;
+              }
+            }
+            return newMessages;
+          });
+          countdown--;
+        } else {
+          if (countdownIntervalRef.current) {
+            clearInterval(countdownIntervalRef.current);
+            countdownIntervalRef.current = undefined;
+          }
+          // Navigate after countdown
+          window.location.href = "/blog/tutorial-cara-order";
+        }
+      }, 1000);
+      
+      return;
+    }
+    
     // Special case for "chat with admin" - collect name first
     if (keyword === "chat with admin") {
       if (!userName) {
@@ -362,17 +428,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
           // Play sound when bot responds
           playSound('/audio/incoming-message.mp3', 0.25);
           
-          // After a brief delay, show suggestions again
-          setTimeout(() => {
-            setMessages(prevMessages => [
-              ...prevMessages,
-              { 
-                text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-                isBot: true,
-                showSuggestions: true 
-              }
-            ]);
-          }, 25000);
+          // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+          resetInactivityTimer();
           
           return;
         }
@@ -391,17 +448,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
         // Play sound when bot responds
         playSound('/audio/incoming-message.mp3', 0.25);
         
-        // After a brief delay, add follow-up message asking to pick another topic
-        setTimeout(() => {
-          setMessages(prevMessages => [
-            ...prevMessages,
-            { 
-              text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-              isBot: true,
-              showSuggestions: true 
-            }
-          ]);
-        }, 7000);
+        // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+        resetInactivityTimer();
       } else {
         // Fallback for suggestions that don't match exactly
         setMessages([
@@ -412,17 +460,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
         // Play sound when bot responds
         playSound('/audio/incoming-message.mp3', 0.25);
         
-        // After a brief delay, add follow-up message asking to pick another topic
-        setTimeout(() => {
-          setMessages(prevMessages => [
-            ...prevMessages,
-            { 
-              text: "Ada lagi yang ingin Anda tanyakan? Silakan pilih topik lain atau ketik pertanyaan Anda.", 
-              isBot: true,
-              showSuggestions: true 
-            }
-          ]);
-        }, 7000);
+        // Reset inactivity timer - follow-up message will show after 1 minute of inactivity
+        resetInactivityTimer();
       }
     }, 1500);
   };

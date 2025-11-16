@@ -696,6 +696,8 @@
 .file-info {
   flex: 1;
   min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .file-name {
@@ -712,6 +714,9 @@
   font-size: 12px;
   color: #6b7280;
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .file-delete-btn {

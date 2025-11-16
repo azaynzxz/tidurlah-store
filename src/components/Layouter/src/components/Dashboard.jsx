@@ -1,4 +1,4 @@
-import { FileText, Copy, ArrowLeftRight, ExternalLink } from 'lucide-react'
+import { FileText, Copy, ArrowLeftRight, ExternalLink, Pin, Coffee, CreditCard } from 'lucide-react'
 import './Dashboard.css'
 
 const layoutCards = [
@@ -25,6 +25,30 @@ const layoutCards = [
     icon: ArrowLeftRight,
     gradient: 'bg-gradient-to-br from-orange-500 via-red-500 to-orange-600',
     gradientStyle: 'linear-gradient(to bottom right, #f97316, #ef4444, #f97316)'
+  },
+  {
+    id: 'ganci-pin',
+    title: 'Layout Ganci/Pin',
+    description: ['Layout ganci/pin', '(3x5 atau 3x3 grid per halaman)'],
+    icon: Pin,
+    gradient: 'bg-gradient-to-br from-emerald-500 via-teal-500 to-cyan-600',
+    gradientStyle: 'linear-gradient(to bottom right, #10b981, #14b8a6, #0891b2)'
+  },
+  {
+    id: 'mug',
+    title: 'Layout Mug',
+    description: ['Layout mug', '(20x10 cm, A4 landscape)'],
+    icon: Coffee,
+    gradient: 'bg-gradient-to-br from-amber-500 via-orange-500 to-red-500',
+    gradientStyle: 'linear-gradient(to bottom right, #f59e0b, #f97316, #ef4444)'
+  },
+  {
+    id: 'lanyard',
+    title: 'Layout Lanyard',
+    description: ['Layout lanyard', '(2 kolom x 8 baris)'],
+    icon: CreditCard,
+    gradient: 'bg-gradient-to-br from-pink-500 via-rose-500 to-red-500',
+    gradientStyle: 'linear-gradient(to bottom right, #ec4899, #f43f5e, #ef4444)'
   }
 ]
 

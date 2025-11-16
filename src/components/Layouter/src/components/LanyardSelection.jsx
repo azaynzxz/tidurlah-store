@@ -1,17 +1,17 @@
 import { useState, useRef, useEffect } from 'react'
 import { createPortal } from 'react-dom'
-import { ArrowLeft, ArrowRight, Cloud, Download, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Search, X, Check, ArrowUpDown, Building2, Calendar, Edit } from 'lucide-react'
-import { generateLayout1S, generateLayout2SSama, generateLayoutKananKiriBeda } from '../utils/pdfGenerator'
+import { ArrowLeft, ArrowRight, Cloud, Download, Trash2, ChevronDown, ChevronUp, AlertCircle, User, Search, X, Check, Edit, Crop, Building2, Calendar, Plus, Minus } from 'lucide-react'
+import { generateLayoutLanyard } from '../utils/pdfGenerator'
 import ProgressBar from './ProgressBar'
-import BackFileReorder from './BackFileReorder'
+import LanyardRectangularCropper from './LanyardRectangularCropper'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import processCompleteSound from '@/components/process-complete.mp3'
 import './FileSelection.css'
+import './ImageCropper.css'
 
-function FileSelection({ layout, onBack }) {
-  const [files, setFiles] = useState([])
-  const [backFiles, setBackFiles] = useState([])
+function LanyardSelection({ onBack }) {
+  const [files, setFiles] = useState([]) // Array of { original: File, cropped: File, quantity: number }
   const [isProcessing, setIsProcessing] = useState(false)
   const [progress, setProgress] = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -24,13 +24,12 @@ function FileSelection({ layout, onBack }) {
   const [customerSearchTerm, setCustomerSearchTerm] = useState('')
   const [showCustomerSelector, setShowCustomerSelector] = useState(false)
   const [isFileListExpanded, setIsFileListExpanded] = useState(false)
-  const [isBackFileListExpanded, setIsBackFileListExpanded] = useState(false)
-  const [showReorderDialog, setShowReorderDialog] = useState(false)
-  const [orderedBackFiles, setOrderedBackFiles] = useState([])
+  const [currentCropFile, setCurrentCropFile] = useState(null)
+  const [pendingFiles, setPendingFiles] = useState([])
+  const [editingFileIndex, setEditingFileIndex] = useState(null)
+  const [printingSide, setPrintingSide] = useState('1-side') // '1-side' or '2-side'
   const [imagePreviews, setImagePreviews] = useState({}) // Store preview URLs by file name
-  const [backImagePreviews, setBackImagePreviews] = useState({}) // Store preview URLs for back files
-  const frontInputRef = useRef(null)
-  const backInputRef = useRef(null)
+  const inputRef = useRef(null)
 
   // Load customers from order history
   useEffect(() => {
@@ -115,15 +114,6 @@ function FileSelection({ layout, onBack }) {
     setFilteredCustomers(filtered)
   }, [customerSearchTerm, customers])
 
-  // Sync orderedBackFiles with backFiles when backFiles change
-  useEffect(() => {
-    if (backFiles.length > 0) {
-      setOrderedBackFiles([...backFiles])
-    } else {
-      setOrderedBackFiles([])
-    }
-  }, [backFiles])
-
   // Handle customer selection
   const handleCustomerSelect = (customerId) => {
     setSelectedCustomerId(customerId)
@@ -169,23 +159,26 @@ function FileSelection({ layout, onBack }) {
     return 'FILE'
   }
 
-  const handleFileChange = (e, isBack = false) => {
+  const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files)
     const imageFiles = selectedFiles.filter(file => 
       file.type.startsWith('image/') && 
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    if (isBack) {
-      setBackFiles(prev => [...prev, ...imageFiles])
-    } else {
-      setFiles(prev => [...prev, ...imageFiles])
+    
+    if (imageFiles.length > 0) {
+      setPendingFiles(prev => [...prev, ...imageFiles])
+      if (!currentCropFile) {
+        setCurrentCropFile(imageFiles[0])
+      }
     }
   }
 
   // Load image previews when files change
   useEffect(() => {
     const loadPreviews = () => {
-      files.forEach(file => {
+      files.forEach(fileItem => {
+        const file = fileItem.original
         setImagePreviews(prev => {
           // Skip if already loaded
           if (prev[file.name]) {
@@ -206,33 +199,9 @@ function FileSelection({ layout, onBack }) {
     }
   }, [files])
 
-  // Load image previews when backFiles change
-  useEffect(() => {
-    const loadPreviews = () => {
-      backFiles.forEach(file => {
-        setBackImagePreviews(prev => {
-          // Skip if already loaded
-          if (prev[file.name]) {
-            return prev
-          }
-          // Load preview
-          const reader = new FileReader()
-          reader.onload = (e) => {
-            setBackImagePreviews(current => ({ ...current, [file.name]: e.target.result }))
-          }
-          reader.readAsDataURL(file)
-          return prev
-        })
-      })
-    }
-    if (backFiles.length > 0) {
-      loadPreviews()
-    }
-  }, [backFiles])
-
   // Clean up preview URLs when files are removed
   useEffect(() => {
-    const fileNames = new Set(files.map(file => file.name))
+    const fileNames = new Set(files.map(item => item.original.name))
     setImagePreviews(prev => {
       const updated = {}
       Object.keys(prev).forEach(key => {
@@ -244,50 +213,55 @@ function FileSelection({ layout, onBack }) {
     })
   }, [files])
 
-  // Clean up preview URLs when backFiles are removed
-  useEffect(() => {
-    const fileNames = new Set(backFiles.map(file => file.name))
-    setBackImagePreviews(prev => {
-      const updated = {}
-      Object.keys(prev).forEach(key => {
-        if (fileNames.has(key)) {
-          updated[key] = prev[key]
-        }
+  const handleRemoveFile = (index) => {
+    const fileToRemove = files[index]
+    // Clean up preview URL
+    if (imagePreviews[fileToRemove.original.name]) {
+      URL.revokeObjectURL(imagePreviews[fileToRemove.original.name])
+      setImagePreviews(prev => {
+        const updated = { ...prev }
+        delete updated[fileToRemove.original.name]
+        return updated
       })
-      return updated
-    })
-  }, [backFiles])
-
-  const handleRemoveFile = (index, isBack = false) => {
-    if (isBack) {
-      const fileToRemove = backFiles[index]
-      // Clean up preview URL
-      if (backImagePreviews[fileToRemove.name]) {
-        setBackImagePreviews(prev => {
-          const updated = { ...prev }
-          delete updated[fileToRemove.name]
-          return updated
-        })
-      }
-      setBackFiles(prev => prev.filter((_, i) => i !== index))
-      setOrderedBackFiles(prev => prev.filter((_, i) => i !== index))
-    } else {
-      const fileToRemove = files[index]
-      // Clean up preview URL
-      if (imagePreviews[fileToRemove.name]) {
-        setImagePreviews(prev => {
-          const updated = { ...prev }
-          delete updated[fileToRemove.name]
-          return updated
-        })
-      }
-      setFiles(prev => prev.filter((_, i) => i !== index))
     }
+    setFiles(prev => prev.filter((_, i) => i !== index))
   }
 
-  const handleSaveBackFileOrder = (orderedFiles) => {
-    setOrderedBackFiles(orderedFiles)
-    setBackFiles(orderedFiles) // Also update the original backFiles to keep them in sync
+  const handleQuantityChange = (index, delta) => {
+    setFiles(prev => prev.map((item, i) => {
+      if (i === index) {
+        const newQuantity = Math.max(1, item.quantity + delta)
+        return { ...item, quantity: newQuantity }
+      }
+      return item
+    }))
+  }
+
+  const handleQuantityInput = (index, value) => {
+    const numValue = parseInt(value) || 1
+    const quantity = Math.max(1, numValue)
+    setFiles(prev => prev.map((item, i) => {
+      if (i === index) {
+        return { ...item, quantity }
+      }
+      return item
+    }))
+  }
+
+  // Calculate total pages needed (max 16 images per page = 2 columns x 8 rows)
+  const calculateTotalPages = () => {
+    const imagesPerPage = 16 // 2 columns x 8 rows
+    let totalImages = 0
+    
+    files.forEach(item => {
+      totalImages += item.quantity
+    })
+    
+    return Math.ceil(totalImages / imagesPerPage)
+  }
+
+  const getTotalImages = () => {
+    return files.reduce((sum, item) => sum + item.quantity, 0)
   }
 
   const handleDragOver = (e) => {
@@ -300,7 +274,7 @@ function FileSelection({ layout, onBack }) {
     setIsDragging(false)
   }
 
-  const handleDrop = (e, isBack = false) => {
+  const handleDrop = (e) => {
     e.preventDefault()
     setIsDragging(false)
     const droppedFiles = Array.from(e.dataTransfer.files)
@@ -308,10 +282,63 @@ function FileSelection({ layout, onBack }) {
       file.type.startsWith('image/') && 
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    if (isBack) {
-      setBackFiles(prev => [...prev, ...imageFiles])
+    
+    if (imageFiles.length > 0) {
+      setPendingFiles(prev => [...prev, ...imageFiles])
+      if (!currentCropFile) {
+        setCurrentCropFile(imageFiles[0])
+      }
+    }
+  }
+
+  const handleCropSave = (croppedFile) => {
+    const originalFile = currentCropFile
+    
+    if (editingFileIndex !== null) {
+      setFiles(prev => prev.map((f, idx) => {
+        if (idx === editingFileIndex) {
+          return { original: f.original, cropped: croppedFile, quantity: f.quantity }
+        }
+        return f
+      }))
+      setCurrentCropFile(null)
+      setEditingFileIndex(null)
+      return
+    }
+    
+    setFiles(prev => [...prev, { original: originalFile, cropped: croppedFile, quantity: 1 }])
+    
+    const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
+    const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
+    setPendingFiles(remaining)
+    
+    if (remaining.length > 0) {
+      setCurrentCropFile(remaining[0])
     } else {
-      setFiles(prev => [...prev, ...imageFiles])
+      setCurrentCropFile(null)
+    }
+  }
+
+  const handleEditCrop = (fileItem, index) => {
+    setEditingFileIndex(index)
+    setCurrentCropFile(fileItem.original)
+  }
+
+  const handleCropCancel = () => {
+    if (editingFileIndex !== null) {
+      setCurrentCropFile(null)
+      setEditingFileIndex(null)
+      return
+    }
+    
+    const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
+    const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
+    setPendingFiles(remaining)
+    
+    if (remaining.length > 0) {
+      setCurrentCropFile(remaining[0])
+    } else {
+      setCurrentCropFile(null)
     }
   }
 
@@ -338,11 +365,6 @@ function FileSelection({ layout, onBack }) {
   const handleProcess = async () => {
     if (files.length === 0) {
       alert('Silakan pilih minimal satu file gambar')
-      return
-    }
-
-    if (layout === 'kanan-kiri-beda' && backFiles.length === 0) {
-      alert('Silakan pilih file gambar belakang')
       return
     }
 
@@ -373,15 +395,13 @@ function FileSelection({ layout, onBack }) {
         instansi: instansi.trim() || 'N/A'
       }
 
-      if (layout === '1s') {
-        await generateLayout1S(files, setProgress, customerInfo)
-      } else if (layout === '2s-sama') {
-        await generateLayout2SSama(files, setProgress, customerInfo)
-      } else if (layout === 'kanan-kiri-beda') {
-        // Use orderedBackFiles if available, otherwise use backFiles
-        const backFilesToUse = orderedBackFiles.length > 0 ? orderedBackFiles : backFiles
-        await generateLayoutKananKiriBeda(files, backFilesToUse, setProgress, customerInfo)
-      }
+      await generateLayoutLanyard(
+        files.map(item => ({ original: item.original, cropped: item.cropped })),
+        files.map(item => item.quantity),
+        setProgress,
+        customerInfo,
+        printingSide
+      )
       success = true
     } catch (error) {
       console.error('Error generating PDF:', error)
@@ -405,48 +425,58 @@ function FileSelection({ layout, onBack }) {
     }
   }
 
-  const getLayoutName = () => {
-    if (layout === '1s') return 'IDC 1S'
-    if (layout === '2s-sama') return 'IDC 2S (Sama Sisi)'
-    if (layout === 'kanan-kiri-beda') return 'IDC 2S (Sisi Berbeda)'
-    return 'Layout Tidak Dikenal'
-  }
-
-  const renderFileUploadArea = (title, fileList, isBack = false) => {
-    const inputRef = isBack ? backInputRef : frontInputRef
-
+  const renderFileUploadArea = (title, fileList) => {
     return (
       <div className="upload-section">
         <div className="upload-section-header">
           <div className="upload-section-header-left">
             <h3 className="upload-section-title">{title}</h3>
-            <p className="upload-section-subtitle">
-              {layout === 'kanan-kiri-beda' && isBack 
-                ? 'Unggah gambar sisi belakang Anda' 
-                : 'Unggah gambar ID card Anda'}
-            </p>
+            <p className="upload-section-subtitle">Unggah gambar lanyard Anda (90cm x 2.25cm)</p>
           </div>
-          {isBack && fileList.length > 1 && (
-            <div className="upload-section-header-right">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => setShowReorderDialog(true)}
-                disabled={isProcessing}
-                className="file-reorder-button-header"
-              >
-                <ArrowUpDown className="w-4 h-4 mr-2" />
-                Atur Urutan ID Card Belakang
-              </Button>
-            </div>
-          )}
+        </div>
+
+        {/* Printing Side Selector */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Sisi Cetak
+          </label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setPrintingSide('1-side')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${printingSide === '1-side' 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              1 Sisi
+            </button>
+            <button
+              type="button"
+              onClick={() => setPrintingSide('2-side')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${printingSide === '2-side' 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2 Sisi
+            </button>
+          </div>
         </div>
 
         <div
           className={`drop-zone ${isDragging ? 'dragging' : ''}`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onDrop={(e) => handleDrop(e, isBack)}
+          onDrop={handleDrop}
           onClick={() => inputRef.current?.click()}
         >
           <Cloud className="drop-zone-icon" />
@@ -457,7 +487,7 @@ function FileSelection({ layout, onBack }) {
             type="file"
             multiple
             accept="image/png,image/jpeg,image/jpg"
-            onChange={(e) => handleFileChange(e, isBack)}
+            onChange={handleFileChange}
             disabled={isProcessing}
             className="file-input"
           />
@@ -467,38 +497,86 @@ function FileSelection({ layout, onBack }) {
           <div className="file-list-container">
             <button
               className="file-list-header"
-              onClick={() => isBack ? setIsBackFileListExpanded(!isBackFileListExpanded) : setIsFileListExpanded(!isFileListExpanded)}
+              onClick={() => setIsFileListExpanded(!isFileListExpanded)}
             >
-              <span className="file-list-count">{fileList.length} file dipilih</span>
-              {isBack ? (
-                isBackFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-              ) : (
-                isFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />
-              )}
+              <span className="file-list-count">
+                {fileList.length} file dipilih • {getTotalImages()} total gambar • {calculateTotalPages()} halaman
+              </span>
+              {isFileListExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
             </button>
-            {(isBack ? isBackFileListExpanded : isFileListExpanded) && (
+            {isFileListExpanded && (
               <>
                 <div className="file-list-grid">
-                  {fileList.map((file, index) => (
-                    <div key={`${file.name}-${index}`} className="file-item">
-                      {(isBack ? backImagePreviews[file.name] : imagePreviews[file.name]) && (
+                  {fileList.map((fileItem, index) => (
+                    <div key={`${fileItem.original.name}-${index}`} className="file-item">
+                      {imagePreviews[fileItem.original.name] && (
                         <img 
-                          src={isBack ? backImagePreviews[file.name] : imagePreviews[file.name]} 
-                          alt={file.name}
+                          src={imagePreviews[fileItem.original.name]} 
+                          alt={fileItem.original.name}
                           className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
                         />
                       )}
-                      <div className="file-info">
-                        <p className="file-name">{file.name}</p>
-                        <p className="file-size">{formatFileSize(file.size)}</p>
+                      <div className="file-info flex-1 min-w-0 flex flex-col">
+                        <p className="file-name truncate">{fileItem.original.name}</p>
+                        <div className="flex items-center gap-2 mt-1">
+                          <label className="text-xs text-gray-600 whitespace-nowrap">QTY:</label>
+                          <div className="flex items-center gap-1 border rounded bg-white">
+                            <button
+                              type="button"
+                              className="p-1 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleQuantityChange(index, -1)
+                              }}
+                              disabled={isProcessing || fileItem.quantity <= 1}
+                            >
+                              <Minus className="w-3 h-3" />
+                            </button>
+                            <input
+                              type="number"
+                              min="1"
+                              value={fileItem.quantity}
+                              onChange={(e) => {
+                                e.stopPropagation()
+                                handleQuantityInput(index, e.target.value)
+                              }}
+                              onClick={(e) => e.stopPropagation()}
+                              disabled={isProcessing}
+                              className="w-14 text-center text-sm border-0 focus:outline-none bg-transparent"
+                            />
+                            <button
+                              type="button"
+                              className="p-1 hover:bg-gray-100 disabled:opacity-50 transition-colors"
+                              onClick={(e) => {
+                                e.stopPropagation()
+                                handleQuantityChange(index, 1)
+                              }}
+                              disabled={isProcessing}
+                            >
+                              <Plus className="w-3 h-3" />
+                            </button>
+                          </div>
+                        </div>
                       </div>
                       <button
                         className="file-delete-btn"
                         onClick={(e) => {
                           e.stopPropagation()
-                          handleRemoveFile(index, isBack)
+                          handleEditCrop(fileItem, index)
                         }}
                         disabled={isProcessing}
+                        title="Edit crop"
+                      >
+                        <Crop className="w-4 h-4" />
+                      </button>
+                      <button
+                        className="file-delete-btn"
+                        onClick={(e) => {
+                          e.stopPropagation()
+                          handleRemoveFile(index)
+                        }}
+                        disabled={isProcessing}
+                        title="Hapus file"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -516,8 +594,8 @@ function FileSelection({ layout, onBack }) {
   return (
     <div className="file-selection">
       <div className="file-selection-header">
-        <h2 className="file-selection-title">{getLayoutName()}</h2>
-        <p className="file-selection-subtitle">Unggah gambar ID card Anda untuk menghasilkan layout PDF</p>
+        <h2 className="file-selection-title">Layout Lanyard</h2>
+        <p className="file-selection-subtitle">Unggah gambar lanyard Anda untuk menghasilkan layout PDF</p>
       </div>
 
       {/* Customer Info Dialog */}
@@ -703,29 +781,13 @@ function FileSelection({ layout, onBack }) {
       </Dialog>
 
       <div className="file-upload-container">
-        {renderFileUploadArea(
-          layout === 'kanan-kiri-beda' ? 'Gambar Depan' : 'Pilih Gambar',
-          files,
-          false
-        )}
-
-        {layout === 'kanan-kiri-beda' && renderFileUploadArea('Gambar Belakang', backFiles, true)}
+        {renderFileUploadArea('Pilih Gambar', files)}
       </div>
 
       {isProcessing && (
         <div className="processing-section">
           <ProgressBar progress={progress} />
         </div>
-      )}
-
-      {/* Back File Reorder Dialog */}
-      {showReorderDialog && layout === 'kanan-kiri-beda' && backFiles.length > 1 && (
-        <BackFileReorder
-          files={backFiles}
-          frontFiles={files}
-          onClose={() => setShowReorderDialog(false)}
-          onSave={handleSaveBackFileOrder}
-        />
       )}
 
       {/* Floating Action Buttons */}
@@ -745,7 +807,7 @@ function FileSelection({ layout, onBack }) {
               <Button
                 className="floating-action-btn-process"
                 onClick={customerName ? handleProcess : handleLanjut}
-                disabled={isProcessing || files.length === 0 || (layout === 'kanan-kiri-beda' && backFiles.length === 0)}
+                disabled={isProcessing || files.length === 0}
                 size="lg"
               >
                 {isProcessing ? (
@@ -776,9 +838,18 @@ function FileSelection({ layout, onBack }) {
         </div>,
         document.body
       )}
+
+      {/* Crop Dialog */}
+      {currentCropFile && createPortal(
+        <LanyardRectangularCropper
+          file={currentCropFile}
+          onSave={handleCropSave}
+          onCancel={handleCropCancel}
+        />,
+        document.body
+      )}
     </div>
   )
 }
 
-export default FileSelection
-
+export default LanyardSelection

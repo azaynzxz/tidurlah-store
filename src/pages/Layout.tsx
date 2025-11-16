@@ -3,13 +3,16 @@ import Header from "@/components/common/Header"
 import { AnimatedElement } from "@/components/animations/AnimatedElement"
 import Dashboard from '@/components/Layouter/src/components/Dashboard'
 import FileSelection from '@/components/Layouter/src/components/FileSelection'
+import GanciPinSelection from '@/components/Layouter/src/components/GanciPinSelection'
+import MugSelection from '@/components/Layouter/src/components/MugSelection'
+import LanyardSelection from '@/components/Layouter/src/components/LanyardSelection'
 import '@/components/Layouter/src/App.css'
 import '@/components/Layouter/src/index.css'
 import '@/components/Layouter/src/components/Dashboard.css'
 import '@/components/Layouter/src/components/FileSelection.css'
 import '@/components/Layouter/src/components/ProgressBar.css'
 
-type LayoutType = '1s' | '2s-sama' | 'kanan-kiri-beda'
+type LayoutType = '1s' | '2s-sama' | 'kanan-kiri-beda' | 'ganci-pin' | 'mug' | 'lanyard'
 
 const Layout = () => {
   const [selectedLayout, setSelectedLayout] = useState<LayoutType | null>(null)
@@ -41,10 +44,10 @@ const Layout = () => {
         {!selectedLayout ? (
           <>
             {/* Header */}
-            <AnimatedElement direction="up" delay={200} duration={300}>
+            <AnimatedElement direction="up" delay={50} duration={200}>
               <header className="text-center mb-12">
                 <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-6 tracking-tight">
-                  Layout Otomatis ID Card
+                  Tidurlah Sistem Layout Otomatis
                 </h1>
                 
                 {/* Brand Pills */}
@@ -62,21 +65,39 @@ const Layout = () => {
             </AnimatedElement>
 
             {/* Dashboard */}
-            <AnimatedElement direction="up" delay={400} duration={300}>
+            <AnimatedElement direction="up" delay={100} duration={200}>
               <div className="container max-w-4xl mx-auto">
                 <Dashboard onSelectLayout={handleLayoutSelect} />
               </div>
             </AnimatedElement>
 
             {/* Footer */}
-            <AnimatedElement direction="up" delay={600} duration={300}>
+            <AnimatedElement direction="up" delay={150} duration={200}>
               <footer className="text-center mt-16 text-muted-foreground text-sm">
                 <p>© 2025 Tidurlah Store. Hak Cipta Dilindungi.</p>
               </footer>
             </AnimatedElement>
           </>
+        ) : selectedLayout === 'ganci-pin' ? (
+          <AnimatedElement direction="up" delay={50} duration={200}>
+            <div className="container max-w-4xl mx-auto">
+              <GanciPinSelection onBack={handleBack} />
+            </div>
+          </AnimatedElement>
+        ) : selectedLayout === 'mug' ? (
+          <AnimatedElement direction="up" delay={50} duration={200}>
+            <div className="container max-w-4xl mx-auto">
+              <MugSelection onBack={handleBack} />
+            </div>
+          </AnimatedElement>
+        ) : selectedLayout === 'lanyard' ? (
+          <AnimatedElement direction="up" delay={50} duration={200}>
+            <div className="container max-w-4xl mx-auto">
+              <LanyardSelection onBack={handleBack} />
+            </div>
+          </AnimatedElement>
         ) : (
-          <AnimatedElement direction="up" delay={200} duration={300}>
+          <AnimatedElement direction="up" delay={50} duration={200}>
             <div className="container max-w-4xl mx-auto">
               <FileSelection 
                 layout={selectedLayout} 

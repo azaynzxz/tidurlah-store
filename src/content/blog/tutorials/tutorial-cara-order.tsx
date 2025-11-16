@@ -9,8 +9,8 @@ export const blogPost: BlogPostData = {
   date: "2024-01-26",
   tags: ["Tutorial", "Cara Order", "Panduan", "ID Card", "Lanyard"],
   readTime: "5 menit",
-  views: 0,
-  image: null,
+  views: 2000,
+  image: "/blog-thumbnail/cara-order.gif",
   category: "tutorials",
   content: `
     <div class="space-y-6">

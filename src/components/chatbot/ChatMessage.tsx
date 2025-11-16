@@ -5,11 +5,23 @@ import { suggestions, subMenus } from "@/data/chatbot/responses";
 interface ChatMessageProps {
   message: Message;
   onSuggestionClick: (keyword: string) => void;
+  index?: number;
 }
 
-export const ChatMessage = ({ message, onSuggestionClick }: ChatMessageProps) => {
+export const ChatMessage = ({ message, onSuggestionClick, index = 0 }: ChatMessageProps) => {
+  const handleSuggestionClick = (keyword: string) => {
+    // For all suggestions, use the normal handler (including "cara order" which is handled in useChatBot)
+    onSuggestionClick(keyword);
+  };
+
   return (
-    <div className={`mb-3 ${message.isBot ? "text-left" : "text-right"}`}>
+    <div 
+      className={`mb-3 ${message.isBot ? "text-left" : "text-right"} chat-message-bubble`}
+      style={{ 
+        animationDelay: `${index * 30}ms`,
+        animationFillMode: 'both'
+      }}
+    >
       <div 
         className={`inline-block p-2 rounded-lg max-w-[85%] text-sm ${
           message.isBot 
@@ -34,7 +46,7 @@ export const ChatMessage = ({ message, onSuggestionClick }: ChatMessageProps) =>
           {suggestions.map((suggestion, sIdx) => (
             <button
               key={sIdx}
-              onClick={() => onSuggestionClick(suggestion.keyword)}
+              onClick={() => handleSuggestionClick(suggestion.keyword)}
               className={`px-3 py-1.5 rounded-full text-xs transition-colors flex items-center ${suggestion.color}`}
             >
               {suggestion.hasIcon && (

@@ -13,6 +13,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
   const [activeIndex, setActiveIndex] = useState(0);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [showAngryPromo, setShowAngryPromo] = useState(false);
+  const [mountedProducts, setMountedProducts] = useState<Set<number>>(new Set());
 
   // Get current month in Indonesian
   const getCurrentMonth = () => {
@@ -114,7 +115,20 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
     if (containerRef.current) {
       containerRef.current.scrollTo({ top: 0, behavior: 'auto' });
     }
+    // Reset mounted products when promo count changes to re-trigger animation
+    setMountedProducts(new Set());
   }, [promoCount]);
+
+  // Track when products are mounted for animation
+  useEffect(() => {
+    promotedProductsWithData.forEach((product: any) => {
+      if (!mountedProducts.has(product.id)) {
+        setTimeout(() => {
+          setMountedProducts(prev => new Set(prev).add(product.id));
+        }, 10);
+      }
+    });
+  }, [promotedProductsWithData, mountedProducts]);
 
   useEffect(() => {
     if (promoCount <= 1) return;
@@ -155,12 +169,18 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
         >
           {promotedProductsWithData.map((product: any, index: number) => {
             const isAngryActive = showAngryPromo && index === activeIndex;
+            const isMounted = mountedProducts.has(product.id);
             return (
               <div 
-                key={product.id} 
-                className={`border border-green-400 rounded-lg overflow-hidden shadow-sm bg-background/80 cursor-pointer snap-start h-[80px] flex-shrink-0 transition-transform duration-200 ${
+                key={product.id}
+                className={`border border-green-400 rounded-lg overflow-hidden shadow-sm bg-background/80 cursor-pointer snap-start h-[80px] flex-shrink-0 transition-all duration-200 ${
                   isAngryActive ? "angry-wiggle angry-highlight" : ""
                 }`}
+                style={{
+                  opacity: isMounted ? 1 : 0,
+                  transform: isMounted ? 'translateY(0)' : 'translateY(20px)',
+                  transition: `opacity 0.3s ease-out ${index * 50}ms, transform 0.3s ease-out ${index * 50}ms`
+                }}
                 onClick={() => onOpenDetails(product)}
               >
                 <div className="flex items-center h-full px-3 py-2 gap-2">

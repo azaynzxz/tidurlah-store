@@ -11,7 +11,12 @@ export const ChatMessagesList = ({ messages, messagesEndRef, onSuggestionClick }
   return (
     <div className="flex-1 p-3 overflow-y-auto">
       {messages.map((msg, idx) => (
-        <ChatMessage key={idx} message={msg} onSuggestionClick={onSuggestionClick} />
+        <ChatMessage 
+          key={`${msg.text}-${idx}-${msg.isBot ? 'bot' : 'user'}-${msg.isTyping ? 'typing' : 'done'}`} 
+          message={msg} 
+          onSuggestionClick={onSuggestionClick}
+          index={idx}
+        />
       ))}
       <div ref={messagesEndRef} /> {/* For auto-scroll */}
     </div>

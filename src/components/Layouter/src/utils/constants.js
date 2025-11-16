@@ -38,3 +38,29 @@ export const PAGE_NUMBER_Y = 50
 export const BORDER_GREY_COLOR = [201 / 255, 202 / 255, 202 / 255]
 export const BORDER_BLACK_COLOR = [0, 0, 0]
 
+// A4 dimensions at 300 DPI
+export const A4_WIDTH_PX = MM_TO_PX(210)   // 2480px
+export const A4_HEIGHT_PX = MM_TO_PX(297)   // 3508px
+
+// Ganci/Pin dimensions
+export const GANCI_3CM_DIAMETER_PX = MM_TO_PX(30)   // 354px
+export const GANCI_5CM_DIAMETER_PX = MM_TO_PX(50)   // 591px
+export const GANCI_OFFSET_PX = MM_TO_PX(0.5)        // 6px (thin line offset)
+
+// Mug dimensions (20x10 cm horizontal)
+export const MUG_WIDTH_PX = MM_TO_PX(200)   // 2362px (20cm)
+export const MUG_HEIGHT_PX = MM_TO_PX(100)   // 1181px (10cm)
+
+// A4 Landscape dimensions (297mm x 210mm)
+export const A4_LANDSCAPE_WIDTH_PX = MM_TO_PX(297)   // 3508px (width)
+export const A4_LANDSCAPE_HEIGHT_PX = MM_TO_PX(210)   // 2480px (height)
+
+// Lanyard dimensions
+export const LANYARD_PAGE_WIDTH_PX = MM_TO_PX(10200)  // 120472px (1020cm)
+export const LANYARD_PAGE_HEIGHT_PX = MM_TO_PX(210)   // 2480px (21cm)
+export const LANYARD_COL1_WIDTH_PX = MM_TO_PX(100)   // 1181px (10cm)
+export const LANYARD_COL2_WIDTH_PX = MM_TO_PX(900)    // 10630px (90cm)
+export const LANYARD_ROW_HEIGHT_PX = MM_TO_PX(22.5)  // 266px (2.25cm)
+export const LANYARD_COLS = 2
+export const LANYARD_ROWS = 8
+
