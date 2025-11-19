@@ -5,7 +5,9 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HalloweenThemeProvider } from "@/contexts/HalloweenThemeContext";
 import { DialogProvider } from "@/contexts/DialogContext";
+import { PromoBannerProvider } from "@/contexts/PromoBannerContext";
 import HalloweenDecorations from "@/components/HalloweenDecorations";
+import PromoBanner from "@/components/PromoBanner";
 import "@/utils/applyDynamicColors"; // Import to apply dynamic colors
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
@@ -27,12 +29,15 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <HalloweenThemeProvider>
       <DialogProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <HalloweenDecorations />
-          <BrowserRouter>
-            <Routes>
+        <PromoBannerProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <HalloweenDecorations />
+            <BrowserRouter>
+              {/* Promo Banner - Shows on all pages */}
+              <PromoBanner />
+              <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/product/:slug" element={<Index />} />
               <Route path="/survey" element={<Survey />} />
@@ -49,9 +54,10 @@ const App = () => (
               <Route path="/login-blocked" element={<LoginBlocked />} />
               {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
               <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </PromoBannerProvider>
       </DialogProvider>
     </HalloweenThemeProvider>
   </QueryClientProvider>

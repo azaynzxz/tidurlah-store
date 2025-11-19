@@ -41,29 +41,80 @@ export const generateProductUrl = (product: any) => {
   return `${baseUrl}/product/${slug}`;
 };
 
-// Calculate appropriate price based on quantity and thresholds
+/**
+ * Calculate price per unit based on quantity thresholds
+ * 
+ * PRICE DETERMINATION PRIORITY:
+ * 1. If priceThresholds exist → Find applicable threshold based on quantity
+ * 2. If discountPrice exists → Use discountPrice
+ * 3. Otherwise → Use base price
+ * 
+ * ⚠️ IMPORTANT NOTES:
+ * - This function does NOT apply promo codes (handled in calculateTotal)
+ * - Thresholds are checked in descending order (highest minQuantity first)
+ * - If product has both discountPrice and priceThresholds, thresholds take precedence
+ * 
+ * ⚠️ POTENTIAL GAP: 
+ * - discountPrice is only used as fallback when no thresholds apply
+ * - Consider: Should thresholds apply to discountPrice or base price?
+ * 
+ * @param product - Product object with price, discountPrice, and priceThresholds
+ * @param quantity - Quantity being purchased
+ * @returns Price per unit after threshold application
+ * 
+ * @example
+ * Product: Base Rp 25,000, Thresholds: [{minQuantity: 4, price: 20,000}, {minQuantity: 25, price: 18,000}]
+ * Quantity 1 → Rp 25,000 (no threshold)
+ * Quantity 5 → Rp 20,000 (4+ threshold)
+ * Quantity 30 → Rp 18,000 (25+ threshold)
+ */
 export const getApplicablePrice = (product: any, quantity: number) => {
+  // No thresholds: use discountPrice if available, otherwise base price
   if (!product.priceThresholds) {
     return product.discountPrice !== null ? product.discountPrice : product.price;
   }
 
-  // Sort thresholds in descending order by minQuantity
+  // Sort thresholds descending by minQuantity to check highest thresholds first
+  // This ensures we get the best price for the quantity
   const sortedThresholds = [...product.priceThresholds].sort((a, b) => b.minQuantity - a.minQuantity);
 
-  // Find the first threshold that applies
+  // Find the first (highest) threshold that applies to this quantity
   for (const threshold of sortedThresholds) {
     if (quantity >= threshold.minQuantity) {
       return threshold.price;
     }
   }
 
-  // If no threshold applies, use the default price
+  // No threshold applies: use discountPrice if available, otherwise base price
+  // ⚠️ GAP: discountPrice is fallback, but maybe it should be the base for thresholds?
   return product.discountPrice !== null ? product.discountPrice : product.price;
 };
 
-// Calculate savings compared to base price
+/**
+ * Calculate total savings from threshold discounts
+ * 
+ * SAVINGS CALCULATION:
+ * Savings = (Base Price - Threshold Price) × Quantity
+ * 
+ * ⚠️ IMPORTANT NOTES:
+ * - Compares base price vs threshold price
+ * - Does NOT account for promo code discounts
+ * - Does NOT account for discountPrice field
+ * 
+ * ⚠️ POTENTIAL GAP:
+ * - Savings shown might be incorrect when promo codes are active
+ * - Should savings compare to discountPrice if it exists?
+ * 
+ * @param product - Product object
+ * @param quantity - Quantity purchased
+ * @returns Total savings amount in Rupiah
+ * 
+ * @example
+ * Base: Rp 25,000, Threshold (4+): Rp 20,000, Quantity: 5
+ * Savings = (25,000 - 20,000) × 5 = Rp 25,000
+ */
 export const calculateSavings = (product: any, quantity: number) => {
-  const basePrice = product.price;
+  const basePrice = product.price; // Always uses base price, not discountPrice
   const appliedPrice = getApplicablePrice(product, quantity);
 
   return (basePrice - appliedPrice) * quantity;

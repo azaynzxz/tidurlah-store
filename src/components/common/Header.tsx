@@ -6,6 +6,16 @@ import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
 import { useDialog } from "@/contexts/DialogContext";
+import { usePromoBanner } from "@/contexts/PromoBannerContext";
+
+// Helper hook to safely use promo banner context
+const usePromoBannerSafe = () => {
+  try {
+    return usePromoBanner();
+  } catch {
+    return { isBannerVisible: false };
+  }
+};
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -24,12 +34,26 @@ const Header = ({
   const location = useLocation();
   const { isHalloweenMode, toggleHalloweenMode } = useHalloweenTheme();
   const { isDialogOpen } = useDialog();
+  const { isBannerVisible } = usePromoBannerSafe();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
+  const [bannerHeight, setBannerHeight] = useState('0px');
+
+  // Get banner height from CSS variable
+  useEffect(() => {
+    const updateBannerHeight = () => {
+      const height = getComputedStyle(document.documentElement).getPropertyValue('--promo-banner-height').trim();
+      setBannerHeight(height || '0px');
+    };
+    
+    updateBannerHeight();
+    const interval = setInterval(updateBannerHeight, 100);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -151,7 +175,10 @@ const Header = ({
 
 
   return (
-    <div className={`bg-background shadow-sm p-3 lg:p-4 sticky top-0 z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`}>
+    <div 
+      className={`bg-background shadow-sm p-3 lg:p-4 sticky z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`} 
+      style={{ marginTop: 0, top: bannerHeight, marginBottom: 0, display: 'block' }}
+    >
       <div className="flex justify-between items-center relative z-10">
         {/* Mobile Logo */}
         <img 

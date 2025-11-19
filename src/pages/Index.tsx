@@ -841,9 +841,9 @@ const Index = () => {
                   <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
                 </div>
                 
-                {promoDiscount > 0 && (
+                {calculateTotalDiscountCallback() > 0 && (
                   <div className="flex justify-between items-center text-sm text-green-600">
-                    <p>Diskon Promo ({promoDiscount}%)</p>
+                    <p>Diskon Promo{promoDiscount > 0 ? ` (${promoDiscount}%)` : ''}</p>
                     <p>- Rp {calculateTotalDiscountCallback().toLocaleString('id-ID')}</p>
                   </div>
                 )}
@@ -1010,9 +1010,9 @@ const Index = () => {
                     <p>Rp {cartItems.reduce((total, item) => total + (item.appliedPrice * item.quantity), 0).toLocaleString('id-ID')}</p>
                   </div>
                   
-                  {promoDiscount > 0 && (
+                  {calculateTotalDiscountCallback() > 0 && (
                     <div className="flex justify-between items-center text-sm text-green-600">
-                      <p>Diskon Promo ({promoDiscount}%)</p>
+                      <p>Diskon Promo{promoDiscount > 0 ? ` (${promoDiscount}%)` : ''}</p>
                       <p>- Rp {calculateTotalDiscountCallback().toLocaleString('id-ID')}</p>
                     </div>
                   )}

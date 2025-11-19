@@ -18,21 +18,47 @@ export const validPromoCodes: Record<string, PromoCodeType> = {
   }
 };
 
+// Promo Banner Configuration
+/**
+ * Controls the visibility of the promo banner across the entire application.
+ * 
+ * @description
+ * Set this to `false` to completely disable the promo banner. When disabled:
+ * - The banner will not render at all
+ * - The header will position itself at the top (no banner offset)
+ * - All banner-related logic will be skipped
+ * 
+ * Set this to `true` to enable the banner. The banner will then check:
+ * - If the current date is within the promo period (Nov 20-25, 2025)
+ * - If the user has dismissed it (stored in localStorage)
+ * 
+ * @example
+ * // To disable the banner:
+ * export const PROMO_BANNER_ENABLED = false;
+ * 
+ * // To enable the banner:
+ * export const PROMO_BANNER_ENABLED = true;
+ * 
+ * @default true
+ */
+export const PROMO_BANNER_ENABLED = true;
+
 // Define promoted products with end dates
+
 export const promotedProducts: PromotedProductType[] = [
   {
     id: 8,
     discount: 40,
-    endDate: new Date('2025-11-25T23:59:59'),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     promoCode: "HUT3TH",
-    description: "Promo ulang tahun 3 tahun! Berlaku 20-25 November untuk Paket IDC LYD 2S."
+    description: "Promo ulang tahun 3 tahun! Harga spesial untuk Paket IDC LYD 2S."
   },
   {
     id: 7,
     discount: 35,
-    endDate: new Date('2025-11-25T23:59:59'),
+    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
     promoCode: "HUT3TH",
-    description: "Promo ulang tahun 3 tahun! Berlaku 20-25 November untuk Paket IDC LYD 1S."
+    description: "Promo ulang tahun 3 tahun! Harga spesial untuk Paket IDC LYD 1S."
   }
 ];
 

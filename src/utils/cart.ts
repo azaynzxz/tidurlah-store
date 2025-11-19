@@ -11,11 +11,25 @@ export interface FlyingBubble {
   endY: number;
 }
 
-// Flying animation function
+/**
+ * Trigger flying animation bubble effect when item is added to cart
+ * 
+ * ⚠️ IMPORTANT: This function requires setFlyingBubbles to be passed from the component.
+ * If not provided, animation will be skipped (no error thrown).
+ * 
+ * @param sourceElement - Element where animation starts (product card/button)
+ * @param setFlyingBubbles - State setter for flying bubbles (optional)
+ * @returns Created bubble data if setFlyingBubbles is provided, undefined otherwise
+ */
 export const triggerFlyingAnimation = (
   sourceElement?: HTMLElement,
-  setFlyingBubbles: React.Dispatch<React.SetStateAction<FlyingBubble[]>>
+  setFlyingBubbles?: React.Dispatch<React.SetStateAction<FlyingBubble[]>>
 ) => {
+  // Skip animation if setter is not provided
+  if (!setFlyingBubbles) {
+    return;
+  }
+
   // Get source position (product location)
   let startX = window.innerWidth / 2; // Default to center
   let startY = window.innerHeight / 2;
@@ -39,7 +53,7 @@ export const triggerFlyingAnimation = (
 
   // Create bubble
   const bubbleId = Date.now().toString();
-  const newBubble = { id: bubbleId, startX, startY, endX, endY };
+  const newBubble: FlyingBubble = { id: bubbleId, startX, startY, endX, endY };
 
   setFlyingBubbles(prev => [...prev, newBubble]);
 
@@ -55,6 +69,8 @@ export const triggerFlyingAnimation = (
   setTimeout(() => {
     setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
   }, 1200);
+
+  return newBubble;
 };
 
 // Add to cart function
@@ -97,7 +113,7 @@ export const addToCart = (
   // Check if this product already exists in cart with a case variant
   const existingCartItem = cartItems.find(item =>
     item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
+    (!product.models || item.modelCode === selectedModel) &&
     (!idCardWithCaseIds.includes(product.id) || item.caseVariant) &&
     (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant)
   );
@@ -184,9 +200,9 @@ export const addToCart = (
 
   const existingItem = cartItems.find(item =>
     item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
-    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
-    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
+    (!product.models || item.modelCode === selectedModel) &&
+    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
   );
 
   if (existingItem) {
@@ -196,9 +212,9 @@ export const addToCart = (
     setCartItems(
       cartItems.map(item =>
         item.id === product.id &&
-        (!product.models || item.modelCode === selectedModel || item.modelCode === product.modelCode) &&
-        (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase || item.caseVariant === product.caseVariant) &&
-        (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination || item.laminationVariant === product.laminationVariant)
+        (!product.models || item.modelCode === selectedModel) &&
+        (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+        (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
           ? {
               ...item,
               quantity: newQuantity,
@@ -220,19 +236,17 @@ export const addToCart = (
       }
     });
 
-    // Trigger flying animation only on successful add
-    if (sourceElement) {
-      triggerFlyingAnimation(sourceElement, (prev) => setCartItems(prevItems => prevItems)); // This needs to be fixed
-    }
+    // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
+    // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
   } else {
     const newItem: CartItem = {
       ...product,
       quantity: quantity,
       appliedPrice: getApplicablePrice(product, quantity),
       savings: calculateSavings(product, quantity),
-      modelCode: product.models ? (selectedModel || product.modelCode) : undefined,
-      caseVariant: idCardWithCaseIds.includes(product.id) ? (selectedCase || product.caseVariant) : undefined,
-      laminationVariant: stikerWithLaminationIds.includes(product.id) ? (selectedLamination || product.laminationVariant) : undefined
+      modelCode: product.models ? selectedModel : undefined,
+      caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
+      laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
     };
     setCartItems([...cartItems, newItem]);
     toast.success(`${product.name} ditambahkan ${quantity}× ke keranjang`, {
@@ -247,10 +261,8 @@ export const addToCart = (
       }
     });
 
-    // Trigger flying animation only on successful add
-    if (sourceElement) {
-      triggerFlyingAnimation(sourceElement, (prev) => setCartItems(prevItems => prevItems));
-    }
+    // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
+    // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
   }
 };
 
@@ -290,8 +302,8 @@ export const addBannerToCart = (
     }
   });
 
-  // Trigger flying animation for banner products
-  triggerFlyingAnimation(undefined, (prev) => setCartItems(prevItems => prevItems));
+  // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
+  // Animation cannot be triggered here as addBannerToCart doesn't have access to setFlyingBubbles
 };
 
 // Remove from cart function
@@ -349,21 +361,87 @@ export const deleteFromCart = (
   }
 };
 
-// Calculate total price with promo discount
+/**
+ * Calculate total cart price with promo code applied
+ * 
+ * PRICING LOGIC FLOW:
+ * 1. Start with item.appliedPrice (includes threshold discounts, excludes promos)
+ * 2. If promo code applies:
+ *    - Override Price Promos: Replace price entirely with flat override price
+ *    - Percentage Promos: Apply discount to threshold price
+ * 
+ * ⚠️ IMPORTANT NOTES:
+ * - Override prices completely ignore quantity thresholds
+ * - Percentage discounts are applied AFTER threshold prices
+ * - item.appliedPrice is calculated in addToCart() using getApplicablePrice()
+ * 
+ * @param cartItems - Array of cart items with appliedPrice already set
+ * @param promoCode - Active promo code (empty string if none)
+ * @returns Total price after all discounts
+ * 
+ * @see pricing-documentation.md for detailed pricing flow explanation
+ */
 export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
   return cartItems.reduce((total, item) => {
+    // Start with threshold-adjusted price (from getApplicablePrice)
     let itemPrice = item.appliedPrice * item.quantity;
+    
     if (promoCode && validPromoCodes[promoCode]) {
       const promoInfo = validPromoCodes[promoCode];
       const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
       const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
       if (productMatches && quantityMatches) {
-        itemPrice = itemPrice * (1 - promoInfo.discount / 100);
+        // TYPE 1: Override Price Promos (e.g., HUT3TH)
+        // These set a flat price per unit, completely ignoring thresholds
+        // ⚠️ GAP: Override prices ignore quantity - 1 item or 100 items get same unit price
+        if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
+          itemPrice = promoInfo.overridePrices[item.id] * item.quantity;
+        } 
+        // TYPE 2: Percentage Discount Promos
+        // Applied to threshold price, not base price
+        // ⚠️ GAP: Discount is on threshold price, not original base price
+        else {
+          itemPrice = itemPrice * (1 - promoInfo.discount / 100);
+        }
       }
     }
     return total + itemPrice;
   }, 0);
+};
+
+/**
+ * Get effective price per unit for display purposes
+ * 
+ * This function returns the actual price per unit that will be charged,
+ * considering both threshold prices and active promo codes.
+ * 
+ * USE CASE: Display correct price in cart/checkout when promo is active
+ * 
+ * ⚠️ GAP: Currently cart items show item.appliedPrice which doesn't reflect promos.
+ * Use this function to show correct price in UI.
+ * 
+ * @param item - Cart item with appliedPrice set
+ * @param promoCode - Active promo code
+ * @returns Effective price per unit after promo application
+ */
+export const getEffectivePrice = (item: CartItem, promoCode: string): number => {
+  if (promoCode && validPromoCodes[promoCode]) {
+    const promoInfo = validPromoCodes[promoCode];
+    const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
+    const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
+
+    if (productMatches && quantityMatches) {
+      // Override prices: flat price per unit
+      if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
+        return promoInfo.overridePrices[item.id];
+      }
+      // Percentage discount: applied to threshold price
+      return item.appliedPrice * (1 - promoInfo.discount / 100);
+    }
+  }
+  // No promo or promo doesn't apply: return threshold-adjusted price
+  return item.appliedPrice;
 };
 
 // Calculate total savings
@@ -373,7 +451,23 @@ export const calculateTotalSavings = (cartItems: CartItem[]) => {
   }, 0);
 };
 
-// Calculate total discount
+/**
+ * Calculate total discount amount from promo code
+ * 
+ * DISCOUNT CALCULATION:
+ * - Override Promos: Discount = (threshold price - override price) × quantity
+ * - Percentage Promos: Discount = threshold price × quantity × (discount %)
+ * 
+ * ⚠️ IMPORTANT NOTES:
+ * - Discount is calculated from threshold price, NOT base price
+ * - For override promos, discount shown might be less than actual savings
+ *   Example: Base Rp 25,000, Threshold Rp 20,000, Override Rp 15,000
+ *   Discount shown: Rp 5,000 (but actual savings from base is Rp 10,000)
+ * 
+ * @param cartItems - Array of cart items
+ * @param promoCode - Active promo code
+ * @returns Total discount amount in Rupiah
+ */
 export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string) => {
   if (!promoCode || !validPromoCodes[promoCode]) return 0;
 
@@ -383,13 +477,47 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
     const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
     if (productMatches && quantityMatches) {
-      return discount + (item.appliedPrice * item.quantity * (promoInfo.discount / 100));
+      // Override Price Discount
+      // Compares threshold price vs override price
+      // ⚠️ GAP: Doesn't compare to base price, only threshold price
+      if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
+        const originalPrice = item.appliedPrice * item.quantity; // Threshold price
+        const overridePrice = promoInfo.overridePrices[item.id] * item.quantity;
+        return discount + (originalPrice - overridePrice);
+      } 
+      // Percentage Discount
+      // Applied to threshold price
+      else {
+        return discount + (item.appliedPrice * item.quantity * (promoInfo.discount / 100));
+      }
     }
     return discount;
   }, 0);
 };
 
-// Validate and apply promo code
+/**
+ * Validate and apply promo code to cart
+ * 
+ * VALIDATION FLOW:
+ * 0. Check date validity for date-restricted promos (e.g., HUT3TH: Nov 20-25, 2025)
+ * 1. Check if promo code exists
+ * 2. If promo targets specific products: verify at least one matching product in cart
+ * 3. If promo has minQuantity: verify quantity requirement met
+ * 4. Apply promo if all checks pass
+ * 
+ * ⚠️ LIMITATIONS:
+ * - Only ONE promo code can be active at a time
+ * - Promo validation happens client-side only
+ * - HUT3TH promo is only valid on Nov 20-25, 2025
+ * 
+ * @param code - Promo code string (empty string clears promo)
+ * @param cartItems - Current cart items
+ * @param setPromoCode - State setter for promo code
+ * @param setPromoCodeError - State setter for error message
+ * @param setPromoDiscount - State setter for discount percentage (for display)
+ * 
+ * @see validPromoCodes in constants/index.ts for promo definitions
+ */
 export const handlePromoCodeChange = (
   code: string,
   cartItems: CartItem[],
@@ -400,6 +528,7 @@ export const handlePromoCodeChange = (
   setPromoCode(code);
   setPromoCodeError("");
 
+  // Clear promo if empty code
   if (!code) {
     setPromoDiscount(0);
     return;
@@ -407,7 +536,21 @@ export const handlePromoCodeChange = (
 
   const promo = validPromoCodes[code as keyof typeof validPromoCodes];
   if (promo) {
-    // If promo applies to specific products, check if any of those products are in the cart
+    // VALIDATION STEP 0: Check date validity for HUT3TH promo (Nov 20-25, 2025)
+    if (code === "HUT3TH") {
+      const promoStartDate = new Date('2025-11-20T00:00:00');
+      const promoEndDate = new Date('2025-11-25T23:59:59');
+      const now = new Date();
+      
+      if (now < promoStartDate || now > promoEndDate) {
+        setPromoDiscount(0);
+        setPromoCodeError("Kode promo HUT3TH hanya berlaku pada tanggal 20-25 November 2025.");
+        return;
+      }
+    }
+    
+    // VALIDATION STEP 1: Check product eligibility
+    // If promo targets specific products, verify at least one is in cart
     if (promo.productIds && Array.isArray(promo.productIds)) {
       const matchingCartItem = cartItems.find(item => promo.productIds!.includes(item.id));
       if (!matchingCartItem) {
@@ -415,28 +558,47 @@ export const handlePromoCodeChange = (
         setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
         return;
       }
-      // Now check minimum quantity requirement if specified
+      // VALIDATION STEP 2: Check minimum quantity requirement
       if (promo.minQuantity && matchingCartItem.quantity < promo.minQuantity) {
         setPromoDiscount(0);
         setPromoCodeError(`Kode promo memerlukan minimal ${promo.minQuantity} pcs pada produk yang dipilih.`);
         return;
       }
     }
-    // For codes that apply to all products or pass the above checks
-    // Check if promo applies to any product in the cart with sufficient quantity
+    
+    // VALIDATION STEP 3: Verify promo applies to at least one item
+    // (For promos that apply to all products or passed above checks)
     const appliesToAny = cartItems.some(item => {
       const productMatches = promo.productIds === null || promo.productIds.includes(item.id);
       const quantityMatches = !promo.minQuantity || item.quantity >= promo.minQuantity;
       return productMatches && quantityMatches;
     });
+    
     if (appliesToAny) {
-      setPromoDiscount(promo.discount);
-      toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, { position: 'top-center', style: { marginTop: '60px' } });
+      // Promo is valid - apply it
+      setPromoDiscount(promo.discount); // For display (0% for override price promos)
+      
+      // Custom success messages for specific promos
+      if (code === "HUT3TH") {
+        // HUT3TH uses override prices, not percentage discount
+        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!", { 
+          position: 'top-center', 
+          style: { marginTop: '60px' } 
+        });
+      } else {
+        // Standard percentage discount promos
+        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, { 
+          position: 'top-center', 
+          style: { marginTop: '60px' } 
+        });
+      }
     } else {
+      // Promo doesn't apply to any items in cart
       setPromoDiscount(0);
       setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
     }
   } else {
+    // Invalid promo code
     setPromoDiscount(0);
     setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
   }
