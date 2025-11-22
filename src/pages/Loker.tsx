@@ -92,7 +92,7 @@ const jobs: Job[] = [
       "Rajin, jujur, dan memiliki fisik yang sehat",
       "Berdomisili di Lampung"
     ],
-    isAvailable: true
+    isAvailable: false
   },
   {
     id: "reseller",
