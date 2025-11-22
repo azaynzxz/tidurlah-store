@@ -18,7 +18,7 @@ export const convertImageToBase64 = (src: string): Promise<string> => {
   });
 };
 
-// Generate URL-friendly slug from product name
+// Generate URL-friendly slug from product namenp
 export const generateProductSlug = (productName: string) => {
   return productName
     .toLowerCase()

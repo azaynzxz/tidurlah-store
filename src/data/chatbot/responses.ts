@@ -75,7 +75,7 @@ Masukkan kode promo di halaman checkout untuk mendapatkan diskon.`,
 Contoh kode: PROMO123, SAVE20, HEMAT`,
   "ubah pesanan": "Ya, Anda dapat meminta perubahan sebelum produksi dimulai. Silakan hubungi kami segera melalui WhatsApp dengan nomor pesanan dan perubahan yang Anda minta.",
   "kirim luar kota": "Ya, kami menawarkan pengiriman ke seluruh Indonesia. Biaya pengiriman akan dihitung berdasarkan lokasi, berat paket, dan layanan kurir yang Anda pilih.",
-  "rush order": "Kami mungkin dapat mengakomodasi pesanan mendesak tergantung jadwal produksi kami saat ini. Biasanya ada biaya tambahan 30% untuk layanan rush, dan ketersediaan bervariasi berdasarkan jenis produk.",
+  "rush order": "Kami mungkin dapat mengakomodasi pesanan mendesak tergantung jadwal produksi kami saat ini. Biasanya ada biaya tambahan Rp 25.000 untuk layanan rush, dan ketersediaan bervariasi berdasarkan jenis produk.",
   "lacak pesanan": "Setelah pesanan Anda dikirim, kami akan memberikan nomor pelacakan melalui WhatsApp yang dapat Anda gunakan untuk memantau progres paket Anda melalui situs web kurir.",
   "metode pembayaran": "Kami menerima transfer bank, pembayaran e-wallet (GoPay, OVO, Dana), dan tunai untuk pengambilan di toko. Detail pembayaran akan diberikan saat menyelesaikan pesanan Anda melalui WhatsApp.",
   

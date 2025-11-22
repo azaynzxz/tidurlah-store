@@ -189,3 +189,4 @@ When modifying pricing logic:
 4. **Update this documentation if adding new pricing features**
 5. **Consider edge cases**: empty cart, invalid quantities, expired promos
 
+
