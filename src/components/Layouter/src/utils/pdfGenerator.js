@@ -17,6 +17,8 @@ import {
   GANCI_3CM_DIAMETER_PX,
   GANCI_5CM_DIAMETER_PX,
   GANCI_OFFSET_PX,
+  GANCI_PADDING_X,
+  GANCI_PADDING_Y,
   MUG_WIDTH_PX,
   MUG_HEIGHT_PX,
   A4_LANDSCAPE_WIDTH_PX,
@@ -291,14 +293,18 @@ export async function generateLayoutGanciPin(files, setProgress, customerInfo = 
   const radiusPx = diameterPx / 2
   const offsetRadiusPx = radiusPx + GANCI_OFFSET_PX
   
-  // Grid: 4x5 for 3cm, 3x5 for 5cm
-  const cols = is3cm ? 4 : 3
-  const rows = 5
+  // Grid: 3x4 for 3cm, 2x3 for 5cm
+  const cols = is3cm ? 3 : 2
+  const rows = is3cm ? 4 : 3
   const itemsPerPage = cols * rows
   
+  // Calculate usable area with padding (reduces column gap)
+  const usableWidth = A4_WIDTH_PX - (GANCI_PADDING_X * 2)
+  const usableHeight = A4_HEIGHT_PX - (GANCI_PADDING_Y * 2)
+  
   // Calculate cell dimensions
-  const cellWidth = A4_WIDTH_PX / cols
-  const cellHeight = A4_HEIGHT_PX / rows
+  const cellWidth = usableWidth / cols
+  const cellHeight = usableHeight / rows
   
   // Total pages = one page per file (each file fills entire page)
   const totalPages = totalFiles
@@ -331,9 +337,9 @@ export async function generateLayoutGanciPin(files, setProgress, customerInfo = 
     for (let row = 0; row < rows; row++) {
       for (let col = 0; col < cols; col++) {
         try {
-          // Calculate center position of the cell
-          const centerX = (col + 0.5) * cellWidth
-          const centerY = (row + 0.5) * cellHeight
+          // Calculate center position of the cell (with padding offset)
+          const centerX = GANCI_PADDING_X + (col + 0.5) * cellWidth
+          const centerY = GANCI_PADDING_Y + (row + 0.5) * cellHeight
           
           // Create circular clipping path
           ctx.save()

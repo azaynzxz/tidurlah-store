@@ -441,7 +441,7 @@ function GanciPinSelection({ onBack }) {
             </button>
           </div>
           <p className="text-xs text-gray-500 mt-2">
-            {diameterCm === 3 ? 'Grid: 4x5 (20 item per halaman)' : 'Grid: 3x5 (15 item per halaman)'}
+            {diameterCm === 3 ? 'Grid: 3x4 (12 item per halaman)' : 'Grid: 2x3 (6 item per halaman)'}
           </p>
         </div>
 
