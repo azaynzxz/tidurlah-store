@@ -46,6 +46,8 @@ export const A4_HEIGHT_PX = MM_TO_PX(297)   // 3508px
 export const GANCI_3CM_DIAMETER_PX = MM_TO_PX(30)   // 354px
 export const GANCI_5CM_DIAMETER_PX = MM_TO_PX(50)   // 591px
 export const GANCI_OFFSET_PX = MM_TO_PX(0.5)        // 6px (thin line offset)
+export const GANCI_PADDING_X = MM_TO_PX(10)          // 118px horizontal padding (reduces column gap)
+export const GANCI_PADDING_Y = MM_TO_PX(10)          // 118px vertical padding
 
 // Mug dimensions (20x10 cm horizontal)
 export const MUG_WIDTH_PX = MM_TO_PX(200)   // 2362px (20cm)
