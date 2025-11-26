@@ -31,6 +31,7 @@ body.loaded {
   0% {
     background-position: -200px 0;
   }
+
   100% {
     background-position: calc(200px + 100%) 0;
   }
@@ -40,6 +41,23 @@ body.loaded {
   background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
   background-size: 200px 100%;
   animation: shimmer 1.5s infinite;
+}
+
+/* Page transition animation */
+@keyframes pageTransition {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageTransition 0.3s ease-out;
 }
 
 @layer base {
@@ -181,7 +199,7 @@ body.loaded {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
+    background-image:
       radial-gradient(circle at 20% 20%, rgba(255, 94, 1, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 80% 80%, rgba(255, 94, 1, 0.1) 0%, transparent 50%),
       radial-gradient(circle at 40% 60%, rgba(255, 94, 1, 0.05) 0%, transparent 50%);
@@ -195,7 +213,7 @@ body.loaded {
     position: relative;
   }
 
-  .header-dropdown > * {
+  .header-dropdown>* {
     z-index: 99999 !important;
   }
 
@@ -290,42 +308,48 @@ body.loaded {
   .halloween-mode .bg-green-50,
   .halloween-mode .bg-green-200,
   .halloween-mode .bg-green-300 {
-    color: #166534 !important; /* Dark green for light green backgrounds */
+    color: #166534 !important;
+    /* Dark green for light green backgrounds */
   }
 
   .halloween-mode .bg-orange-50,
   .halloween-mode .bg-orange-100,
   .halloween-mode .bg-orange-200,
   .halloween-mode .bg-orange-300 {
-    color: #c2410c !important; /* Dark orange for light orange backgrounds */
+    color: #c2410c !important;
+    /* Dark orange for light orange backgrounds */
   }
 
   .halloween-mode .bg-blue-50,
   .halloween-mode .bg-blue-100,
   .halloween-mode .bg-blue-200,
   .halloween-mode .bg-blue-300 {
-    color: #1e40af !important; /* Dark blue for light blue backgrounds */
+    color: #1e40af !important;
+    /* Dark blue for light blue backgrounds */
   }
 
   .halloween-mode .bg-yellow-50,
   .halloween-mode .bg-yellow-100,
   .halloween-mode .bg-yellow-200,
   .halloween-mode .bg-yellow-300 {
-    color: #a16207 !important; /* Dark yellow for light yellow backgrounds */
+    color: #a16207 !important;
+    /* Dark yellow for light yellow backgrounds */
   }
 
   .halloween-mode .bg-purple-50,
   .halloween-mode .bg-purple-100,
   .halloween-mode .bg-purple-200,
   .halloween-mode .bg-purple-300 {
-    color: #7c3aed !important; /* Dark purple for light purple backgrounds */
+    color: #7c3aed !important;
+    /* Dark purple for light purple backgrounds */
   }
 
   .halloween-mode .bg-pink-50,
   .halloween-mode .bg-pink-100,
   .halloween-mode .bg-pink-200,
   .halloween-mode .bg-pink-300 {
-    color: #be185d !important; /* Dark pink for light pink backgrounds */
+    color: #be185d !important;
+    /* Dark pink for light pink backgrounds */
   }
 
   /* Ensure nested elements and SVG icons also get the proper color */
@@ -355,8 +379,10 @@ body.loaded {
 
 /* Christmas Mode - Red and green theme */
 .christmas-mode {
-  --background: 0 0% 8%; /* Very dark background */
-  --foreground: 0 0% 98%; /* White text */
+  --background: 0 0% 8%;
+  /* Very dark background */
+  --foreground: 0 0% 98%;
+  /* White text */
   --card: 0 0% 8%;
   --card-foreground: 0 0% 98%;
   --popover: 0 0% 8%;
@@ -386,8 +412,10 @@ body.loaded {
 
 /* Eid Mode - Gold and green theme */
 .eid-mode {
-  --background: 120 20% 8%; /* Dark green background */
-  --foreground: 60 0% 98%; /* White text */
+  --background: 120 20% 8%;
+  /* Dark green background */
+  --foreground: 60 0% 98%;
+  /* White text */
   --card: 120 20% 8%;
   --card-foreground: 60 0% 98%;
   --popover: 120 20% 8%;
@@ -417,8 +445,10 @@ body.loaded {
 
 /* Ramadan Mode - Purple and gold theme */
 .ramadan-mode {
-  --background: 270 20% 8%; /* Dark purple background */
-  --foreground: 60 0% 98%; /* White text */
+  --background: 270 20% 8%;
+  /* Dark purple background */
+  --foreground: 60 0% 98%;
+  /* White text */
   --card: 270 20% 8%;
   --card-foreground: 60 0% 98%;
   --popover: 270 20% 8%;
@@ -448,8 +478,10 @@ body.loaded {
 
 /* Diwali Mode - Orange and gold theme */
 .diwali-mode {
-  --background: 30 20% 8%; /* Dark orange background */
-  --foreground: 60 0% 98%; /* White text */
+  --background: 30 20% 8%;
+  /* Dark orange background */
+  --foreground: 60 0% 98%;
+  /* White text */
   --card: 30 20% 8%;
   --card-foreground: 60 0% 98%;
   --popover: 30 20% 8%;
@@ -482,6 +514,7 @@ body.loaded {
 .eid-mode,
 .ramadan-mode,
 .diwali-mode {
+
   /* Universal background adaptation for all themes */
   .bg-gray-50,
   .bg-gray-100,
@@ -497,11 +530,18 @@ body.loaded {
   }
 
   /* Universal text color adaptation for all themes */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     color: hsl(var(--foreground)) !important;
   }
 
-  p, span, div {
+  p,
+  span,
+  div {
     color: hsl(var(--foreground)) !important;
   }
 
@@ -518,147 +558,168 @@ body.loaded {
   .bg-green-50,
   .bg-green-200,
   .bg-green-300 {
-    color: #166534 !important; /* Dark green for light green backgrounds */
+    color: #166534 !important;
+    /* Dark green for light green backgrounds */
   }
 
   .bg-orange-50,
   .bg-orange-100,
   .bg-orange-200,
   .bg-orange-300 {
-    color: #c2410c !important; /* Dark orange for light orange backgrounds */
+    color: #c2410c !important;
+    /* Dark orange for light orange backgrounds */
   }
 
   .bg-blue-50,
   .bg-blue-100,
   .bg-blue-200,
   .bg-blue-300 {
-    color: #1e40af !important; /* Dark blue for light blue backgrounds */
+    color: #1e40af !important;
+    /* Dark blue for light blue backgrounds */
   }
 
   .bg-yellow-50,
   .bg-yellow-100,
   .bg-yellow-200,
   .bg-yellow-300 {
-    color: #a16207 !important; /* Dark yellow for light yellow backgrounds */
+    color: #a16207 !important;
+    /* Dark yellow for light yellow backgrounds */
   }
 
   .bg-red-50,
   .bg-red-100,
   .bg-red-200,
   .bg-red-300 {
-    color: #dc2626 !important; /* Dark red for light red backgrounds */
+    color: #dc2626 !important;
+    /* Dark red for light red backgrounds */
   }
 
   .bg-purple-50,
   .bg-purple-100,
   .bg-purple-200,
   .bg-purple-300 {
-    color: #7c3aed !important; /* Dark purple for light purple backgrounds */
+    color: #7c3aed !important;
+    /* Dark purple for light purple backgrounds */
   }
 
   .bg-pink-50,
   .bg-pink-100,
   .bg-pink-200,
   .bg-pink-300 {
-    color: #be185d !important; /* Dark pink for light pink backgrounds */
+    color: #be185d !important;
+    /* Dark pink for light pink backgrounds */
   }
 
   .bg-indigo-50,
   .bg-indigo-100,
   .bg-indigo-200,
   .bg-indigo-300 {
-    color: #3730a3 !important; /* Dark indigo for light indigo backgrounds */
+    color: #3730a3 !important;
+    /* Dark indigo for light indigo backgrounds */
   }
 
   .bg-teal-50,
   .bg-teal-100,
   .bg-teal-200,
   .bg-teal-300 {
-    color: #0f766e !important; /* Dark teal for light teal backgrounds */
+    color: #0f766e !important;
+    /* Dark teal for light teal backgrounds */
   }
 
   .bg-cyan-50,
   .bg-cyan-100,
   .bg-cyan-200,
   .bg-cyan-300 {
-    color: #0891b2 !important; /* Dark cyan for light cyan backgrounds */
+    color: #0891b2 !important;
+    /* Dark cyan for light cyan backgrounds */
   }
 
   .bg-emerald-50,
   .bg-emerald-100,
   .bg-emerald-200,
   .bg-emerald-300 {
-    color: #047857 !important; /* Dark emerald for light emerald backgrounds */
+    color: #047857 !important;
+    /* Dark emerald for light emerald backgrounds */
   }
 
   .bg-lime-50,
   .bg-lime-100,
   .bg-lime-200,
   .bg-lime-300 {
-    color: #65a30d !important; /* Dark lime for light lime backgrounds */
+    color: #65a30d !important;
+    /* Dark lime for light lime backgrounds */
   }
 
   .bg-amber-50,
   .bg-amber-100,
   .bg-amber-200,
   .bg-amber-300 {
-    color: #d97706 !important; /* Dark amber for light amber backgrounds */
+    color: #d97706 !important;
+    /* Dark amber for light amber backgrounds */
   }
 
   .bg-sky-50,
   .bg-sky-100,
   .bg-sky-200,
   .bg-sky-300 {
-    color: #0369a1 !important; /* Dark sky for light sky backgrounds */
+    color: #0369a1 !important;
+    /* Dark sky for light sky backgrounds */
   }
 
   .bg-violet-50,
   .bg-violet-100,
   .bg-violet-200,
   .bg-violet-300 {
-    color: #7c2d12 !important; /* Dark violet for light violet backgrounds */
+    color: #7c2d12 !important;
+    /* Dark violet for light violet backgrounds */
   }
 
   .bg-fuchsia-50,
   .bg-fuchsia-100,
   .bg-fuchsia-200,
   .bg-fuchsia-300 {
-    color: #a21caf !important; /* Dark fuchsia for light fuchsia backgrounds */
+    color: #a21caf !important;
+    /* Dark fuchsia for light fuchsia backgrounds */
   }
 
   .bg-rose-50,
   .bg-rose-100,
   .bg-rose-200,
   .bg-rose-300 {
-    color: #be123c !important; /* Dark rose for light rose backgrounds */
+    color: #be123c !important;
+    /* Dark rose for light rose backgrounds */
   }
 
   .bg-slate-50,
   .bg-slate-100,
   .bg-slate-200,
   .bg-slate-300 {
-    color: #334155 !important; /* Dark slate for light slate backgrounds */
+    color: #334155 !important;
+    /* Dark slate for light slate backgrounds */
   }
 
   .bg-zinc-50,
   .bg-zinc-100,
   .bg-zinc-200,
   .bg-zinc-300 {
-    color: #3f3f46 !important; /* Dark zinc for light zinc backgrounds */
+    color: #3f3f46 !important;
+    /* Dark zinc for light zinc backgrounds */
   }
 
   .bg-neutral-50,
   .bg-neutral-100,
   .bg-neutral-200,
   .bg-neutral-300 {
-    color: #404040 !important; /* Dark neutral for light neutral backgrounds */
+    color: #404040 !important;
+    /* Dark neutral for light neutral backgrounds */
   }
 
   .bg-stone-50,
   .bg-stone-100,
   .bg-stone-200,
   .bg-stone-300 {
-    color: #44403c !important; /* Dark stone for light stone backgrounds */
+    color: #44403c !important;
+    /* Dark stone for light stone backgrounds */
   }
 }
 
@@ -678,24 +739,33 @@ body.loaded {
 
 @layer utilities {
   .scrollbar-hide {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none;
+    /* IE and Edge */
+    scrollbar-width: none;
+    /* Firefox */
   }
+
   .scrollbar-hide::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari and Opera */
+    display: none;
+    /* Chrome, Safari and Opera */
   }
-  
+
   /* Thin scrollbar for image thumbnails */
   .scrollbar-thin {
-    scrollbar-width: thin;  /* Firefox */
+    scrollbar-width: thin;
+    /* Firefox */
   }
+
   .scrollbar-thin::-webkit-scrollbar {
-    height: 4px;  /* Chrome, Safari and Opera */
+    height: 4px;
+    /* Chrome, Safari and Opera */
   }
+
   .scrollbar-thumb-gray-300::-webkit-scrollbar-thumb {
     background-color: #d1d5db;
     border-radius: 2px;
   }
+
   .scrollbar-track-gray-100::-webkit-scrollbar-track {
     background-color: #f3f4f6;
   }
@@ -709,30 +779,35 @@ body.loaded {
     overflow: hidden;
   }
 
-/* Hero section responsive aspect ratios */
-.hero-section {
-  min-height: 50vh; /* 50% viewport height on mobile */
-}
-
-@media (min-width: 1024px) {
+  /* Hero section responsive aspect ratios */
   .hero-section {
-    min-height: 50vh; /* 50% viewport height on desktop */
+    min-height: 50vh;
+    /* 50% viewport height on mobile */
   }
-}
 
-/* Animated gradient line */
-@keyframes gradient-x {
-  0%, 100% {
-    transform: translateX(-100%);
+  @media (min-width: 1024px) {
+    .hero-section {
+      min-height: 50vh;
+      /* 50% viewport height on desktop */
+    }
   }
-  50% {
-    transform: translateX(100%);
-  }
-}
 
-.animate-gradient-x {
-  animation: gradient-x 3s ease infinite;
-}
+  /* Animated gradient line */
+  @keyframes gradient-x {
+
+    0%,
+    100% {
+      transform: translateX(-100%);
+    }
+
+    50% {
+      transform: translateX(100%);
+    }
+  }
+
+  .animate-gradient-x {
+    animation: gradient-x 3s ease infinite;
+  }
 
   /* Angry wiggling animation for case selection */
   .angry-wiggle {
@@ -740,10 +815,23 @@ body.loaded {
   }
 
   @keyframes angry-shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-2px); }
-    50% { transform: translateX(2px); }
-    75% { transform: translateX(-2px); }
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    25% {
+      transform: translateX(-2px);
+    }
+
+    50% {
+      transform: translateX(2px);
+    }
+
+    75% {
+      transform: translateX(-2px);
+    }
   }
 
   /* Orange angry highlighting */
@@ -762,9 +850,17 @@ body.loaded {
   }
 
   @keyframes angry-pulse {
-    0% { box-shadow: 0 0 15px rgba(255, 94, 1, 0.6); }
-    50% { box-shadow: 0 0 25px rgba(255, 94, 1, 0.9), 0 0 35px rgba(255, 94, 1, 0.4); }
-    100% { box-shadow: 0 0 15px rgba(255, 94, 1, 0.6); }
+    0% {
+      box-shadow: 0 0 15px rgba(255, 94, 1, 0.6);
+    }
+
+    50% {
+      box-shadow: 0 0 25px rgba(255, 94, 1, 0.9), 0 0 35px rgba(255, 94, 1, 0.4);
+    }
+
+    100% {
+      box-shadow: 0 0 15px rgba(255, 94, 1, 0.6);
+    }
   }
 
   /* Flying bubble animation - simple and smooth */
@@ -801,14 +897,17 @@ body.loaded {
       transform: translate(0, 0) scale(1) rotate(0deg);
       opacity: 1;
     }
+
     20% {
       transform: translate(15px, -15px) scale(1.2) rotate(45deg);
       opacity: 0.9;
     }
+
     80% {
       transform: translate(calc(var(--end-x) - var(--start-x) - 10px), calc(var(--end-y) - var(--start-y) + 10px)) scale(0.7) rotate(315deg);
       opacity: 0.7;
     }
+
     100% {
       transform: translate(calc(var(--end-x) - var(--start-x)), calc(var(--end-y) - var(--start-y))) scale(0.4) rotate(360deg);
       opacity: 0;
@@ -816,115 +915,165 @@ body.loaded {
   }
 
   @keyframes bubbleFloat {
-    0%, 100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); }
-    50% { transform: translate(-50%, -50%) scale(1.1) rotate(180deg); }
+
+    0%,
+    100% {
+      transform: translate(-50%, -50%) scale(1) rotate(0deg);
+    }
+
+    50% {
+      transform: translate(-50%, -50%) scale(1.1) rotate(180deg);
+    }
   }
 
   /* Cart icon bounce effect */
-  
+
   /* Fix for UI elements disappearing when modal is open/closed */
   /* Prevent Dialog body scroll lock from affecting carousel and other components */
   body[data-scroll-locked] [data-embla] {
     transform: none !important;
     transition: none !important;
   }
-  
+
   /* Ensure all components remain visible when modal is open */
-  [data-radix-portal] ~ * [data-embla],
-  [data-radix-portal] ~ * .grid,
-  [data-radix-portal] ~ * [class*="grid-cols"] {
+  [data-radix-portal]~* [data-embla],
+  [data-radix-portal]~* .grid,
+  [data-radix-portal]~* [class*="grid-cols"] {
     visibility: visible !important;
     opacity: 1 !important;
     transform: none !important;
   }
-  
+
   /* Maintain functionality during modal state */
   body[data-scroll-locked] [data-embla] [data-embla-container] {
     will-change: transform;
     backface-visibility: hidden;
   }
-  
+
   /* Prevent z-index issues after modal closes - be more specific */
   body:not([data-scroll-locked]) .grid:not(.sticky):not([class*="z-"]),
   body:not([data-scroll-locked]) [class*="grid-cols"]:not(.sticky):not([class*="z-"]) {
     z-index: auto;
   }
-  
+
   /* Force re-render of grids after modal close */
   body:not([data-scroll-locked]) .grid,
   body:not([data-scroll-locked]) [class*="grid-cols"] {
     animation: fadeIn 0.1s ease-in;
   }
-  
+
   @keyframes fadeIn {
-    from { opacity: 0.99; }
-    to { opacity: 1; }
+    from {
+      opacity: 0.99;
+    }
+
+    to {
+      opacity: 1;
+    }
   }
 
   @keyframes slideInFromRight {
-    0% { 
-      transform: translateX(100%); 
-      opacity: 0; 
+    0% {
+      transform: translateX(100%);
+      opacity: 0;
     }
-    100% { 
-      transform: translateX(0); 
-      opacity: 1; 
+
+    100% {
+      transform: translateX(0);
+      opacity: 1;
     }
   }
 
   @keyframes slideInFromBottom {
-    0% { 
-      transform: translateY(30px); 
-      opacity: 0; 
+    0% {
+      transform: translateY(30px);
+      opacity: 0;
     }
-    100% { 
-      transform: translateY(0); 
-      opacity: 1; 
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
     }
   }
 
   @keyframes slideInFromBottomContainer {
-    0% { 
-      transform: translateY(100%); 
-      opacity: 0; 
+    0% {
+      transform: translateY(100%);
+      opacity: 0;
     }
-    100% { 
-      transform: translateY(0); 
-      opacity: 1; 
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes slideOutToBottom {
+    0% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
     }
   }
 
   @keyframes fadeInShadow {
-    0% { 
+    0% {
       box-shadow: 0 0 0 rgba(0, 0, 0, 0);
     }
-    100% { 
+
+    100% {
       box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
     }
   }
 
   /* Spotlight-specific animations and styles */
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+
+    50% {
+      transform: translateY(-10px);
+    }
   }
 
   @keyframes slide-up {
-    0% { transform: translateY(100px); opacity: 0; }
-    100% { transform: translateY(0); opacity: 1; }
+    0% {
+      transform: translateY(100px);
+      opacity: 0;
+    }
+
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
   }
 
   @keyframes fade-in {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
+    0% {
+      opacity: 0;
+    }
+
+    100% {
+      opacity: 1;
+    }
   }
 
   @keyframes gradient-shift {
-    0%, 100% { 
+
+    0%,
+    100% {
       background-position: 0% 50%;
       background-size: 200% 200%;
     }
-    50% { 
+
+    50% {
       background-position: 100% 50%;
       background-size: 200% 200%;
     }
@@ -956,6 +1105,7 @@ body.loaded {
       transform: translateX(100%);
       opacity: 0;
     }
+
     100% {
       transform: translateX(0);
       opacity: 1;
@@ -967,6 +1117,7 @@ body.loaded {
       transform: translateY(20px);
       opacity: 0;
     }
+
     100% {
       transform: translateY(0);
       opacity: 1;
@@ -981,14 +1132,23 @@ body.loaded {
   .perspective-1000 {
     perspective: 1000px;
   }
+
   .cart-bounce {
     animation: cartBounce 0.6s ease-out;
   }
 
   @keyframes cartBounce {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.3) rotate(5deg); }
-    100% { transform: scale(1) rotate(0deg); }
+    0% {
+      transform: scale(1);
+    }
+
+    50% {
+      transform: scale(1.3) rotate(5deg);
+    }
+
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
   }
 
   /* Success ripple effect */
@@ -1006,6 +1166,7 @@ body.loaded {
       height: 0;
       opacity: 1;
     }
+
     100% {
       width: 200px;
       height: 200px;
@@ -1047,19 +1208,24 @@ body.loaded {
     0% {
       transform: translateX(-100%) skewX(-15deg);
     }
+
     50% {
       transform: translateX(200%) skewX(-15deg);
     }
+
     100% {
       transform: translateX(200%) skewX(-15deg);
     }
   }
 
   @keyframes border-shine {
-    0%, 75% {
+
+    0%,
+    75% {
       border-color: rgba(255, 255, 255, 0.3);
       box-shadow: 0 0 10px rgba(255, 255, 255, 0.2), 0 0 20px rgba(255, 255, 255, 0.1);
     }
+
     37.5% {
       border-color: rgba(255, 255, 255, 0.9);
       box-shadow: 0 0 25px rgba(255, 255, 255, 0.6), 0 0 40px rgba(255, 255, 255, 0.4);
@@ -1080,12 +1246,10 @@ body.loaded {
     left: 0;
     width: 50%;
     height: 100%;
-    background: linear-gradient(
-      90deg,
-      transparent,
-      rgba(255, 255, 255, 0.5),
-      transparent
-    );
+    background: linear-gradient(90deg,
+        transparent,
+        rgba(255, 255, 255, 0.5),
+        transparent);
     animation: shine-sweep 3s cubic-bezier(0.86, 0, 0.07, 1) infinite;
     animation-delay: var(--shine-delay, 0s);
     pointer-events: none;
@@ -1097,7 +1261,7 @@ body.loaded {
     background: linear-gradient(145deg, #2c3e50, #34495e);
     border-radius: 12px 12px 8px 8px;
     padding: 15px 10px 10px 10px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
     position: relative;
     max-width: 100%;
     overflow: hidden;
@@ -1117,7 +1281,7 @@ body.loaded {
     margin-bottom: 15px;
     position: relative;
     overflow: hidden;
-    box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+    box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5);
   }
 
   .printer-slot::before {
@@ -1127,13 +1291,11 @@ body.loaded {
     left: 0;
     right: 0;
     height: 100%;
-    background: repeating-linear-gradient(
-      90deg,
-      transparent 0px,
-      transparent 3px,
-      rgba(255,255,255,0.1) 3px,
-      rgba(255,255,255,0.1) 4px
-    );
+    background: repeating-linear-gradient(90deg,
+        transparent 0px,
+        transparent 3px,
+        rgba(255, 255, 255, 0.1) 3px,
+        rgba(255, 255, 255, 0.1) 4px);
   }
 
   /* Receipt sliding container */
@@ -1152,7 +1314,7 @@ body.loaded {
     position: relative;
     background: white;
     border-radius: 4px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     animation: slideFromPrinter 4s ease-out forwards;
     transform: translateY(-100%);
     width: 350px;
@@ -1165,9 +1327,11 @@ body.loaded {
       transform: translateY(-100%);
       opacity: 0;
     }
+
     10% {
       opacity: 1;
     }
+
     100% {
       transform: translateY(0);
       opacity: 1;
@@ -1188,8 +1352,16 @@ body.loaded {
   }
 
   @keyframes printerBlink {
-    0%, 50% { opacity: 1; }
-    51%, 100% { opacity: 0.3; }
+
+    0%,
+    50% {
+      opacity: 1;
+    }
+
+    51%,
+    100% {
+      opacity: 0.3;
+    }
   }
 
   /* Loading dots animation */
@@ -1206,15 +1378,27 @@ body.loaded {
     animation: loadingDot 1.4s infinite both;
   }
 
-  .loading-dot:nth-child(1) { animation-delay: 0s; }
-  .loading-dot:nth-child(2) { animation-delay: 0.2s; }
-  .loading-dot:nth-child(3) { animation-delay: 0.4s; }
+  .loading-dot:nth-child(1) {
+    animation-delay: 0s;
+  }
+
+  .loading-dot:nth-child(2) {
+    animation-delay: 0.2s;
+  }
+
+  .loading-dot:nth-child(3) {
+    animation-delay: 0.4s;
+  }
 
   @keyframes loadingDot {
-    0%, 80%, 100% {
+
+    0%,
+    80%,
+    100% {
       transform: scale(0.8);
       opacity: 0.5;
     }
+
     40% {
       transform: scale(1.2);
       opacity: 1;
@@ -1238,22 +1422,25 @@ body.loaded {
   }
 
   @keyframes printerMotor {
-    0% { transform: translateX(-100%); }
-    100% { transform: translateX(100%); }
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
   }
 
   /* Receipt paper texture */
   .receipt-content {
     position: relative;
     font-family: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
-    background: 
-      repeating-linear-gradient(
-        0deg,
+    background:
+      repeating-linear-gradient(0deg,
         transparent,
         transparent 1px,
-        rgba(0,0,0,0.02) 1px,
-        rgba(0,0,0,0.02) 2px
-      ),
+        rgba(0, 0, 0, 0.02) 1px,
+        rgba(0, 0, 0, 0.02) 2px),
       white;
   }
 
@@ -1265,8 +1452,8 @@ body.loaded {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
-      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
     background-size: 4px 4px;
     pointer-events: none;
     opacity: 0.3;
@@ -1536,7 +1723,7 @@ body.loaded {
   }
 
   /* Ensure all receipt content is above watermarks */
-  .receipt-content > * {
+  .receipt-content>* {
     position: relative;
     z-index: 10;
   }
@@ -1547,15 +1734,15 @@ body.loaded {
       font-size: 11px;
       padding: 12px 8px;
     }
-    
+
     .receipt-store-title {
       font-size: 14px;
     }
-    
+
     .receipt-items-title {
       font-size: 11px;
     }
-    
+
     .receipt-total {
       font-size: 12px;
     }
@@ -1569,14 +1756,12 @@ body.loaded {
   .receipt-content-v2 {
     position: relative;
     font-family: 'Courier New', 'Consolas', 'Monaco', 'Lucida Console', monospace;
-    background: 
-      repeating-linear-gradient(
-        0deg,
+    background:
+      repeating-linear-gradient(0deg,
         transparent,
         transparent 1px,
-        rgba(0,0,0,0.02) 1px,
-        rgba(0,0,0,0.02) 2px
-      ),
+        rgba(0, 0, 0, 0.02) 1px,
+        rgba(0, 0, 0, 0.02) 2px),
       white;
     font-size: 15px !important;
     line-height: 1.5 !important;
@@ -1589,8 +1774,8 @@ body.loaded {
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: 
-      radial-gradient(circle at 1px 1px, rgba(0,0,0,0.05) 1px, transparent 0);
+    background-image:
+      radial-gradient(circle at 1px 1px, rgba(0, 0, 0, 0.05) 1px, transparent 0);
     background-size: 4px 4px;
     pointer-events: none;
     opacity: 0.3;
@@ -1815,7 +2000,7 @@ body.loaded {
     padding-top: 7px;
   }
 
-  .receipt-content-v2 > * {
+  .receipt-content-v2>* {
     position: relative;
     z-index: 10;
   }
@@ -1827,6 +2012,7 @@ body.loaded {
     transform: translateY(10px);
     opacity: 0;
   }
+
   100% {
     transform: translateY(0);
     opacity: 1;
@@ -1835,7 +2021,8 @@ body.loaded {
 
 .chat-message-bubble {
   animation: chatBubbleSlideUp 0.4s ease-out forwards;
-  opacity: 0; /* Start invisible, animation will make it visible */
+  opacity: 0;
+  /* Start invisible, animation will make it visible */
   animation-fill-mode: both;
 }
 

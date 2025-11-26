@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { HelpCircle, Clock, History, Search, X, User, Settings } from "lucide-react";
+import { HelpCircle, Clock, History, Search, X, User, Settings, Menu, Layout, MapPin, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
 
 interface POSHeaderProps {
@@ -17,6 +17,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
   const [internalSearchTerm, setInternalSearchTerm] = useState(searchTerm || "");
   const [showCashierDialog, setShowCashierDialog] = useState(false);
   const [tempCashierName, setTempCashierName] = useState(cashierName || "");
+  const [showToolsMenu, setShowToolsMenu] = useState(false);
 
   const currentTime = new Date().toLocaleTimeString('id-ID', {
     hour: '2-digit',
@@ -58,7 +59,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
         <div className="md:hidden space-y-2">
           {/* Top Row: Logo + Time + History */}
           <div className="flex items-center justify-between">
-            <a 
+            <a
               href="/"
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               title="Kembali ke website utama"
@@ -92,12 +93,55 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                 </div>
               </div>
 
+              {/* Tools Menu */}
+              <div className="relative">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2"
+                  onClick={() => setShowToolsMenu(!showToolsMenu)}
+                >
+                  <Menu className="w-3 h-3" />
+                </Button>
+
+                {showToolsMenu && (
+                  <div className="absolute right-0 top-full mt-1 w-48 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                    <a
+                      href="/layout"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                      onClick={() => setShowToolsMenu(false)}
+                    >
+                      <Layout className="h-4 w-4 mr-3" />
+                      Layout Editor
+                    </a>
+                    <a
+                      href="/hello"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                      onClick={() => setShowToolsMenu(false)}
+                    >
+                      <MapPin className="h-4 w-4 mr-3" />
+                      Hello Page
+                    </a>
+                    <a
+                      href="https://docs.google.com/spreadsheets/d/1bK-hq2TDTGElXt0sJbrhGy2ka--leelHlOiH9EhUDhk/edit?gid=1558950426#gid=1558950426"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                      onClick={() => setShowToolsMenu(false)}
+                    >
+                      <ExternalLink className="h-4 w-4 mr-3" />
+                      Order Data
+                    </a>
+                  </div>
+                )}
+              </div>
+
               {/* Compact History Button */}
               {onShowOrderHistory && (
-                <Button 
-                  variant="secondary" 
-                  size="sm" 
-                  className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2" 
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2"
                   onClick={onShowOrderHistory}
                 >
                   <History className="w-3 h-3" />
@@ -135,7 +179,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
         <div className="hidden md:grid grid-cols-3 items-center">
           {/* Left section - Logo and Title */}
           <div className="flex items-center gap-3">
-            <a 
+            <a
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               title="Kembali ke website utama"
@@ -186,10 +230,10 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
             {/* Cashier Name Settings */}
             <Dialog open={showCashierDialog} onOpenChange={setShowCashierDialog}>
               <DialogTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  className="gap-1.5 text-white hover:bg-white hover:bg-opacity-20 h-8 px-2 text-xs" 
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="gap-1.5 text-white hover:bg-white hover:bg-opacity-20 h-8 px-2 text-xs"
                   title="Pengaturan Kasir"
                 >
                   <User className="w-3 h-3" />
@@ -254,12 +298,56 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
               </div>
             </div>
 
+            {/* Tools Menu */}
+            <div className="relative">
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-1.5 bg-white text-[#FF5E01] hover:bg-orange-50 h-8 px-3 text-sm"
+                onClick={() => setShowToolsMenu(!showToolsMenu)}
+              >
+                <Menu className="w-3 h-3" />
+                Tools
+              </Button>
+
+              {showToolsMenu && (
+                <div className="absolute right-0 top-full mt-1 w-52 bg-white rounded-lg shadow-lg border border-gray-200 py-1 z-50">
+                  <a
+                    href="/layout"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                    onClick={() => setShowToolsMenu(false)}
+                  >
+                    <Layout className="h-4 w-4 mr-3" />
+                    Layout Editor
+                  </a>
+                  <a
+                    href="/hello"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                    onClick={() => setShowToolsMenu(false)}
+                  >
+                    <MapPin className="h-4 w-4 mr-3" />
+                    Hello Page
+                  </a>
+                  <a
+                    href="https://docs.google.com/spreadsheets/d/1bK-hq2TDTGElXt0sJbrhGy2ka--leelHlOiH9EhUDhk/edit?gid=1558950426#gid=1558950426"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
+                    onClick={() => setShowToolsMenu(false)}
+                  >
+                    <ExternalLink className="h-4 w-4 mr-3" />
+                    Order Data
+                  </a>
+                </div>
+              )}
+            </div>
+
             {/* History Button */}
             {onShowOrderHistory && (
-              <Button 
-                variant="secondary" 
-                size="sm" 
-                className="gap-1.5 bg-white text-[#FF5E01] hover:bg-orange-50 h-8 px-3 text-sm" 
+              <Button
+                variant="secondary"
+                size="sm"
+                className="gap-1.5 bg-white text-[#FF5E01] hover:bg-orange-50 h-8 px-3 text-sm"
                 onClick={onShowOrderHistory}
               >
                 <History className="w-3 h-3" />

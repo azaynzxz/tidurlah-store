@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import SEO from "@/components/common/SEO";
 import { Briefcase, MapPin, Clock, GraduationCap, CheckCircle, XCircle, Share2, ArrowRight } from "lucide-react";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
@@ -137,15 +138,15 @@ const Loker = () => {
 
   // Filter jobs based on search query and location
   const filteredJobs = jobs.filter(job => {
-    const matchesSearch = searchQuery === "" || 
+    const matchesSearch = searchQuery === "" ||
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.responsibilities.some(resp => resp.toLowerCase().includes(searchQuery.toLowerCase())) ||
       job.qualifications.some(qual => qual.toLowerCase().includes(searchQuery.toLowerCase()));
-    
-    const matchesLocation = locationFilter === "" || 
+
+    const matchesLocation = locationFilter === "" ||
       job.location.toLowerCase().includes(locationFilter.toLowerCase());
-    
+
     return matchesSearch && matchesLocation;
   });
 
@@ -161,7 +162,7 @@ const Loker = () => {
 
   const handleJobShare = (job: Job) => {
     const shareUrl = `${window.location.origin}/loker/${job.id}`;
-    
+
     if (navigator.share) {
       navigator.share({
         title: `Lowongan Kerja: ${job.title} - Tidurlah Store`,
@@ -170,17 +171,22 @@ const Loker = () => {
       });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!", { 
-        position: 'top-center', 
-        style: { marginTop: '60px' } 
+      toast.success("Link lowongan kerja disalin!", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col page-transition">
+      <SEO
+        title="Lowongan Kerja & Karir"
+        description="Bergabunglah dengan tim Tidurlah Grafika. Temukan peluang karir dan lowongan kerja terbaru di Bandar Lampung."
+        keywords="loker lampung, lowongan kerja bandar lampung, karir tidurlah grafika, loker percetakan"
+      />
       <Header />
-      
+
       {/* Hero Section */}
       <div className="relative bg-background overflow-hidden hero-section">
         <div className="container mx-auto max-w-7xl px-4 py-8 lg:py-12 h-full flex items-center">
@@ -193,7 +199,7 @@ const Loker = () => {
                   Temui <span className="text-[#FF5E01]">Peluang!</span>
                 </h1>
                 <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-                Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, dan teliti untuk bergabung dengan tim kami.
+                  Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, dan teliti untuk bergabung dengan tim kami.
                 </p>
               </div>
 
@@ -246,7 +252,7 @@ const Loker = () => {
               <div className="relative w-full h-64 sm:h-80 lg:h-96 xl:h-[500px]">
                 {/* Background Circle */}
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 lg:w-96 lg:h-96 xl:w-[500px] xl:h-[500px] bg-gradient-to-br from-orange-100 to-pink-100 rounded-full opacity-80"></div>
-                
+
                 {/* Image Placeholder */}
                 <div className="relative z-10 w-full h-full flex items-center justify-center">
                   <div className="bg-background rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
@@ -302,12 +308,12 @@ const Loker = () => {
           </div>
 
           {/* Job Cards Grid - 3 Columns */}
-          <StaggeredContainer 
+          <StaggeredContainer
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
             staggerDelay={50}
           >
             {filteredJobs.map((job) => (
-              <div 
+              <div
                 key={job.id}
                 className="bg-background rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
                 onClick={() => {
@@ -368,7 +374,7 @@ const Loker = () => {
                       </div>
                     </div>
                   </div>
-                  
+
                   <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
                     {job.description}
                   </p>
@@ -424,13 +430,13 @@ const Loker = () => {
               Kirim lamaran Anda melalui email atau hubungi kami untuk informasi lebih lanjut
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a 
+              <a
                 href="mailto:hrd@tidurlah.com"
                 className="bg-background text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
               >
                 Kirim Email
               </a>
-              <a 
+              <a
                 href="https://wa.me/6285172157808"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -454,7 +460,7 @@ const JobDetailPage = ({ job }: { job: Job }) => {
 
   const handleShare = () => {
     const shareUrl = `${window.location.origin}/loker/${job.id}`;
-    
+
     if (navigator.share) {
       navigator.share({
         title: `Lowongan Kerja: ${job.title} - Tidurlah Store`,
@@ -463,17 +469,17 @@ const JobDetailPage = ({ job }: { job: Job }) => {
       });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!", { 
-        position: 'top-center', 
-        style: { marginTop: '60px' } 
+      toast.success("Link lowongan kerja disalin!", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
       });
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col page-transition">
       <Header />
-      
+
       <div className="flex-1">
         <div className="container mx-auto max-w-4xl px-4 py-4 md:py-8">
           {/* Breadcrumb - Compact on Mobile */}
@@ -483,12 +489,12 @@ const JobDetailPage = ({ job }: { job: Job }) => {
                 // Scroll to top immediately before navigation
                 window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                 navigate('/');
-              }} className="hover:text-[#FF5E01]">Home</button> / 
+              }} className="hover:text-[#FF5E01]">Home</button> /
               <button onClick={() => {
                 // Scroll to top immediately before navigation
                 window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
                 navigate('/loker');
-              }} className="hover:text-[#FF5E01] ml-1"> Loker</button> / 
+              }} className="hover:text-[#FF5E01] ml-1"> Loker</button> /
               <span className="text-gray-700 ml-1">{job.title}</span>
             </span>
           </nav>
@@ -626,7 +632,7 @@ const JobDetailPage = ({ job }: { job: Job }) => {
 
               {/* Action Buttons - Compact */}
               <div className="pt-4 md:pt-6 border-t border-gray-200">
-                <ApplyButton 
+                <ApplyButton
                   posisi={job.title}
                   isAvailable={job.isAvailable}
                   onShare={handleShare}

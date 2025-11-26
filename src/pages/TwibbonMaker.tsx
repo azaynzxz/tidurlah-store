@@ -19,11 +19,11 @@ const TwibbonMaker = () => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 });
   const [isLoading, setIsLoading] = useState(false);
-  
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  
+
   const lastTouchDistanceRef = useRef<number | null>(null);
   const lastTouchCenterRef = useRef<{ x: number; y: number } | null>(null);
   const initialScaleRef = useRef<number>(1.0);
@@ -57,10 +57,10 @@ const TwibbonMaker = () => {
       ctx.save();
       ctx.translate(imagePosition.x + CANVAS_WIDTH / 2, imagePosition.y + CANVAS_HEIGHT / 2);
       ctx.scale(scale, scale);
-      
+
       const scaledWidth = uploadedImage.width * scale;
       const scaledHeight = uploadedImage.height * scale;
-      
+
       ctx.drawImage(
         uploadedImage,
         -scaledWidth / 2,
@@ -117,15 +117,15 @@ const TwibbonMaker = () => {
   // Constrain image position to stay within bounds
   const constrainPosition = useCallback((x: number, y: number, currentScale: number) => {
     if (!uploadedImage) return { x: 0, y: 0 };
-    
+
     const scaledWidth = uploadedImage.width * currentScale;
     const scaledHeight = uploadedImage.height * currentScale;
-    
+
     const maxX = CANVAS_WIDTH / 2 + scaledWidth / 2;
     const minX = CANVAS_WIDTH / 2 - scaledWidth / 2;
     const maxY = CANVAS_HEIGHT / 2 + scaledHeight / 2;
     const minY = CANVAS_HEIGHT / 2 - scaledHeight / 2;
-    
+
     return {
       x: Math.max(-maxX, Math.min(maxX, x)),
       y: Math.max(-maxY, Math.min(maxY, y))
@@ -135,32 +135,32 @@ const TwibbonMaker = () => {
   // Handle mouse drag
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!uploadedImage) return;
-    
+
     setIsDragging(true);
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-    
+
     const scaleX = CANVAS_WIDTH / rect.width;
     const scaleY = CANVAS_HEIGHT / rect.height;
-    
+
     const x = (e.clientX - rect.left) * scaleX - CANVAS_WIDTH / 2;
     const y = (e.clientY - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-    
+
     setDragStart({ x: x - imagePosition.x, y: y - imagePosition.y });
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (!isDragging || !uploadedImage) return;
-    
+
     const rect = canvasRef.current?.getBoundingClientRect();
     if (!rect) return;
-    
+
     const scaleX = CANVAS_WIDTH / rect.width;
     const scaleY = CANVAS_HEIGHT / rect.height;
-    
+
     const x = (e.clientX - rect.left) * scaleX - CANVAS_WIDTH / 2;
     const y = (e.clientY - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-    
+
     const newPos = constrainPosition(x - dragStart.x, y - dragStart.y, scale);
     setImagePosition(newPos);
   };
@@ -172,40 +172,40 @@ const TwibbonMaker = () => {
   // Handle touch events
   const handleTouchStart = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!uploadedImage) return;
-    
+
     if (e.touches.length === 1) {
       // Single touch - drag
       setIsDragging(true);
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-      
+
       const scaleX = CANVAS_WIDTH / rect.width;
       const scaleY = CANVAS_HEIGHT / rect.height;
-      
+
       const touch = e.touches[0];
       const x = (touch.clientX - rect.left) * scaleX - CANVAS_WIDTH / 2;
       const y = (touch.clientY - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-      
+
       setDragStart({ x: x - imagePosition.x, y: y - imagePosition.y });
       lastTouchDistanceRef.current = null;
     } else if (e.touches.length === 2) {
       // Two touches - pinch zoom
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      
+
       const distance = Math.hypot(
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       );
-      
+
       lastTouchDistanceRef.current = distance;
       initialScaleRef.current = scale;
-      
+
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         const scaleX = CANVAS_WIDTH / rect.width;
         const scaleY = CANVAS_HEIGHT / rect.height;
-        
+
         const centerX = ((touch1.clientX + touch2.clientX) / 2 - rect.left) * scaleX - CANVAS_WIDTH / 2;
         const centerY = ((touch1.clientY + touch2.clientY) / 2 - rect.top) * scaleY - CANVAS_HEIGHT / 2;
         lastTouchCenterRef.current = { x: centerX, y: centerY };
@@ -215,19 +215,19 @@ const TwibbonMaker = () => {
 
   const handleTouchMove = (e: React.TouchEvent<HTMLCanvasElement>) => {
     if (!uploadedImage) return;
-    
+
     if (e.touches.length === 1 && isDragging) {
       // Single touch - drag
       const rect = canvasRef.current?.getBoundingClientRect();
       if (!rect) return;
-      
+
       const scaleX = CANVAS_WIDTH / rect.width;
       const scaleY = CANVAS_HEIGHT / rect.height;
-      
+
       const touch = e.touches[0];
       const x = (touch.clientX - rect.left) * scaleX - CANVAS_WIDTH / 2;
       const y = (touch.clientY - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-      
+
       const newPos = constrainPosition(x - dragStart.x, y - dragStart.y, scale);
       setImagePosition(newPos);
     } else if (e.touches.length === 2) {
@@ -235,31 +235,31 @@ const TwibbonMaker = () => {
       e.preventDefault();
       const touch1 = e.touches[0];
       const touch2 = e.touches[1];
-      
+
       const distance = Math.hypot(
         touch2.clientX - touch1.clientX,
         touch2.clientY - touch1.clientY
       );
-      
+
       if (lastTouchDistanceRef.current !== null) {
         const scaleChange = distance / lastTouchDistanceRef.current;
         const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, initialScaleRef.current * scaleChange));
         setScale(newScale);
-        
+
         // Adjust position to keep zoom centered
         if (lastTouchCenterRef.current) {
           const rect = canvasRef.current?.getBoundingClientRect();
           if (rect) {
             const scaleX = CANVAS_WIDTH / rect.width;
             const scaleY = CANVAS_HEIGHT / rect.height;
-            
+
             const centerX = ((touch1.clientX + touch2.clientX) / 2 - rect.left) * scaleX - CANVAS_WIDTH / 2;
             const centerY = ((touch1.clientY + touch2.clientY) / 2 - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-            
+
             const scaleRatio = newScale / initialScaleRef.current;
             const offsetX = centerX - lastTouchCenterRef.current.x;
             const offsetY = centerY - lastTouchCenterRef.current.y;
-            
+
             const newPos = constrainPosition(
               imagePosition.x - offsetX * (1 - scaleRatio),
               imagePosition.y - offsetY * (1 - scaleRatio),
@@ -281,24 +281,24 @@ const TwibbonMaker = () => {
   // Handle wheel zoom
   const handleWheel = (e: React.WheelEvent<HTMLCanvasElement>) => {
     if (!uploadedImage) return;
-    
+
     e.preventDefault();
     const delta = e.deltaY > 0 ? 0.9 : 1.1;
     const newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, scale * delta));
-    
+
     if (newScale !== scale) {
       const rect = canvasRef.current?.getBoundingClientRect();
       if (rect) {
         const scaleX = CANVAS_WIDTH / rect.width;
         const scaleY = CANVAS_HEIGHT / rect.height;
-        
+
         const x = (e.clientX - rect.left) * scaleX - CANVAS_WIDTH / 2;
         const y = (e.clientY - rect.top) * scaleY - CANVAS_HEIGHT / 2;
-        
+
         const scaleRatio = newScale / scale;
         const offsetX = x - imagePosition.x;
         const offsetY = y - imagePosition.y;
-        
+
         const newPos = constrainPosition(
           imagePosition.x - offsetX * (1 - scaleRatio),
           imagePosition.y - offsetY * (1 - scaleRatio),
@@ -336,14 +336,14 @@ const TwibbonMaker = () => {
     }
 
     setIsLoading(true);
-    
+
     try {
       // Create a temporary canvas for export
       const exportCanvas = document.createElement("canvas");
       exportCanvas.width = CANVAS_WIDTH;
       exportCanvas.height = CANVAS_HEIGHT;
       const ctx = exportCanvas.getContext("2d");
-      
+
       if (!ctx) {
         throw new Error("Failed to get canvas context");
       }
@@ -352,10 +352,10 @@ const TwibbonMaker = () => {
       ctx.save();
       ctx.translate(imagePosition.x + CANVAS_WIDTH / 2, imagePosition.y + CANVAS_HEIGHT / 2);
       ctx.scale(scale, scale);
-      
+
       const scaledWidth = uploadedImage.width * scale;
       const scaledHeight = uploadedImage.height * scale;
-      
+
       ctx.drawImage(
         uploadedImage,
         -scaledWidth / 2,
@@ -373,7 +373,7 @@ const TwibbonMaker = () => {
         if (!blob) {
           throw new Error("Failed to create blob");
         }
-        
+
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
@@ -382,7 +382,7 @@ const TwibbonMaker = () => {
         link.click();
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
-        
+
         toast.success("Gambar berhasil diunduh", { position: 'top-center', style: { marginTop: '60px' } });
       }, "image/png");
     } catch (error) {
@@ -399,10 +399,10 @@ const TwibbonMaker = () => {
     const container = containerRef.current;
     const containerWidth = container.clientWidth - 32; // padding
     const containerHeight = window.innerHeight * 0.6;
-    
+
     const scaleX = containerWidth / CANVAS_WIDTH;
     const scaleY = containerHeight / CANVAS_HEIGHT;
-    
+
     return Math.min(scaleX, scaleY, 1); // Don't scale up beyond 1:1
   };
 
@@ -411,15 +411,15 @@ const TwibbonMaker = () => {
   const displayHeight = CANVAS_HEIGHT * displayScale;
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <div className="min-h-screen bg-background flex flex-col page-transition">
       <Header cartItemsCount={0} showSearch={false} />
-      
+
       <div className="container mx-auto max-w-full md:max-w-full lg:max-w-7xl bg-background flex-1 flex flex-col px-4 md:px-6 lg:px-6 py-6">
         <div className="flex-1 flex flex-col items-center">
           <h1 className="text-2xl md:text-3xl font-bold mb-4 text-center">
             Twibbon HUT 3 th ID Card Lampung
           </h1>
-          
+
           <div className="w-full max-w-4xl">
             {/* Controls */}
             <div className="mb-4 flex flex-wrap gap-3 justify-center items-center">
@@ -430,7 +430,7 @@ const TwibbonMaker = () => {
                 onChange={handleFileUpload}
                 className="hidden"
               />
-              
+
               <Button
                 onClick={() => fileInputRef.current?.click()}
                 variant="outline"
@@ -439,7 +439,7 @@ const TwibbonMaker = () => {
                 <Upload className="h-4 w-4" />
                 Unggah Foto
               </Button>
-              
+
               {uploadedImage && (
                 <>
                   <Button
@@ -450,7 +450,7 @@ const TwibbonMaker = () => {
                   >
                     <ZoomOut className="h-4 w-4" />
                   </Button>
-                  
+
                   <div className="flex items-center gap-2 min-w-[150px]">
                     <span className="text-sm text-muted-foreground whitespace-nowrap">
                       Zoom: {Math.round(scale * 100)}%
@@ -464,7 +464,7 @@ const TwibbonMaker = () => {
                       className="flex-1"
                     />
                   </div>
-                  
+
                   <Button
                     onClick={handleZoomIn}
                     variant="outline"
@@ -473,7 +473,7 @@ const TwibbonMaker = () => {
                   >
                     <ZoomIn className="h-4 w-4" />
                   </Button>
-                  
+
                   <Button
                     onClick={handleReset}
                     variant="outline"
@@ -482,7 +482,7 @@ const TwibbonMaker = () => {
                     <RotateCcw className="h-4 w-4" />
                     Reset
                   </Button>
-                  
+
                   <Button
                     onClick={handleDownload}
                     disabled={isLoading}
@@ -491,7 +491,7 @@ const TwibbonMaker = () => {
                     <Download className="h-4 w-4" />
                     {isLoading ? "Mengunduh..." : "Unduh PNG"}
                   </Button>
-                  
+
                   <Button
                     onClick={() => {
                       setUploadedImage(null);
@@ -506,7 +506,7 @@ const TwibbonMaker = () => {
                 </>
               )}
             </div>
-            
+
             {/* Canvas Container */}
             <div
               ref={containerRef}
@@ -533,7 +533,7 @@ const TwibbonMaker = () => {
                 onWheel={handleWheel}
               />
             </div>
-            
+
             {/* Instructions */}
             {!uploadedImage && (
               <div className="mt-4 text-center text-sm text-muted-foreground">
@@ -544,7 +544,7 @@ const TwibbonMaker = () => {
           </div>
         </div>
       </div>
-      
+
       <div className="mt-12 mb-8">
         <Footer />
       </div>

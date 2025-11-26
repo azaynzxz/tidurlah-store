@@ -1,5 +1,6 @@
 import { MapPin, Store, Instagram, Facebook, MessageCircle, ExternalLink, Clock } from "lucide-react";
 import Header from "@/components/common/Header";
+import SEO from "@/components/common/SEO";
 import { AnimatedElement } from "@/components/animations/AnimatedElement";
 import { Button } from "@/components/ui/button";
 import ChatBot from "@/components/ChatBot";
@@ -80,12 +81,17 @@ const Spotlight = () => {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col">
+    <div className="min-h-screen bg-white overflow-hidden relative selection:bg-black/20 page-transition">
+      <SEO
+        title="Hubungi Kami"
+        description="Hubungi Tidurlah Grafika untuk konsultasi produk, pemesanan, dan informasi lebih lanjut. Kami siap melayani kebutuhan cetak Anda."
+        keywords="kontak tidurlah grafika, alamat tidurlah grafika, whatsapp tidurlah grafika, lokasi percetakan lampung"
+      />
       {/* Universal Header */}
-      <Header 
+      <Header
         cartItemsCount={0}
         onCartClick={() => window.location.href = '/'}
-        onSearch={() => {}}
+        onSearch={() => { }}
         showSearch={false}
       />
 
@@ -94,20 +100,20 @@ const Spotlight = () => {
         {/* Animated gradient background */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
-        
+
         {/* Header */}
         <AnimatedElement direction="up" delay={200} duration={300}>
           <header className="text-center mb-8">
             <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-6 tracking-tight">
               Hubungi Kami
             </h1>
-            
+
             {/* Brand Pills */}
             <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
               {["ID Card Lampung", "Papan ID Craft", "Tidurlah Grafika"].map((brand) => (
                 <div
                   key={brand}
-                  className="px-4 py-1.5 bg-white/60 backdrop-blur-sm rounded-full text-xs font-medium text-foreground/80 border border-border/50"
+                  className="px-4 py-1.5 bg-black/5 backdrop-blur-sm rounded-full text-xs font-medium text-gray-800 border border-gray-200"
                 >
                   {brand}
                 </div>
@@ -122,7 +128,7 @@ const Spotlight = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {cards.map((card, index) => {
                 const Icon = card.icon;
-                
+
                 return (
                   <div
                     key={card.id}
@@ -146,13 +152,13 @@ const Spotlight = () => {
                         <ExternalLink className="w-4 h-4 opacity-80" />
                       )}
                     </div>
-                    
+
                     <h3 className="text-lg font-bold mb-1 relative z-10">{card.title}</h3>
                     <p className="text-white/90 text-sm mb-3 relative z-10">{card.description}</p>
-                    
+
                     {card.id === "visit-stores" && (
                       <div className="space-y-2 mt-4 relative z-10">
-                        <Button 
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleStoreLocationClick("https://maps.app.goo.gl/hVwcunR4E5LobVBTA");
@@ -162,7 +168,7 @@ const Spotlight = () => {
                           <MapPin className="mr-2 h-4 w-4" />
                           Cabang Korpri
                         </Button>
-                        <Button 
+                        <Button
                           onClick={(e) => {
                             e.stopPropagation();
                             handleStoreLocationClick("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA");
@@ -225,7 +231,7 @@ const Spotlight = () => {
           </footer>
         </AnimatedElement>
       </div>
-      
+
       {/* Chat Bot */}
       <ChatBot />
     </div>

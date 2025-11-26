@@ -24,9 +24,9 @@ interface HeaderProps {
   showSearch?: boolean;
 }
 
-const Header = ({ 
-  cartItemsCount = 0, 
-  onCartClick, 
+const Header = ({
+  cartItemsCount = 0,
+  onCartClick,
   onSearch,
   showSearch = false
 }: HeaderProps) => {
@@ -49,7 +49,7 @@ const Header = ({
       const height = getComputedStyle(document.documentElement).getPropertyValue('--promo-banner-height').trim();
       setBannerHeight(height || '0px');
     };
-    
+
     updateBannerHeight();
     const interval = setInterval(updateBannerHeight, 100);
     return () => clearInterval(interval);
@@ -102,19 +102,19 @@ const Header = ({
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-      
+
       // Also try smooth scroll as fallback
       setTimeout(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       }, 10);
     };
-    
+
     // Scroll immediately
     scrollToTop();
-    
+
     // Navigate
     navigate(path);
-    
+
     // Scroll again after navigation (for mobile)
     setTimeout(scrollToTop, 50);
     setTimeout(scrollToTop, 200);
@@ -128,19 +128,19 @@ const Header = ({
       window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
       document.documentElement.scrollTop = 0;
       document.body.scrollTop = 0;
-      
+
       // Also try smooth scroll as fallback
       setTimeout(() => {
         window.scrollTo({ top: 0, left: 0, behavior: 'smooth' });
       }, 10);
     };
-    
+
     // Scroll immediately
     scrollToTop();
-    
+
     // Navigate
     navigate(path);
-    
+
     // Scroll again after navigation (for mobile)
     setTimeout(scrollToTop, 50);
     setTimeout(scrollToTop, 200);
@@ -160,14 +160,14 @@ const Header = ({
 
   const handleTouchEnd = () => {
     if (!isDragging) return;
-    
+
     const deltaY = currentY - startY;
     const threshold = 100; // Minimum swipe distance to close
-    
+
     if (deltaY > threshold) {
       handleCloseMenu();
     }
-    
+
     setIsDragging(false);
     setStartY(0);
     setCurrentY(0);
@@ -175,371 +175,343 @@ const Header = ({
 
 
   return (
-    <div 
-      className={`bg-background shadow-sm p-3 lg:p-4 sticky z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`} 
+    <div
+      className={`bg-background shadow-sm p-3 lg:p-4 sticky z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`}
       style={{ marginTop: 0, top: bannerHeight, marginBottom: 0, display: 'block' }}
     >
       <div className="flex justify-between items-center relative z-10">
         {/* Mobile Logo */}
-        <img 
+        <img
           src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
           alt="TIDURLAH STORE"
           className="h-8 w-8 object-contain cursor-pointer lg:hidden"
           onClick={() => navigateWithScrollToTop('/')}
         />
-        
+
         {/* Desktop Logo */}
-        <img 
+        <img
           src="/product-image/Tidurlah Logo Horizontal.png"
           alt="TIDURLAH STORE"
           className="h-8 lg:h-10 object-contain cursor-pointer hidden lg:block"
           style={isHalloweenMode ? { filter: 'brightness(0) invert(1)' } : {}}
           onClick={() => navigateWithScrollToTop('/')}
         />
-        
+
         {/* Center Search Bar - Mobile */}
         {showSearch && onSearch && (
           <div className="flex-1 max-w-md mx-2 md:hidden">
             <SearchBar onSearch={onSearch} placeholder={location.pathname.startsWith('/blog') ? 'Cari Artikel' : 'Search products'} />
           </div>
         )}
-        
+
         {/* Center Search Bar - Desktop - Absolutely Centered */}
         {showSearch && onSearch && (
           <div className="hidden md:block absolute left-1/2 transform -translate-x-1/2 w-80 max-w-md">
             <SearchBar onSearch={onSearch} placeholder={location.pathname.startsWith('/blog') ? 'Cari Artikel' : 'Search products'} />
           </div>
         )}
-        
-        <div className="flex items-center space-x-2 lg:space-x-4">
-        <MusicPlayer />
-        
-        
-        <button 
-          onClick={() => navigateWithScrollToTop('/blog')}
-          className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
-        >
-          <Newspaper className="h-5 w-5 lg:h-6 lg:w-6" />
-        </button>
-        
-        <button 
-          onClick={() => navigateWithScrollToTop('/loker')}
-          className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
-        >
-          <Briefcase className="h-5 w-5 lg:h-6 lg:w-6" />
-        </button>
-        
-        {/* Desktop Dropdown Menu */}
-        <div className="relative hidden md:block desktop-dropdown header-dropdown">
-          <button
-            onClick={handleDesktopDropdownToggle}
-            className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-all duration-200"
-          >
-            <Menu className={`h-5 w-5 lg:h-6 lg:w-6 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-90' : ''}`} />
-          </button>
-          
-          {/* Dropdown Content */}
-          {desktopDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 bg-background rounded-lg shadow-lg border border-gray-200 py-2 z-[999999] animate-in slide-in-from-top-2 fade-in duration-200">
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/')}
-                style={{ animationDelay: '0ms' }}
-              >
-                <Home className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Home
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/blog')}
-                style={{ animationDelay: '50ms' }}
-              >
-                <Newspaper className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Blog
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/loker')}
-                style={{ animationDelay: '100ms' }}
-              >
-                <Briefcase className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Loker
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/blog/panduan-desain')}
-                style={{ animationDelay: '150ms' }}
-              >
-                <FileText className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Panduan Desain
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/blog/kebijakan-privasi')}
-                style={{ animationDelay: '200ms' }}
-              >
-                <Shield className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Privacy Policy
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/blog/syarat-ketentuan-pengembalian')}
-                style={{ animationDelay: '250ms' }}
-              >
-                <RotateCcw className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Return Policy
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/twibbon-hut-3-id-card-lampung')}
-                style={{ animationDelay: '300ms' }}
-              >
-                <Image className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Twibbon HUT 3 th ID Card Lampung
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/katalog')}
-                style={{ animationDelay: '350ms' }}
-              >
-                <Image className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Katalog Desain
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={() => handleDesktopMenuClick('/hello')}
-                style={{ animationDelay: '400ms' }}
-              >
-                <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
-                Hello Page
-              </button>
-              <button 
-                className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                onClick={toggleHalloweenMode}
-                style={{ animationDelay: '450ms' }}
-              >
-                <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
-                Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
-              </button>
-            </div>
-          )}
-        </div>
-        
-        {onCartClick && (
-          <button 
-            className="relative p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
-            onClick={onCartClick}
-            data-cart-icon
-          >
-            <ShoppingCart className="h-6 w-6 text-[#FF5E01]" />
-            {cartItemsCount > 0 && (
-              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
-                {cartItemsCount}
-              </span>
-            )}
-          </button>
-        )}
-        {/* Mobile hamburger */}
-        <button
-          className="md:hidden p-2 rounded-lg hover:bg-orange-50"
-          onClick={handleOpenMenu}
-          aria-label="Open menu"
-        >
-          <Menu className="h-6 w-6 text-[#FF5E01]" />
-        </button>
-      </div>
 
-      {/* iOS-style Bottom Sheet */}
-      {(mobileOpen || isClosing) && (
-        <div 
-          className={`fixed inset-0 bg-black/40 md:hidden transition-opacity duration-300 ease-in-out ${
-            isClosing ? 'opacity-0' : 'opacity-100'
-          }`} 
-          style={{ zIndex: 99999 }}
-          onClick={handleCloseMenu}
-        >
-          {/* Bottom Sheet Container */}
-          <div 
-            className={`fixed bottom-0 left-0 right-0 md:hidden bg-background rounded-t-3xl shadow-2xl transform transition-all duration-300 ease-out ${
-              isClosing ? 'translate-y-full' : 'translate-y-0'
-            }`}
-            style={{ 
-              zIndex: 100000,
-              transform: isDragging ? `translateY(${Math.max(0, currentY - startY)}px)` : undefined,
-              animation: isClosing ? 'none' : 'slideInFromBottomContainer 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both, fadeInShadow 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0s both'
-            }}
-            onClick={(e) => e.stopPropagation()}
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
+        <div className="flex items-center space-x-2 lg:space-x-4">
+          <MusicPlayer />
+
+
+          <button
+            onClick={() => navigateWithScrollToTop('/blog')}
+            className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
           >
-            {/* Drag Handle */}
-            <div 
-              className="flex justify-center pt-2 pb-1"
-              style={{ 
-                animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.01s both'
-              }}
+            <Newspaper className="h-5 w-5 lg:h-6 lg:w-6" />
+          </button>
+
+          <button
+            onClick={() => navigateWithScrollToTop('/loker')}
+            className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium hidden md:flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
+          >
+            <Briefcase className="h-5 w-5 lg:h-6 lg:w-6" />
+          </button>
+
+          {/* Desktop Dropdown Menu */}
+          <div className="relative hidden md:block desktop-dropdown header-dropdown">
+            <button
+              onClick={handleDesktopDropdownToggle}
+              className="text-[#FF5E01] hover:text-[#FF5E01]/80 text-xs font-medium flex items-center p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-all duration-200"
             >
-              <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
-            </div>
-            
-            {/* Header */}
-            <div 
-              className="px-4 pb-2 border-b border-gray-100"
-              style={{ 
-                animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.03s both'
-              }}
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-base font-semibold text-foreground">Menu</h2>
-                <button 
-                  className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200" 
-                  onClick={handleCloseMenu}
-                  aria-label="Close menu"
+              <Menu className={`h-5 w-5 lg:h-6 lg:w-6 transition-transform duration-200 ${desktopDropdownOpen ? 'rotate-90' : ''}`} />
+            </button>
+
+            {/* Dropdown Content */}
+            {desktopDropdownOpen && (
+              <div className="absolute right-0 top-full mt-2 w-64 bg-background rounded-lg shadow-lg border border-gray-200 py-2 z-[999999] animate-in slide-in-from-top-2 fade-in duration-200">
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/')}
+                  style={{ animationDelay: '0ms' }}
                 >
-                  <X className="h-4 w-4 text-muted-foreground" />
+                  <Home className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Home
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/blog')}
+                  style={{ animationDelay: '50ms' }}
+                >
+                  <Newspaper className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Blog
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/loker')}
+                  style={{ animationDelay: '100ms' }}
+                >
+                  <Briefcase className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Loker
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/blog/panduan-desain')}
+                  style={{ animationDelay: '150ms' }}
+                >
+                  <FileText className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Panduan Desain
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/blog/kebijakan-privasi')}
+                  style={{ animationDelay: '200ms' }}
+                >
+                  <Shield className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Privacy Policy
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/blog/syarat-ketentuan-pengembalian')}
+                  style={{ animationDelay: '250ms' }}
+                >
+                  <RotateCcw className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Return Policy
+                </button>
+
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/katalog')}
+                  style={{ animationDelay: '350ms' }}
+                >
+                  <Image className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Katalog Desain
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={() => handleDesktopMenuClick('/hello')}
+                  style={{ animationDelay: '400ms' }}
+                >
+                  <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
+                  Hello Page
+                </button>
+                <button
+                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
+                  onClick={toggleHalloweenMode}
+                  style={{ animationDelay: '450ms' }}
+                >
+                  <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
+                  Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
                 </button>
               </div>
-            </div>
-            
-            {/* Navigation Items */}
-            <div className="px-4 py-2 space-y-0.5">
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Home className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Home
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Newspaper className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Blog
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/loker'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Briefcase className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Loker
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/panduan-desain'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <FileText className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Panduan Desain
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/kebijakan-privasi'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Shield className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Privacy Policy
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <RotateCcw className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Return Policy
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Image className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Twibbon HUT 3 th ID Card Lampung
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/katalog'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <Image className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Katalog Desain
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/hello'); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <MapPin className="h-4 w-4 mr-3 text-[#FF5E01]" />
-                Hello Page
-              </button>
-              
-              <button 
-                className={`w-full text-left px-3 py-2 rounded-lg hover:bg-gray-50 text-sm font-medium flex items-center transition-all duration-300 transform ${
-                  isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                }`}
-                onClick={() => { handleCloseMenu(); toggleHalloweenMode(); }}
-                style={{ 
-                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                }}
-              >
-                <span className="h-4 w-4 mr-3 text-[#FF5E01]">🎃</span>
-                Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
-              </button>
-            </div>
-            
-            {/* Bottom padding for safe area */}
-            <div className="h-3"></div>
+            )}
           </div>
+
+          {onCartClick && (
+            <button
+              className="relative p-2 lg:px-3 lg:py-2 rounded-lg hover:bg-orange-50 transition-colors"
+              onClick={onCartClick}
+              data-cart-icon
+            >
+              <ShoppingCart className="h-6 w-6 text-[#FF5E01]" />
+              {cartItemsCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                  {cartItemsCount}
+                </span>
+              )}
+            </button>
+          )}
+          {/* Mobile hamburger */}
+          <button
+            className="md:hidden p-2 rounded-lg hover:bg-orange-50"
+            onClick={handleOpenMenu}
+            aria-label="Open menu"
+          >
+            <Menu className="h-6 w-6 text-[#FF5E01]" />
+          </button>
         </div>
-      )}
+
+        {/* iOS-style Bottom Sheet */}
+        {(mobileOpen || isClosing) && (
+          <div
+            className={`fixed inset-0 bg-black/40 md:hidden transition-opacity duration-300 ease-in-out ${isClosing ? 'opacity-0' : 'opacity-100'
+              }`}
+            style={{ zIndex: 99999 }}
+            onClick={handleCloseMenu}
+          >
+            {/* Bottom Sheet Container */}
+            <div
+              className={`fixed bottom-0 left-0 right-0 md:hidden bg-background rounded-t-3xl shadow-2xl transform transition-all duration-300 ease-out ${isClosing ? 'translate-y-full' : 'translate-y-0'
+                }`}
+              style={{
+                zIndex: 100000,
+                transform: isDragging ? `translateY(${Math.max(0, currentY - startY)}px)` : undefined,
+                animation: isClosing
+                  ? 'slideOutToBottom 0.25s cubic-bezier(0.23, 1, 0.32, 1) 0s both'
+                  : 'slideInFromBottomContainer 0.25s cubic-bezier(0.23, 1, 0.32, 1) 0s both, fadeInShadow 0.25s cubic-bezier(0.23, 1, 0.32, 1) 0s both'
+              }}
+              onClick={(e) => e.stopPropagation()}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+            >
+              {/* Drag Handle */}
+              <div
+                className="flex justify-center pt-2 pb-1"
+                style={{
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.01s both'
+                }}
+              >
+                <div className="w-8 h-0.5 bg-gray-300 rounded-full"></div>
+              </div>
+
+              {/* Header */}
+              <div
+                className="px-4 pb-2 border-b border-gray-100"
+                style={{
+                  animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.03s both'
+                }}
+              >
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base font-semibold text-foreground">Menu</h2>
+                  <button
+                    className="p-1.5 rounded-full hover:bg-gray-100 transition-colors duration-200"
+                    onClick={handleCloseMenu}
+                    aria-label="Close menu"
+                  >
+                    <X className="h-4 w-4 text-muted-foreground" />
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Items */}
+              <div className="px-4 py-2 grid grid-cols-3 gap-2">
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <Home className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Home</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <Newspaper className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Blog</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/loker'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <Briefcase className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Loker</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/panduan-desain'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <FileText className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Panduan</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/kebijakan-privasi'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <Shield className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Privacy</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <RotateCcw className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Return</span>
+                </button>
+
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/katalog'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <Image className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Katalog</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); navigateWithScrollToTop('/hello'); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <MapPin className="h-6 w-6 mb-1 text-[#FF5E01]" />
+                  <span className="text-center">Hello</span>
+                </button>
+
+                <button
+                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
+                    }`}
+                  onClick={() => { handleCloseMenu(); toggleHalloweenMode(); }}
+                  style={{
+                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
+                  }}
+                >
+                  <span className="text-2xl mb-1">🎃</span>
+                  <span className="text-center">Halloween {isHalloweenMode ? 'ON' : 'OFF'}</span>
+                </button>
+              </div>
+
+              {/* Bottom padding for safe area */}
+              <div className="h-3"></div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

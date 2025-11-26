@@ -15,6 +15,9 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
   const [showAngryPromo, setShowAngryPromo] = useState(false);
   const [mountedProducts, setMountedProducts] = useState<Set<number>>(new Set());
 
+  // Flag to toggle visibility of the section
+  const isVisible = false;
+
   // Get current month in Indonesian
   const getCurrentMonth = () => {
     const months = [
@@ -28,16 +31,16 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
   const calculateTimeRemaining = (endDate: Date) => {
     const now = new Date();
     const difference = endDate.getTime() - now.getTime();
-    
+
     if (difference <= 0) {
       return "Promo berakhir";
     }
-    
+
     const days = Math.floor(difference / (1000 * 60 * 60 * 24));
     const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
     const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
     const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-    
+
     return `${days}d ${hours}h ${minutes}m ${seconds}s`;
   };
 
@@ -45,20 +48,20 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
   useEffect(() => {
     const updateTimers = () => {
       const timers: Record<number, string> = {};
-      
+
       promotedProducts.forEach(promo => {
         timers[promo.id] = calculateTimeRemaining(promo.endDate);
       });
-      
+
       setTimeRemaining(timers);
     };
-    
+
     // Initial update
     updateTimers();
-    
+
     // Set interval for updates every second
     const interval = setInterval(updateTimers, 1000);
-    
+
     return () => clearInterval(interval);
   }, [promotedProducts]);
 
@@ -69,14 +72,14 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
       const productData = Object.values(products)
         .flat()
         .find((p: any) => p.id === promo.id);
-      
+
       if (productData) {
         return {
           ...productData,
           promoInfo: promo
         };
       }
-      
+
       return null;
     }).filter(Boolean); // Remove any null values
   };
@@ -147,7 +150,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
     return () => clearInterval(interval);
   }, [promoCount]);
 
-  if (promotedProductsWithData.length === 0) {
+  if (!isVisible || promotedProductsWithData.length === 0) {
     return null;
   }
 
@@ -171,11 +174,10 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
             const isAngryActive = showAngryPromo && index === activeIndex;
             const isMounted = mountedProducts.has(product.id);
             return (
-              <div 
+              <div
                 key={product.id}
-                className={`border border-green-400 rounded-lg overflow-hidden shadow-sm bg-background/80 cursor-pointer snap-start h-[80px] flex-shrink-0 transition-all duration-200 ${
-                  isAngryActive ? "angry-wiggle angry-highlight" : ""
-                }`}
+                className={`border border-green-400 rounded-lg overflow-hidden shadow-sm bg-background/80 cursor-pointer snap-start h-[80px] flex-shrink-0 transition-all duration-200 ${isAngryActive ? "angry-wiggle angry-highlight" : ""
+                  }`}
                 style={{
                   opacity: isMounted ? 1 : 0,
                   transform: isMounted ? 'translateY(0)' : 'translateY(20px)',
@@ -185,13 +187,13 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
               >
                 <div className="flex items-center h-full px-3 py-2 gap-2">
                   <div className="w-12 h-12 relative flex-shrink-0 rounded-md overflow-hidden">
-                    <img 
-                      src={product.image} 
+                    <img
+                      src={product.image}
                       alt={product.name}
                       className="h-full w-full object-cover"
                     />
                   </div>
-                  
+
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-center">
                       <h3 className={`font-medium text-xs line-clamp-1 ${isAngryActive ? "text-white" : "text-foreground"}`}>{product.name}</h3>
@@ -199,7 +201,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
                         {product.promoInfo.discount}% OFF
                       </span>
                     </div>
-                    
+
                     <div className="flex justify-between items-center text-[10px] mt-1">
                       <div className={`font-medium truncate ${isAngryActive ? "text-white" : "text-green-700"}`}>
                         Kode: <span className="font-bold">{product.promoInfo.promoCode}</span>
@@ -209,7 +211,7 @@ const PromotedProducts = ({ products, promotedProducts, onAddToCart, onOpenDetai
                         <span className="font-medium whitespace-nowrap">{timeRemaining[product.id]}</span>
                       </div>
                     </div>
-                    
+
                     {product.promoInfo.minQuantity && (
                       <div className={`text-[10px] inline-flex px-1.5 py-0.5 rounded mt-1 ${isAngryActive ? "bg-white text-[#FF5E01]" : "bg-green-100 text-green-800"}`}>
                         Min. {product.promoInfo.minQuantity} pcs

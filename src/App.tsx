@@ -23,44 +23,48 @@ import TwibbonMaker from "./pages/TwibbonMaker";
 import Layout from "./pages/Layout";
 import Katalog from "./pages/Katalog";
 
+import { HelmetProvider } from 'react-helmet-async';
+
 const queryClient = new QueryClient();
 
 const App = () => (
-  <QueryClientProvider client={queryClient}>
-    <HalloweenThemeProvider>
-      <DialogProvider>
-        <PromoBannerProvider>
-          <TooltipProvider>
-            <Toaster />
-            <Sonner />
-            <HalloweenDecorations />
-            <BrowserRouter>
-              {/* Promo Banner - Shows on all pages */}
-              <PromoBanner />
-              <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/product/:slug" element={<Index />} />
-              <Route path="/survey" element={<Survey />} />
-              <Route path="/blog" element={<Blog />} />
-              <Route path="/blog/:title" element={<BlogPost />} />
-              <Route path="/hello" element={<Spotlight />} />
-              <Route path="/cashier" element={<Cashier />} />
-              <Route path="/receipt" element={<Receipt />} />
-              <Route path="/loker" element={<Loker />} />
-              <Route path="/loker/:jobSlug" element={<Loker />} />
-              <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
-              <Route path="/layout" element={<Layout />} />
-              <Route path="/katalog" element={<Katalog />} />
-              <Route path="/login-blocked" element={<LoginBlocked />} />
-              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-              <Route path="*" element={<NotFound />} />
-              </Routes>
-            </BrowserRouter>
-          </TooltipProvider>
-        </PromoBannerProvider>
-      </DialogProvider>
-    </HalloweenThemeProvider>
-  </QueryClientProvider>
+  <HelmetProvider>
+    <QueryClientProvider client={queryClient}>
+      <HalloweenThemeProvider>
+        <DialogProvider>
+          <PromoBannerProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <HalloweenDecorations />
+              <BrowserRouter>
+                {/* Promo Banner - Shows on all pages */}
+                <PromoBanner />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/product/:slug" element={<Index />} />
+                  <Route path="/survey" element={<Survey />} />
+                  <Route path="/blog" element={<Blog />} />
+                  <Route path="/blog/:title" element={<BlogPost />} />
+                  <Route path="/hello" element={<Spotlight />} />
+                  <Route path="/cashier" element={<Cashier />} />
+                  <Route path="/receipt" element={<Receipt />} />
+                  <Route path="/loker" element={<Loker />} />
+                  <Route path="/loker/:jobSlug" element={<Loker />} />
+                  <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
+                  <Route path="/layout" element={<Layout />} />
+                  <Route path="/katalog" element={<Katalog />} />
+                  <Route path="/login-blocked" element={<LoginBlocked />} />
+                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </BrowserRouter>
+            </TooltipProvider>
+          </PromoBannerProvider>
+        </DialogProvider>
+      </HalloweenThemeProvider>
+    </QueryClientProvider>
+  </HelmetProvider>
 );
 
 export default App;

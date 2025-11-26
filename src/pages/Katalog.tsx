@@ -35,9 +35,9 @@ const Katalog = () => {
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch katalog images:", error);
-        toast.error("Gagal memuat katalog. Silakan coba lagi nanti.", { 
-          position: 'top-center', 
-          style: { marginTop: '60px' } 
+        toast.error("Gagal memuat katalog. Silakan coba lagi nanti.", {
+          position: 'top-center',
+          style: { marginTop: '60px' }
         });
         setIsLoading(false);
       }
@@ -46,20 +46,20 @@ const Katalog = () => {
   }, []);
 
   const categories = ["All", ...Array.from(new Set(galleryImages.map(img => img.category)))];
-  const filteredImages = selectedCategory === "All" 
-    ? galleryImages 
+  const filteredImages = selectedCategory === "All"
+    ? galleryImages
     : galleryImages.filter(img => img.category === selectedCategory);
 
   // Handle URL parameter for deep linking
   useEffect(() => {
     const imageId = searchParams.get('image');
     const categoryParam = searchParams.get('category');
-    
+
     // Set category from URL if present
     if (categoryParam && categories.includes(categoryParam)) {
       setSelectedCategory(categoryParam);
     }
-    
+
     // Open image modal if image ID is in URL
     if (imageId) {
       const id = parseInt(imageId, 10);
@@ -100,10 +100,10 @@ const Katalog = () => {
     if (e) {
       e.stopPropagation();
     }
-    
+
     const shareUrl = generateShareLink(imageId);
     const image = galleryImages.find(img => img.id === imageId);
-    
+
     if (navigator.share) {
       try {
         await navigator.share({
@@ -119,8 +119,8 @@ const Katalog = () => {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(shareUrl);
       setLinkCopied(true);
-      toast.success("Link berhasil disalin!", { 
-        position: 'top-center', 
+      toast.success("Link berhasil disalin!", {
+        position: 'top-center',
         style: { marginTop: '60px' },
         duration: 2000
       });
@@ -155,12 +155,12 @@ const Katalog = () => {
   }, [filteredImages]);
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col">
+    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col page-transition">
       {/* Universal Header */}
-      <Header 
+      <Header
         cartItemsCount={0}
         onCartClick={() => window.location.href = '/'}
-        onSearch={() => {}}
+        onSearch={() => { }}
         showSearch={false}
       />
 
@@ -169,7 +169,7 @@ const Katalog = () => {
         {/* Animated gradient background */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
-        
+
         {/* Header */}
         <AnimatedElement direction="up" delay={200} duration={300}>
           <header className="text-center mb-8">
@@ -207,11 +207,10 @@ const Katalog = () => {
                       }
                     }
                   }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${
-                    selectedCategory === category
+                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedCategory === category
                       ? "bg-[#FF5E01] text-white shadow-md"
                       : "bg-white/60 backdrop-blur-sm text-foreground/80 border border-border/50 hover:bg-white/80"
-                  }`}
+                    }`}
                 >
                   {category}
                 </button>
@@ -229,62 +228,62 @@ const Katalog = () => {
                 <p className="text-muted-foreground">Memuat katalog...</p>
               </div>
             ) : (
-              <div 
+              <div
                 ref={galleryRef}
                 className="columns-2 md:columns-3 lg:columns-4"
-                style={{ 
+                style={{
                   columnFill: 'balance',
                   columnGap: '1rem'
                 }}
               >
                 {filteredImages.map((image) => (
-                <div
-                  key={image.id}
-                  className="group relative cursor-pointer overflow-hidden rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 mb-3 lg:mb-4 break-inside-avoid"
-                  onClick={() => handleImageClick(image.id)}
-                >
-                  {/* Image Container - Natural Aspect Ratio */}
-                  <div className="relative w-full bg-gray-100">
-                    <img
-                      src={image.src}
-                      alt={image.title}
-                      className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                      onError={(e) => {
-                        // Show placeholder if image doesn't exist
-                        const target = e.target as HTMLImageElement;
-                        const placeholderUrl = `https://via.placeholder.com/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
-                        if (!target.src.includes('placeholder.com')) {
-                          target.src = placeholderUrl;
-                        }
-                      }}
-                      onLoad={(e) => {
-                        // Ensure image maintains aspect ratio
-                        const target = e.target as HTMLImageElement;
-                        target.style.height = 'auto';
-                      }}
-                    />
-                    {/* Overlay on hover */}
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center pointer-events-none">
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
-                        <ImageIcon className="h-8 w-8 text-white" />
+                  <div
+                    key={image.id}
+                    className="group relative cursor-pointer overflow-hidden rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 mb-3 lg:mb-4 break-inside-avoid"
+                    onClick={() => handleImageClick(image.id)}
+                  >
+                    {/* Image Container - Natural Aspect Ratio */}
+                    <div className="relative w-full bg-gray-100">
+                      <img
+                        src={image.src}
+                        alt={image.title}
+                        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
+                        onError={(e) => {
+                          // Show placeholder if image doesn't exist
+                          const target = e.target as HTMLImageElement;
+                          const placeholderUrl = `https://via.placeholder.com/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
+                          if (!target.src.includes('placeholder.com')) {
+                            target.src = placeholderUrl;
+                          }
+                        }}
+                        onLoad={(e) => {
+                          // Ensure image maintains aspect ratio
+                          const target = e.target as HTMLImageElement;
+                          target.style.height = 'auto';
+                        }}
+                      />
+                      {/* Overlay on hover */}
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center pointer-events-none">
+                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
+                          <ImageIcon className="h-8 w-8 text-white" />
+                        </div>
                       </div>
+                      {/* Share button */}
+                      <button
+                        onClick={(e) => handleShare(image.id, e)}
+                        className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 z-10"
+                        title="Bagikan desain"
+                      >
+                        <Share2 className="h-4 w-4 text-[#FF5E01]" />
+                      </button>
                     </div>
-                    {/* Share button */}
-                    <button
-                      onClick={(e) => handleShare(image.id, e)}
-                      className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 z-10"
-                      title="Bagikan desain"
-                    >
-                      <Share2 className="h-4 w-4 text-[#FF5E01]" />
-                    </button>
+                    {/* Title */}
+                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-2">
+                      <p className="text-white text-xs font-medium truncate">{image.title}</p>
+                      <p className="text-white/70 text-xxs">{image.category}</p>
+                    </div>
                   </div>
-                  {/* Title */}
-                  <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-2">
-                    <p className="text-white text-xs font-medium truncate">{image.title}</p>
-                    <p className="text-white/70 text-xxs">{image.category}</p>
-                  </div>
-                </div>
-              ))}
+                ))}
               </div>
             )}
 
@@ -363,7 +362,7 @@ const Katalog = () => {
 
       {/* Footer */}
       <Footer />
-      
+
       {/* Chat Bot */}
       <ChatBot />
     </div>
