@@ -283,11 +283,10 @@ Tidurlah Grafika`;
       <div className="max-w-4xl mx-auto">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="w-4 h-4 mr-2" />
-              Kembali
+            <Button variant="ghost" size="sm" onClick={onBack} title="Kembali">
+              <ArrowLeft className="w-4 h-4" />
             </Button>
-            <h2 className="text-xl font-semibold">Riwayat Pesanan</h2>
+            <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
           </div>
 
           {orders.length > 0 && (
@@ -295,8 +294,9 @@ Tidurlah Grafika`;
               variant="destructive"
               size="sm"
               onClick={handleClearAll}
+              title="Hapus Semua"
             >
-              Hapus Semua
+              <Trash2 className="w-4 h-4" />
             </Button>
           )}
         </div>

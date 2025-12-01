@@ -34,8 +34,8 @@ interface ProductGridProps {
 export function ProductGrid({ products, onAddToCart, selectedProducts }: ProductGridProps) {
   return (
     <div className="h-full overflow-y-auto">
-      {/* Mobile: 2 columns, Desktop: 3-5 columns */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-2 md:gap-4 p-2 md:p-4">
+      {/* 3 columns on all screen sizes */}
+      <div className="grid grid-cols-3 gap-2 md:gap-4 p-2 md:p-4">
         {products.map((product) => (
           <ProductCard
             key={product.id}

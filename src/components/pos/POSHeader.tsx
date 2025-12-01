@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { HelpCircle, Clock, History, Search, X, User, Settings, Menu, Layout, MapPin, ExternalLink } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -55,9 +55,48 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
   return (
     <header className="bg-[#FF5E01] text-white">
       <div className="px-2 md:px-4 py-2">
+        {/* Cashier Settings Dialog - Shared for both mobile and desktop */}
+        <Dialog open={showCashierDialog} onOpenChange={setShowCashierDialog}>
+          <DialogContent className="sm:max-w-md rounded-lg">
+            <DialogHeader>
+              <DialogTitle>Pengaturan Kasir</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 py-4">
+              <div className="space-y-2">
+                <Label htmlFor="cashier-name">Nama Kasir/Admin</Label>
+                <Input
+                  id="cashier-name"
+                  type="text"
+                  placeholder="Masukkan nama kasir"
+                  value={tempCashierName}
+                  onChange={(e) => setTempCashierName(e.target.value)}
+                  className="w-full"
+                />
+                <p className="text-xs text-gray-500">
+                  Nama ini akan muncul di struk dan riwayat pesanan
+                </p>
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowCashierDialog(false)}
+                >
+                  Batal
+                </Button>
+                <Button
+                  onClick={handleCashierNameSave}
+                  className="bg-[#FF5E01] hover:bg-[#e54d00]"
+                >
+                  Simpan
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
         {/* Mobile Layout - Stacked */}
         <div className="md:hidden space-y-2">
-          {/* Top Row: Logo + Time + History */}
+          {/* Top Row: Logo + Time + Settings + Tools + History */}
           <div className="flex items-center justify-between">
             <a
               href="/"
@@ -92,6 +131,17 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                   </span>
                 </div>
               </div>
+
+              {/* Cashier Settings Button - Mobile */}
+              <Button
+                variant="secondary"
+                size="sm"
+                className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2"
+                title="Pengaturan Kasir"
+                onClick={() => setShowCashierDialog(true)}
+              >
+                <Settings className="w-3 h-3" />
+              </Button>
 
               {/* Tools Menu */}
               <div className="relative">
@@ -227,56 +277,18 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
 
           {/* Right section - Cashier, Time and History */}
           <div className="flex items-center justify-end gap-3">
-            {/* Cashier Name Settings */}
-            <Dialog open={showCashierDialog} onOpenChange={setShowCashierDialog}>
-              <DialogTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="gap-1.5 text-white hover:bg-white hover:bg-opacity-20 h-8 px-2 text-xs"
-                  title="Pengaturan Kasir"
-                >
-                  <User className="w-3 h-3" />
-                  <span className="max-w-20 truncate">{cashierName || "Kasir"}</span>
-                  <Settings className="w-3 h-3" />
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="sm:max-w-md">
-                <DialogHeader>
-                  <DialogTitle>Pengaturan Kasir</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-4 py-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="cashier-name">Nama Kasir/Admin</Label>
-                    <Input
-                      id="cashier-name"
-                      type="text"
-                      placeholder="Masukkan nama kasir"
-                      value={tempCashierName}
-                      onChange={(e) => setTempCashierName(e.target.value)}
-                      className="w-full"
-                    />
-                    <p className="text-xs text-gray-500">
-                      Nama ini akan muncul di struk dan riwayat pesanan
-                    </p>
-                  </div>
-                  <div className="flex justify-end gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => setShowCashierDialog(false)}
-                    >
-                      Batal
-                    </Button>
-                    <Button
-                      onClick={handleCashierNameSave}
-                      className="bg-[#FF5E01] hover:bg-[#e54d00]"
-                    >
-                      Simpan
-                    </Button>
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+            {/* Cashier Name Settings - Desktop */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="gap-1.5 text-white hover:bg-white hover:bg-opacity-20 h-8 px-2 text-xs"
+              title="Pengaturan Kasir"
+              onClick={() => setShowCashierDialog(true)}
+            >
+              <User className="w-3 h-3" />
+              <span className="max-w-20 truncate">{cashierName || "Kasir"}</span>
+              <Settings className="w-3 h-3" />
+            </Button>
 
             {/* Time Display */}
             <div className="bg-black bg-opacity-20 rounded px-2 py-1">
