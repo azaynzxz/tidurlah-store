@@ -456,14 +456,14 @@ const Index = () => {
 
         {!showOrderForm ? (
           /* Product Listing */
-          <div className="p-3 flex-1 mb-8">
+          <div className="p-3 flex-1 mb-8 md:max-w-full lg:max-w-[75%] lg:mx-auto">
             {/* Banner Carousel */}
             <AnimatedElement direction="up" delay={100} duration={300}>
               <BannerCarousel />
             </AnimatedElement>
 
             {/* Desktop: Side by Side Layout | Mobile: Stacked */}
-            <div className="mt-6 mb-4 flex flex-col gap-6">
+            <div className="mt-0 mb-4 flex flex-col gap-6">
               {/* Promoted Products - Hidden for now */}
               {/* 
               <div className="lg:w-1/3 lg:flex-shrink-0">
@@ -479,35 +479,60 @@ const Index = () => {
               */}
 
               {/* Category Grid */}
-              <div className="mt-6 lg:mt-0 w-full">
+              <div className="mt-4 lg:mt-0 w-full">
                 <AnimatedElement direction="up" delay={300} duration={300}>
                   <div className="mb-3">
                     <h2 className="text-sm font-bold mb-2 text-foreground flex items-center">
                       <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{ fontSize: '16px' }}>category</span>
                       Kategori Produk:
                     </h2>
-                    <div className="grid grid-cols-4 lg:grid-cols-4 gap-2">
+                    <div className="grid grid-cols-4 lg:grid-cols-4 gap-2 pt-0">
                       {categories.map(category => {
                         const IconComponent = category.icon;
+                        const isActive = activeTab === category.id;
+                        const showBadge = category.tooltip && isActive;
+                        
                         return (
-                          <div
-                            key={category.id}
-                            onClick={() => {
-                              setActiveTab(category.id);
-                              // Reset search when switching tabs to prevent stale filtered data
-                              if (searchTerm) {
-                                setSearchTerm("");
-                                setFilteredProducts(JSON.parse(JSON.stringify(products)));
-                                setActiveCategory("");
-                              }
-                            }}
-                            className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px] ${activeTab === category.id
-                              ? `${category.color} ${category.textColor}`
-                              : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
-                              }`}
-                          >
-                            <IconComponent className="h-6 w-6" />
-                            <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
+                          <div key={category.id} className="relative">
+                            {/* Bubble badge - shown on top when active */}
+                            {showBadge && (
+                              <div 
+                                className="absolute -top-9 left-1/2 z-10"
+                                style={{
+                                  animation: 'slideUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards'
+                                }}
+                              >
+                                <div className="relative bg-foreground text-background px-2.5 py-1 rounded-full font-medium shadow-lg text-center" style={{ fontSize: '10px' }}>
+                                  <div className="leading-tight">
+                                    Dikelola oleh
+                                    <br />
+                                    @papan_idcraft
+                                  </div>
+                                  {/* Small triangle pointing down */}
+                                  <div className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 bg-foreground rotate-45"></div>
+                                </div>
+                              </div>
+                            )}
+                            
+                            {/* Category card */}
+                            <div
+                              onClick={() => {
+                                setActiveTab(category.id);
+                                // Reset search when switching tabs to prevent stale filtered data
+                                if (searchTerm) {
+                                  setSearchTerm("");
+                                  setFilteredProducts(JSON.parse(JSON.stringify(products)));
+                                  setActiveCategory("");
+                                }
+                              }}
+                              className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px] ${isActive
+                                ? `${category.color} ${category.textColor}`
+                                : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
+                                }`}
+                            >
+                              <IconComponent className="h-6 w-6" />
+                              <span className="text-xs font-medium text-center leading-tight">{category.name}</span>
+                            </div>
                           </div>
                         );
                       })}

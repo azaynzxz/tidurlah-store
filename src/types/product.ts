@@ -94,4 +94,5 @@ export type CategoryItem = {
   textColor: string;
   inactiveColor: string;
   inactiveText: string;
+  tooltip?: string;
 };

@@ -2006,6 +2006,19 @@ body.loaded {
   }
 }
 
+/* Category badge bubble slide up animation */
+@keyframes slideUpFade {
+  0% {
+    transform: translateX(-50%) translateY(10px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
 /* Chat message bubble animation */
 @keyframes chatBubbleSlideUp {
   0% {
