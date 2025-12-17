@@ -28,6 +28,7 @@ function LanyardSelection({ onBack }) {
   const [pendingFiles, setPendingFiles] = useState([])
   const [editingFileIndex, setEditingFileIndex] = useState(null)
   const [printingSide, setPrintingSide] = useState('1-side') // '1-side' or '2-side'
+  const [lanyardHeight, setLanyardHeight] = useState('2.25') // '2.25' or '2'
   const [imagePreviews, setImagePreviews] = useState({}) // Store preview URLs by file name
   const inputRef = useRef(null)
 
@@ -248,9 +249,9 @@ function LanyardSelection({ onBack }) {
     }))
   }
 
-  // Calculate total pages needed (max 16 images per page = 2 columns x 8 rows)
+  // Calculate total pages needed (max 8 lanyards per page = 8 rows)
   const calculateTotalPages = () => {
-    const imagesPerPage = 16 // 2 columns x 8 rows
+    const imagesPerPage = 8 // 8 rows per page (each row is 1 lanyard with 2 columns)
     let totalImages = 0
     
     files.forEach(item => {
@@ -400,7 +401,8 @@ function LanyardSelection({ onBack }) {
         files.map(item => item.quantity),
         setProgress,
         customerInfo,
-        printingSide
+        printingSide,
+        parseFloat(lanyardHeight)
       )
       success = true
     } catch (error) {
@@ -431,7 +433,7 @@ function LanyardSelection({ onBack }) {
         <div className="upload-section-header">
           <div className="upload-section-header-left">
             <h3 className="upload-section-title">{title}</h3>
-            <p className="upload-section-subtitle">Unggah gambar lanyard Anda (90cm x 2.25cm)</p>
+            <p className="upload-section-subtitle">Unggah gambar lanyard Anda (90cm × {lanyardHeight}cm)</p>
           </div>
         </div>
 
@@ -468,6 +470,43 @@ function LanyardSelection({ onBack }) {
               disabled={isProcessing}
             >
               2 Sisi
+            </button>
+          </div>
+        </div>
+
+        {/* Lanyard Height Selector */}
+        <div className="mb-4">
+          <label className="block text-sm font-medium text-gray-700 mb-2">
+            Tinggi Lanyard
+          </label>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={() => setLanyardHeight('2.25')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${lanyardHeight === '2.25' 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2.25 cm
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanyardHeight('2')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${lanyardHeight === '2' 
+                  ? 'bg-primary text-primary-foreground shadow-md' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2 cm
             </button>
           </div>
         </div>
@@ -845,6 +884,7 @@ function LanyardSelection({ onBack }) {
           file={currentCropFile}
           onSave={handleCropSave}
           onCancel={handleCropCancel}
+          heightCm={parseFloat(lanyardHeight)}
         />,
         document.body
       )}

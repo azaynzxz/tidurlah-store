@@ -5,7 +5,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { LANYARD_COL1_WIDTH_PX, LANYARD_ROW_HEIGHT_PX } from '../utils/constants'
 import './ImageCropper.css'
 
-function LanyardRectangularCropper({ file, onSave, onCancel }) {
+function LanyardRectangularCropper({ file, onSave, onCancel, heightCm = 2.25 }) {
   const [image, setImage] = useState(null)
   const [scale, setScale] = useState(1)
   const [rotation, setRotation] = useState(0)
@@ -15,7 +15,7 @@ function LanyardRectangularCropper({ file, onSave, onCancel }) {
   const canvasRef = useRef(null)
 
   const cropWidth = LANYARD_COL1_WIDTH_PX  // 10cm
-  const cropHeight = LANYARD_ROW_HEIGHT_PX  // 2.25cm
+  const cropHeight = heightCm === 2 ? Math.round((20 * 300) / 25.4) : LANYARD_ROW_HEIGHT_PX  // Dynamic height based on selection
   const canvasWidth = Math.max(cropWidth + 40, 500)
   const canvasHeight = Math.max(cropHeight + 40, 300)
 
@@ -293,7 +293,7 @@ function LanyardRectangularCropper({ file, onSave, onCancel }) {
     <Dialog open={true} onOpenChange={() => onCancel()}>
       <DialogContent className="max-w-xl max-h-[85vh] flex flex-col p-0">
         <DialogHeader className="px-4 pt-4 pb-2">
-          <DialogTitle className="text-base">Crop Gambar untuk Kolom 1 (10cm x 2.25cm)</DialogTitle>
+          <DialogTitle className="text-base">Crop Gambar untuk Kolom 1 (10cm × {heightCm}cm)</DialogTitle>
           <DialogDescription className="text-xs">
             Geser horizontal (X), zoom, dan putar gambar untuk posisi yang pas
           </DialogDescription>

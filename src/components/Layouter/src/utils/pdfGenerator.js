@@ -811,15 +811,16 @@ function generateFilename(customerInfo, layoutType) {
 /**
  * Generate Layout Lanyard - 2 columns x 8 rows
  * Page: 1020mm width x 210mm height
- * Column 1: 10cm x 2.25cm (cropped image)
- * Column 2: 90cm x 2.25cm (original image)
+ * Column 1: 10cm x customizable height (cropped image)
+ * Column 2: 90cm x customizable height (original image)
  * @param {Array} files - Array of { original: File, cropped: File }
  * @param {Array} quantities - Array of quantities for each file
  * @param {Function} setProgress - Progress callback
  * @param {Object} customerInfo - Customer information
  * @param {string} printingSide - '1-side' or '2-side' printing
+ * @param {number} heightCm - Height in cm (default 2.25)
  */
-export async function generateLayoutLanyard(files, quantities, setProgress, customerInfo = null, printingSide = '1-side') {
+export async function generateLayoutLanyard(files, quantities, setProgress, customerInfo = null, printingSide = '1-side', heightCm = 2.25) {
   const pdfDoc = await PDFDocument.create()
   
   // Calculate total images across all files
@@ -851,7 +852,7 @@ export async function generateLayoutLanyard(files, quantities, setProgress, cust
   // Column dimensions in mm
   const col1WidthMM = 100   // 10cm = 100mm
   const col2WidthMM = 900   // 90cm = 900mm
-  const rowHeightMM = 22.5  // 2.25cm = 22.5mm
+  const rowHeightMM = heightCm * 10  // Convert cm to mm (e.g., 2.25cm = 22.5mm, 2cm = 20mm)
   
   // Column dimensions (scaled for canvas at 150 DPI)
   const col1Width = Math.round((col1WidthMM * CANVAS_DPI) / 25.4)  // ~591px
@@ -869,8 +870,8 @@ export async function generateLayoutLanyard(files, quantities, setProgress, cust
   const finalCol2Width = col2Width
   const finalColumnSpacing = columnSpacing
   
-  const rowsPerPage = 8 // 8 rows per page (each row = 2 columns = 2 images)
-  const imagesPerRow = 2 // Column 1 + Column 2
+  const rowsPerPage = 8 // 8 rows per page
+  const imagesPerRow = 1 // Each row represents 1 lanyard unit (has 2 columns but counts as 1 item)
   
   let pageIndex = 0
   let totalPagesCreated = 0
