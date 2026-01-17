@@ -510,31 +510,31 @@ function LanyardSelection({ onBack }) {
             </button>
             <button
               type="button"
-              onClick={() => setLanyardHeight('2.35')}
+              onClick={() => setLanyardHeight('2.3')}
               className={`
                 px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${lanyardHeight === '2.35'
+                ${lanyardHeight === '2.3'
                   ? 'bg-primary text-primary-foreground shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
               disabled={isProcessing}
             >
-              2,35 cm
+              2,3 cm
             </button>
             <button
               type="button"
-              onClick={() => setLanyardHeight('2.45')}
+              onClick={() => setLanyardHeight('2.4')}
               className={`
                 px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${lanyardHeight === '2.45'
+                ${lanyardHeight === '2.4'
                   ? 'bg-primary text-primary-foreground shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
               disabled={isProcessing}
             >
-              2,45 cm
+              2,4 cm
             </button>
           </div>
         </div>
