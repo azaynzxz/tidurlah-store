@@ -51,7 +51,7 @@ function LanyardSelection({ onBack }) {
             const key = `${order.customer.name}_${order.customer.instansi || ''}`
             const existingCustomer = customerMap.get(key)
             const orderTimestamp = new Date(order.timestamp).getTime()
-            
+
             if (!existingCustomer) {
               // First time seeing this customer
               customerMap.set(key, {
@@ -108,7 +108,7 @@ function LanyardSelection({ onBack }) {
       const instansiMatch = customer.instansi.toLowerCase().includes(searchLower)
       const phoneMatch = customer.phone && customer.phone.includes(searchLower)
       const receiptMatch = customer.receiptId.toLowerCase().includes(searchLower)
-      
+
       return nameMatch || instansiMatch || phoneMatch || receiptMatch
     })
 
@@ -162,11 +162,11 @@ function LanyardSelection({ onBack }) {
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files)
-    const imageFiles = selectedFiles.filter(file => 
-      file.type.startsWith('image/') && 
+    const imageFiles = selectedFiles.filter(file =>
+      file.type.startsWith('image/') &&
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    
+
     if (imageFiles.length > 0) {
       setPendingFiles(prev => [...prev, ...imageFiles])
       if (!currentCropFile) {
@@ -253,11 +253,11 @@ function LanyardSelection({ onBack }) {
   const calculateTotalPages = () => {
     const imagesPerPage = 8 // 8 rows per page (each row is 1 lanyard with 2 columns)
     let totalImages = 0
-    
+
     files.forEach(item => {
       totalImages += item.quantity
     })
-    
+
     return Math.ceil(totalImages / imagesPerPage)
   }
 
@@ -279,11 +279,11 @@ function LanyardSelection({ onBack }) {
     e.preventDefault()
     setIsDragging(false)
     const droppedFiles = Array.from(e.dataTransfer.files)
-    const imageFiles = droppedFiles.filter(file => 
-      file.type.startsWith('image/') && 
+    const imageFiles = droppedFiles.filter(file =>
+      file.type.startsWith('image/') &&
       ['image/png', 'image/jpeg', 'image/jpg'].includes(file.type)
     )
-    
+
     if (imageFiles.length > 0) {
       setPendingFiles(prev => [...prev, ...imageFiles])
       if (!currentCropFile) {
@@ -294,7 +294,7 @@ function LanyardSelection({ onBack }) {
 
   const handleCropSave = (croppedFile) => {
     const originalFile = currentCropFile
-    
+
     if (editingFileIndex !== null) {
       setFiles(prev => prev.map((f, idx) => {
         if (idx === editingFileIndex) {
@@ -306,13 +306,13 @@ function LanyardSelection({ onBack }) {
       setEditingFileIndex(null)
       return
     }
-    
+
     setFiles(prev => [...prev, { original: originalFile, cropped: croppedFile, quantity: 1 }])
-    
+
     const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
     const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
     setPendingFiles(remaining)
-    
+
     if (remaining.length > 0) {
       setCurrentCropFile(remaining[0])
     } else {
@@ -331,11 +331,11 @@ function LanyardSelection({ onBack }) {
       setEditingFileIndex(null)
       return
     }
-    
+
     const currentIndex = pendingFiles.findIndex(f => f === currentCropFile)
     const remaining = pendingFiles.filter((_, i) => i !== currentIndex)
     setPendingFiles(remaining)
-    
+
     if (remaining.length > 0) {
       setCurrentCropFile(remaining[0])
     } else {
@@ -412,7 +412,7 @@ function LanyardSelection({ onBack }) {
     } finally {
       setIsProcessing(false)
       setProgress(0)
-      
+
       // Play completion sound if processing was successful
       if (success) {
         try {
@@ -448,8 +448,8 @@ function LanyardSelection({ onBack }) {
               onClick={() => setPrintingSide('1-side')}
               className={`
                 px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${printingSide === '1-side' 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
+                ${printingSide === '1-side'
+                  ? 'bg-primary text-primary-foreground shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
@@ -462,8 +462,8 @@ function LanyardSelection({ onBack }) {
               onClick={() => setPrintingSide('2-side')}
               className={`
                 px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${printingSide === '2-side' 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
+                ${printingSide === '2-side'
+                  ? 'bg-primary text-primary-foreground shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
@@ -479,34 +479,62 @@ function LanyardSelection({ onBack }) {
           <label className="block text-sm font-medium text-gray-700 mb-2">
             Tinggi Lanyard
           </label>
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={() => setLanyardHeight('2.25')}
-              className={`
-                px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${lanyardHeight === '2.25' 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
-                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                }
-              `}
-              disabled={isProcessing}
-            >
-              2.25 cm
-            </button>
+          <div className="flex gap-2 flex-wrap">
             <button
               type="button"
               onClick={() => setLanyardHeight('2')}
               className={`
                 px-6 py-3 rounded-full font-medium text-sm transition-all
-                ${lanyardHeight === '2' 
-                  ? 'bg-primary text-primary-foreground shadow-md' 
+                ${lanyardHeight === '2'
+                  ? 'bg-primary text-primary-foreground shadow-md'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
                 }
               `}
               disabled={isProcessing}
             >
               2 cm
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanyardHeight('2.25')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${lanyardHeight === '2.25'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2,25 cm
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanyardHeight('2.50')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${lanyardHeight === '2.50'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2,50 cm
+            </button>
+            <button
+              type="button"
+              onClick={() => setLanyardHeight('2.85')}
+              className={`
+                px-6 py-3 rounded-full font-medium text-sm transition-all
+                ${lanyardHeight === '2.85'
+                  ? 'bg-primary text-primary-foreground shadow-md'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }
+              `}
+              disabled={isProcessing}
+            >
+              2,85 cm
             </button>
           </div>
         </div>
@@ -549,8 +577,8 @@ function LanyardSelection({ onBack }) {
                   {fileList.map((fileItem, index) => (
                     <div key={`${fileItem.original.name}-${index}`} className="file-item">
                       {imagePreviews[fileItem.original.name] && (
-                        <img 
-                          src={imagePreviews[fileItem.original.name]} 
+                        <img
+                          src={imagePreviews[fileItem.original.name]}
                           alt={fileItem.original.name}
                           className="w-12 h-12 object-cover rounded border border-gray-200 flex-shrink-0"
                         />
@@ -646,7 +674,7 @@ function LanyardSelection({ onBack }) {
               Pilih pelanggan dari riwayat pesanan atau masukkan informasi secara manual.
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="flex-1 overflow-hidden flex flex-col px-0 md:px-0">
             {/* Manual Input Fields */}
             <div className="mb-4 md:mb-6">
@@ -755,7 +783,7 @@ function LanyardSelection({ onBack }) {
                             return typeof timestamp === 'string' ? timestamp : String(timestamp)
                           }
                         }
-                        
+
                         return (
                           <div
                             key={customer.id}
