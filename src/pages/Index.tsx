@@ -491,12 +491,12 @@ const Index = () => {
                         const IconComponent = category.icon;
                         const isActive = activeTab === category.id;
                         const showBadge = category.tooltip && isActive;
-                        
+
                         return (
                           <div key={category.id} className="relative">
                             {/* Bubble badge - shown on top when active */}
                             {showBadge && (
-                              <div 
+                              <div
                                 className="absolute -top-9 left-1/2 z-10"
                                 style={{
                                   animation: 'slideUpFade 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards'
@@ -513,7 +513,7 @@ const Index = () => {
                                 </div>
                               </div>
                             )}
-                            
+
                             {/* Category card */}
                             <div
                               onClick={() => {
@@ -597,44 +597,87 @@ const Index = () => {
                               <h3 className="font-medium text-xs lg:text-sm line-clamp-2 mb-1">{product.name}</h3>
 
                               <div className="mt-auto pt-1">
-                                {product.discountPrice !== null ? (
-                                  <div className="flex flex-col gap-0.5">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
-                                        Rp {product.discountPrice.toLocaleString('id-ID')}
-                                      </span>
-                                      {product.rating && (
-                                        <div className="flex items-center gap-1">
-                                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                          <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+                                {(() => {
+                                  // Get the lowest price from priceThresholds
+                                  const getLowestPrice = (product: any) => {
+                                    if (!product.priceThresholds || product.priceThresholds.length === 0) {
+                                      return product.discountPrice !== null ? product.discountPrice : product.price;
+                                    }
+                                    // Find the minimum price in the thresholds
+                                    const lowestThreshold = product.priceThresholds.reduce((min: any, current: any) =>
+                                      current.price < min.price ? current : min
+                                    );
+                                    return lowestThreshold.price;
+                                  };
+
+                                  const lowestPrice = getLowestPrice(product);
+                                  const hasMultiplePrices = product.priceThresholds && product.priceThresholds.length > 1;
+                                  const basePrice = product.discountPrice !== null ? product.discountPrice : product.price;
+
+                                  return (
+                                    <>
+                                      {product.discountPrice !== null ? (
+                                        <div className="flex flex-col gap-0.5">
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex flex-col">
+                                              {hasMultiplePrices && lowestPrice < basePrice && (
+                                                <span className="text-[10px] text-gray-500 font-medium">Mulai dari</span>
+                                              )}
+                                              <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
+                                                Rp {lowestPrice.toLocaleString('id-ID')}
+                                              </span>
+                                            </div>
+                                            {product.rating && (
+                                              <div className="flex items-center gap-1">
+                                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+                                              </div>
+                                            )}
+                                          </div>
+                                          <div className="flex items-center gap-1.5">
+                                            <span className="line-through text-muted-foreground text-xxs">
+                                              Rp {product.price.toLocaleString('id-ID')}
+                                            </span>
+                                            <span className="text-xxs text-green-600 font-medium">
+                                              Hemat Rp {(product.price - lowestPrice).toLocaleString('id-ID')}
+                                            </span>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="flex flex-col gap-0.5">
+                                          <div className="flex items-center justify-between">
+                                            <div className="flex flex-col">
+                                              {hasMultiplePrices && lowestPrice < basePrice && (
+                                                <span className="text-[10px] text-gray-500 font-medium">Mulai dari</span>
+                                              )}
+                                              <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
+                                                Rp {lowestPrice.toLocaleString('id-ID')}
+                                              </span>
+                                            </div>
+                                            {product.rating && (
+                                              <div className="flex items-center gap-1">
+                                                <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
+                                                <span className="text-xs font-medium text-gray-700">{product.rating}</span>
+                                              </div>
+                                            )}
+                                          </div>
+                                          {hasMultiplePrices && lowestPrice < basePrice ? (
+                                            <div className="flex items-center gap-1.5">
+                                              <span className="line-through text-muted-foreground text-xxs">
+                                                Rp {basePrice.toLocaleString('id-ID')}
+                                              </span>
+                                              <span className="text-xxs text-green-600 font-medium">
+                                                Hemat Rp {(basePrice - lowestPrice).toLocaleString('id-ID')}
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <div className="h-4"></div>
+                                          )}
                                         </div>
                                       )}
-                                    </div>
-                                    <div className="flex items-center gap-1.5">
-                                      <span className="line-through text-muted-foreground text-xxs">
-                                        Rp {product.price.toLocaleString('id-ID')}
-                                      </span>
-                                      <span className="text-xxs text-green-600 font-medium">
-                                        Hemat Rp {(product.price - product.discountPrice).toLocaleString('id-ID')}
-                                      </span>
-                                    </div>
-                                  </div>
-                                ) : (
-                                  <div className="flex flex-col gap-0.5">
-                                    <div className="flex items-center justify-between">
-                                      <span className="text-[#FF5E01] font-bold text-base lg:text-lg">
-                                        Rp {product.price.toLocaleString('id-ID')}
-                                      </span>
-                                      {product.rating && (
-                                        <div className="flex items-center gap-1">
-                                          <Star className="h-3 w-3 fill-yellow-400 text-yellow-400" />
-                                          <span className="text-xs font-medium text-gray-700">{product.rating}</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                    <div className="h-4"></div>
-                                  </div>
-                                )}
+                                    </>
+                                  );
+                                })()}
                               </div>
                             </div>
                           </div>
