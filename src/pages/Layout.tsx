@@ -6,13 +6,14 @@ import FileSelection from '@/components/Layouter/src/components/FileSelection'
 import GanciPinSelection from '@/components/Layouter/src/components/GanciPinSelection'
 import MugSelection from '@/components/Layouter/src/components/MugSelection'
 import LanyardSelection from '@/components/Layouter/src/components/LanyardSelection'
+import DualColumnLanyardSelection from '@/components/Layouter/src/components/DualColumnLanyardSelection'
 import '@/components/Layouter/src/App.css'
 import '@/components/Layouter/src/index.css'
 import '@/components/Layouter/src/components/Dashboard.css'
 import '@/components/Layouter/src/components/FileSelection.css'
 import '@/components/Layouter/src/components/ProgressBar.css'
 
-type LayoutType = '1s' | '2s-sama' | 'kanan-kiri-beda' | 'ganci-pin' | 'mug' | 'lanyard'
+type LayoutType = '1s' | '2s-sama' | 'kanan-kiri-beda' | 'ganci-pin' | 'mug' | 'lanyard' | 'dual-lanyard'
 
 const Layout = () => {
   const [selectedLayout, setSelectedLayout] = useState<LayoutType | null>(null)
@@ -28,10 +29,10 @@ const Layout = () => {
   return (
     <div className="min-h-screen relative overflow-hidden bg-background flex flex-col">
       {/* Universal Header */}
-      <Header 
+      <Header
         cartItemsCount={0}
         onCartClick={() => window.location.href = '/'}
-        onSearch={() => {}}
+        onSearch={() => { }}
         showSearch={false}
       />
 
@@ -40,7 +41,7 @@ const Layout = () => {
         {/* Animated gradient background */}
         <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
         <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
-        
+
         {!selectedLayout ? (
           <>
             {/* Header */}
@@ -49,7 +50,7 @@ const Layout = () => {
                 <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-6 tracking-tight">
                   Tidurlah Sistem Layout Otomatis
                 </h1>
-                
+
                 {/* Brand Pills */}
                 <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
                   {["ID Card Lampung", "Papan ID Craft", "Tidurlah Grafika"].map((brand) => (
@@ -96,11 +97,17 @@ const Layout = () => {
               <LanyardSelection onBack={handleBack} />
             </div>
           </AnimatedElement>
+        ) : selectedLayout === 'dual-lanyard' ? (
+          <AnimatedElement direction="up" delay={50} duration={200}>
+            <div className="container max-w-4xl mx-auto">
+              <DualColumnLanyardSelection onBack={handleBack} />
+            </div>
+          </AnimatedElement>
         ) : (
           <AnimatedElement direction="up" delay={50} duration={200}>
             <div className="container max-w-4xl mx-auto">
-              <FileSelection 
-                layout={selectedLayout} 
+              <FileSelection
+                layout={selectedLayout}
                 onBack={handleBack}
               />
             </div>

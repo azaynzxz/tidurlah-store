@@ -1,4 +1,4 @@
-import { FileText, Copy, ArrowLeftRight, ExternalLink, Pin, Coffee, CreditCard } from 'lucide-react'
+import { FileText, Copy, ArrowLeftRight, ExternalLink, Pin, Coffee, CreditCard, Columns2 } from 'lucide-react'
 import './Dashboard.css'
 
 const layoutCards = [
@@ -49,6 +49,14 @@ const layoutCards = [
     icon: CreditCard,
     gradient: 'bg-gradient-to-br from-pink-500 via-rose-500 to-red-500',
     gradientStyle: 'linear-gradient(to bottom right, #ec4899, #f43f5e, #ef4444)'
+  },
+  {
+    id: 'dual-lanyard',
+    title: 'Layout Dual Lanyard',
+    description: ['Layout lanyard 2 kolom', '(Pendek & Panjang)'],
+    icon: Columns2,
+    gradient: 'bg-gradient-to-br from-purple-500 via-indigo-500 to-blue-500',
+    gradientStyle: 'linear-gradient(to bottom right, #a855f7, #6366f1, #3b82f6)'
   }
 ]
 
@@ -58,7 +66,7 @@ function Dashboard({ onSelectLayout }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {layoutCards.map((card) => {
           const Icon = card.icon
-          
+
           return (
             <div
               key={card.id}
@@ -80,7 +88,7 @@ function Dashboard({ onSelectLayout }) {
                 </div>
                 <ExternalLink className="w-4 h-4 opacity-80" />
               </div>
-              
+
               <h3 className="text-lg font-bold mb-1">{card.title}</h3>
               <p className="text-white/90 text-sm">
                 {card.description[0]}

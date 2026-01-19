@@ -66,3 +66,23 @@ export const LANYARD_ROW_HEIGHT_PX = MM_TO_PX(22.5)  // 266px (2.25cm)
 export const LANYARD_COLS = 2
 export const LANYARD_ROWS = 8
 
+// Dual-column lanyard dimensions (landscape orientation)
+export const DUAL_LANYARD_PAGE_WIDTH_PX = MM_TO_PX(912)   // 10772px (91.2cm width - landscape)
+export const DUAL_LANYARD_PAGE_HEIGHT_PX = MM_TO_PX(210)  // 2480px (21cm height - landscape)
+export const DUAL_LANYARD_SHORT_COL_WIDTH_PX = MM_TO_PX(100)  // 1181px (10cm per column)
+export const DUAL_LANYARD_SHORT_COLS = 9  // 9 columns for short layout
+
+// Height presets for dual-column lanyard (in cm and px)
+export const DUAL_LANYARD_HEIGHT_PRESETS = {
+  2: MM_TO_PX(20),      // 236px - 8 rows max
+  2.25: MM_TO_PX(22.5), // 266px - 8 rows max
+  2.3: MM_TO_PX(23),    // 271px - 7 rows max
+  2.4: MM_TO_PX(24)     // 283px - 7 rows max
+}
+
+// Calculate max rows based on height preset
+export const getDualLanyardMaxRows = (heightCm) => {
+  if (heightCm >= 2.3) return 7
+  return 8
+}
+
