@@ -55,10 +55,12 @@ export async function generateDualColumnLanyardPDF(
     // Margins (2mm + 5mm shift = 7mm) and Spacing (3mm rows, 1mm cols)
     const topMargin = Math.round(MM_TO_PX(5) * CANVAS_SCALE)
     const leftMargin = Math.round(MM_TO_PX(7) * CANVAS_SCALE)
-    const rowSpacing = Math.round(MM_TO_PX(3) * CANVAS_SCALE)
+    // Reduce spacing for taller heights to fit 8 rows
+    const rowSpacing = Math.round(MM_TO_PX(heightCm >= 2.3 ? 2 : 3) * CANVAS_SCALE)
     const shortColGap = Math.round(MM_TO_PX(1) * CANVAS_SCALE)
 
-    const rowsPerPage = heightCm >= 2.3 ? 7 : 8
+    // All heights now use 8 rows with adjusted spacing
+    const rowsPerPage = 8
 
     // Expand Short Files
     const shortImagesToLayout = []
