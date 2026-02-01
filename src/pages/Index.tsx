@@ -20,6 +20,7 @@ import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
 import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
+import { ModelSelector } from "@/components/product/ModelSelector";
 import { submitToGoogleSheet, handleWhatsAppRedirect } from "@/utils/api";
 import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, prevImage, generateInvoiceNumber, handleSearch } from "@/utils/form";
 
@@ -1060,7 +1061,7 @@ const Index = () => {
                                 const newQuantity = parseInt(e.target.value) || 1;
                                 const product = Object.values(products).flat().find((p: any) => p.id === item.id);
                                 if (product) {
-                                  const newPrice = getApplicablePrice(product, newQuantity);
+                                  const newPrice = getApplicablePrice(product, newQuantity, item.modelCode);
                                   setCartItems(
                                     cartItems.map(cartItem =>
                                       cartItem.id === item.id
@@ -1068,7 +1069,7 @@ const Index = () => {
                                           ...cartItem,
                                           quantity: newQuantity,
                                           appliedPrice: newPrice,
-                                          savings: calculateSavings(product, newQuantity)
+                                          savings: calculateSavings(product, newQuantity, item.modelCode)
                                         }
                                         : cartItem
                                     )
@@ -1200,17 +1201,40 @@ const Index = () => {
                   <div className="relative">
                     <div className="relative w-full overflow-hidden rounded-lg" style={{ paddingBottom: "75%" }}>
                       <img
-                        src={selectedProduct.models ? selectedProduct.models.find(m => m.code === selectedModel)?.image || selectedProduct.models[0].image : [selectedProduct.image, ...selectedProduct.additionalImages][currentImageIndex]}
+                        src={(() => {
+                          // Check if we distinguish models by image
+                          const distinctModelImages = selectedProduct.models
+                            ? new Set(selectedProduct.models.map((m: any) => m.image)).size
+                            : 0;
+                          const showModelImage = selectedProduct.models && distinctModelImages > 1;
+
+                          if (showModelImage && selectedModel) {
+                            return selectedProduct.models.find((m: any) => m.code === selectedModel)?.image || selectedProduct.models[0].image;
+                          }
+
+                          return [selectedProduct.image, ...selectedProduct.additionalImages][currentImageIndex];
+                        })()}
                         alt={selectedProduct.name}
                         className="absolute top-0 left-0 w-full h-full object-cover"
                       />
                       {/* Navigation buttons - show for all products with multiple images */}
-                      {((selectedProduct.models && selectedProduct.models.length > 1) ||
-                        (!selectedProduct.models && selectedProduct.additionalImages.length > 0)) && (
+                      {/* Navigation buttons - show for all products with multiple images */}
+                      {(() => {
+                        const distinctModelImages = selectedProduct.models
+                          ? new Set(selectedProduct.models.map((m: any) => m.image)).size
+                          : 0;
+                        const showModelNav = selectedProduct.models && distinctModelImages > 1;
+                        const hasMultipleImages = showModelNav
+                          ? selectedProduct.models.length > 1
+                          : (selectedProduct.additionalImages && selectedProduct.additionalImages.length > 0);
+
+                        if (!hasMultipleImages) return null;
+
+                        return (
                           <>
                             <button
-                              onClick={selectedProduct.models ? () => {
-                                const currentIndex = selectedProduct.models.findIndex(m => m.code === selectedModel);
+                              onClick={showModelNav ? () => {
+                                const currentIndex = selectedProduct.models.findIndex((m: any) => m.code === selectedModel);
                                 const prevIndex = currentIndex > 0 ? currentIndex - 1 : selectedProduct.models.length - 1;
                                 setSelectedModel(selectedProduct.models[prevIndex].code);
                               } : prevImageCallback}
@@ -1219,8 +1243,8 @@ const Index = () => {
                               <ChevronLeft className="h-5 w-5" />
                             </button>
                             <button
-                              onClick={selectedProduct.models ? () => {
-                                const currentIndex = selectedProduct.models.findIndex(m => m.code === selectedModel);
+                              onClick={showModelNav ? () => {
+                                const currentIndex = selectedProduct.models.findIndex((m: any) => m.code === selectedModel);
                                 const nextIndex = currentIndex < selectedProduct.models.length - 1 ? currentIndex + 1 : 0;
                                 setSelectedModel(selectedProduct.models[nextIndex].code);
                               } : nextImageCallback}
@@ -1229,70 +1253,74 @@ const Index = () => {
                               <ChevronRight className="h-5 w-5" />
                             </button>
                           </>
-                        )}
+                        );
+                      })()}
                     </div>
 
                     {/* Model Selector for Plakat */}
                     {selectedProduct.models && (
-                      <div className="mt-4">
-                        <h4 className="text-sm font-medium mb-2">Pilih Model:</h4>
-                        <div className="grid grid-cols-3 gap-2">
-                          {selectedProduct.models.map((model) => (
-                            <button
-                              key={model.code}
-                              onClick={() => setSelectedModel(model.code)}
-                              className={`px-2 py-1.5 rounded-lg text-xs transition-colors text-center ${selectedModel === model.code
-                                ? "bg-[#FF5E01] text-white"
-                                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                                }`}
-                            >
-                              {model.code}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
+                      <ModelSelector
+                        models={selectedProduct.models}
+                        selectedModel={selectedModel}
+                        onSelect={setSelectedModel}
+                        showImages={false} // Images are shown in the main carousel/grid below
+                      />
                     )}
+
 
                     {/* Image Thumbnails */}
                     <div className="mt-2">
-                      <div className="grid grid-cols-8 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
-                        {selectedProduct.models ? (
-                          selectedProduct.models.slice(0, 8).map((model, index) => (
-                            <div
-                              key={`${model.code}-${index}`}
-                              className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
-                                }`}
-                              onClick={() => setSelectedModel(model.code)}
-                            >
-                              <img
-                                src={model.image}
-                                alt={`${model.code}`}
-                                className="w-full h-full object-cover"
-                              />
+                      {(() => {
+                        // Check if we should show model gallery or standard gallery
+                        // Show model gallery only if distinct images exist across models
+                        const distinctModelImages = selectedProduct.models
+                          ? new Set(selectedProduct.models.map(m => m.image)).size
+                          : 0;
+                        const showModelGallery = selectedProduct.models && distinctModelImages > 1;
+
+                        return (
+                          <>
+                            <div className="grid grid-cols-8 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                              {showModelGallery ? (
+                                selectedProduct.models.slice(0, 8).map((model: any, index: number) => (
+                                  <div
+                                    key={`${model.code}-${index}`}
+                                    className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                                      }`}
+                                    onClick={() => setSelectedModel(model.code)}
+                                  >
+                                    <img
+                                      src={model.image}
+                                      alt={`${model.code}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ))
+                              ) : (
+                                [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
+                                  <div
+                                    key={`img-${index}`}
+                                    className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                                      }`}
+                                    onClick={() => setCurrentImageIndex(index)}
+                                  >
+                                    <img
+                                      src={image}
+                                      alt={`${selectedProduct.name} - Gambar ${index + 1}`}
+                                      className="w-full h-full object-cover"
+                                    />
+                                  </div>
+                                ))
+                              )}
                             </div>
-                          ))
-                        ) : (
-                          [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
-                            <div
-                              key={`img-${index}`}
-                              className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
-                                }`}
-                              onClick={() => setCurrentImageIndex(index)}
-                            >
-                              <img
-                                src={image}
-                                alt={`${selectedProduct.name} - Gambar ${index + 1}`}
-                                className="w-full h-full object-cover"
-                              />
-                            </div>
-                          ))
-                        )}
-                      </div>
-                      {selectedProduct.models && selectedProduct.models.length > 8 && (
-                        <div className="text-center text-xs text-gray-500 mt-1">
-                          +{selectedProduct.models.length - 8} model lainnya tersedia
-                        </div>
-                      )}
+                            {showModelGallery && selectedProduct.models && selectedProduct.models.length > 8 && (
+                              <div className="text-center text-xs text-gray-500 mt-1">
+                                +{selectedProduct.models.length - 8} model lainnya tersedia
+                              </div>
+                            )}
+                          </>
+                        );
+                      })()}
                     </div>
                   </div>
                   <div className="space-y-3">
@@ -1662,14 +1690,14 @@ const Index = () => {
                           <div className="flex justify-between items-center">
                             <span className="text-sm text-gray-600 flex-shrink-0">Total Harga:</span>
                             <span className="font-medium text-[#FF5E01] text-right break-words">
-                              Rp {(getApplicablePrice(selectedProduct, modalQuantity) * modalQuantity).toLocaleString('id-ID')}
+                              Rp {(getApplicablePrice(selectedProduct, modalQuantity, selectedModel) * modalQuantity).toLocaleString('id-ID')}
                             </span>
                           </div>
-                          {modalQuantity > 1 && calculateSavings(selectedProduct, modalQuantity) > 0 && (
+                          {modalQuantity > 1 && calculateSavings(selectedProduct, modalQuantity, selectedModel) > 0 && (
                             <div className="flex justify-between items-center text-sm">
                               <span className="text-green-600 flex-shrink-0">Hemat:</span>
                               <span className="text-green-600 font-medium text-right break-words">
-                                Rp {calculateSavings(selectedProduct, modalQuantity).toLocaleString('id-ID')}
+                                Rp {calculateSavings(selectedProduct, modalQuantity, selectedModel).toLocaleString('id-ID')}
                               </span>
                             </div>
                           )}

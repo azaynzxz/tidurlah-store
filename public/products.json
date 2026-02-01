@@ -1192,6 +1192,51 @@
       "rating": 4.8,
       "unit": "pcs",
       "is_available": true
+    },
+    {
+      "id": 2100,
+      "name": "Plakat Akrilik UV",
+      "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+      "additionalImages": [
+        "/product-image/Merch/Plakat-UV/UV-2.webp",
+        "/product-image/Merch/Plakat-UV/UV-3.webp"
+      ],
+      "description": "Plakat Akrilik UV berkualitas tinggi dengan berbagai pilihan ketebalan. Sudah termasuk box bludru.",
+      "price": 125000,
+      "discountPrice": null,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "3-5 hari",
+      "rating": 4.9,
+      "models": [
+        {
+          "code": "3 mm",
+          "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+          "price": 125000
+        },
+        {
+          "code": "5 mm",
+          "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+          "price": 165000
+        },
+        {
+          "code": "8 mm",
+          "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+          "price": 190000
+        },
+        {
+          "code": "10 mm",
+          "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+          "price": 200000
+        },
+        {
+          "code": "20 mm",
+          "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
+          "price": 285000
+        }
+      ],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Papan Bunga": [

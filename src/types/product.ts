@@ -18,7 +18,7 @@ export interface Product {
   minHeight?: number;
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
-  models?: { code: string; image: string }[];
+  models?: { code: string; image: string; price?: number }[];
 }
 
 export type PromoCodeType = {

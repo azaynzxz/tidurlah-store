@@ -68,7 +68,18 @@ export const generateProductUrl = (product: any) => {
  * Quantity 5 → Rp 20,000 (4+ threshold)
  * Quantity 30 → Rp 18,000 (25+ threshold)
  */
-export const getApplicablePrice = (product: any, quantity: number) => {
+export const getApplicablePrice = (product: any, quantity: number, selectedModel?: string) => {
+  // Check for model-specific price first
+  if (selectedModel && product.models) {
+    const model = product.models.find((m: any) => m.code === selectedModel);
+    if (model && model.price) {
+      // If model has a specific price, use it as the base price.
+      // NOTE: Current logic assumes no quantity thresholds for model-specific prices yet,
+      // but this could be expanded if needed. For now, flat model price.
+      return model.price;
+    }
+  }
+
   // No thresholds: use discountPrice if available, otherwise base price
   if (!product.priceThresholds) {
     return product.discountPrice !== null ? product.discountPrice : product.price;
@@ -113,9 +124,18 @@ export const getApplicablePrice = (product: any, quantity: number) => {
  * Base: Rp 25,000, Threshold (4+): Rp 20,000, Quantity: 5
  * Savings = (25,000 - 20,000) × 5 = Rp 25,000
  */
-export const calculateSavings = (product: any, quantity: number) => {
-  const basePrice = product.price; // Always uses base price, not discountPrice
-  const appliedPrice = getApplicablePrice(product, quantity);
+export const calculateSavings = (product: any, quantity: number, selectedModel?: string) => {
+  let basePrice = product.price;
+
+  // If model is selected and has a specific price, use that as base price
+  if (selectedModel && product.models) {
+    const model = product.models.find((m: any) => m.code === selectedModel);
+    if (model && model.price) {
+      basePrice = model.price;
+    }
+  }
+
+  const appliedPrice = getApplicablePrice(product, quantity, selectedModel);
 
   return (basePrice - appliedPrice) * quantity;
 };
@@ -130,21 +150,21 @@ export const calculateBannerPrice = (product: any, width: number, height: number
   }
 
   const area = width * height;
-  
+
   // Apply price thresholds to basePricePerSqm based on quantity
   let basePricePerSqm = product.basePricePerSqm || product.price;
-  
+
   if (product.priceThresholds && product.priceThresholds.length > 0) {
     const applicableThreshold = product.priceThresholds
       .slice()
       .reverse()
       .find((threshold: any) => quantity >= threshold.minQuantity);
-    
+
     if (applicableThreshold) {
       basePricePerSqm = applicableThreshold.price;
     }
   }
-  
+
   const calculatedPrice = basePricePerSqm * area;
 
   // Calculate area-based pricing with quantity-adjusted price

@@ -207,20 +207,20 @@ export const addToCart = (
 
   if (existingItem) {
     const newQuantity = existingItem.quantity + quantity;
-    const newPrice = getApplicablePrice(product, newQuantity);
+    const newPrice = getApplicablePrice(product, newQuantity, existingItem.modelCode);
 
     setCartItems(
       cartItems.map(item =>
         item.id === product.id &&
-        (!product.models || item.modelCode === selectedModel) &&
-        (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
-        (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
+          (!product.models || item.modelCode === selectedModel) &&
+          (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
+          (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
           ? {
-              ...item,
-              quantity: newQuantity,
-              appliedPrice: newPrice,
-              savings: calculateSavings(product, newQuantity)
-            }
+            ...item,
+            quantity: newQuantity,
+            appliedPrice: newPrice,
+            savings: calculateSavings(product, newQuantity)
+          }
           : item
       )
     );
@@ -242,8 +242,8 @@ export const addToCart = (
     const newItem: CartItem = {
       ...product,
       quantity: quantity,
-      appliedPrice: getApplicablePrice(product, quantity),
-      savings: calculateSavings(product, quantity),
+      appliedPrice: getApplicablePrice(product, quantity, selectedModel),
+      savings: calculateSavings(product, quantity, selectedModel),
       modelCode: product.models ? selectedModel : undefined,
       caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
       laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
@@ -318,17 +318,17 @@ export const removeFromCart = (
   if (existingItem && existingItem.quantity > 1) {
     const newQuantity = existingItem.quantity - 1;
     const product = Object.values(products).flat().find((p: any) => p.id === id);
-    const newPrice = getApplicablePrice(product, newQuantity);
+    const newPrice = getApplicablePrice(product, newQuantity, existingItem.modelCode);
 
     setCartItems(
       cartItems.map(item =>
         item.id === id
           ? {
-              ...item,
-              quantity: newQuantity,
-              appliedPrice: newPrice,
-              savings: calculateSavings(product, newQuantity)
-            }
+            ...item,
+            quantity: newQuantity,
+            appliedPrice: newPrice,
+            savings: calculateSavings(product, newQuantity, existingItem.modelCode)
+          }
           : item
       )
     );
@@ -385,7 +385,7 @@ export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
   return cartItems.reduce((total, item) => {
     // Start with threshold-adjusted price (from getApplicablePrice)
     let itemPrice = item.appliedPrice * item.quantity;
-    
+
     if (promoCode && validPromoCodes[promoCode]) {
       const promoInfo = validPromoCodes[promoCode];
       const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
@@ -397,7 +397,7 @@ export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
         // ⚠️ GAP: Override prices ignore quantity - 1 item or 100 items get same unit price
         if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
           itemPrice = promoInfo.overridePrices[item.id] * item.quantity;
-        } 
+        }
         // TYPE 2: Percentage Discount Promos
         // Applied to threshold price, not base price
         // ⚠️ GAP: Discount is on threshold price, not original base price
@@ -484,7 +484,7 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
         const originalPrice = item.appliedPrice * item.quantity; // Threshold price
         const overridePrice = promoInfo.overridePrices[item.id] * item.quantity;
         return discount + (originalPrice - overridePrice);
-      } 
+      }
       // Percentage Discount
       // Applied to threshold price
       else {
@@ -541,14 +541,14 @@ export const handlePromoCodeChange = (
       const promoStartDate = new Date('2025-11-20T00:00:00');
       const promoEndDate = new Date('2025-11-25T23:59:59');
       const now = new Date();
-      
+
       if (now < promoStartDate || now > promoEndDate) {
         setPromoDiscount(0);
         setPromoCodeError("Kode promo HUT3TH hanya berlaku pada tanggal 20-25 November 2025.");
         return;
       }
     }
-    
+
     // VALIDATION STEP 1: Check product eligibility
     // If promo targets specific products, verify at least one is in cart
     if (promo.productIds && Array.isArray(promo.productIds)) {
@@ -565,7 +565,7 @@ export const handlePromoCodeChange = (
         return;
       }
     }
-    
+
     // VALIDATION STEP 3: Verify promo applies to at least one item
     // (For promos that apply to all products or passed above checks)
     const appliesToAny = cartItems.some(item => {
@@ -573,23 +573,23 @@ export const handlePromoCodeChange = (
       const quantityMatches = !promo.minQuantity || item.quantity >= promo.minQuantity;
       return productMatches && quantityMatches;
     });
-    
+
     if (appliesToAny) {
       // Promo is valid - apply it
       setPromoDiscount(promo.discount); // For display (0% for override price promos)
-      
+
       // Custom success messages for specific promos
       if (code === "HUT3TH") {
         // HUT3TH uses override prices, not percentage discount
-        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!", { 
-          position: 'top-center', 
-          style: { marginTop: '60px' } 
+        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!", {
+          position: 'top-center',
+          style: { marginTop: '60px' }
         });
       } else {
         // Standard percentage discount promos
-        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, { 
-          position: 'top-center', 
-          style: { marginTop: '60px' } 
+        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, {
+          position: 'top-center',
+          style: { marginTop: '60px' }
         });
       }
     } else {
