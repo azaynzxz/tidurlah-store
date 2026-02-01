@@ -27,4 +27,5 @@ yarn-error.log*
 EOF
 
 # Google Apps Script files (sensitive)
-docs/archive/loker_appscript.js
+# Archive
+archive/
