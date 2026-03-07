@@ -18,6 +18,15 @@ const STATUS_OPTIONS = [
   { value: 'done', label: 'Selesai', className: 'bg-green-100 text-green-700' },
 ];
 
+const STATUS_PRIORITY: Record<string, number> = { pending: 0, partial: 1, done: 2 };
+
+const CHANNEL_OPTIONS = [
+  { value: 'all', label: 'Semua' },
+  { value: 'pos', label: 'POS' },
+  { value: 'website', label: 'Web' },
+  { value: 'migrated', label: 'Old' },
+];
+
 function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
   return {
     receiptId: order.orderId,
@@ -77,6 +86,8 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+  const [statusFilter, setStatusFilter] = useState<string>('partial');
+  const [channelFilter, setChannelFilter] = useState<string>('all');
 
   useEffect(() => {
     // Cache-first: load from localStorage cache immediately
@@ -118,15 +129,48 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     }
   };
 
+  // Compute status counts for filter badges
+  const statusCounts = useMemo(() => {
+    const counts: Record<string, number> = { all: orders.length, pending: 0, partial: 0, done: 0 };
+    orders.forEach(o => {
+      const s = (o.orderStatus || '').toLowerCase();
+      if (counts[s] !== undefined) counts[s]++;
+    });
+    return counts;
+  }, [orders]);
+
   const filteredOrders = useMemo(() => {
-    if (!search.trim()) return orders;
-    const q = search.toLowerCase();
-    return orders.filter(o =>
-      (o.orderId || '').toLowerCase().includes(q) ||
-      (o.customerName || '').toLowerCase().includes(q) ||
-      String(o.customerPhone || '').includes(q)
-    );
-  }, [orders, search]);
+    let result = orders;
+
+    // Status filter
+    if (statusFilter !== 'all') {
+      result = result.filter(o => (o.orderStatus || '').toLowerCase() === statusFilter);
+    }
+
+    // Channel filter
+    if (channelFilter !== 'all') {
+      result = result.filter(o => (o.channel || '') === channelFilter);
+    }
+
+    // Search filter
+    if (search.trim()) {
+      const q = search.toLowerCase();
+      result = result.filter(o =>
+        (o.orderId || '').toLowerCase().includes(q) ||
+        (o.customerName || '').toLowerCase().includes(q) ||
+        String(o.customerPhone || '').includes(q)
+      );
+    }
+
+    // Priority sort: pending → partial → done
+    result = [...result].sort((a, b) => {
+      const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
+      const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
+      return pa - pb;
+    });
+
+    return result;
+  }, [orders, search, statusFilter, channelFilter]);
 
   const handleDownloadReceipt = async (order: OrderHistoryItem) => {
     setDownloadingId(order.orderId);
@@ -225,7 +269,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   };
 
   return (
-    <div className="min-h-screen p-4">
+    <div className="h-full overflow-y-auto p-4">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
@@ -252,24 +296,69 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           />
         </div>
 
-        {/* Layout Toggle & Results Count */}
-        <div className="flex items-center justify-between mb-3 px-1">
-          <p className="text-xs text-gray-400">{filteredOrders.length} pesanan</p>
-          <div className="flex bg-gray-100 p-0.5 rounded-lg">
-            <button
-              onClick={() => setViewMode('list')}
-              className={`p-1.5 rounded-md transition-shadow ${viewMode === 'list' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
-              title="Tampilan List"
-            >
-              <List className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode('grid')}
-              className={`p-1.5 rounded-md transition-shadow ${viewMode === 'grid' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
-              title="Tampilan Grid"
-            >
-              <LayoutGrid className="w-4 h-4" />
-            </button>
+        {/* Filters Row: status + channel + view toggle — single row on desktop, wraps on mobile */}
+        <div className="flex flex-wrap items-center gap-2 mb-3">
+          {/* Status Filter Tabs */}
+          <div className="flex gap-1 overflow-x-auto">
+            {[
+              { value: 'all', label: 'Semua', inactiveBg: 'bg-gray-200 text-gray-700 border-gray-300', activeColor: 'bg-gray-800 text-white border-gray-800' },
+              { value: 'pending', label: 'Pending', inactiveBg: 'bg-orange-100 text-orange-800 border-orange-300', activeColor: 'bg-orange-500 text-white border-orange-500' },
+              { value: 'partial', label: 'DP', inactiveBg: 'bg-yellow-100 text-yellow-800 border-yellow-300', activeColor: 'bg-yellow-500 text-white border-yellow-500' },
+              { value: 'done', label: 'Selesai', inactiveBg: 'bg-green-100 text-green-800 border-green-300', activeColor: 'bg-green-600 text-white border-green-600' },
+            ].map(tab => (
+              <button
+                key={tab.value}
+                onClick={() => setStatusFilter(tab.value)}
+                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border transition-all ${statusFilter === tab.value
+                  ? `${tab.activeColor} shadow-sm`
+                  : `${tab.inactiveBg} hover:brightness-95`
+                  }`}
+              >
+                {tab.label}
+                <span className={`min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold ${statusFilter === tab.value ? 'bg-white/30 text-white' : 'bg-black/10'
+                  }`}>
+                  {statusCounts[tab.value] || 0}
+                </span>
+              </button>
+            ))}
+          </div>
+
+          {/* Separator */}
+          <div className="hidden sm:block w-px h-5 bg-gray-300" />
+
+          {/* Channel Filter Dropdown */}
+          <select
+            value={channelFilter}
+            onChange={e => setChannelFilter(e.target.value)}
+            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01]"
+          >
+            {CHANNEL_OPTIONS.map(ch => (
+              <option key={ch.value} value={ch.value}>{ch.label}</option>
+            ))}
+          </select>
+
+          {/* Spacer */}
+          <div className="flex-1" />
+
+          {/* Results count + view toggle */}
+          <div className="flex items-center gap-2">
+            <p className="text-xs text-gray-500 font-medium">{filteredOrders.length} pesanan</p>
+            <div className="flex bg-gray-200 p-0.5 rounded-lg">
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-md transition-shadow ${viewMode === 'list' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+                title="Tampilan List"
+              >
+                <List className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-md transition-shadow ${viewMode === 'grid' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+                title="Tampilan Grid"
+              >
+                <LayoutGrid className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
@@ -322,6 +411,17 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                         </div>
                         <div className="flex items-center gap-2 ml-2">
                           <span className="text-sm font-bold text-green-600 whitespace-nowrap">{formatCurrency(order.total)}</span>
+                          <button
+                            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
+                            title="Download Struk"
+                            onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
+                            disabled={downloadingId === order.orderId}
+                          >
+                            {downloadingId === order.orderId
+                              ? <Loader2 className="w-4 h-4 animate-spin" />
+                              : <Download className="w-4 h-4" />
+                            }
+                          </button>
                           {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
                         </div>
                       </>
@@ -340,7 +440,18 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-gray-50">
                           <span className="text-sm font-extrabold text-green-600">{formatCurrency(order.total)}</span>
-                          <div className="flex items-center text-gray-400 text-[10px]">
+                          <div className="flex items-center gap-1.5 text-gray-400 text-[10px]">
+                            <button
+                              className="p-1 rounded hover:bg-gray-200 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
+                              title="Download Struk"
+                              onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
+                              disabled={downloadingId === order.orderId}
+                            >
+                              {downloadingId === order.orderId
+                                ? <Loader2 className="w-4 h-4 animate-spin" />
+                                : <Download className="w-4 h-4" />
+                              }
+                            </button>
                             {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                           </div>
                         </div>
