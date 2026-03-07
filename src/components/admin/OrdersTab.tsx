@@ -38,6 +38,7 @@ export function OrdersTab() {
         if (cached) {
             try { setOrders(JSON.parse(cached)); setIsLoading(false); } catch { }
         }
+        loadOrders();
     }, []);
 
     const loadOrders = async () => {
