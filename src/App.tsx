@@ -22,6 +22,7 @@ import Loker from "./pages/Loker";
 import TwibbonMaker from "./pages/TwibbonMaker";
 import Layout from "./pages/Layout";
 import Katalog from "./pages/Katalog";
+import Admin from "./pages/Admin";
 
 import { HelmetProvider } from 'react-helmet-async';
 
@@ -54,6 +55,7 @@ const App = () => (
                   <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
                   <Route path="/layout" element={<Layout />} />
                   <Route path="/katalog" element={<Katalog />} />
+                  <Route path="/admin" element={<Admin />} />
                   <Route path="/login-blocked" element={<LoginBlocked />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />

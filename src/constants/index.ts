@@ -90,11 +90,11 @@ export const categories = [
 // Product version for cache busting
 export const PRODUCT_VERSION = Date.now();
 
-// Google Sheets submission URL (for website orders)
-export const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw7Ht5Ax693Wt99YC-kBQXYmzohctNRUQzuH_rLWvfySR9lM3QkBo_7emeL7T8Erkpy/exec';
+// Google Sheets URL — Unified endpoint for both website and POS orders
+export const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpwKU0n3iS-HK9uRUlhkwZUUCRPGnPYI512cch3G8wIi06WzvvYw0UWiqXtWXQZIvg/exec';
 
-// POS Google Sheets submission URL
-export const POS_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbycXaK6zr-fHedGBcGFo04C7-AndbCJ74yB45c-9gD9s_zP01Uejq5yYob09fG7-hA/exec';
+// POS Google Sheets URL — Same unified endpoint
+export const POS_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpwKU0n3iS-HK9uRUlhkwZUUCRPGnPYI512cch3G8wIi06WzvvYw0UWiqXtWXQZIvg/exec';
 
 // Loker (Job Application) Google Sheets submission URL
 export const LOKER_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzuEkPrBkPbhKZDwD5AtnNdx-_oxiElFcNP5LfKNdmu7AzMBeGcwqXwuoRenSHNRq0u/exec';

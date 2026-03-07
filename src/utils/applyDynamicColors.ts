@@ -8,43 +8,43 @@ export function applyDynamicTextColors() {
   const isEidMode = document.body.classList.contains('eid-mode');
   const isRamadanMode = document.body.classList.contains('ramadan-mode');
   const isDiwaliMode = document.body.classList.contains('diwali-mode');
-  
+
   const isThemeActive = isHalloweenMode || isChristmasMode || isEidMode || isRamadanMode || isDiwaliMode;
-  
+
   if (!isThemeActive) return;
 
   // Select all elements with Tailwind background classes
   const elements = document.querySelectorAll('[class*="bg-"]');
-  
+
   elements.forEach((element) => {
     const htmlElement = element as HTMLElement;
     const classList = Array.from(htmlElement.classList);
-    
+
     // Find the first colored background class (skip gray, background, etc)
-    const bgClass = classList.find(cls => 
-      cls.startsWith('bg-') && 
-      !cls.includes('gray') && 
+    const bgClass = classList.find(cls =>
+      cls.startsWith('bg-') &&
+      !cls.includes('gray') &&
       !cls.includes('background') &&
       !cls.includes('card') &&
       !cls.includes('muted') &&
       !cls.includes('primary') &&
       !cls.includes('secondary')
     );
-    
+
     if (!bgClass) return;
-    
+
     // Extract the color from the class (e.g., 'bg-green-100' -> 'green-100')
     const colorMatch = bgClass.match(/bg-([a-z]+)-\d+/);
     if (!colorMatch) return;
-    
+
     const colorBase = colorMatch[1];
     const numberMatch = bgClass.match(/bg-[a-z]+-(\d+)/);
     const colorNumber = numberMatch ? parseInt(numberMatch[1]) : 0;
-    
+
     // Light backgrounds (50-300) should have dark text
     // Dark backgrounds (400+) should have light text
     // Neutral/gray backgrounds should follow theme foreground
-    
+
     if (colorBase === 'green' && colorNumber <= 300) {
       htmlElement.style.color = '#166534'; // Dark green text
     } else if (colorBase === 'orange' && colorNumber <= 300) {
@@ -63,7 +63,7 @@ export function applyDynamicTextColors() {
       // For darker backgrounds, use light text
       htmlElement.style.color = '#ffffff';
     }
-    
+
     // Apply to child elements as well
     const childElements = htmlElement.querySelectorAll('*');
     childElements.forEach(child => {
@@ -84,12 +84,12 @@ if (typeof window !== 'undefined') {
   } else {
     applyDynamicTextColors();
   }
-  
+
   // Apply when theme mode changes (observe body class changes)
   const observer = new MutationObserver(() => {
     applyDynamicTextColors();
   });
-  
+
   observer.observe(document.body, {
     attributes: true,
     attributeFilter: ['class']

@@ -2,8 +2,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import { HelpCircle, Clock, History, Search, X, User, Settings, Menu, Layout, MapPin, ExternalLink } from "lucide-react";
+import { HelpCircle, Clock, History, Search, X, User, Settings, Menu, Layout, MapPin, ExternalLink, LayoutDashboard, ShoppingCart } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 interface POSHeaderProps {
   onShowOrderHistory?: () => void;
@@ -18,6 +19,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
   const [showCashierDialog, setShowCashierDialog] = useState(false);
   const [tempCashierName, setTempCashierName] = useState(cashierName || "");
   const [showToolsMenu, setShowToolsMenu] = useState(false);
+  const location = useLocation();
 
   const currentTime = new Date().toLocaleTimeString('id-ID', {
     hour: '2-digit',
@@ -117,7 +119,9 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
               </div>
             </a>
 
-            <div className="flex items-center gap-2">
+            <div className="flex-1"></div>
+
+            <div className="flex items-center justify-end gap-2">
               {/* Compact Time */}
               <div className="bg-black bg-opacity-20 rounded px-1.5 py-0.5">
                 <div className="flex items-center gap-1 text-xs text-white font-mono">
@@ -173,7 +177,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                       Hello Page
                     </a>
                     <a
-                      href="https://docs.google.com/spreadsheets/d/1bK-hq2TDTGElXt0sJbrhGy2ka--leelHlOiH9EhUDhk/edit?gid=1558950426#gid=1558950426"
+                      href="https://docs.google.com/spreadsheets/d/1Z1u_5qExy6_K0rgjQZExeIGyItXKY-7wUnyplVDthSU/edit?usp=sharing"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
@@ -181,6 +185,23 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                     >
                       <ExternalLink className="h-4 w-4 mr-3" />
                       Order Data
+                    </a>
+                    <div className="border-t my-1"></div>
+                    <a
+                      href="/cashier"
+                      className={`flex items-center px-4 py-2 text-sm hover:bg-orange-50 transition-colors ${location.pathname === '/cashier' ? 'text-[#FF5E01] font-bold bg-orange-50' : 'text-gray-700'}`}
+                      onClick={() => setShowToolsMenu(false)}
+                    >
+                      <ShoppingCart className="h-4 w-4 mr-3" />
+                      Cashier POS
+                    </a>
+                    <a
+                      href="/admin"
+                      className={`flex items-center px-4 py-2 text-sm hover:bg-orange-50 transition-colors ${location.pathname === '/admin' ? 'text-[#FF5E01] font-bold bg-orange-50' : 'text-gray-700'}`}
+                      onClick={() => setShowToolsMenu(false)}
+                    >
+                      <LayoutDashboard className="h-4 w-4 mr-3" />
+                      Admin Dashboard
                     </a>
                   </div>
                 )}
@@ -249,17 +270,17 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
             </a>
           </div>
 
-          {/* Center section - Search Bar */}
-          {onSearch && (
-            <div className="flex justify-center">
-              <div className="relative">
+          {/* Center section - Search Bar (or empty space to keep grid alignment) */}
+          <div className="flex justify-center">
+            {onSearch && (
+              <div className="relative w-full max-w-sm">
                 <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 w-3 h-3" />
                 <Input
                   type="text"
                   placeholder="Cari produk..."
                   value={internalSearchTerm}
                   onChange={handleSearchChange}
-                  className="pl-7 pr-8 h-8 w-64 bg-white text-gray-900 border-white placeholder-gray-500 focus:ring-1 focus:ring-white text-sm"
+                  className="pl-7 pr-8 h-8 w-full bg-white text-gray-900 border-white placeholder-gray-500 focus:ring-1 focus:ring-white text-sm"
                 />
                 {internalSearchTerm && (
                   <Button
@@ -272,8 +293,8 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                   </Button>
                 )}
               </div>
-            </div>
-          )}
+            )}
+          </div>
 
           {/* Right section - Cashier, Time and History */}
           <div className="flex items-center justify-end gap-3">
@@ -341,7 +362,7 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                     Hello Page
                   </a>
                   <a
-                    href="https://docs.google.com/spreadsheets/d/1bK-hq2TDTGElXt0sJbrhGy2ka--leelHlOiH9EhUDhk/edit?gid=1558950426#gid=1558950426"
+                    href="https://docs.google.com/spreadsheets/d/1Z1u_5qExy6_K0rgjQZExeIGyItXKY-7wUnyplVDthSU/edit?usp=sharing"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-orange-50 transition-colors"
@@ -349,6 +370,23 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                   >
                     <ExternalLink className="h-4 w-4 mr-3" />
                     Order Data
+                  </a>
+                  <div className="border-t my-1"></div>
+                  <a
+                    href="/cashier"
+                    className={`flex items-center px-4 py-2 text-sm hover:bg-orange-50 transition-colors ${location.pathname === '/cashier' ? 'text-[#FF5E01] font-bold bg-orange-50' : 'text-gray-700'}`}
+                    onClick={() => setShowToolsMenu(false)}
+                  >
+                    <ShoppingCart className="h-4 w-4 mr-3" />
+                    Cashier POS
+                  </a>
+                  <a
+                    href="/admin"
+                    className={`flex items-center px-4 py-2 text-sm hover:bg-orange-50 transition-colors ${location.pathname === '/admin' ? 'text-[#FF5E01] font-bold bg-orange-50' : 'text-gray-700'}`}
+                    onClick={() => setShowToolsMenu(false)}
+                  >
+                    <LayoutDashboard className="h-4 w-4 mr-3" />
+                    Admin Dashboard
                   </a>
                 </div>
               )}

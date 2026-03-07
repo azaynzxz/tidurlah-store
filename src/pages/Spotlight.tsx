@@ -161,16 +161,6 @@ const Spotlight = () => {
                         <Button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleStoreLocationClick("https://maps.app.goo.gl/hVwcunR4E5LobVBTA");
-                          }}
-                          className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
-                        >
-                          <MapPin className="mr-2 h-4 w-4" />
-                          Cabang Korpri
-                        </Button>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
                             handleStoreLocationClick("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA");
                           }}
                           className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
@@ -183,22 +173,7 @@ const Spotlight = () => {
 
                     {card.id === "open-hours" && (
                       <div className="space-y-3 mt-4 relative z-10">
-                        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                          <div className="flex items-start gap-2 mb-1">
-                            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm mb-1">Cabang Korpri</h4>
-                              <p className="text-white/90 text-xs leading-relaxed">
-                                08.00 - 21.00
-                                <br />
-                                (Khusus Pengambilan)
-                              </p>
-                              <p className="text-white/80 text-xs mt-1">
-                                Senin - Minggu
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+
                         <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
                           <div className="flex items-start gap-2 mb-1">
                             <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
@@ -210,7 +185,7 @@ const Spotlight = () => {
                                 (Order dan Pengambilan)
                               </p>
                               <p className="text-white/80 text-xs mt-1">
-                                Senin - Kamis
+                                Senin - Sabtu
                               </p>
                             </div>
                           </div>

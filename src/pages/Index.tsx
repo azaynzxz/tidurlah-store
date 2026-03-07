@@ -14,6 +14,8 @@ import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import TutorialPopup from "@/components/TutorialPopup";
 import { AnimatedElement, StaggeredContainer, LoadingState } from "@/components/animations/AnimatedElement";
+import { Helmet } from 'react-helmet-async';
+
 
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
@@ -26,8 +28,6 @@ import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, pre
 
 // Set document title and load Google Fonts
 if (typeof document !== 'undefined') {
-  document.title = "Spesialis ID Card Lanyard Lampung dan Merchandise Custom - TIDURLAH STORE";
-
   // Add Google Fonts Material Symbols if not already added
   if (!document.querySelector('link[href*="material+symbols"]')) {
     const link = document.createElement('link');
@@ -441,9 +441,10 @@ const Index = () => {
   return (
     <div key={PRODUCT_VERSION} className="min-h-screen bg-background notranslate flex flex-col" translate="no">
       <SEO
-        title="Cetak ID Card & Lanyard Lampung"
-        description="Pusat cetak ID Card, Lanyard, Tali Id Card, dan Merchandise Custom di Bandar Lampung. Harga murah, pengerjaan cepat, dan berkualitas."
+        title={selectedProduct ? `Jual ${selectedProduct.name}` : "Cetak ID Card & Lanyard Lampung"}
+        description={selectedProduct ? `${selectedProduct.description?.slice(0, 150) || selectedProduct.name} - Pesan di Tidurlah Store` : "Pusat cetak ID Card, Lanyard, Tali Id Card, dan Merchandise Custom di Bandar Lampung. Harga murah, pengerjaan cepat, dan berkualitas."}
         keywords="id card lampung, lanyard custom, cetak id card bandar lampung, lanyard bisa dicuci, cetak id card terdekat, plakat, merchandise lampung"
+        image={selectedProduct?.image}
       />
       {/* Header - Full Width */}
       <Header

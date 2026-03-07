@@ -6,11 +6,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/
 const Footer = () => {
   const navigate = useNavigate();
   const { isHalloweenMode } = useHalloweenTheme();
-  const [selectedLocation, setSelectedLocation] = useState<'korpri' | 'belwis'>('korpri');
+  const [selectedLocation, setSelectedLocation] = useState<'belwis'>('belwis');
 
   // Map URLs for different locations
   const mapUrls = {
-    korpri: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8274688427937!2d105.30290814455876!3d-5.3685203858369155!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e1!3m2!1sen!2sid!4v1762012469415!5m2!1sen!2sid",
     belwis: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
   };
 
@@ -162,26 +161,11 @@ const Footer = () => {
             <div className="lg:col-span-1">
               <h4 className="text-lg font-bold text-white mb-4">Lokasi Cabang</h4>
 
-              {/* Location Selector */}
-              <div className="mb-3 flex gap-2">
-                <button
-                  onClick={() => setSelectedLocation('korpri')}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedLocation === 'korpri'
-                      ? 'bg-[#FF5E01] text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                >
-                  Cabang Korpri, Balam
-                </button>
-                <button
-                  onClick={() => setSelectedLocation('belwis')}
-                  className={`flex-1 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${selectedLocation === 'belwis'
-                      ? 'bg-[#FF5E01] text-white'
-                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                    }`}
-                >
+              {/* Location Header */}
+              <div className="mb-3">
+                <div className="bg-[#FF5E01] text-white px-3 py-2 rounded-lg text-sm font-medium text-center">
                   Cabang Belwis, Jatiagung
-                </button>
+                </div>
               </div>
 
               <div className="relative">

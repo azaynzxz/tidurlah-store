@@ -1,6 +1,5 @@
-import type { OrderData, BannerDetails } from '@/types/product';
-import { JASA_DESAIN_PRICE, GOOGLE_SHEETS_URL, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
-import { caseVariants } from '@/constants';
+import type { OrderData } from '@/types/product';
+import { JASA_DESAIN_PRICE, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
 
 // POS Order Data interface
 export interface POSOrderData {
@@ -15,6 +14,7 @@ export interface POSOrderData {
     address: string;
   };
   items: {
+    productId?: number;
     name: string;
     quantity: number;
     price: number;
@@ -35,128 +35,73 @@ export interface POSOrderData {
   paymentMethod?: string;
 }
 
-// Google Sheet submission function
+// Website order submission — sends normalized JSON to unified endpoint
 export const submitToGoogleSheet = async (orderData: OrderData) => {
   try {
-    const formData = new URLSearchParams();
-
-    // Format order details to include name, quantity, dimensions for banner products, and model code
-    const simplifiedOrderDetails = [
-      ...orderData.cartItems.map((item: any) => {
-        let modifiedName = item.name;
-        if (item.width && item.height) {
-          const area = (item.width * item.height).toFixed(2);
-          modifiedName = `${item.name} [${item.width}m × ${item.height}m, ${area}m²]`;
-        }
-        if (item.modelCode) {
-          modifiedName = `${item.name} [${item.modelCode}]`;
-        }
-        // Add this for casing
-        if (item.caseVariant) {
-          const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
-          modifiedName = `${item.name} [Casing: ${caseName}]`;
-        }
-        // Add this for lamination
-        if (item.laminationVariant) {
-          modifiedName = `${item.name} [Laminasi: ${item.laminationVariant}]`;
-        }
-        return {
-          name: modifiedName,
-          quantity: item.quantity,
-          price: item.appliedPrice,
-          width: item.width || 0,
-          height: item.height || 0,
-          hasDimensions: item.width && item.height ? true : false,
-          modelCode: item.modelCode || '',
-          caseVariant: item.caseVariant,
-          laminationVariant: item.laminationVariant
-        };
-      }),
+    // Build normalized items array
+    const items: POSOrderData['items'] = [
+      ...orderData.cartItems.map((item: any) => ({
+        productId: item.id,
+        name: item.name,
+        quantity: item.quantity,
+        price: item.appliedPrice,
+        subtotal: item.appliedPrice * item.quantity,
+        modelCode: item.modelCode || '',
+        caseVariant: item.caseVariant || '',
+        laminationVariant: item.laminationVariant || '',
+        width: item.width || undefined,
+        height: item.height || undefined,
+        dimensionText: item.dimensionText || '',
+        area: item.area || '',
+      })),
       ...(orderData.requestJasaDesain ? [{
+        productId: 2001,
         name: 'Jasa Desain',
         quantity: 1,
         price: JASA_DESAIN_PRICE,
-        width: 0,
-        height: 0,
-        hasDimensions: false,
-        modelCode: ''
-      }] : [])
+        subtotal: JASA_DESAIN_PRICE,
+      }] : []),
+      ...(orderData.isExpressPrint ? [{
+        productId: 2003,
+        name: 'Cetak Express',
+        quantity: 1,
+        price: JASA_DESAIN_PRICE,
+        subtotal: JASA_DESAIN_PRICE,
+      }] : []),
     ];
 
-    // Add all order data to formData
-    formData.append('InvoiceNumber', orderData.invoiceNumber);
-    formData.append('CustomerName', orderData.customerName);
-    formData.append('Instansi', orderData.instansi || '');
-    formData.append('PhoneNumber', orderData.phoneNumber);
-    formData.append('DesignNote', encodeURIComponent(orderData.designNote || '').replace(/%20/g, '+'));
-    formData.append('OrderDetails', JSON.stringify(simplifiedOrderDetails));
+    const normalizedData = {
+      receiptId: orderData.invoiceNumber,
+      channel: 'website',
+      cashier: 'Website',
+      customerName: orderData.customerName,
+      phoneNumber: orderData.phoneNumber,
+      institution: orderData.instansi || '',
+      items,
+      subtotal: orderData.subtotal,
+      discount: 0,
+      total: orderData.total,
+      downPayment: 0,
+      remainingBalance: orderData.total,
+      paymentMethod: 'Pending',
+      // Website-specific fields
+      promoCode: orderData.promoCode || '',
+      promoDiscount: orderData.promoDiscount || 0,
+      designNote: orderData.designNote || '',
+      isShipping: orderData.isShipping || false,
+      address: orderData.address || '',
+    };
 
-    // Add separate detail fields for banners to ensure dimensions are captured
-    const bannerItems = orderData.cartItems.filter(item => item.width && item.height);
-    if (bannerItems.length > 0) {
-      formData.append('HasBanners', 'true');
-      formData.append('BannerDetails', JSON.stringify(bannerItems.map(item => ({
-        name: item.name,
-        id: item.id,
-        width: item.width,
-        height: item.height,
-        dimensions: `${item.width}m × ${item.height}m`,
-        area: (item.width * item.height).toFixed(2),
-        price: item.appliedPrice,
-        quantity: item.quantity
-      } as BannerDetails))));
+    await fetch(POS_GOOGLE_SHEETS_URL, {
+      method: 'POST',
+      body: JSON.stringify(normalizedData),
+      mode: 'no-cors'
+    });
 
-      // Add a single string with all banner dimensions for easier Google Sheet processing
-      const bannerDimensionsText = bannerItems.map(item =>
-        `${item.name}: ${item.width}m × ${item.height}m (${(item.width * item.height).toFixed(2)}m²)`
-      ).join('; ');
-      formData.append('BannerDimensions', bannerDimensionsText);
-
-      // Also add individual banner dimensions for easier parsing
-      bannerItems.forEach((item, index) => {
-        formData.append(`Banner_${index}_Name`, item.name);
-        formData.append(`Banner_${index}_Width`, item.width.toString());
-        formData.append(`Banner_${index}_Height`, item.height.toString());
-        formData.append(`Banner_${index}_Area`, (item.width * item.height).toFixed(2));
-        formData.append(`Banner_${index}_Quantity`, item.quantity.toString());
-        formData.append(`Banner_${index}_Price`, item.appliedPrice.toString());
-      });
-
-      // Log banner details to console for debugging
-      // Banner details prepared for submission
-    }
-
-    formData.append('Subtotal', orderData.subtotal.toString());
-    formData.append('PromoCode', orderData.promoCode || '');
-    formData.append('PromoDiscount', orderData.promoDiscount.toString());
-    formData.append('Total', orderData.total.toString());
-    formData.append('ShippingInfo', orderData.isShipping.toString());
-    formData.append('Address', orderData.address || '');
-    formData.append('RequestJasaDesain', orderData.requestJasaDesain ? 'Ya' : 'Tidak');
-    formData.append('IsExpressPrint', orderData.isExpressPrint ? 'Ya' : 'Tidak');
-    if (orderData.requestJasaDesain) {
-      formData.append('JasaDesainPrice', JASA_DESAIN_PRICE.toString());
-    }
-
-    try {
-      const response = await fetch(GOOGLE_SHEETS_URL, {
-        method: 'POST',
-        body: formData,
-        mode: 'no-cors'
-      });
-
-      // Note: With 'no-cors' mode, we can't read the response,
-      // but we can assume it's successful if no error is thrown
-      // Google Sheets submission completed
-      return { success: true };
-    } catch (fetchError) {
-      console.error('Error submitting to Google Sheet:', fetchError);
-      // Show a toast with error details
-      throw new Error(`Error sending to Google Sheets: ${fetchError.message}`);
-    }
+    return { success: true };
   } catch (error) {
-    console.error('Error preparing order data:', error);
-    throw new Error(`Error preparing order data: ${error.message}`);
+    console.error('Error submitting website order:', error);
+    throw new Error(`Error sending to Google Sheets: ${error.message}`);
   }
 };
 
@@ -264,22 +209,81 @@ Total: Rp ${(calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DE
 // POS Order submission function
 export const submitPOSOrder = async (posOrderData: POSOrderData) => {
   try {
-    // Submitting POS order to Google Sheets
-    
-    // Send as POST request with JSON body to dedicated POS endpoint
+    // Add channel identifier for POS orders
+    const dataWithChannel = {
+      ...posOrderData,
+      channel: 'pos'
+    };
+
+    // Send as POST request with JSON body to unified endpoint
     const response = await fetch(POS_GOOGLE_SHEETS_URL, {
       method: 'POST',
-      body: JSON.stringify(posOrderData),
+      body: JSON.stringify(dataWithChannel),
       mode: 'no-cors'
     });
 
-    // Note: With 'no-cors' mode, we can't read the response,
-    // but we can assume it's successful if no error is thrown
-    // POS order submission completed
     return { success: true };
   } catch (error) {
     console.error('Error submitting POS order:', error);
     throw new Error(`Error sending POS order to Google Sheets: ${error.message}`);
+  }
+};
+
+// Fetch order history from Google Sheets
+export interface OrderHistoryItem {
+  orderId: string;
+  timestamp: string;
+  channel: string;
+  cashier: string;
+  customerName: string;
+  customerPhone: string;
+  institution: string;
+  subtotal: number;
+  discount: number;
+  total: number;
+  downPayment: number;
+  remainingBalance: number;
+  paymentMethod: string;
+  orderStatus: string;
+  itemCount: number;
+  itemsSummary: string;
+  promoCode: string;
+  promoDiscount: number;
+  designNote: string;
+  isShipping: string;
+  address: string;
+  items: {
+    productId: number | string;
+    name: string;
+    quantity: number;
+    price: number;
+    subtotal: number;
+    modelCode?: string;
+    caseVariant?: string;
+    lamination?: string;
+    width?: number;
+    height?: number;
+    dimensionText?: string;
+    area?: string;
+  }[];
+}
+
+export const fetchOrderHistory = async (
+  options: { limit?: number; channel?: string; cashier?: string } = {}
+): Promise<{ success: boolean; orders: OrderHistoryItem[]; total: number; error?: string }> => {
+  try {
+    const params = new URLSearchParams();
+    params.set('action', 'orders');
+    if (options.limit) params.set('limit', options.limit.toString());
+    if (options.channel) params.set('channel', options.channel);
+    if (options.cashier) params.set('cashier', options.cashier);
+
+    const response = await fetch(`${POS_GOOGLE_SHEETS_URL}?${params.toString()}`);
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error fetching order history:', error);
+    return { success: false, orders: [], total: 0, error: error.message };
   }
 };
 
@@ -324,7 +328,7 @@ export const submitJobApplication = async (
     // Start smooth fake progress bar
     let currentProgress = 0;
     let progressInterval: ReturnType<typeof setInterval> | null = null;
-    
+
     const startProgress = () => {
       progressInterval = setInterval(() => {
         if (onProgress && currentProgress < 98) {
@@ -339,7 +343,7 @@ export const submitJobApplication = async (
           } else {
             increment = 0.4; // Slow near end
           }
-          
+
           currentProgress = Math.min(currentProgress + increment, 98);
           onProgress(Math.round(currentProgress), 'Mengirim berkas lamaran');
         } else {
@@ -350,14 +354,14 @@ export const submitJobApplication = async (
         }
       }, 80); // Update every 80ms for smoother, slower animation
     };
-    
+
     startProgress();
 
     // Convert CV file to base64 if provided
     let cvBase64 = '';
     let cvMimeType = '';
     let cvFileName = '';
-    
+
     if (applicationData.cv) {
       cvBase64 = await fileToBase64(applicationData.cv);
       cvMimeType = applicationData.cv.type;
@@ -373,13 +377,13 @@ export const submitJobApplication = async (
     let fileBase64 = '';
     let fileMimeType = '';
     let fileName = '';
-    
+
     if (applicationData.portfolio) {
       fileBase64 = await fileToBase64(applicationData.portfolio);
       fileMimeType = applicationData.portfolio.type;
       fileName = applicationData.portfolio.name;
     }
-    
+
     // Prepare data for Google Apps Script
     const payload: any = {
       nama: applicationData.nama,
@@ -404,7 +408,7 @@ export const submitJobApplication = async (
       payload.fileMimeType = '';
       payload.fileName = '';
     }
-    
+
     // Send as POST request with JSON body
     // Note: Using 'no-cors' mode because Google Apps Script handles CORS
     // However, this means we can't read the response status
@@ -427,14 +431,14 @@ export const submitJobApplication = async (
         clearInterval(progressInterval);
         progressInterval = null;
       }
-      
+
       // Smooth finish to 100%
       if (onProgress) {
         const finishProgress = () => {
           if (currentProgress < 100) {
             currentProgress = Math.min(currentProgress + 0.5, 100);
             onProgress(Math.round(currentProgress), 'Mengirim berkas lamaran');
-            
+
             if (currentProgress < 100) {
               setTimeout(finishProgress, 50);
             }
@@ -442,7 +446,7 @@ export const submitJobApplication = async (
         };
         finishProgress();
       }
-      
+
       // Wait a bit for the progress to reach 100%
       await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -451,16 +455,16 @@ export const submitJobApplication = async (
       return { success: true };
     } catch (fetchError: any) {
       console.error('Fetch error:', fetchError);
-      
+
       // Check for specific error types
       if (fetchError.message?.includes('403') || fetchError.message?.includes('Forbidden')) {
         throw new Error('Akses ditolak. Pastikan Google Apps Script sudah di-deploy dengan pengaturan "Who has access: Anyone"');
       }
-      
+
       if (fetchError.message?.includes('Failed to fetch') || fetchError.message?.includes('NetworkError')) {
         throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau URL API.');
       }
-      
+
       throw new Error(`Gagal mengirim lamaran: ${fetchError.message || 'Terjadi kesalahan tidak diketahui'}`);
     }
   } catch (error: any) {

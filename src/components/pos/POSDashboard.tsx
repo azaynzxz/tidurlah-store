@@ -17,30 +17,30 @@ declare global {
   interface Navigator {
     bluetooth: Bluetooth;
   }
-  
+
   interface Bluetooth {
     requestDevice(options: BluetoothRequestDeviceOptions): Promise<BluetoothDevice>;
   }
-  
+
   interface BluetoothRequestDeviceOptions {
     filters?: BluetoothLEScanFilter[];
     optionalServices?: BluetoothServiceUUID[];
   }
-  
+
   interface BluetoothLEScanFilter {
     services?: BluetoothServiceUUID[];
     namePrefix?: string;
     name?: string;
   }
-  
+
   type BluetoothServiceUUID = string;
-  
+
   interface BluetoothDevice {
     id: string;
     name?: string;
     gatt?: BluetoothRemoteGATTServer;
   }
-  
+
   interface BluetoothRemoteGATTServer {
     connected: boolean;
     connect(): Promise<BluetoothRemoteGATTServer>;
@@ -150,10 +150,10 @@ export function POSDashboard() {
       const currentHour = now.getHours();
       const currentMinute = now.getMinutes();
       const today = now.toDateString();
-      
+
       // Create unique key for each notification
       const notifKey = `${today}-${currentHour}`;
-      
+
       // Reset notifications shown at midnight
       const lastResetDate = localStorage.getItem('lastNotifReset');
       if (lastResetDate !== today) {
@@ -302,7 +302,7 @@ export function POSDashboard() {
         // Load horizontal logo for PDF
         const base64Logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
         setLogoBase64(base64Logo);
-        
+
         // Load survey QR code
         const base64SurveyQR = await convertImageToBase64('/product-image/survey-qr.png');
         setSurveyQRBase64(base64SurveyQR);
@@ -386,7 +386,7 @@ export function POSDashboard() {
     };
     setCartItems(prev => [...prev, newItem]);
     setSelectedProducts(prev => new Set([...prev, product.id]));
-    
+
     toast.success(`${product.name} ditambahkan ke keranjang`, {
       position: 'top-center',
       duration: 2000,
@@ -396,12 +396,12 @@ export function POSDashboard() {
   // Get default options for a product
   const getDefaultOptions = (product: Product) => {
     const options: any = {};
-    
+
     // Set default model if product has models
     if (product.models && product.models.length > 0) {
       options.modelCode = product.models[0].code;
     }
-    
+
     // Set default dimensions for dimensional products
     if (product.pricingMethod === "dimensional") {
       options.width = product.minWidth || 1;
@@ -410,19 +410,19 @@ export function POSDashboard() {
       options.dimensionText = `${options.width}m x ${options.height}m`;
       options.area = `${options.width * options.height} m²`;
     }
-    
+
     // Set default case for products that need casing
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     if (idCardWithCaseIds.includes(product.id)) {
       options.caseVariant = ""; // Will require selection
     }
-    
+
     // Set default lamination for products that need it
     const stikerWithLaminationIds = [15];
     if (stikerWithLaminationIds.includes(product.id)) {
       options.laminationVariant = ""; // Will require selection
     }
-    
+
     return options;
   };
 
@@ -522,18 +522,19 @@ export function POSDashboard() {
   const handleAddDesignService = () => {
     // Find the design service product from products.json
     const designService = products.find(p => p.id === 200);
-    
+
     if (designService) {
       // Check if design service is already in cart
       const existingItem = cartItems.find(item => item.product.id === 200);
-      
+
       if (!existingItem) {
         const newItem: CartItem = {
+          cartItemId: `${designService.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           product: designService,
           quantity: 1,
           options: {}
         };
-        
+
         setCartItems(prev => [...prev, newItem]);
       }
     }
@@ -543,18 +544,19 @@ export function POSDashboard() {
   const handleAddExpressService = () => {
     // Find the express service product from products.json
     const expressService = products.find(p => p.id === 2001);
-    
+
     if (expressService) {
       // Check if express service is already in cart
       const existingItem = cartItems.find(item => item.product.id === 2001);
-      
+
       if (!existingItem) {
         const newItem: CartItem = {
+          cartItemId: `${expressService.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           product: expressService,
           quantity: 1,
           options: {}
         };
-        
+
         setCartItems(prev => [...prev, newItem]);
       }
     }
@@ -602,26 +604,27 @@ export function POSDashboard() {
   const handleAddOngkir = (price: number) => {
     // Find the ongkir product from products.json
     const ongkirProduct = products.find(p => p.id === 2002);
-    
+
     if (ongkirProduct) {
       // Check if ongkir is already in cart
       const existingItem = cartItems.find(item => item.product.id === 2002);
-      
+
       if (existingItem) {
         // Update existing ongkir item with new price in options
-        setCartItems(prev => prev.map(item => 
-          item.product.id === 2002 
+        setCartItems(prev => prev.map(item =>
+          item.product.id === 2002
             ? { ...item, options: { ...item.options, customPrice: price } }
             : item
         ));
       } else {
         // Add new ongkir item with custom price in options
         const newItem: CartItem = {
+          cartItemId: `${ongkirProduct.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
           product: ongkirProduct, // Keep original product from JSON
           quantity: 1,
           options: { customPrice: price } // Store custom price in options
         };
-        
+
         setCartItems(prev => [...prev, newItem]);
       }
     }
@@ -633,81 +636,81 @@ export function POSDashboard() {
     return new Promise((resolve, reject) => {
       // Use passed data or fall back to state
       const data = dataToRender || receiptData;
-      
+
       // Generate receipt using shared template
       if (data) {
-          // Create a temporary div to render the receipt
-          const receiptDiv = document.createElement('div');
-          receiptDiv.innerHTML = generateReceiptHTML(
-            data,
-            logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
-            surveyQRBase64 || '/product-image/survey-qr.png'
-          );
-          receiptDiv.style.position = 'absolute';
-          receiptDiv.style.left = '-9999px';
-          receiptDiv.style.top = '-9999px';
-          receiptDiv.style.width = '350px';
-          receiptDiv.style.background = 'white';
-          receiptDiv.style.padding = '0';
-          receiptDiv.style.margin = '0';
-          receiptDiv.style.boxSizing = 'border-box';
+        // Create a temporary div to render the receipt
+        const receiptDiv = document.createElement('div');
+        receiptDiv.innerHTML = generateReceiptHTML(
+          data,
+          logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
+          surveyQRBase64 || '/product-image/survey-qr.png'
+        );
+        receiptDiv.style.position = 'absolute';
+        receiptDiv.style.left = '-9999px';
+        receiptDiv.style.top = '-9999px';
+        receiptDiv.style.width = '350px';
+        receiptDiv.style.background = 'white';
+        receiptDiv.style.padding = '0';
+        receiptDiv.style.margin = '0';
+        receiptDiv.style.boxSizing = 'border-box';
 
-          document.body.appendChild(receiptDiv);
+        document.body.appendChild(receiptDiv);
 
-          // Wait for all images (especially QR code) to load
-          const images = receiptDiv.querySelectorAll('img');
-          const imagePromises = Array.from(images).map(img => {
-            if (img.complete) return Promise.resolve();
-            return new Promise((resolve) => {
-              img.onload = () => resolve(true);
-              img.onerror = () => resolve(true);
-            });
+        // Wait for all images (especially QR code) to load
+        const images = receiptDiv.querySelectorAll('img');
+        const imagePromises = Array.from(images).map(img => {
+          if (img.complete) return Promise.resolve();
+          return new Promise((resolve) => {
+            img.onload = () => resolve(true);
+            img.onerror = () => resolve(true);
           });
+        });
 
-          Promise.all(imagePromises).then(() => {
-            // Small delay to ensure layout is fully rendered
-            setTimeout(() => {
-              // Use html2canvas to convert to image
-              import('html2canvas').then((html2canvas) => {
-                html2canvas.default(receiptDiv, {
-                  backgroundColor: '#ffffff',
-                  scale: 3,
-                  width: 350,
-                  height: receiptDiv.scrollHeight,
-                  useCORS: true,
-                  allowTaint: true,
-                  logging: false,
-                  removeContainer: true,
-                  imageTimeout: 15000,
-                  foreignObjectRendering: false,
-                }).then((canvas) => {
-                  // Convert to blob and download
-                  canvas.toBlob((blob) => {
-                    if (blob) {
-                      const url = URL.createObjectURL(blob);
-                      const link = document.createElement('a');
-                      link.href = url;
-                      link.download = `receipt-${receiptData?.receiptId || 'POS'}.jpg`;
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                      URL.revokeObjectURL(url);
-                    }
+        Promise.all(imagePromises).then(() => {
+          // Small delay to ensure layout is fully rendered
+          setTimeout(() => {
+            // Use html2canvas to convert to image
+            import('html2canvas').then((html2canvas) => {
+              html2canvas.default(receiptDiv, {
+                backgroundColor: '#ffffff',
+                scale: 3,
+                width: 350,
+                height: receiptDiv.scrollHeight,
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                removeContainer: true,
+                imageTimeout: 15000,
+                foreignObjectRendering: false,
+              }).then((canvas) => {
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                  if (blob) {
+                    const url = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = url;
+                    link.download = `receipt-${receiptData?.receiptId || 'POS'}.jpg`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    URL.revokeObjectURL(url);
+                  }
 
-                    // Clean up
-                    document.body.removeChild(receiptDiv);
-                    resolve(true);
-                  });
-                }).catch((error) => {
+                  // Clean up
                   document.body.removeChild(receiptDiv);
-                  reject(error);
+                  resolve(true);
                 });
+              }).catch((error) => {
+                document.body.removeChild(receiptDiv);
+                reject(error);
               });
-            }, 200);
-          });
-        } else {
-          reject(new Error('Receipt content not found'));
-        }
+            });
+          }, 200);
+        });
+      } else {
+        reject(new Error('Receipt content not found'));
+      }
     });
   };
 
@@ -749,12 +752,12 @@ export function POSDashboard() {
       if (server) {
         setBluetoothDevice(device);
         setIsBluetoothConnected(true);
-        
+
         toast.success(`Terhubung ke printer: ${device.name}`, {
           position: 'top-center',
           duration: 3000
         });
-        
+
         return true;
       }
     } catch (error) {
@@ -780,11 +783,11 @@ export function POSDashboard() {
     for (let i = 0; i < data.length; i += 4) {
       // Calculate grayscale value
       const gray = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
-      
+
       // Apply threshold for black/white conversion (adjust threshold as needed)
       const threshold = 128;
       const bw = gray > threshold ? 255 : 0;
-      
+
       data[i] = bw;     // Red
       data[i + 1] = bw; // Green
       data[i + 2] = bw; // Blue
@@ -805,7 +808,7 @@ export function POSDashboard() {
     try {
       // Convert to black and white for thermal printer
       const bwCanvas = convertToBlackAndWhite(canvas);
-      
+
       // Convert canvas to blob
       const blob = await new Promise<Blob>((resolve) => {
         bwCanvas.toBlob((blob) => {
@@ -817,7 +820,7 @@ export function POSDashboard() {
       // Real thermal printers require specific ESC/POS commands or other protocols
       // You'll need to implement the actual printer communication based on your printer's specifications
       // Common protocols: ESC/POS, CPCL, ZPL, etc.
-      
+
       toast.success("Gambar berhasil dikirim ke printer Bluetooth!", {
         position: 'top-center',
         duration: 3000,
@@ -898,7 +901,7 @@ export function POSDashboard() {
     // Extract initials from customer name (max 3 characters)
     const words = customerName.trim().split(/\s+/);
     let initials = '';
-    
+
     if (words.length === 1) {
       // Single name: take first 3 characters
       initials = words[0].substring(0, 3).toUpperCase();
@@ -910,12 +913,12 @@ export function POSDashboard() {
         .join('')
         .toUpperCase();
     }
-    
+
     // Format: INV-{INITIALS}-{YYMMDD}-{HHMMSS}-{ITEMS}
     const now = new Date();
     const dateStr = now.toISOString().replace(/[-:T.]/g, '').slice(2, 8); // YYMMDD
     const timeStr = now.toISOString().replace(/[-:T.]/g, '').slice(9, 15); // HHMMSS
-    
+
     return `INV-${initials}-${dateStr}-${timeStr}-${itemCount}P`;
   };
 
@@ -929,13 +932,13 @@ export function POSDashboard() {
     try {
       // Generate receipt data with customer-specific invoice ID
       const receiptId = generateInvoiceId(customerDetails.name, cartItems.length);
-      
+
       // Calculate subtotal (with discounts applied through getApplicablePrice)
       const subtotal = cartItems.reduce((total, item) => {
         const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
         return total + (applicablePrice * item.quantity);
       }, 0);
-      
+
       // Calculate total discounts (original price - applicable price)
       const totalDiscounts = cartItems.reduce((total, item) => {
         // Skip discount calculation for ongkir (custom price product)
@@ -950,7 +953,7 @@ export function POSDashboard() {
         }
         return total;
       }, 0);
-      
+
       const receiptData = {
         receiptId,
         timestamp: new Date().toLocaleDateString('id-ID', {
@@ -1011,6 +1014,7 @@ export function POSDashboard() {
         items: cartItems.map(item => {
           const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
           return {
+            productId: item.product.id,
             name: item.product.name,
             quantity: item.quantity,
             price: applicablePrice,
@@ -1045,7 +1049,7 @@ export function POSDashboard() {
       // Set receipt data and generate JPG immediately (like Index.tsx)
       setReceiptData(receiptData);
       setShowReceipt(true);
-      
+
       // Handle different modes: auto-download vs print mode
       if (!printMode) {
         // Auto-generate and download receipt instantly (original behavior)
@@ -1116,13 +1120,13 @@ export function POSDashboard() {
     try {
       // First process the order in print mode (generates receipt data, no auto-download)
       await handleProcessOrder(customerDetails, true);
-      
+
       // Small delay to ensure receipt data is ready
       await new Promise(resolve => setTimeout(resolve, 500));
-      
+
       // Then print via Bluetooth
       const printSuccess = await printReceiptBluetooth();
-      
+
       if (printSuccess) {
         // Generate JPG receipt after successful Bluetooth print
         try {
@@ -1135,13 +1139,13 @@ export function POSDashboard() {
           console.error('Error generating JPG after print:', error);
           // Don't fail the entire operation if JPG generation fails
         }
-        
+
         // Clear cart after successful print
         setCartItems([]);
         setSelectedProducts(new Set());
         setShowReceipt(false);
       }
-      
+
       return printSuccess;
     } catch (error) {
       console.error('Error in print order:', error);
@@ -1159,7 +1163,7 @@ export function POSDashboard() {
         const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
         return total + (applicablePrice * item.quantity);
       }, 0);
-      
+
       const pdfReceiptData = {
         receiptId,
         timestamp: new Date().toLocaleDateString('id-ID', {
@@ -1198,20 +1202,20 @@ export function POSDashboard() {
           remainingBalance: subtotal - (customerDetails.downPayment || 0)
         }
       };
-      
+
       // Export to PDF using V2 template (bigger fonts)
       const exportSuccess = await exportReceiptToPDF(pdfReceiptData, logoBase64, surveyQRBase64);
-      
+
       if (exportSuccess) {
         // Now submit the order to Google Sheets
         await handleProcessOrder(customerDetails, false);
-        
+
         // Clear cart after successful export
         setCartItems([]);
         setSelectedProducts(new Set());
         setShowReceipt(false);
       }
-      
+
       return exportSuccess;
     } catch (error) {
       console.error('Error exporting PDF:', error);
@@ -1231,10 +1235,6 @@ export function POSDashboard() {
     navigate('/cashier');
   };
 
-  if (showOrderHistory) {
-    return <OrderHistory onBack={() => setShowOrderHistory(false)} cashierName={cashierName} />;
-  }
-
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -1249,55 +1249,61 @@ export function POSDashboard() {
   return (
     <div className="h-screen flex flex-col bg-gray-100">
       {/* Header - Compact and fixed at top */}
-      <POSHeader 
-        onShowOrderHistory={() => setShowOrderHistory(true)} 
-        onSearch={handleSearch} 
+      <POSHeader
+        onShowOrderHistory={() => setShowOrderHistory(true)}
+        onSearch={!showOrderHistory ? handleSearch : undefined}
         searchTerm={searchTerm}
         cashierName={cashierName}
         onCashierNameChange={handleCashierNameChange}
       />
 
-      {/* Main Content Area - Responsive Layout */}
-      <div className="flex-1 flex overflow-hidden">
-        {/* Products Section - Full width on mobile, 65% on desktop */}
-        <div className="flex-1 flex flex-col p-2 md:p-4 overflow-hidden">
-          {/* Category Tabs */}
-          <div className="mb-2 md:mb-4">
-            <CategoryTabs
-              categories={categories}
-              activeCategory={activeCategory}
-              onCategoryChange={setActiveCategory}
-            />
+      {showOrderHistory ? (
+        <div className="flex-1 overflow-hidden bg-gray-50">
+          <OrderHistory onBack={() => setShowOrderHistory(false)} cashierName={cashierName} />
+        </div>
+      ) : (
+        /* Main Content Area - Responsive Layout */
+        <div className="flex-1 flex overflow-hidden">
+          {/* Products Section - Full width on mobile, 65% on desktop */}
+          <div className="flex-1 flex flex-col p-2 md:p-4 overflow-hidden">
+            {/* Category Tabs */}
+            <div className="mb-2 md:mb-4">
+              <CategoryTabs
+                categories={categories}
+                activeCategory={activeCategory}
+                onCategoryChange={setActiveCategory}
+              />
+            </div>
+
+            {/* Product Grid - Scrollable */}
+            <div className="flex-1 bg-gray-50 rounded-lg overflow-hidden">
+              <ProductGrid
+                products={filteredProducts}
+                onAddToCart={handleAddProductToCart}
+                selectedProducts={selectedProducts}
+              />
+            </div>
           </div>
 
-          {/* Product Grid - Scrollable */}
-          <div className="flex-1 bg-gray-50 rounded-lg overflow-hidden">
-            <ProductGrid
-              products={filteredProducts}
-              onAddToCart={handleAddProductToCart}
-              selectedProducts={selectedProducts}
+          {/* Desktop Cart - Hidden on mobile */}
+          <div className="hidden md:flex w-[420px] bg-background border-l border-gray-200 flex-col">
+            <Cart
+              items={cartItems}
+              onUpdateQuantityById={handleUpdateQuantityById}
+              onRemoveItemById={handleRemoveItemById}
+              onClearAll={handleClearAll}
+              onProcessOrder={handleProcessOrder}
+              onUpdateOptionsById={handleUpdateOptionsById}
+              onPrintOrder={handlePrintOrder}
+              onExportPDF={handleExportPDF}
+              onAddDesignService={handleAddDesignService}
+              onAddExpressService={handleAddExpressService}
+              onAddOngkir={handleAddOngkir}
+              isBluetoothSupported={isBluetoothSupported()}
             />
           </div>
         </div>
-
-        {/* Desktop Cart - Hidden on mobile */}
-        <div className="hidden md:flex w-[420px] bg-background border-l border-gray-200 flex-col">
-          <Cart
-            items={cartItems}
-            onUpdateQuantityById={handleUpdateQuantityById}
-            onRemoveItemById={handleRemoveItemById}
-            onClearAll={handleClearAll}
-            onProcessOrder={handleProcessOrder}
-            onUpdateOptionsById={handleUpdateOptionsById}
-            onPrintOrder={handlePrintOrder}
-            onExportPDF={handleExportPDF}
-            onAddDesignService={handleAddDesignService}
-            onAddExpressService={handleAddExpressService}
-            onAddOngkir={handleAddOngkir}
-            isBluetoothSupported={isBluetoothSupported()}
-          />
-        </div>
-      </div>
+      )}
 
       {/* Mobile Cart - Floating Action Button */}
       <div className="md:hidden fixed bottom-4 right-4 z-40">
@@ -1320,7 +1326,7 @@ export function POSDashboard() {
       {/* Mobile Cart Modal */}
       {showMobileCart && (
         <div className="md:hidden fixed inset-0 z-50 bg-black bg-opacity-50" onClick={() => setShowMobileCart(false)}>
-          <div 
+          <div
             className="absolute bottom-0 left-0 right-0 bg-background rounded-t-2xl shadow-2xl max-h-[90vh] flex flex-col animate-slide-up"
             onClick={(e) => e.stopPropagation()}
           >
@@ -1328,7 +1334,7 @@ export function POSDashboard() {
             <div className="flex justify-center pt-3 pb-2 shrink-0">
               <div className="w-12 h-1 bg-gray-300 rounded-full"></div>
             </div>
-            
+
             {/* Close Button */}
             <button
               onClick={() => setShowMobileCart(false)}
@@ -1365,245 +1371,245 @@ export function POSDashboard() {
 
       {/* Hidden Receipt Content for JPG Generation */}
       <div className="fixed -left-[9999px] -top-[9999px] opacity-0 pointer-events-none">
-          <div className="bg-background p-4 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
+        <div className="bg-background p-4 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-hidden">
 
-            {/* Thermal Printer Simulation */}
-            <div className={`printer-container ${showReceipt ? 'printer-active' : ''}`}>
-              {/* Printer LED Indicator */}
-              <div className="printer-indicator"></div>
+          {/* Thermal Printer Simulation */}
+          <div className={`printer-container ${showReceipt ? 'printer-active' : ''}`}>
+            {/* Printer LED Indicator */}
+            <div className="printer-indicator"></div>
 
-              {/* Printer Slot */}
-              <div className="printer-slot"></div>
+            {/* Printer Slot */}
+            <div className="printer-slot"></div>
 
-              {/* Receipt Sliding Area */}
-              <div className="receipt-slide-container">
+            {/* Receipt Sliding Area */}
+            <div className="receipt-slide-container">
+              <div
+                ref={receiptRef}
+                className={`receipt-paper ${showReceipt ? 'receipt-sliding' : ''}`}
+              >
                 <div
-                  ref={receiptRef}
-                  className={`receipt-paper ${showReceipt ? 'receipt-sliding' : ''}`}
+                  className="receipt-content"
+                  style={{
+                    fontSize: '13px',
+                    lineHeight: '1.3',
+                    width: '100%',
+                    maxWidth: '350px',
+                    margin: '0 auto',
+                    minWidth: '300px',
+                    fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
+                    color: '#000000',
+                    overflow: 'visible',
+                    wordWrap: 'break-word',
+                    backgroundColor: 'white',
+                    padding: '8px 6px',
+                    boxSizing: 'border-box'
+                  }}
                 >
-                  <div
-                    className="receipt-content"
-                    style={{
-                      fontSize: '13px',
-                      lineHeight: '1.3',
-                      width: '100%',
-                      maxWidth: '350px',
-                      margin: '0 auto',
-                      minWidth: '300px',
-                      fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
-                      color: '#000000',
-                      overflow: 'visible',
-                      wordWrap: 'break-word',
-                      backgroundColor: 'white',
-                      padding: '8px 6px',
-                      boxSizing: 'border-box'
-                    }}
-                  >
-                    {/* Store Header */}
-                    <div className="receipt-header">
-                      <div className="receipt-logo-section">
-                        <div className="flex justify-center items-center mb-2">
-                          {logoBase64 ? (
-                            <img
-                              src={logoBase64}
-                              alt="TIDURLAH GRAFIKA"
-                              className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
-                              crossOrigin="anonymous"
-                            />
-                          ) : (
-                            <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
-                              <span className="text-xs text-gray-500">Loading...</span>
-                            </div>
-                          )}
-                        </div>
-                        <h2 className="receipt-store-title">TIDURLAH GRAFIKA</h2>
-                        <p className="receipt-slogan">"Cetak apa aja, Tidurlah Grafika!"</p>
-                        <p className="receipt-address">Perum. Korpri Raya, Blok D3. No. 3</p>
-                        <p className="receipt-address">Sukarame, Bandar Lampung</p>
+                  {/* Store Header */}
+                  <div className="receipt-header">
+                    <div className="receipt-logo-section">
+                      <div className="flex justify-center items-center mb-2">
+                        {logoBase64 ? (
+                          <img
+                            src={logoBase64}
+                            alt="TIDURLAH GRAFIKA"
+                            className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
+                            crossOrigin="anonymous"
+                          />
+                        ) : (
+                          <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
+                            <span className="text-xs text-gray-500">Loading...</span>
+                          </div>
+                        )}
                       </div>
-                      <div className="receipt-separator"></div>
-                      <div className="receipt-contact">
-                        <p>WhatsApp: 085172157808</p>
-                        <p>Instagram: @tidurlah_grafika</p>
-                      </div>
+                      <h2 className="receipt-store-title">TIDURLAH GRAFIKA</h2>
+                      <p className="receipt-slogan">"Cetak apa aja, Tidurlah Grafika!"</p>
+                      <p className="receipt-address">Perum. Korpri Raya, Blok D3. No. 3</p>
+                      <p className="receipt-address">Sukarame, Bandar Lampung</p>
                     </div>
+                    <div className="receipt-separator"></div>
+                    <div className="receipt-contact">
+                      <p>WhatsApp: 085172157808</p>
+                      <p>Instagram: @tidurlah_grafika</p>
+                    </div>
+                  </div>
 
-                    {/* Transaction Details */}
-                    <div className="receipt-meta">
-                      <div className="receipt-meta-row">
-                        <span>No. Transaksi:</span>
-                        <span className="font-bold">{receiptData?.receiptId}</span>
-                      </div>
-                      <div className="receipt-meta-row">
-                        <span>Tanggal:</span>
-                        <span>{receiptData?.timestamp}</span>
-                      </div>
-                      <div className="receipt-meta-row">
-                        <span>Kasir:</span>
-                        <span>{receiptData?.cashier}</span>
-                      </div>
-                      {receiptData?.customer && (
-                        <>
-                          <div className="receipt-separator"></div>
+                  {/* Transaction Details */}
+                  <div className="receipt-meta">
+                    <div className="receipt-meta-row">
+                      <span>No. Transaksi:</span>
+                      <span className="font-bold">{receiptData?.receiptId}</span>
+                    </div>
+                    <div className="receipt-meta-row">
+                      <span>Tanggal:</span>
+                      <span>{receiptData?.timestamp}</span>
+                    </div>
+                    <div className="receipt-meta-row">
+                      <span>Kasir:</span>
+                      <span>{receiptData?.cashier}</span>
+                    </div>
+                    {receiptData?.customer && (
+                      <>
+                        <div className="receipt-separator"></div>
+                        <div className="receipt-meta-row">
+                          <span>Pelanggan:</span>
+                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.name}</span>
+                        </div>
+                        <div className="receipt-meta-row">
+                          <span>Telepon:</span>
+                          <span>{receiptData.customer.phone}</span>
+                        </div>
+                        {receiptData.customer.instansi && (
                           <div className="receipt-meta-row">
-                            <span>Pelanggan:</span>
-                            <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.name}</span>
+                            <span>Instansi:</span>
+                            <span>{receiptData.customer.instansi}</span>
                           </div>
-                          <div className="receipt-meta-row">
-                            <span>Telepon:</span>
-                            <span>{receiptData.customer.phone}</span>
-                          </div>
-                          {receiptData.customer.instansi && (
+                        )}
+                        {receiptData.customer.delivery && (
+                          <>
+                            <div className="receipt-separator"></div>
+                            <div className="receipt-meta-row" style={{ fontWeight: '900', textAlign: 'center', fontSize: '13px', marginBottom: '2px' }}>
+                              <span>INFORMASI PENGIRIMAN</span>
+                            </div>
                             <div className="receipt-meta-row">
-                              <span>Instansi:</span>
-                              <span>{receiptData.customer.instansi}</span>
+                              <span>Penerima:</span>
+                              <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.delivery.recipientName}</span>
+                            </div>
+                            <div className="receipt-meta-row">
+                              <span>Telepon:</span>
+                              <span>{receiptData.customer.delivery.recipientPhone}</span>
+                            </div>
+                            <div className="receipt-meta-row">
+                              <span>Alamat:</span>
+                            </div>
+                            <div style={{ lineHeight: '1.2', paddingLeft: '4px', wordWrap: 'break-word' }}>
+                              {receiptData.customer.delivery.address}
+                            </div>
+                          </>
+                        )}
+                      </>
+                    )}
+                  </div>
+
+                  {/* Items */}
+                  <div className="receipt-items">
+                    <div className="receipt-items-title">DETAIL PEMBELIAN</div>
+                    <div className="receipt-items-list">
+                      {receiptData?.items?.map((item: any, index: number) => (
+                        <div key={index} className="receipt-item">
+                          <div className="receipt-item-name">
+                            {item.name}
+                            {item.width && item.height && (
+                              <span className="receipt-item-dimension"> ({item.width}m x {item.height}m)</span>
+                            )}
+                            {item.modelCode && (
+                              <span className="receipt-item-model"> [{item.modelCode}]</span>
+                            )}
+                          </div>
+                          {item.caseVariant && (
+                            <div className="receipt-item-detail">
+                              Casing: {item.caseVariant}
                             </div>
                           )}
-                          {receiptData.customer.delivery && (
-                            <>
-                              <div className="receipt-separator"></div>
-                              <div className="receipt-meta-row" style={{ fontWeight: '900', textAlign: 'center', fontSize: '13px', marginBottom: '2px' }}>
-                                <span>INFORMASI PENGIRIMAN</span>
-                              </div>
-                              <div className="receipt-meta-row">
-                                <span>Penerima:</span>
-                                <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.delivery.recipientName}</span>
-                              </div>
-                              <div className="receipt-meta-row">
-                                <span>Telepon:</span>
-                                <span>{receiptData.customer.delivery.recipientPhone}</span>
-                              </div>
-                              <div className="receipt-meta-row">
-                                <span>Alamat:</span>
-                              </div>
-                              <div style={{ lineHeight: '1.2', paddingLeft: '4px', wordWrap: 'break-word' }}>
-                                {receiptData.customer.delivery.address}
-                              </div>
-                            </>
+                          {item.laminationVariant && (
+                            <div className="receipt-item-detail">
+                              Laminasi: {item.laminationVariant}
+                            </div>
                           )}
-                        </>
-                      )}
-                    </div>
-
-                    {/* Items */}
-                    <div className="receipt-items">
-                      <div className="receipt-items-title">DETAIL PEMBELIAN</div>
-                      <div className="receipt-items-list">
-                        {receiptData?.items?.map((item: any, index: number) => (
-                          <div key={index} className="receipt-item">
-                            <div className="receipt-item-name">
-                              {item.name}
-                              {item.width && item.height && (
-                                <span className="receipt-item-dimension"> ({item.width}m x {item.height}m)</span>
-                              )}
-                              {item.modelCode && (
-                                <span className="receipt-item-model"> [{item.modelCode}]</span>
-                              )}
-                            </div>
-                            {item.caseVariant && (
-                              <div className="receipt-item-detail">
-                                Casing: {item.caseVariant}
-                              </div>
-                            )}
-                            {item.laminationVariant && (
-                              <div className="receipt-item-detail">
-                                Laminasi: {item.laminationVariant}
-                              </div>
-                            )}
-                            <div className="receipt-item-pricing">
-                              <span>{item.quantity} x Rp {item.price.toLocaleString('id-ID')}</span>
-                              <span>Rp {item.subtotal.toLocaleString('id-ID')}</span>
-                            </div>
+                          <div className="receipt-item-pricing">
+                            <span>{item.quantity} x Rp {item.price.toLocaleString('id-ID')}</span>
+                            <span>Rp {item.subtotal.toLocaleString('id-ID')}</span>
                           </div>
-                        ))}
-                      </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Totals */}
+                  <div className="receipt-summary">
+                    <div className="receipt-summary-row">
+                      <span>Subtotal:</span>
+                      <span>Rp {receiptData?.summary?.subtotal?.toLocaleString('id-ID')}</span>
                     </div>
 
-                    {/* Totals */}
-                    <div className="receipt-summary">
-                      <div className="receipt-summary-row">
-                        <span>Subtotal:</span>
-                        <span>Rp {receiptData?.summary?.subtotal?.toLocaleString('id-ID')}</span>
+                    {receiptData?.summary?.discount > 0 && (
+                      <div className="receipt-summary-row receipt-discount">
+                        <span>Diskon:</span>
+                        <span>-Rp {receiptData?.summary?.discount?.toLocaleString('id-ID')}</span>
                       </div>
+                    )}
 
-                      {receiptData?.summary?.discount > 0 && (
-                        <div className="receipt-summary-row receipt-discount">
-                          <span>Diskon:</span>
-                          <span>-Rp {receiptData?.summary?.discount?.toLocaleString('id-ID')}</span>
-                        </div>
-                      )}
-
-                      <div className="receipt-summary-row receipt-total">
-                        <span>TOTAL:</span>
-                        <span>Rp {receiptData?.summary?.total?.toLocaleString('id-ID')}</span>
-                      </div>
-
-                      {receiptData?.summary?.downPayment > 0 && (
-                        <>
-                          <div className="receipt-summary-row" style={{ color: '#10B981', fontWeight: 'bold' }}>
-                            <span>DP (Down Payment):</span>
-                            <span>Rp {receiptData?.summary?.downPayment?.toLocaleString('id-ID')}</span>
-                          </div>
-                          <div className="receipt-summary-row" style={{ color: '#2563EB', fontWeight: 'bold', fontSize: '14px' }}>
-                            <span>SISA BAYAR:</span>
-                            <span>Rp {receiptData?.summary?.remainingBalance?.toLocaleString('id-ID')}</span>
-                          </div>
-                        </>
-                      )}
+                    <div className="receipt-summary-row receipt-total">
+                      <span>TOTAL:</span>
+                      <span>Rp {receiptData?.summary?.total?.toLocaleString('id-ID')}</span>
                     </div>
 
-                    {/* Survey Section */}
-                    <div className="receipt-separator"></div>
-                    <div style={{ padding: '6px 4px', backgroundColor: '#f8f8f8', marginTop: '6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <div style={{ flexShrink: 0 }}>
-                        <img 
-                          src="/product-image/survey-qr.png" 
-                          alt="Survey QR Code" 
-                          style={{ width: '70px', height: '70px', border: '1px solid #ddd', borderRadius: '4px' }}
-                          crossOrigin="anonymous"
-                        />
+                    {receiptData?.summary?.downPayment > 0 && (
+                      <>
+                        <div className="receipt-summary-row" style={{ color: '#10B981', fontWeight: 'bold' }}>
+                          <span>DP (Down Payment):</span>
+                          <span>Rp {receiptData?.summary?.downPayment?.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div className="receipt-summary-row" style={{ color: '#2563EB', fontWeight: 'bold', fontSize: '14px' }}>
+                          <span>SISA BAYAR:</span>
+                          <span>Rp {receiptData?.summary?.remainingBalance?.toLocaleString('id-ID')}</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  {/* Survey Section */}
+                  <div className="receipt-separator"></div>
+                  <div style={{ padding: '6px 4px', backgroundColor: '#f8f8f8', marginTop: '6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <div style={{ flexShrink: 0 }}>
+                      <img
+                        src="/product-image/survey-qr.png"
+                        alt="Survey QR Code"
+                        style={{ width: '70px', height: '70px', border: '1px solid #ddd', borderRadius: '4px' }}
+                        crossOrigin="anonymous"
+                      />
+                    </div>
+                    <div style={{ flex: 1, textAlign: 'left' }}>
+                      <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px', color: '#333', lineHeight: '1.2' }}>
+                        Seberapa baikkah pelayanan kami?
                       </div>
-                      <div style={{ flex: 1, textAlign: 'left' }}>
-                        <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px', color: '#333', lineHeight: '1.2' }}>
-                          Seberapa baikkah pelayanan kami?
-                        </div>
-                        <div style={{ fontSize: '10px', lineHeight: '1.3', marginBottom: '3px', color: '#555' }}>
-                          Kami ingin mendengar pendapat Anda. Pindai QR atau kunjungi:
-                        </div>
-                        <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#ff6b35' }}>
-                          tidurlah.com/survey
-                        </div>
+                      <div style={{ fontSize: '10px', lineHeight: '1.3', marginBottom: '3px', color: '#555' }}>
+                        Kami ingin mendengar pendapat Anda. Pindai QR atau kunjungi:
+                      </div>
+                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#ff6b35' }}>
+                        tidurlah.com/survey
                       </div>
                     </div>
+                  </div>
 
-                    <div className="receipt-separator"></div>
+                  <div className="receipt-separator"></div>
 
-                    {/* Footer */}
-                    <div className="receipt-footer">
-                      <div className="receipt-thank-you">Terima kasih telah berbelanja!</div>
-                      <div className="receipt-disclaimer">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+                  {/* Footer */}
+                  <div className="receipt-footer">
+                    <div className="receipt-thank-you">Terima kasih telah berbelanja!</div>
+                    <div className="receipt-disclaimer">Barang yang sudah dibeli tidak dapat dikembalikan</div>
 
 
-                      <div className="receipt-timestamp">
-                        Struk ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
-                      </div>
+                    <div className="receipt-timestamp">
+                      Struk ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
                     </div>
                   </div>
                 </div>
               </div>
-
-              <div className="text-center mt-4">
-                <div className="flex items-center justify-center text-sm text-gray-500">
-                  <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
-                  </svg>
-                  <span>Struk akan tertutup otomatis setelah selesai dicetak</span>
-                </div>
-              </div>
             </div>
 
+            <div className="text-center mt-4">
+              <div className="flex items-center justify-center text-sm text-gray-500">
+                <svg className="h-4 w-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                </svg>
+                <span>Struk akan tertutup otomatis setelah selesai dicetak</span>
+              </div>
+            </div>
           </div>
+
         </div>
+      </div>
     </div>
   );
 }

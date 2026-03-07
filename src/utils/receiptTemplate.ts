@@ -8,10 +8,11 @@
  * Mask phone number, showing only the last 4 digits
  * Example: 085172157808 -> *******5708
  */
-function maskPhoneNumber(phone: string): string {
-  if (!phone || phone.length <= 4) return phone;
-  const lastFour = phone.slice(-4);
-  const masked = phone.slice(0, -4).replace(/./g, '*');
+function maskPhoneNumber(phone: string | number): string {
+  const phoneStr = String(phone || '');
+  if (!phoneStr || phoneStr.length <= 4) return phoneStr;
+  const lastFour = phoneStr.slice(-4);
+  const masked = phoneStr.slice(0, -4).replace(/./g, '*');
   return masked + lastFour;
 }
 
@@ -137,27 +138,27 @@ export function generateReceiptHTML(data: ReceiptData, logoBase64?: string, surv
         <div style="text-align: center; font-weight: 700; font-size: 14px; margin-bottom: 8px; letter-spacing: 1.5px; color: #000;">DETAIL PEMBELIAN</div>
         <div>
           ${data.items.map((item) => {
-            // Build additional info array
-            const additionalInfo = [];
-            if (item.width && item.height) {
-              additionalInfo.push(`${item.width}m x ${item.height}m`);
-            }
-            if (item.modelCode) {
-              additionalInfo.push(`Model: ${item.modelCode}`);
-            }
-            if (item.caseVariant) {
-              additionalInfo.push(`Casing: ${item.caseVariant}`);
-            }
-            if (item.laminationVariant) {
-              additionalInfo.push(`Laminasi: ${item.laminationVariant}`);
-            }
-            
-            // Format product name with additional info
-            const productDisplay = additionalInfo.length > 0 
-              ? `${item.name} (${additionalInfo.join(', ')})`
-              : item.name;
-            
-            return `
+    // Build additional info array
+    const additionalInfo = [];
+    if (item.width && item.height) {
+      additionalInfo.push(`${item.width}m x ${item.height}m`);
+    }
+    if (item.modelCode) {
+      additionalInfo.push(`Model: ${item.modelCode}`);
+    }
+    if (item.caseVariant) {
+      additionalInfo.push(`Casing: ${item.caseVariant}`);
+    }
+    if (item.laminationVariant) {
+      additionalInfo.push(`Laminasi: ${item.laminationVariant}`);
+    }
+
+    // Format product name with additional info
+    const productDisplay = additionalInfo.length > 0
+      ? `${item.name} (${additionalInfo.join(', ')})`
+      : item.name;
+
+    return `
             <div style="margin: 4px 0; padding: 3px 0;">
               <div style="font-size: 14px; margin-bottom: 2px; color: #000;">
                 <span style="font-weight: 700;">${item.name}</span>
@@ -169,7 +170,7 @@ export function generateReceiptHTML(data: ReceiptData, logoBase64?: string, surv
               </div>
             </div>
           `;
-          }).join('')}
+  }).join('')}
         </div>
       </div>
 

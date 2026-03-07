@@ -1,0 +1,41 @@
+Column name	Description	Syntax/supported values	Example
+id	Unique ID that represents the product.	Maximum of 127 characters.	DS0294-L
+title	Name of the product (same name as the product from the landing page, including variant details, such as color and size).	Maximum of 500 characters.	Women’s denim shirt, large
+description	Description of the product.	Maximum of 10,000 characters in plain text (not HTML).	Casual fit denim shirt made with the finest quality Japanese denim
+link	Landing page for the product (needs to lead directly to the same product and showcase the same data).	URL with a maximum of 511 characters, starting with http:// (we do not recommend hardwalls).	https://www.example.com/cat/womens-clothing/denim-shirt-0294
+image_link	
+Link to the main product image (at least 1000x1500 pixels, accessible by our user-agent and no template or placeholder images).
+
+If you change the image later, you’ll need to use a different link or the image will not update.
+
+URL with a maximum of 2,000 characters, starting with http:// or https:// (encode or remove commas).
+
+We recommend enclosing the URL with quotes.
+
+https://scene.example.com/image/image.jpg
+price	Price of the product (should reflect the true cost of the product and include currency in ISO-4217 if it's not US dollars, otherwise we’ll default to US dollars).	
+<numeric>
+
+<ISO 4217>
+
+Currency can come before or after the numeric price value, with or without space and follow the standard ISO-4217 code. Do not use 0 values or currency symbols.
+
+24.99 USD
+24.99USD
+24,99 USD
+24,99USD
+24.99
+24,99
+GBP24.99
+GBP 24.99
+GBP24,99
+GBP 24,99
+availability	Availability of the product.	
+One of the following:
+
+in stock
+out of stock
+preorder
+
+in stock
+item_group_id (only required when products have multiple variants)	Parent ID of the product.	Maximum of 127 characters.	DS0294

@@ -1,455 +1,442 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Eye, Trash2, Download, X, MessageCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List } from "lucide-react";
 import { convertImageToBase64 } from "@/utils/product";
-import { generateReceiptHTML } from "@/utils/receiptTemplate";
-
-interface ReceiptData {
-  receiptId: string;
-  timestamp: string;
-  cashier: string;
-  customer?: {
-    name: string;
-    phone: string;
-    instansi: string;
-  };
-  items: Array<{
-    name: string;
-    quantity: number;
-    price: number;
-    subtotal: number;
-    modelCode?: string;
-    caseVariant?: string;
-    laminationVariant?: string;
-    width?: number;
-    height?: number;
-    dimensionText?: string;
-    area?: string;
-  }>;
-  summary: {
-    subtotal: number;
-    discount: number;
-    tax: number;
-    total: number;
-  };
-  shipping?: {
-    customerName: string;
-    customerPhone: string;
-    address: string;
-  };
-}
+import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
+import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
+import { updateOrderStatus, deleteOrder, clearAdminCache } from "@/utils/adminApi";
 
 interface OrderHistoryProps {
   onBack: () => void;
   cashierName?: string;
 }
 
+const STATUS_OPTIONS = [
+  { value: 'pending', label: 'Pending', className: 'bg-orange-100 text-orange-700' },
+  { value: 'partial', label: 'DP', className: 'bg-yellow-100 text-yellow-700' },
+  { value: 'done', label: 'Selesai', className: 'bg-green-100 text-green-700' },
+];
+
+function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
+  return {
+    receiptId: order.orderId,
+    timestamp: order.timestamp,
+    cashier: order.cashier || "Kasir",
+    customer: order.customerName ? {
+      name: order.customerName,
+      phone: String(order.customerPhone || ''),
+      instansi: order.institution || '',
+      delivery: order.address ? {
+        recipientName: order.customerName,
+        recipientPhone: String(order.customerPhone || ''),
+        address: order.address,
+      } : undefined,
+    } : undefined,
+    items: (order.items || []).map(item => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+      subtotal: item.subtotal || (item.price * item.quantity),
+      modelCode: item.modelCode || undefined,
+      caseVariant: item.caseVariant || undefined,
+      laminationVariant: item.lamination || undefined,
+      width: item.width || undefined,
+      height: item.height || undefined,
+    })),
+    summary: {
+      subtotal: order.subtotal,
+      discount: order.discount || 0,
+      total: order.total,
+      downPayment: order.downPayment || undefined,
+      remainingBalance: order.remainingBalance || undefined,
+    },
+  };
+}
+
+const formatCurrency = (n: number) => `Rp ${(n || 0).toLocaleString('id-ID')}`;
+
+const formatPhoneForWA = (phone: string | number): string => {
+  let cleaned = String(phone).replace(/\D/g, '');
+  if (cleaned.startsWith('08')) return '62' + cleaned.substring(1);
+  if (cleaned.startsWith('62')) return cleaned;
+  if (cleaned.startsWith('8')) return '62' + cleaned;
+  return '62' + cleaned;
+};
+
 export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
-  const [orders, setOrders] = useState<ReceiptData[]>([]);
-  const [selectedOrder, setSelectedOrder] = useState<ReceiptData | null>(null);
-  const [showReceiptModal, setShowReceiptModal] = useState(false);
+  const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
+  const [search, setSearch] = useState("");
+  const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
   const [logoBase64, setLogoBase64] = useState<string>("");
   const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
-  const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
-  const receiptRef = useRef<HTMLDivElement>(null);
-
-  const formatCurrency = (amount: number) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR',
-      minimumFractionDigits: 0,
-    }).format(amount).replace('IDR', 'Rp');
-  };
-
-  // Format phone number for WhatsApp (Indonesian format)
-  const formatPhoneNumberForWhatsApp = (phone: string): string => {
-    // Remove all non-numeric characters
-    let cleaned = phone.replace(/\D/g, '');
-    
-    // If starts with 08, replace with 62
-    if (cleaned.startsWith('08')) {
-      return '62' + cleaned.substring(1);
-    }
-    
-    // If already starts with 62, leave as is
-    if (cleaned.startsWith('62')) {
-      return cleaned;
-    }
-    
-    // If starts with 8 (without 0), add 62
-    if (cleaned.startsWith('8')) {
-      return '62' + cleaned;
-    }
-    
-    // Default: add 62 prefix
-    return '62' + cleaned;
-  };
-
-  // Generate WhatsApp message for customer
-  const generateWhatsAppMessage = (order: ReceiptData): string => {
-    const customerName = order.customer?.name || 'Pelanggan';
-    const hasShipping = !!order.shipping;
-    
-    let message = `Halo kak ${customerName}, pesanan kakak dengan nomor invoice ${order.receiptId} sudah selesai di proses.`;
-    
-    if (hasShipping) {
-      // Message for orders with shipping info
-      message += ` Untuk pengiriman, akan kami proses segera pada alamat yang diberikan ya kak.
-
-Dimohon untuk melakukan pelunasan terlebih dahulu sebelum paket dikirimkan (abaikan jika sudah lunas). Cek kembali pesanan kakak dan rekam video unboxing, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
-    } else {
-      // Message for pickup orders (no shipping)
-      message += ` Pengambilan bisa di toko, lihat alamat google maps kami di sini: tidurlah.com/hello
-
-dan boleh konfirmasi ke admin jika ingin dibantu pengiriman melalui gojek/maxim.
-
-Dimohon untuk konfirmasi kapan ingin mengambil, dan melakukan pelunasan terlebih dahulu sebelum mengambil. Cek kembali pesanan kakak, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
-    }
-    
-    message += `
-
-Salam,
-ID Card lampung, 
-Tidurlah Grafika`;
-    
-    return encodeURIComponent(message);
-  };
-
-  // Handle WhatsApp chat with customer
-  const handleChatCustomer = (order: ReceiptData) => {
-    if (!order.customer || !order.customer.phone) {
-      alert('Nomor telepon pelanggan tidak tersedia');
-      return;
-    }
-
-    const formattedPhone = formatPhoneNumberForWhatsApp(order.customer.phone);
-    const message = generateWhatsAppMessage(order);
-    const whatsappUrl = `https://wa.me/${formattedPhone}?text=${message}`;
-    
-    // Open WhatsApp in new tab
-    window.open(whatsappUrl, '_blank');
-  };
+  const [downloadingId, setDownloadingId] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState("");
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
 
   useEffect(() => {
-    loadOrderHistory();
-    loadLogo();
+    // Cache-first: load from localStorage cache immediately
+    const cached = localStorage.getItem('orderHistory_cache');
+    if (cached) {
+      try { setOrders(JSON.parse(cached)); } catch { }
+    }
+    loadImages();
   }, []);
 
-  // Load logo and survey QR as base64 for html2canvas compatibility
-  const loadLogo = async () => {
+  const loadImages = async () => {
     try {
-      const base64Logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
-      setLogoBase64(base64Logo);
-      
-      const base64SurveyQR = await convertImageToBase64('/product-image/survey-qr.png');
-      setSurveyQRBase64(base64SurveyQR);
-    } catch (error) {
-      console.error('Failed to load images:', error);
-      // Fallback to original image paths if conversion fails
+      const logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
+      setLogoBase64(logo);
+      const qr = await convertImageToBase64('/product-image/survey-qr.png');
+      setSurveyQRBase64(qr);
+    } catch {
       setLogoBase64('/product-image/Tidurlah Logo Horizontal.png');
       setSurveyQRBase64('/product-image/survey-qr.png');
     }
   };
 
-  const loadOrderHistory = () => {
+  // Only fetch from API when user clicks refresh
+  const refreshFromAPI = async () => {
+    setIsLoading(true);
+    setLoadError("");
     try {
-      const stored = localStorage.getItem('orderHistory');
-      if (stored) {
-        const orderHistory = JSON.parse(stored);
-        setOrders(orderHistory.reverse()); // Show newest first
+      const result = await fetchOrderHistory({ limit: 100 });
+      if (result.success && result.orders.length > 0) {
+        setOrders(result.orders);
+        localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
+      } else if (result.error) {
+        setLoadError("Gagal memuat: " + result.error);
       }
-    } catch (error) {
-      console.error('Error loading order history:', error);
-    }
-  };
-
-  const handleViewReceipt = (order: ReceiptData) => {
-    setSelectedOrder(order);
-    setShowReceiptModal(true);
-  };
-
-  // Generate receipt as JPG using shared template
-  const generateReceiptJPG = async (order: ReceiptData) => {
-    return new Promise((resolve, reject) => {
-        // Create a temporary div to render the receipt
-        const receiptDiv = document.createElement('div');
-      receiptDiv.innerHTML = generateReceiptHTML(
-        order,
-        logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
-        surveyQRBase64 || '/product-image/survey-qr.png'
-      );
-        receiptDiv.style.position = 'absolute';
-        receiptDiv.style.left = '-9999px';
-        receiptDiv.style.top = '-9999px';
-        receiptDiv.style.width = '350px';
-        receiptDiv.style.background = 'white';
-        receiptDiv.style.padding = '0';
-        receiptDiv.style.margin = '0';
-        receiptDiv.style.boxSizing = 'border-box';
-
-        document.body.appendChild(receiptDiv);
-
-        // Wait for all images (especially QR code) to load
-        const images = receiptDiv.querySelectorAll('img');
-        const imagePromises = Array.from(images).map(img => {
-          if (img.complete) return Promise.resolve();
-          return new Promise((resolve) => {
-            img.onload = () => resolve(true);
-            img.onerror = () => resolve(true);
-          });
-        });
-
-        Promise.all(imagePromises).then(() => {
-          // Small delay to ensure layout is fully rendered
-          setTimeout(() => {
-            // Use html2canvas to convert to image
-            import('html2canvas').then((html2canvas) => {
-              html2canvas.default(receiptDiv, {
-                backgroundColor: '#ffffff',
-                scale: 3,
-                width: 350,
-                height: receiptDiv.scrollHeight,
-                useCORS: true,
-                allowTaint: true,
-                logging: false,
-                removeContainer: true,
-                imageTimeout: 15000,
-                foreignObjectRendering: false,
-              }).then((canvas) => {
-                // Convert to blob and download
-                canvas.toBlob((blob) => {
-                  if (blob) {
-                    const url = URL.createObjectURL(blob);
-                    const link = document.createElement('a');
-                    link.href = url;
-                    link.download = `receipt-${order.receiptId}.jpg`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    URL.revokeObjectURL(url);
-                  }
-
-                  // Clean up
-                  document.body.removeChild(receiptDiv);
-                  resolve(true);
-                });
-              }).catch((error) => {
-                document.body.removeChild(receiptDiv);
-                reject(error);
-              });
-            });
-          }, 200);
-        });
-    });
-  };
-
-  const handleDownloadReceipt = async () => {
-    if (!selectedOrder) return;
-    
-    setIsGeneratingReceipt(true);
-    try {
-      await generateReceiptJPG(selectedOrder);
-    } catch (error) {
-      console.error('Error generating receipt:', error);
+    } catch {
+      setLoadError("Gagal memuat dari server");
     } finally {
-      setIsGeneratingReceipt(false);
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteOrder = (receiptId: string) => {
+  const filteredOrders = useMemo(() => {
+    if (!search.trim()) return orders;
+    const q = search.toLowerCase();
+    return orders.filter(o =>
+      (o.orderId || '').toLowerCase().includes(q) ||
+      (o.customerName || '').toLowerCase().includes(q) ||
+      String(o.customerPhone || '').includes(q)
+    );
+  }, [orders, search]);
+
+  const handleDownloadReceipt = async (order: OrderHistoryItem) => {
+    setDownloadingId(order.orderId);
+    const receiptData = apiOrderToReceiptData(order);
+
     try {
-      const stored = localStorage.getItem('orderHistory');
-      if (stored) {
-        const orderHistory = JSON.parse(stored);
-        const updatedHistory = orderHistory.filter((order: ReceiptData) => order.receiptId !== receiptId);
-        localStorage.setItem('orderHistory', JSON.stringify(updatedHistory));
-        loadOrderHistory(); // Reload the list
-      }
-    } catch (error) {
-      console.error('Error deleting order:', error);
+      const div = document.createElement('div');
+      div.innerHTML = generateReceiptHTML(receiptData, logoBase64, surveyQRBase64);
+      div.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:350px;background:white;padding:0;margin:0;box-sizing:border-box;';
+      document.body.appendChild(div);
+      const imgs = div.querySelectorAll('img');
+      await Promise.all(Array.from(imgs).map(img =>
+        img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r; })
+      ));
+      await new Promise(r => setTimeout(r, 200));
+      const html2canvas = (await import('html2canvas')).default;
+      const canvas = await html2canvas(div, {
+        backgroundColor: '#ffffff', scale: 3, width: 350, height: div.scrollHeight,
+        useCORS: true, allowTaint: true, logging: false, removeContainer: true,
+      });
+      canvas.toBlob(blob => {
+        if (blob) {
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `receipt-${receiptData.receiptId}.jpg`;
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
+          URL.revokeObjectURL(url);
+        }
+        document.body.removeChild(div);
+      });
+    } catch (err) {
+      console.error('Error generating receipt:', err);
+    } finally {
+      setDownloadingId(null);
     }
   };
 
-  const handleClearAll = () => {
-    if (confirm('Apakah Anda yakin ingin menghapus semua riwayat pesanan?')) {
-      localStorage.removeItem('orderHistory');
-      setOrders([]);
+  const handleChatCustomer = (order: OrderHistoryItem) => {
+    if (!order.customerPhone) return;
+    const phone = formatPhoneForWA(order.customerPhone);
+    const name = order.customerName || 'Pelanggan';
+    const hasShipping = !!order.address;
+    let msg = `Halo kak ${name}, pesanan kakak dengan nomor invoice ${order.orderId} sudah selesai di proses.`;
+    if (hasShipping) {
+      msg += ` Untuk pengiriman, akan kami proses segera ya kak.\n\nDimohon untuk melakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Cek kembali pesanan kakak, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
+    } else {
+      msg += ` Pengambilan bisa di toko: tidurlah.com/hello\n\nDimohon untuk konfirmasi kapan ingin mengambil, dan melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
     }
+    msg += `\n\nSalam,\nTidurlah Grafika`;
+    window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  const handleStatusChange = async (orderId: string, newStatus: string) => {
+    setUpdatingId(orderId);
+    // Optimistic update
+    setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, orderStatus: newStatus } : o));
+
+    const result = await updateOrderStatus(orderId, newStatus);
+    if (result.success) {
+      // Clear all caches and refresh from API to get fresh data
+      clearAdminCache();
+      // Small delay to let the sheet update, then refresh
+      setTimeout(() => refreshFromAPI(), 1500);
+    }
+    setUpdatingId(null);
+  };
+
+  const handleDelete = async (orderId: string) => {
+    setDeletingId(orderId);
+    const result = await deleteOrder(orderId, cashierName || 'Cashier');
+    if (result.success) {
+      setOrders(prev => prev.filter(o => o.orderId !== orderId));
+      setConfirmDeleteId(null);
+      // Clear all caches
+      clearAdminCache();
+      // Refresh from API after a delay
+      setTimeout(() => refreshFromAPI(), 1500);
+    }
+    setDeletingId(null);
+  };
+
+  const getStatusBadge = (status: string) => {
+    const opt = STATUS_OPTIONS.find(s => s.value === (status || '').toLowerCase());
+    if (opt) return <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${opt.className}`}>{opt.label}</span>;
+    return <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">{status}</span>;
+  };
+
+  const getChannelBadge = (ch: string) => {
+    if (ch === 'website') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-blue-100 text-blue-700 font-medium">Web</span>;
+    if (ch === 'pos') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-700 font-medium">POS</span>;
+    if (ch === 'migrated') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500 font-medium">Old</span>;
+    return null;
   };
 
   return (
     <div className="min-h-screen p-4">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="sm" onClick={onBack} title="Kembali">
+      <div className="max-w-2xl mx-auto">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-3">
+            <Button variant="ghost" size="sm" onClick={onBack}>
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
+            {orders.length > 0 && <span className="text-sm text-gray-400">({orders.length})</span>}
           </div>
-
-          {orders.length > 0 && (
-            <Button
-              variant="destructive"
-              size="sm"
-              onClick={handleClearAll}
-              title="Hapus Semua"
-            >
-              <Trash2 className="w-4 h-4" />
-            </Button>
-          )}
+          <Button variant="outline" size="sm" onClick={refreshFromAPI} disabled={isLoading} title="Refresh dari server">
+            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+          </Button>
         </div>
 
-        {orders.length === 0 ? (
-          <div className="text-center text-gray-500 py-12">
-            <p className="text-lg mb-2">Belum ada riwayat pesanan</p>
-            <p className="text-sm">Riwayat pesanan akan muncul di sini setelah Anda memproses pesanan.</p>
-            <Button
-              variant="outline"
-              className="mt-4"
-              onClick={onBack}
+        {/* Search */}
+        <div className="relative mb-3">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            placeholder="Cari nama, ID, atau telepon..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="pl-9 h-9 text-sm"
+          />
+        </div>
+
+        {/* Layout Toggle & Results Count */}
+        <div className="flex items-center justify-between mb-3 px-1">
+          <p className="text-xs text-gray-400">{filteredOrders.length} pesanan</p>
+          <div className="flex bg-gray-100 p-0.5 rounded-lg">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`p-1.5 rounded-md transition-shadow ${viewMode === 'list' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Tampilan List"
             >
-              Kembali ke Kasir
+              <List className="w-4 h-4" />
+            </button>
+            <button
+              onClick={() => setViewMode('grid')}
+              className={`p-1.5 rounded-md transition-shadow ${viewMode === 'grid' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+              title="Tampilan Grid"
+            >
+              <LayoutGrid className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
+        {/* Error / Loading */}
+        {loadError && (
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2 rounded-lg mb-3">
+            {loadError}
+          </div>
+        )}
+
+        {isLoading && (
+          <div className="text-center py-4">
+            <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#FF5E01]" />
+            <p className="text-xs text-gray-500 mt-1">Memperbarui data...</p>
+          </div>
+        )}
+
+        {orders.length === 0 && !isLoading ? (
+          <div className="text-center text-gray-500 py-12">
+            <p className="text-base mb-2">Belum ada riwayat pesanan</p>
+            <p className="text-xs mb-4">Klik tombol refresh untuk memuat data dari server</p>
+            <Button variant="outline" onClick={refreshFromAPI}>
+              <RefreshCw className="w-4 h-4 mr-2" /> Muat Data
             </Button>
           </div>
         ) : (
-          <div className="space-y-4">
-            {orders.map((order, index) => (
-              <Card key={order.receiptId} className="w-full">
-                <CardHeader className="pb-3">
-                  <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">
-                      Pesanan #{orders.length - index}
-                    </CardTitle>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleViewReceipt(order)}
-                      >
-                        <Eye className="w-4 h-4 mr-1" />
-                        Lihat
-                      </Button>
-                      {order.customer && order.customer.phone && (
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => handleChatCustomer(order)}
-                          className="text-green-600 hover:text-green-700 hover:bg-green-50"
-                          title="Chat pelanggan via WhatsApp"
-                        >
-                          <MessageCircle className="w-4 h-4" />
-                        </Button>
-                      )}
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleDeleteOrder(order.receiptId)}
-                        className="text-red-500 hover:text-red-700"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </Button>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">No. Struk:</span>
-                      <span className="font-mono">{order.receiptId}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Tanggal:</span>
-                      <span>{order.timestamp}</span>
-                    </div>
-                    {order.customer && (
+          <div className={viewMode === 'list' ? "space-y-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start"}>
+            {filteredOrders.map(order => {
+              const isExpanded = expandedOrder === order.orderId;
+              return (
+                <div key={order.orderId} className="bg-white border rounded-lg shadow-sm overflow-hidden">
+                  {/* Row / Card Header */}
+                  <div
+                    className={`px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors ${viewMode === 'list' ? 'flex items-center justify-between' : 'space-y-2'}`}
+                    onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
+                  >
+                    {viewMode === 'list' ? (
                       <>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Pelanggan:</span>
-                          <span>{order.customer.name}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Telepon:</span>
-                          <span>{order.customer.phone}</span>
-                        </div>
-                        {order.customer.instansi && (
-                          <div className="flex justify-between">
-                            <span className="text-gray-600">Instansi:</span>
-                            <span>{order.customer.instansi}</span>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-mono text-[10px] text-gray-500 truncate">{order.orderId}</span>
+                            {getChannelBadge(order.channel)}
+                            {getStatusBadge(order.orderStatus)}
                           </div>
-                        )}
+                          <div className="flex items-center gap-2 mt-0.5">
+                            <span className="text-sm font-medium truncate">{order.customerName || '-'}</span>
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-xs text-gray-500">{order.itemCount || order.items?.length || 0} item</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2 ml-2">
+                          <span className="text-sm font-bold text-green-600 whitespace-nowrap">{formatCurrency(order.total)}</span>
+                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-between">
+                          <span className="font-mono text-[10px] text-gray-400 truncate max-w-[120px]">{order.orderId}</span>
+                          <div className="flex gap-1">
+                            {getChannelBadge(order.channel)}
+                            {getStatusBadge(order.orderStatus)}
+                          </div>
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-base font-bold text-gray-800 truncate">{order.customerName || '-'}</span>
+                          <span className="text-[10px] text-gray-400">{order.timestamp}</span>
+                        </div>
+                        <div className="flex items-center justify-between pt-1 border-t border-gray-50">
+                          <span className="text-sm font-extrabold text-green-600">{formatCurrency(order.total)}</span>
+                          <div className="flex items-center text-gray-400 text-[10px]">
+                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                          </div>
+                        </div>
                       </>
                     )}
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Total Item:</span>
-                      <span>{order.items.length} produk</span>
-                    </div>
-                    <div className="flex justify-between font-bold text-lg pt-2 border-t">
-                      <span>Total:</span>
-                      <span className="text-green-600">{formatCurrency(order.summary.total)}</span>
-                    </div>
                   </div>
-                </CardContent>
-              </Card>
-            ))}
+
+                  {/* Expanded */}
+                  {isExpanded && (
+                    <div className="border-t px-3 py-2.5 bg-gray-50 space-y-2">
+                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                        <div className="text-gray-500">Tanggal</div><div>{order.timestamp}</div>
+                        <div className="text-gray-500">Kasir</div><div>{order.cashier}</div>
+                        {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
+                        {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
+                        {order.paymentMethod && <><div className="text-gray-500">Pembayaran</div><div>{order.paymentMethod}</div></>}
+                        {order.downPayment > 0 && <>
+                          <div className="text-gray-500">DP</div><div>{formatCurrency(order.downPayment)}</div>
+                          <div className="text-gray-500">Sisa</div><div className="font-medium text-red-600">{formatCurrency(order.remainingBalance)}</div>
+                        </>}
+                      </div>
+
+                      {order.items && order.items.length > 0 && (
+                        <div className="pt-2 border-t border-gray-200">
+                          <p className="text-xs font-medium text-gray-500 mb-1">Items:</p>
+                          {order.items.map((item, idx) => (
+                            <div key={idx} className="flex justify-between text-xs py-0.5">
+                              <span className="text-gray-700 truncate mr-2">
+                                {item.name} {item.modelCode ? `[${item.modelCode}]` : ''} ×{item.quantity}
+                              </span>
+                              <span className="text-gray-600 whitespace-nowrap">{formatCurrency(item.subtotal || item.price * item.quantity)}</span>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 pt-2 border-t border-gray-200 flex-wrap">
+                        {/* Status dropdown */}
+                        <select
+                          value={(order.orderStatus || '').toLowerCase()}
+                          onChange={e => handleStatusChange(order.orderId, e.target.value)}
+                          disabled={updatingId === order.orderId}
+                          className="text-xs border rounded px-2 py-1 bg-white"
+                        >
+                          {STATUS_OPTIONS.map(s => (
+                            <option key={s.value} value={s.value}>{s.label}</option>
+                          ))}
+                        </select>
+
+                        {/* Auto-download receipt */}
+                        <Button
+                          size="sm" variant="outline" className="h-7 text-xs"
+                          onClick={() => handleDownloadReceipt(order)}
+                          disabled={downloadingId === order.orderId}
+                        >
+                          {downloadingId === order.orderId
+                            ? <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Membuat...</>
+                            : <><Download className="w-3 h-3 mr-1" /> Struk</>
+                          }
+                        </Button>
+
+                        {order.customerPhone && (
+                          <Button size="sm" variant="outline" className="h-7 text-xs text-green-600" onClick={() => handleChatCustomer(order)}>
+                            <MessageCircle className="w-3 h-3 mr-1" /> WA
+                          </Button>
+                        )}
+
+                        {/* Delete */}
+                        {confirmDeleteId === order.orderId ? (
+                          <div className="flex gap-1 ml-auto">
+                            <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
+                              {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya, Hapus'}
+                            </Button>
+                            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                          </div>
+                        ) : (
+                          <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500 ml-auto" onClick={() => setConfirmDeleteId(order.orderId)}>
+                            <Trash2 className="w-3 h-3 mr-1" /> Hapus
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {filteredOrders.length === 0 && search && (
+              <div className="text-center py-8 text-gray-400 text-sm">
+                Tidak ditemukan "{search}"
+              </div>
+            )}
           </div>
         )}
       </div>
-
-      {/* Receipt Modal with Consistent CSS Layout */}
-      {showReceiptModal && selectedOrder && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white p-4 rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-medium">Struk Pesanan</h3>
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={handleDownloadReceipt}
-                  disabled={isGeneratingReceipt}
-                  className="bg-[#FF5E01] hover:bg-[#e54d00] text-white"
-                >
-                  {isGeneratingReceipt ? (
-                    <>
-                      <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin mr-1"></div>
-                      Membuat...
-                    </>
-                  ) : (
-                    <>
-                      <Download className="w-4 h-4 mr-1" />
-                      Unduh JPG
-                    </>
-                  )}
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => setShowReceiptModal(false)}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Receipt Content with Consistent CSS */}
-            <div className="receipt-slide-container" style={{ height: 'auto', overflow: 'visible' }}>
-              <div
-                ref={receiptRef}
-                className="receipt-paper"
-                style={{ animation: 'none', transform: 'none' }}
-                dangerouslySetInnerHTML={{
-                  __html: generateReceiptHTML(
-                    selectedOrder,
-                    logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
-                    surveyQRBase64 || '/product-image/survey-qr.png'
-                  )
-                }}
-              />
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
