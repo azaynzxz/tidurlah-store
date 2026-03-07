@@ -1425,13 +1425,13 @@ export function POSDashboard() {
                       </div>
                       <h2 className="receipt-store-title">TIDURLAH GRAFIKA</h2>
                       <p className="receipt-slogan">"Cetak apa aja, Tidurlah Grafika!"</p>
-                      <p className="receipt-address">Perum. Korpri Raya, Blok D3. No. 3</p>
-                      <p className="receipt-address">Sukarame, Bandar Lampung</p>
+                      <p className="receipt-address">Jl. Perum Pemda Wayhui, Way Hui</p>
+                      <p className="receipt-address">Kec. Jati Agung, Lampung Selatan 35365</p>
                     </div>
                     <div className="receipt-separator"></div>
                     <div className="receipt-contact">
                       <p>WhatsApp: 085172157808</p>
-                      <p>Instagram: @tidurlah_grafika</p>
+                      <p>Instagram: @tidurlah_grafika | @idcard_lampung</p>
                     </div>
                   </div>
 

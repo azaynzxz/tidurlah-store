@@ -150,8 +150,8 @@ const Receipt = () => {
           {/* Receipt Header */}
           <div className="text-center mb-4">
             <h1 className="text-2xl font-bold text-gray-800 mb-2">TIDURLAH GRAFIKA</h1>
-            <p className="text-sm text-gray-600">Perum. Korpri Raya, Blok D3. No. 3</p>
-            <p className="text-sm text-gray-600">Sukarame, Bandar Lampung</p>
+            <p className="text-sm text-gray-600">Jl. Perum Pemda Wayhui, Way Hui</p>
+            <p className="text-sm text-gray-600">Kec. Jati Agung, Lampung Selatan 35365</p>
             <p className="text-sm text-gray-600">Telp: 0851-7215-7808</p>
           </div>
 
@@ -249,10 +249,10 @@ const Receipt = () => {
           {/* Footer */}
           <div className="text-center text-sm text-gray-600">
             <div className="font-semibold mb-2">Terima kasih telah berbelanja!</div>
-            <div>Instagram: @tidurlah_grafika</div>
+            <div>Instagram: @tidurlah_grafika | @idcard_lampung</div>
             <div>WhatsApp: 0851-7215-7808</div>
             <div className="mt-3 text-xs">
-              Spesialis ID Card & Lanyard Lampung<br/>
+              Spesialis ID Card & Lanyard Lampung<br />
               Barang yang sudah dibeli tidak dapat dikembalikan
             </div>
           </div>

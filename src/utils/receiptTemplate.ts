@@ -71,12 +71,12 @@ export function generateReceiptHTML(data: ReceiptData, logoBase64?: string, surv
             />
           ` : ''}
           <p style="font-size: 14px; font-style: italic; margin: 0x 0; color: #000; font-weight: 500;">"Cetak apa aja, Tidurlah Grafika!"</p>
-          <p style="font-size: 14px; margin: 0x 0; color: #000; font-weight: 500;">Perum. Korpri Raya, Blok D3. No. 3</p>
-          <p style="font-size: 14px; margin: 0x 0; color: #000; font-weight: 500;">Sukarame, Bandar Lampung</p>
+          <p style="font-size: 14px; margin: 0x 0; color: #000; font-weight: 500;">Jl. Perum Pemda Wayhui, Way Hui</p>
+          <p style="font-size: 14px; margin: 0x 0; color: #000; font-weight: 500;">Kec. Jati Agung, Lampung Selatan 35365</p>
         </div>
         <div style="margin: 0px 0;"></div>
         <div style="text-align: center; font-size: 14px; color: #000; font-weight: 500;">
-          WA: 085172157808 | IG: @tidurlah_grafika
+          WA: 085172157808 | IG: @tidurlah_grafika | @idcard_lampung
         </div>
       </div>
 

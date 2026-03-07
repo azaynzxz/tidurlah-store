@@ -70,10 +70,10 @@ export const CardStack = () => {
 
   const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
     if (!isDragging) return;
-    
+
     const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
     const diff = dragStartY.current - clientY;
-    
+
     // Only allow one card change per drag gesture with higher threshold
     if (Math.abs(diff) > 80) {
       if (diff > 0) {
@@ -94,7 +94,7 @@ export const CardStack = () => {
 
   const handleCardClick = (index: number) => {
     if (isDragging) return;
-    
+
     if (index === activeIndex) {
       // Open link - but skip for multiple button cards
       if (cards[index].link === "multiple") {
@@ -119,7 +119,7 @@ export const CardStack = () => {
   const getCardStyle = (index: number) => {
     const offset = index - activeIndex;
     const isActive = index === activeIndex;
-    
+
     return {
       transform: `translateY(${offset * 20}px) scale(${isActive ? 1 : 0.95 - Math.abs(offset) * 0.05})`,
       zIndex: cards.length - Math.abs(offset),
@@ -128,7 +128,7 @@ export const CardStack = () => {
   };
 
   return (
-    <div 
+    <div
       className="relative w-full max-w-md mx-auto h-[500px] perspective-1000 select-none"
       onMouseMove={handleDragMove}
       onMouseUp={handleDragEnd}
@@ -139,7 +139,7 @@ export const CardStack = () => {
       {cards.map((card, index) => {
         const Icon = card.icon;
         const isActive = index === activeIndex;
-        
+
         return (
           <div
             key={card.id}
@@ -164,26 +164,15 @@ export const CardStack = () => {
                   <ExternalLink className="w-6 h-6 opacity-80" />
                 )}
               </div>
-              
+
               <div className="flex-1 flex flex-col justify-end">
                 <h3 className="text-3xl font-bold mb-2">{card.title}</h3>
                 <p className="text-white/90 text-lg mb-4">{card.description}</p>
-                
+
                 {/* Special content for visit-stores card */}
                 {card.id === "visit-stores" && isActive && (
                   <div className="space-y-3 animate-fade-in">
-                    <Button 
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleStoreLocationClick("https://maps.app.goo.gl/hVwcunR4E5LobVBTA", "Cabang Korpri");
-                      }}
-                      className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm py-3"
-                      size="lg"
-                    >
-                      <MapPin className="mr-2 h-5 w-5" />
-                      Cabang Korpri
-                    </Button>
-                    <Button 
+                    <Button
                       onClick={(e) => {
                         e.stopPropagation();
                         handleStoreLocationClick("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA", "Cabang Belwis");
@@ -203,7 +192,7 @@ export const CardStack = () => {
                   Ketuk untuk membuka • Geser ↕ untuk navigasi
                 </div>
               )}
-              
+
               {isActive && card.id === "visit-stores" && (
                 <div className="mt-6 text-sm text-white/70 animate-fade-in">
                   Pilih cabang • Geser ↕ untuk navigasi
@@ -213,7 +202,7 @@ export const CardStack = () => {
           </div>
         );
       })}
-      
+
       {/* Navigation dots */}
       <div className="absolute bottom-0 left-0 right-0 flex justify-center gap-2">
         {cards.map((_, index) => (
@@ -222,8 +211,8 @@ export const CardStack = () => {
             onClick={() => setActiveIndex(index)}
             className={cn(
               "w-2 h-2 rounded-full transition-all duration-300",
-              index === activeIndex 
-                ? "bg-white w-8" 
+              index === activeIndex
+                ? "bg-white w-8"
                 : "bg-white/30"
             )}
             aria-label={`Go to card ${index + 1}`}
