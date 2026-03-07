@@ -923,7 +923,7 @@ export function POSDashboard() {
   };
 
   // Process order with receipt generation (modified to handle print mode)
-  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }, printMode: boolean = false) => {
+  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number; deadline?: string }, printMode: boolean = false) => {
     if (cartItems.length === 0) {
       toast.error("Keranjang masih kosong!");
       return;
@@ -1033,7 +1033,8 @@ export function POSDashboard() {
         total: subtotal, // Subtotal already has discounts applied
         downPayment: customerDetails.downPayment || 0,
         remainingBalance: subtotal - (customerDetails.downPayment || 0),
-        paymentMethod: 'Cash'
+        paymentMethod: 'Cash',
+        deadline: customerDetails.deadline || ''
       };
 
       // Save to localStorage for order history immediately
@@ -1286,7 +1287,7 @@ export function POSDashboard() {
           </div>
 
           {/* Desktop Cart - Hidden on mobile */}
-          <div className="hidden md:flex w-[420px] bg-background border-l border-gray-200 flex-col">
+          <div className="hidden md:flex w-[50%] bg-background border-l border-gray-200 flex-col">
             <Cart
               items={cartItems}
               onUpdateQuantityById={handleUpdateQuantityById}

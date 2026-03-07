@@ -463,7 +463,29 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                   {isExpanded && (
                     <div className="border-t px-3 py-2.5 bg-gray-50 space-y-2">
                       <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                        <div className="text-gray-500">Tanggal</div><div>{order.timestamp}</div>
+                        <div className="text-gray-500 font-semibold">Deadline</div>
+                        <div className={`font-bold ${order.deadline ? 'text-orange-600' : 'text-gray-400 italic'}`}>
+                          {order.deadline ? (() => {
+                            try {
+                              const dl = String(order.deadline).trim();
+                              const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                              // Try parsing as Date (handles ISO strings like "2026-03-02T17:00:00.000Z")
+                              const d = new Date(dl);
+                              if (!isNaN(d.getTime())) {
+                                // Use local methods to match user-entered time exactly
+                                const day = d.getDate();
+                                const month = months[d.getMonth()];
+                                const year = d.getFullYear();
+                                const hours = d.getHours();
+                                const mins = d.getMinutes();
+                                const dateStr = `${day} ${month} ${year}`;
+                                // Only show time if it's not midnight (00:00)
+                                return (hours !== 0 || mins !== 0) ? `${dateStr}, ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}` : dateStr;
+                              }
+                              return dl;
+                            } catch { return String(order.deadline); }
+                          })() : 'Belum ditentukan'}
+                        </div>
                         <div className="text-gray-500">Kasir</div><div>{order.cashier}</div>
                         {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
                         {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}

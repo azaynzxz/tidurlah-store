@@ -3,11 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check, ChevronDown, ChevronUp, Star, FileText } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Star, FileText, Calendar, Clock } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
 import { exportReceiptToPDF } from "@/utils/receiptPDF";
+import { TimePicker } from "@/components/ui/TimePicker";
 import newOrderSound from "@/components/new-order.mp3";
 
 interface Product {
@@ -80,13 +81,17 @@ interface CustomerDetails {
   instansi: string;
   delivery?: DeliveryInfo;
   downPayment?: number;
+  deadline: string;
+  deadlineTime?: string;
 }
 
 export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll, onProcessOrder, onUpdateOptionsById, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
-    instansi: ''
+    instansi: '',
+    deadline: '',
+    deadlineTime: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -168,7 +173,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     if (item.product.id === 2002) {
       return total;
     }
-    
+
     const originalPrice = item.product.price;
     const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
     if (applicablePrice < originalPrice) {
@@ -234,12 +239,12 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
   const handleDeliveryInfoSubmit = (deliveryInfo: DeliveryInfo, ongkirPrice: number) => {
     setCustomerDetails(prev => ({ ...prev, delivery: deliveryInfo }));
     setShowDeliveryDialog(false);
-    
+
     // Add ongkir to cart if price > 0
     if (ongkirPrice > 0) {
       onAddOngkir(ongkirPrice);
     }
-    
+
     toast.success("Informasi pengiriman berhasil disimpan", {
       position: 'top-center',
       duration: 2000,
@@ -254,7 +259,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
         name: customerDetails.delivery.recipientName,
         phone: customerDetails.delivery.recipientPhone
       }));
-      
+
       toast.success("Informasi pelanggan diisi otomatis dari data pengiriman", {
         position: 'top-center',
         duration: 2000,
@@ -284,14 +289,22 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return;
     }
 
+    if (!customerDetails.deadline) {
+      toast.error("Mohon tentukan deadline pesanan.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
     // Validate required options for each item
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     const stikerWithLaminationIds = [15];
-    
+
     for (const item of items) {
       const needsCase = idCardWithCaseIds.includes(item.product.id);
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
-      
+
       if (needsCase && !item.options?.caseVariant) {
         toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
           position: 'top-center',
@@ -299,7 +312,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
         });
         return;
       }
-      
+
       if (needsLamination && !item.options?.laminationVariant) {
         toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
           position: 'top-center',
@@ -313,8 +326,8 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
 
     try {
       // Call the parent's onProcessOrder with customer details including DP
-      await onProcessOrder({ ...customerDetails, downPayment });
-      
+      await onProcessOrder({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
+
       // Play new order sound on successful order
       try {
         const audio = new Audio(newOrderSound);
@@ -324,13 +337,13 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       } catch (err) {
         console.log('Error playing sound:', err);
       }
-      
+
       // Reset customer details and DP after successful order
-      setCustomerDetails({ name: '', phone: '', instansi: '' });
+      setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
       setDownPayment(0);
       setDpDisplayValue('');
       setIsExpressSelected(false);
-      
+
       // Close mobile modal if in mobile mode
       if (isMobile && onClose) {
         setTimeout(() => onClose(), 500);
@@ -377,11 +390,11 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     // Validate required options for each item (same as process order)
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     const stikerWithLaminationIds = [15];
-    
+
     for (const item of items) {
       const needsCase = idCardWithCaseIds.includes(item.product.id);
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
-      
+
       if (needsCase && !item.options?.caseVariant) {
         toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
           position: 'top-center',
@@ -389,7 +402,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
         });
         return;
       }
-      
+
       if (needsLamination && !item.options?.laminationVariant) {
         toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
           position: 'top-center',
@@ -403,15 +416,15 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
 
     try {
       // Call the print order handler which handles everything
-      const printSuccess = await onPrintOrder({ ...customerDetails, downPayment });
-      
+      const printSuccess = await onPrintOrder({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
+
       if (printSuccess) {
         // Reset customer details and DP after successful print
-        setCustomerDetails({ name: '', phone: '', instansi: '' });
+        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
         setDownPayment(0);
         setDpDisplayValue('');
         setIsExpressSelected(false);
-        
+
         // Close mobile modal if in mobile mode
         if (isMobile && onClose) {
           setTimeout(() => onClose(), 500);
@@ -459,11 +472,11 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     // Validate required options for each item
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     const stikerWithLaminationIds = [15];
-    
+
     for (const item of items) {
       const needsCase = idCardWithCaseIds.includes(item.product.id);
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
-      
+
       if (needsCase && !item.options?.caseVariant) {
         toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
           position: 'top-center',
@@ -471,7 +484,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
         });
         return;
       }
-      
+
       if (needsLamination && !item.options?.laminationVariant) {
         toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
           position: 'top-center',
@@ -485,15 +498,15 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
 
     try {
       // Call the PDF export handler which handles everything
-      const exportSuccess = await onExportPDF({ ...customerDetails, downPayment });
-      
+      const exportSuccess = await onExportPDF({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
+
       if (exportSuccess) {
         // Reset customer details and DP after successful export
-        setCustomerDetails({ name: '', phone: '', instansi: '' });
+        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
         setDownPayment(0);
         setDpDisplayValue('');
         setIsExpressSelected(false);
-        
+
         // Close mobile modal if in mobile mode
         if (isMobile && onClose) {
           setTimeout(() => onClose(), 500);
@@ -515,350 +528,389 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
   return (
     <>
       <div className={isMobile ? "flex flex-col" : "flex flex-col h-full"}>
-      {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
-        <h2 className="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={onClearAll}
-          disabled={items.length === 0}
-          className="text-red-500 hover:text-red-700 hover:bg-red-50"
-        >
-          Hapus Semua
-        </Button>
-      </div>
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
+          <h2 className="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={onClearAll}
+            disabled={items.length === 0}
+            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+          >
+            Hapus Semua
+          </Button>
+        </div>
 
-      {/* Cart Items - Scrollable on desktop, natural height on mobile */}
-      <div className={isMobile ? "p-3 space-y-3 bg-gray-50" : "flex-1 overflow-y-auto p-3 space-y-3 bg-gray-50"}>
-        {items.length === 0 ? (
-          <div className="text-center text-gray-500 py-8">
-            <p>Belum ada produk dalam keranjang</p>
-          </div>
-        ) : (
-          items.map((item) => (
-            <CartItem
-              key={item.cartItemId}
-              item={item}
-              onUpdateQuantityById={onUpdateQuantityById}
-              onRemoveById={onRemoveItemById}
-              onUpdateOptionsById={onUpdateOptionsById}
-            />
-          ))
-        )}
-      </div>
-
-      {/* Customer Details & Summary */}
-      {items.length > 0 && (
-        <div className="border-t bg-background">
-          {/* Service Options Section */}
-          <div className="border-b bg-gray-50">
-            {/* Header with Collapse Button */}
-            <div 
-              className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => setIsLayananExpanded(!isLayananExpanded)}
-            >
-              <h3 className="text-xs font-semibold text-gray-700">
-                Layanan Tambahan
-              </h3>
-              <div className="flex items-center">
-                {isLayananExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-gray-500" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                )}
+        {/* Desktop: Side-by-side (items left, info right) | Mobile: Stacked */}
+        <div className={isMobile ? "flex flex-col" : "flex-1 flex overflow-hidden"}>
+          {/* LEFT: Cart Items - Scrollable */}
+          <div className={isMobile ? "p-3 space-y-3 bg-gray-50" : "w-1/2 overflow-y-auto p-3 space-y-3 bg-gray-50 border-r"}>
+            {items.length === 0 ? (
+              <div className="text-center text-gray-500 py-8">
+                <p>Belum ada produk dalam keranjang</p>
               </div>
-            </div>
-            
-            {/* Collapsible Content */}
-            {isLayananExpanded && (
-              <div className="px-2 pb-2 transition-all duration-300 ease-in-out">
-                <div className="grid grid-cols-3 gap-2">
-                  {/* Jasa Desain */}
-                  <button
-                    onClick={() => handleDesignServiceChange(!isDesignServiceSelected)}
-                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
-                      isDesignServiceSelected
-                        ? 'bg-[#FF5E01] text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Jasa Desain
-                    <br />
-                    <span className="text-xs opacity-80">+Rp 25.000</span>
-                  </button>
-                  
-                  {/* Pengiriman */}
-                  <button
-                    onClick={() => handleDeliveryChange(!isDeliverySelected)}
-                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
-                      isDeliverySelected
-                        ? 'bg-[#FF5E01] text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Pengiriman
-                    <br />
-                    <span className="text-xs opacity-80">+ Ongkir</span>
-                  </button>
-                  
-                  {/* Jasa Express */}
-                  <button
-                    onClick={() => handleExpressChange(!isExpressSelected)}
-                    className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${
-                      isExpressSelected
-                        ? 'bg-[#FF5E01] text-white shadow-md'
-                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                    }`}
-                  >
-                    Jasa Express
-                    <br />
-                    <span className="text-xs opacity-80">+Rp 25.000</span>
-                  </button>
-                </div>
-              </div>
+            ) : (
+              items.map((item) => (
+                <CartItem
+                  key={item.cartItemId}
+                  item={item}
+                  onUpdateQuantityById={onUpdateQuantityById}
+                  onRemoveById={onRemoveItemById}
+                  onUpdateOptionsById={onUpdateOptionsById}
+                />
+              ))
             )}
           </div>
 
-          {/* Customer Details Section */}
-          <div className="border-b bg-gray-50">
-            {/* Header with Collapse Button */}
-            <div 
-              className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
-              onClick={() => setIsPelangganExpanded(!isPelangganExpanded)}
-            >
-              <h3 className="text-xs font-semibold text-gray-700">
-                Informasi Pelanggan
-              </h3>
-              <div className="flex items-center">
-                {isPelangganExpanded ? (
-                  <ChevronUp className="h-4 w-4 text-gray-500" />
-                ) : (
-                  <ChevronDown className="h-4 w-4 text-gray-500" />
-                )}
-              </div>
-            </div>
-            
-            {/* Collapsible Content */}
-            {isPelangganExpanded && (
-              <div className="px-2 pb-2 space-y-2 transition-all duration-300 ease-in-out">
-            
-            <div className="grid grid-cols-2 gap-2">
-              <div>
-                <div className="flex items-center gap-2 mb-1">
-                  <button
-                    onClick={handleSmartFill}
-                    className="p-1 rounded-full hover:bg-yellow-100 transition-colors group"
-                    title="Isi otomatis dari data pengiriman"
+          {/* RIGHT: Checkout Info - Scrollable */}
+          <div className={isMobile ? "" : "w-1/2 overflow-y-auto"}>
+            {items.length > 0 && (
+              <div className="bg-background">
+                {/* Service Options Section */}
+                <div className="border-b bg-gray-50">
+                  {/* Header with Collapse Button */}
+                  <div
+                    className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsLayananExpanded(!isLayananExpanded)}
                   >
-                    <Star 
-                      className={`h-4 w-4 transition-colors ${
-                        customerDetails.delivery 
-                          ? 'text-yellow-500 group-hover:text-yellow-600' 
-                          : 'text-gray-400 group-hover:text-gray-500'
-                      }`} 
-                    />
-                  </button>
-                  <Label htmlFor="customer-name" className="text-xs font-medium text-gray-600">
-                    Nama Lengkap *
-                  </Label>
+                    <h3 className="text-xs font-semibold text-gray-700">
+                      Layanan Tambahan
+                    </h3>
+                    <div className="flex items-center">
+                      {isLayananExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-gray-500" />
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Collapsible Content */}
+                  {isLayananExpanded && (
+                    <div className="px-2 pb-2 transition-all duration-300 ease-in-out">
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* Jasa Desain */}
+                        <button
+                          onClick={() => handleDesignServiceChange(!isDesignServiceSelected)}
+                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isDesignServiceSelected
+                            ? 'bg-[#FF5E01] text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                          Jasa Desain
+                          <br />
+                          <span className="text-xs opacity-80">+Rp 25.000</span>
+                        </button>
+
+                        {/* Pengiriman */}
+                        <button
+                          onClick={() => handleDeliveryChange(!isDeliverySelected)}
+                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isDeliverySelected
+                            ? 'bg-[#FF5E01] text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                          Pengiriman
+                          <br />
+                          <span className="text-xs opacity-80">+ Ongkir</span>
+                        </button>
+
+                        {/* Jasa Express */}
+                        <button
+                          onClick={() => handleExpressChange(!isExpressSelected)}
+                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isExpressSelected
+                            ? 'bg-[#FF5E01] text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}
+                        >
+                          Jasa Express
+                          <br />
+                          <span className="text-xs opacity-80">+Rp 25.000</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <Input
-                  id="customer-name"
-                  type="text"
-                  placeholder="Nama lengkap"
-                  value={customerDetails.name}
-                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
-                  className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-                  required
-                />
-              </div>
 
-              <div>
-                <Label htmlFor="customer-phone" className="text-xs font-medium text-gray-600">
-                  Nomor Telepon *
-                </Label>
-                <Input
-                  id="customer-phone"
-                  type="tel"
-                  placeholder="Nomor telepon"
-                  value={customerDetails.phone}
-                  onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
-                  className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-                  required
-                />
-              </div>
-            </div>
+                {/* Customer Details Section */}
+                <div className="border-b bg-gray-50">
+                  {/* Header with Collapse Button */}
+                  <div
+                    className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                    onClick={() => setIsPelangganExpanded(!isPelangganExpanded)}
+                  >
+                    <h3 className="text-xs font-semibold text-gray-700">
+                      Informasi Pelanggan
+                    </h3>
+                    <div className="flex items-center">
+                      {isPelangganExpanded ? (
+                        <ChevronUp className="h-4 w-4 text-gray-500" />
+                      ) : (
+                        <ChevronDown className="h-4 w-4 text-gray-500" />
+                      )}
+                    </div>
+                  </div>
 
-            <div>
-              <Label htmlFor="customer-instansi" className="text-xs font-medium text-gray-600">
-                Instansi/Alias (Opsional)
-              </Label>
-              <Input
-                id="customer-instansi"
-                type="text"
-                placeholder="Nama sekolah, kampus, atau perusahaan"
-                value={customerDetails.instansi}
-                onChange={(e) => setCustomerDetails(prev => ({ ...prev, instansi: e.target.value }))}
-                className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-              />
-            </div>
+                  {/* Collapsible Content */}
+                  {isPelangganExpanded && (
+                    <div className="px-2 pb-2 space-y-2 transition-all duration-300 ease-in-out">
+
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <div className="flex items-center gap-2 mb-1">
+                            <button
+                              onClick={handleSmartFill}
+                              className="p-1 rounded-full hover:bg-yellow-100 transition-colors group"
+                              title="Isi otomatis dari data pengiriman"
+                            >
+                              <Star
+                                className={`h-4 w-4 transition-colors ${customerDetails.delivery
+                                  ? 'text-yellow-500 group-hover:text-yellow-600'
+                                  : 'text-gray-400 group-hover:text-gray-500'
+                                  }`}
+                              />
+                            </button>
+                            <Label htmlFor="customer-name" className="text-xs font-medium text-gray-600">
+                              Nama Lengkap *
+                            </Label>
+                          </div>
+                          <Input
+                            id="customer-name"
+                            type="text"
+                            placeholder="Nama lengkap"
+                            value={customerDetails.name}
+                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
+                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                            required
+                          />
+                        </div>
+
+                        <div>
+                          <Label htmlFor="customer-phone" className="text-xs font-medium text-gray-600">
+                            Nomor Telepon *
+                          </Label>
+                          <Input
+                            id="customer-phone"
+                            type="tel"
+                            placeholder="Nomor telepon"
+                            value={customerDetails.phone}
+                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
+                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                            required
+                          />
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label htmlFor="customer-instansi" className="text-xs font-medium text-gray-600">
+                          Instansi/Alias (Opsional)
+                        </Label>
+                        <Input
+                          id="customer-instansi"
+                          type="text"
+                          placeholder="Nama sekolah, kampus, atau perusahaan"
+                          value={customerDetails.instansi}
+                          onChange={(e) => setCustomerDetails(prev => ({ ...prev, instansi: e.target.value }))}
+                          className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                        />
+                      </div>
+
+                      {/* Deadline Section */}
+                      <div className="pt-2 border-t border-dashed border-gray-200">
+                        <Label className="text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
+                          <Calendar className="w-3.5 h-3.5 text-[#FF5E01]" />
+                          Deadline Pesanan *
+                        </Label>
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <input
+                              type="date"
+                              value={customerDetails.deadline}
+                              onChange={(e) => setCustomerDetails(prev => ({ ...prev, deadline: e.target.value }))}
+                              min={new Date().toISOString().split('T')[0]}
+                              required
+                              className="w-full h-8 px-2 text-xs border border-[#FF5E01] rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer"
+                            />
+                          </div>
+                          <div>
+                            <div className="flex items-center gap-1">
+                              <TimePicker
+                                value={customerDetails.deadlineTime || ''}
+                                onChange={(time) => setCustomerDetails(prev => ({ ...prev, deadlineTime: time }))}
+                                placeholder="Pilih waktu"
+                                className="w-full h-8 px-2 text-xs border border-gray-300 rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01]"
+                              />
+                              <span className="text-[9px] text-gray-400 whitespace-nowrap shrink-0">Opsional</span>
+                            </div>
+                          </div>
+                        </div>
+                        {customerDetails.deadline && (
+                          <p className="text-[10px] text-gray-500 mt-1 flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            Selesai sebelum: {new Date(customerDetails.deadline + (customerDetails.deadlineTime ? 'T' + customerDetails.deadlineTime : '')).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
+                            {customerDetails.deadlineTime && ` pukul ${customerDetails.deadlineTime}`}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Price Summary */}
+                <div className="p-2 space-y-2 bg-background">
+                  <h3 className="text-xs font-semibold text-gray-700 mb-1">
+                    Ringkasan Pembayaran
+                  </h3>
+
+                  <div className="space-y-1 text-xs">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Subtotal:</span>
+                      <span className="font-medium">{formatCurrency(subtotal)}</span>
+                    </div>
+
+                    {totalDiscounts > 0 && (
+                      <div className="flex justify-between text-green-600">
+                        <span>Diskon:</span>
+                        <span className="font-medium">- {formatCurrency(totalDiscounts)}</span>
+                      </div>
+                    )}
+
+                    <div className="flex justify-between text-sm font-bold text-[#FF5E01] pt-1 border-t">
+                      <span>TOTAL:</span>
+                      <span>{formatCurrency(finalTotal)}</span>
+                    </div>
+
+                    {/* Down Payment Input */}
+                    <div className="pt-2 border-t">
+                      <Label htmlFor="downPayment" className="text-xs font-medium text-gray-700 mb-1 block">
+                        DP (Down Payment)
+                      </Label>
+                      <Input
+                        id="downPayment"
+                        type="text"
+                        placeholder="5000 = 5.000.000"
+                        value={dpDisplayValue}
+                        onChange={(e) => {
+                          // Allow digits and one decimal point
+                          let inputValue = e.target.value.replace(/[^\d.]/g, '');
+
+                          // Prevent multiple decimal points
+                          const parts = inputValue.split('.');
+                          if (parts.length > 2) {
+                            inputValue = parts[0] + '.' + parts.slice(1).join('');
+                          }
+
+                          // Parse the numeric value (supports decimals now)
+                          const numericValue = inputValue === '' || inputValue === '.' ? 0 : parseFloat(inputValue);
+
+                          // Auto-multiply by 1000
+                          const actualValue = numericValue * 1000;
+
+                          // Prevent DP from exceeding total
+                          if (actualValue <= finalTotal) {
+                            setDownPayment(actualValue);
+                            setDpDisplayValue(inputValue);
+                          } else {
+                            setDownPayment(finalTotal);
+                            // Format the display value to show decimal if needed
+                            const displayValue = (finalTotal / 1000).toFixed(1).replace(/\.?0+$/, '');
+                            setDpDisplayValue(displayValue);
+                            toast.warning('DP tidak boleh melebihi total', {
+                              position: 'top-center',
+                              duration: 2000,
+                            });
+                          }
+                        }}
+                        className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                      />
+                      {dpDisplayValue && (
+                        <p className="text-[10px] text-gray-500 mt-0.5">
+                          = {formatCurrency(downPayment)}
+                        </p>
+                      )}
+                    </div>
+
+                    {/* Remaining Balance */}
+                    {downPayment > 0 && (
+                      <div className="flex justify-between text-sm font-bold text-blue-600 pt-1">
+                        <span>SISA BAYAR:</span>
+                        <span>{formatCurrency(finalTotal - downPayment)}</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Action Buttons */}
+                  <div className={`flex flex-col gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
+                    <div className="flex gap-2">
+                      <Button
+                        className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
+                        onClick={handleProcessOrder}
+                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.deadline}
+                      >
+                        {isProcessing ? "Memproses..." : "Proses Pesanan"}
+                      </Button>
+
+                      {/* HIDDEN: Bluetooth Print Feature
+                        DO NOT DELETE - This feature may be used in the future for printing receipts via Bluetooth printers.
+                        To re-enable: Change 'false &&' to the original condition below
+                        All related functions (handlePrintReceipt) are preserved.
+                        
+                        To re-enable button, change line below from:
+                        {false && isBluetoothSupported && onPrintOrder && (
+                        To:
+                        {isBluetoothSupported && onPrintOrder && (
+                    */}
+                      {false && isBluetoothSupported && onPrintOrder && (
+                        <Button
+                          className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
+                          onClick={handlePrintReceipt}
+                          disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                        >
+                          <span className="material-icons text-lg">bluetooth</span>
+                          {isPrinting ? "Mencetak..." : "Cetak"}
+                        </Button>
+                      )}
+                    </div>
+
+                    {/* HIDDEN: PDF Export Feature
+                      DO NOT DELETE - This feature may be used in the future for exporting receipts as PDF files.
+                      To re-enable: Remove 'false &&' from the line below
+                      All related functions (handleExportPDF) are preserved.
+                      
+                      To re-enable button, change line below from:
+                      {false && onExportPDF && (
+                      To:
+                      {onExportPDF && (
+                  */}
+                    {false && onExportPDF && (
+                      <Button
+                        className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
+                        onClick={handleExportPDF}
+                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                      >
+                        <FileText className="h-4 w-4" />
+                        {isExportingPDF ? "Membuat PDF..." : "PDF"}
+                      </Button>
+                    )}
+                  </div>
+                </div>
               </div>
             )}
-          </div>
-
-          {/* Price Summary */}
-          <div className="p-2 space-y-2 bg-background">
-            <h3 className="text-xs font-semibold text-gray-700 mb-1">
-              Ringkasan Pembayaran
-            </h3>
-            
-            <div className="space-y-1 text-xs">
-              <div className="flex justify-between">
-                <span className="text-gray-600">Subtotal:</span>
-                <span className="font-medium">{formatCurrency(subtotal)}</span>
-              </div>
-
-              {totalDiscounts > 0 && (
-                <div className="flex justify-between text-green-600">
-                  <span>Diskon:</span>
-                  <span className="font-medium">- {formatCurrency(totalDiscounts)}</span>
-                </div>
-              )}
-
-              <div className="flex justify-between text-sm font-bold text-[#FF5E01] pt-1 border-t">
-                <span>TOTAL:</span>
-                <span>{formatCurrency(finalTotal)}</span>
-              </div>
-
-              {/* Down Payment Input */}
-              <div className="pt-2 border-t">
-                <Label htmlFor="downPayment" className="text-xs font-medium text-gray-700 mb-1 block">
-                  DP (Down Payment)
-                </Label>
-                <Input
-                  id="downPayment"
-                  type="text"
-                  placeholder="5000 = 5.000.000"
-                  value={dpDisplayValue}
-                  onChange={(e) => {
-                    // Allow digits and one decimal point
-                    let inputValue = e.target.value.replace(/[^\d.]/g, '');
-                    
-                    // Prevent multiple decimal points
-                    const parts = inputValue.split('.');
-                    if (parts.length > 2) {
-                      inputValue = parts[0] + '.' + parts.slice(1).join('');
-                    }
-                    
-                    // Parse the numeric value (supports decimals now)
-                    const numericValue = inputValue === '' || inputValue === '.' ? 0 : parseFloat(inputValue);
-                    
-                    // Auto-multiply by 1000
-                    const actualValue = numericValue * 1000;
-                    
-                    // Prevent DP from exceeding total
-                    if (actualValue <= finalTotal) {
-                      setDownPayment(actualValue);
-                      setDpDisplayValue(inputValue);
-                    } else {
-                      setDownPayment(finalTotal);
-                      // Format the display value to show decimal if needed
-                      const displayValue = (finalTotal / 1000).toFixed(1).replace(/\.?0+$/, '');
-                      setDpDisplayValue(displayValue);
-                      toast.warning('DP tidak boleh melebihi total', {
-                        position: 'top-center',
-                        duration: 2000,
-                      });
-                    }
-                  }}
-                  className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-                />
-                {dpDisplayValue && (
-                  <p className="text-[10px] text-gray-500 mt-0.5">
-                    = {formatCurrency(downPayment)}
-                  </p>
-                )}
-              </div>
-
-              {/* Remaining Balance */}
-              {downPayment > 0 && (
-                <div className="flex justify-between text-sm font-bold text-blue-600 pt-1">
-                  <span>SISA BAYAR:</span>
-                  <span>{formatCurrency(finalTotal - downPayment)}</span>
-                </div>
-              )}
-            </div>
-
-            {/* Action Buttons */}
-            <div className={`flex flex-col gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
-              <div className="flex gap-2">
-                <Button
-                  className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
-                  onClick={handleProcessOrder}
-                  disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
-                >
-                  {isProcessing ? "Memproses..." : "Proses Pesanan"}
-                </Button>
-                
-                {/* HIDDEN: Bluetooth Print Feature
-                    DO NOT DELETE - This feature may be used in the future for printing receipts via Bluetooth printers.
-                    To re-enable: Change 'false &&' to the original condition below
-                    All related functions (handlePrintReceipt) are preserved.
-                    
-                    To re-enable button, change line below from:
-                    {false && isBluetoothSupported && onPrintOrder && (
-                    To:
-                    {isBluetoothSupported && onPrintOrder && (
-                */}
-                {false && isBluetoothSupported && onPrintOrder && (
-                  <Button
-                    className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
-                    onClick={handlePrintReceipt}
-                    disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
-                  >
-                    <span className="material-icons text-lg">bluetooth</span>
-                    {isPrinting ? "Mencetak..." : "Cetak"}
-                  </Button>
-                )}
-              </div>
-              
-              {/* HIDDEN: PDF Export Feature
-                  DO NOT DELETE - This feature may be used in the future for exporting receipts as PDF files.
-                  To re-enable: Remove 'false &&' from the line below
-                  All related functions (handleExportPDF) are preserved.
-                  
-                  To re-enable button, change line below from:
-                  {false && onExportPDF && (
-                  To:
-                  {onExportPDF && (
-              */}
-              {false && onExportPDF && (
-                <Button
-                  className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
-                  onClick={handleExportPDF}
-                  disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
-                >
-                  <FileText className="h-4 w-4" />
-                  {isExportingPDF ? "Membuat PDF..." : "PDF"}
-                </Button>
-              )}
-            </div>
           </div>
         </div>
-      )}
-    </div>
+      </div>
 
-    {/* Delivery Info Dialog */}
-    <DeliveryInfoDialog
-      open={showDeliveryDialog}
-      onOpenChange={setShowDeliveryDialog}
-      onSubmit={handleDeliveryInfoSubmit}
-      onCancel={() => {
-        setIsDeliverySelected(false);
-        setShowDeliveryDialog(false);
-      }}
-    />
+      {/* Delivery Info Dialog */}
+      <DeliveryInfoDialog
+        open={showDeliveryDialog}
+        onOpenChange={setShowDeliveryDialog}
+        onSubmit={handleDeliveryInfoSubmit}
+        onCancel={() => {
+          setIsDeliverySelected(false);
+          setShowDeliveryDialog(false);
+        }}
+      />
     </>
   );
 }

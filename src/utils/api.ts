@@ -33,6 +33,7 @@ export interface POSOrderData {
   downPayment?: number;
   remainingBalance?: number;
   paymentMethod?: string;
+  deadline?: string;
 }
 
 // Website order submission — sends normalized JSON to unified endpoint
@@ -90,6 +91,7 @@ export const submitToGoogleSheet = async (orderData: OrderData) => {
       designNote: orderData.designNote || '',
       isShipping: orderData.isShipping || false,
       address: orderData.address || '',
+      deadline: orderData.deadline || '',
     };
 
     await fetch(POS_GOOGLE_SHEETS_URL, {
@@ -180,11 +182,12 @@ export const handleWhatsAppRedirect = async (
     const jasaDesainMessage = requestJasaDesain ? `\nJasa Desain: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
     const expressPrintMessage = isExpressPrint ? `\nCetak Express: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
     const designNoteMessage = designNote ? `\nNote/Link Desain: ${designNote}` : '';
+    const deadlineMessage = orderData.deadline ? `\nDeadline: ${orderData.deadline}` : '';
 
     const message = `Informasi Order:
 Nama: ${customerName}
 Instansi/Alias: ${instansi || '-'}
-Telp: ${phoneNumber}${promoMessage}${designNoteMessage}
+Telp: ${phoneNumber}${promoMessage}${designNoteMessage}${deadlineMessage}
 ${isShipping ? `Alamat: ${address}` : 'Ambil di tempat: Ya (tidak perlu dikirim)'}
 
 Detail Order:
@@ -252,6 +255,7 @@ export interface OrderHistoryItem {
   designNote: string;
   isShipping: string;
   address: string;
+  deadline?: string;
   items: {
     productId: number | string;
     name: string;

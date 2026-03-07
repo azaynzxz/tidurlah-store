@@ -67,6 +67,7 @@ export interface OrderData {
   address: string;
   requestJasaDesain: boolean;
   isExpressPrint: boolean;
+  deadline?: string;
 }
 
 export interface BannerDetails {

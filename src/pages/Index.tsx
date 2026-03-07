@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import SEO from "@/components/common/SEO";
 import { useParams, useNavigate } from "react-router-dom";
-import { ShoppingCart, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Star } from "lucide-react";
+import { ShoppingCart, Check, Trash2, ChevronLeft, ChevronRight, X, Facebook, Instagram, Youtube, Mail, MapPin, Phone, Newspaper, CreditCard, Megaphone, Gift, Flower, Share2, Star, Calendar, Clock } from "lucide-react";
+import { TimePicker } from "@/components/ui/TimePicker";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import BannerCarousel from "@/components/BannerCarousel";
@@ -73,6 +74,8 @@ const Index = () => {
   const [designNote, setDesignNote] = useState("");
   const [isExpressPrint, setIsExpressPrint] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [customerDeadline, setCustomerDeadline] = useState("");
+  const [customerDeadlineTime, setCustomerDeadlineTime] = useState("");
   const [selectedModel, setSelectedModel] = useState("");
   const [nameError, setNameError] = useState("");
   const [phoneError, setPhoneError] = useState("");
@@ -365,7 +368,8 @@ const Index = () => {
         isShipping,
         address,
         requestJasaDesain,
-        isExpressPrint
+        isExpressPrint,
+        deadline: customerDeadline ? (customerDeadlineTime ? `${customerDeadline} ${customerDeadlineTime}` : customerDeadline) : undefined
       };
 
       const result = await handleWhatsAppRedirect(
@@ -866,6 +870,49 @@ const Index = () => {
                       />
                     </div>
                   )}
+
+                  {/* Deadline Section */}
+                  <div className="pt-3 border-t border-dashed border-gray-200">
+                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-1.5">
+                      <Calendar className="w-4 h-4 text-[#FF5E01]" />
+                      Deadline Pesanan (Opsional)
+                    </label>
+                    <p className="text-xs text-gray-500 mb-2">Tentukan kapan pesanan kamu harus selesai</p>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Tanggal</label>
+                        <input
+                          type="date"
+                          value={customerDeadline}
+                          onChange={(e) => setCustomerDeadline(e.target.value)}
+                          min={new Date().toISOString().split('T')[0]}
+                          className="w-full rounded-lg border border-gray-300 p-2 text-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer"
+                        />
+                      </div>
+                      <div>
+                        <label className="text-xs text-gray-500 mb-1 block">Waktu <span className="text-gray-400">(opsional)</span></label>
+                        <TimePicker
+                          value={customerDeadlineTime}
+                          onChange={(time) => setCustomerDeadlineTime(time)}
+                          placeholder="Pilih waktu"
+                          className="w-full rounded-lg border border-gray-300 p-2 text-sm bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01]"
+                        />
+                      </div>
+                    </div>
+                    {customerDeadline && (
+                      <p className="text-xs text-gray-500 mt-2 flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        Selesai sebelum: {(() => {
+                          const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                          const parts = customerDeadline.split('-');
+                          const day = parseInt(parts[2], 10);
+                          const month = months[parseInt(parts[1], 10) - 1];
+                          return `${day} ${month} ${parts[0]}`;
+                        })()}
+                        {customerDeadlineTime && ` pukul ${customerDeadlineTime}`}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 

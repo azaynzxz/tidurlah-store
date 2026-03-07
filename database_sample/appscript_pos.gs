@@ -86,7 +86,8 @@ function setupSpreadsheet() {
     "Promo Discount",
     "Design Note",
     "Is Shipping",
-    "Address"
+    "Address",
+    "Deadline"
   ];
   setupSheetHeaders(ordersSheet, ordersHeaders, "#FF5E01");
   
@@ -112,6 +113,7 @@ function setupSpreadsheet() {
   ordersSheet.setColumnWidth(19, 200); // Design Note
   ordersSheet.setColumnWidth(20, 90);  // Is Shipping
   ordersSheet.setColumnWidth(21, 250); // Address
+  ordersSheet.setColumnWidth(22, 140); // Deadline
   
   // Format currency columns (H:L = Subtotal through Remaining Balance)
   ordersSheet.getRange("H:L").setNumberFormat("#,##0");
@@ -184,7 +186,7 @@ function setupSpreadsheet() {
     "Customer Phone", "Institution", "Subtotal", "Discount", "Total",
     "Down Payment", "Remaining Balance", "Payment Method", "Order Status",
     "Item Count", "Items Summary", "Promo Code", "Promo Discount",
-    "Design Note", "Is Shipping", "Address",
+    "Design Note", "Is Shipping", "Address", "Deadline",
     "Deleted At", "Deleted By"
   ];
   setupSheetHeaders(trashSheet, trashHeaders, "#EA4335");
@@ -203,10 +205,10 @@ function setupSpreadsheet() {
   
   Logger.log("");
   Logger.log("✅ Setup complete! Sheets created:");
-  Logger.log("   📄 Orders (21 columns)");
+  Logger.log("   📄 Orders (22 columns)");
   Logger.log("   📄 Order_Items (13 columns)");
   Logger.log("   📄 Deliveries (6 columns)");
-  Logger.log("   📄 Trash (23 columns)");
+  Logger.log("   📄 Trash (24 columns)");
   Logger.log("");
   Logger.log("Next step: Deploy as Web App and update POS_GOOGLE_SHEETS_URL");
 }
@@ -340,7 +342,8 @@ function processNewOrder(data) {
       data.promoDiscount || 0,
       data.designNote || "",
       data.isShipping ? "Ya" : "",
-      data.address || ""
+      data.address || "",
+      data.deadline || ""
     ];
     
     ordersSheet.appendRow(orderRow);
@@ -507,7 +510,7 @@ function getRecentOrders(e) {
     }
     
     // Read all orders (we filter in memory for flexibility)
-    var numCols = 21; // Updated column count
+    var numCols = 22; // Updated column count (includes Deadline)
     var allOrders = ordersSheet.getRange(2, 1, lastRow - 1, numCols).getValues();
     
     // Build items lookup: orderId -> items[]
@@ -570,6 +573,7 @@ function getRecentOrders(e) {
         designNote: row[18],
         isShipping: row[19],
         address: row[20],
+        deadline: row[21],
         items: itemsMap[orderId] || []
       });
     }
@@ -790,7 +794,8 @@ function migrateOldData() {
       0,   // Promo Discount
       "",  // Design Note
       "",  // Is Shipping
-      ""   // Address
+      "",  // Address
+      ""   // Deadline
     ];
     ordersSheet.appendRow(orderRow);
     
@@ -1149,7 +1154,13 @@ function deleteOrder(data) {
       trashSheet = ss.insertSheet("Trash");
     }
     
-    var ordersData = ordersSheet.getDataRange().getValues();
+    var lastRow = ordersSheet.getLastRow();
+    if (lastRow <= 1) {
+      return createJsonResponse({ success: false, error: "No orders to delete" });
+    }
+    
+    // Read all 22 order columns explicitly (getDataRange may miss empty trailing columns like Deadline)
+    var ordersData = ordersSheet.getRange(1, 1, lastRow, 22).getValues();
     var foundRow = -1;
     
     for (var i = 1; i < ordersData.length; i++) {
@@ -1163,7 +1174,7 @@ function deleteOrder(data) {
       return createJsonResponse({ success: false, error: "Order not found: " + orderId });
     }
     
-    // Copy row to Trash with deletion metadata
+    // Copy row to Trash with deletion metadata (all 22 order columns + 2 metadata)
     var orderRow = ordersData[foundRow];
     var trashRow = orderRow.slice(); // Clone
     trashRow.push(Utilities.formatDate(new Date(), "Asia/Jakarta", "dd/MM/yyyy HH:mm:ss")); // Deleted At
