@@ -1,5 +1,6 @@
 import type { PromoCodeType, PromotedProductType, CaseVariant, CategoryItem } from '@/types/product';
 import { CreditCard, Megaphone, Gift, Flower } from 'lucide-react';
+import * as React from 'react';
 
 // Valid promo codes with their discount percentage
 export const validPromoCodes: Record<string, PromoCodeType> = {
@@ -83,8 +84,9 @@ export const JASA_DESAIN_PRICE = 25000;
 export const categories = [
   { id: "ID Card & Lanyard", name: "ID Card", icon: CreditCard, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
   { id: "Media Promosi", name: "Banner", icon: Megaphone, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
-  { id: "Merchandise", name: "Merchandise", icon: Gift, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
-  { id: "Papan Bunga", name: "Papan Bunga", icon: Flower, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground", tooltip: "Dikelola oleh @papan_idcraft" }
+  { id: "Merchandise", name: "Merch", icon: Gift, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" },
+  { id: "Papan Bunga", name: "Papan Bunga", icon: Flower, color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground", tooltip: "Dikelola oleh @papan_idcraft" },
+  { id: "Apparel", name: "Apparel", icon: (props: any) => React.createElement('span', { className: `material-symbols-outlined ${props.className || ''}` }, 'apparel'), color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" }
 ];
 
 // Product version for cache busting

@@ -33,7 +33,7 @@ if (typeof document !== 'undefined') {
   if (!document.querySelector('link[href*="material+symbols"]')) {
     const link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=category,mail,language,location_on,poll,description,pending';
+    link.href = 'https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=category,mail,language,location_on,poll,description,pending,apparel,checkroom';
     document.head.appendChild(link);
   }
 }
@@ -492,7 +492,7 @@ const Index = () => {
                       <span className="material-symbols-outlined text-[#FF5E01] mr-1" style={{ fontSize: '16px' }}>category</span>
                       Kategori Produk:
                     </h2>
-                    <div className="grid grid-cols-4 lg:grid-cols-4 gap-2 pt-0">
+                    <div className="grid grid-cols-5 lg:grid-cols-5 gap-2 pt-0">
                       {categories.map(category => {
                         const IconComponent = category.icon;
                         const isActive = activeTab === category.id;
@@ -531,7 +531,7 @@ const Index = () => {
                                   setActiveCategory("");
                                 }
                               }}
-                              className={`p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px] ${isActive
+                              className={`p-2 lg:p-3 rounded-lg shadow-sm flex flex-col items-center justify-center space-y-2 cursor-pointer transition-all duration-200 hover:scale-105 min-h-[80px] ${isActive
                                 ? `${category.color} ${category.textColor}`
                                 : `${category.inactiveColor} ${category.inactiveText} ${category.hoverColor}`
                                 }`}

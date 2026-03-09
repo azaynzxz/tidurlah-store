@@ -1053,147 +1053,6 @@
       "is_available": true
     },
     {
-      "id": 101,
-      "name": "Gelang Tiket Kertas",
-      "image": "/product-image/New Product/GELANG-TIKET.webp",
-      "additionalImages": [],
-      "description": "Gelang tiket bahan kertas untuk event, konser, dan seminar.",
-      "price": 1000,
-      "discountPrice": null,
-      "category": "Merchandise",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 1000
-        },
-        {
-          "minQuantity": 3000,
-          "price": 950
-        },
-        {
-          "minQuantity": 5000,
-          "price": 800
-        },
-        {
-          "minQuantity": 7000,
-          "price": 750
-        },
-        {
-          "minQuantity": 9000,
-          "price": 700
-        },
-        {
-          "minQuantity": 20001,
-          "price": 520
-        }
-      ],
-      "time": "3-5 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
-      "id": 102,
-      "name": "Gelang Tiket Tissue",
-      "image": "/product-image/New Product/GELANG-TIKET-TISSUE.webp",
-      "additionalImages": [
-        "/product-image/New Product/GELANG-TIKET-TISSUE-2.webp"
-      ],
-      "description": "Gelang tiket premium bahan tissue, nyaman dipakai. Sudah termasuk cetak, potong, dan pengunci.",
-      "price": 3500,
-      "discountPrice": null,
-      "category": "Merchandise",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 3500
-        },
-        {
-          "minQuantity": 2001,
-          "price": 3000
-        },
-        {
-          "minQuantity": 5001,
-          "price": 2500
-        },
-        {
-          "minQuantity": 10001,
-          "price": 2000
-        }
-      ],
-      "time": "7-25 hari",
-      "rating": 4.9,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
-      "id": 23,
-      "name": "Sablon Kaos",
-      "image": "/product-image/t-shirt-1.webp",
-      "additionalImages": [
-        "/product-image/t-shirt-2.webp",
-        "/product-image/t-shirt-3.webp"
-      ],
-      "description": "Kaos sablon custom dengan desain Anda.",
-      "price": 75000,
-      "discountPrice": null,
-      "category": "Merchandise",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 75000
-        },
-        {
-          "minQuantity": 4,
-          "price": 70000
-        },
-        {
-          "minQuantity": 25,
-          "price": 65000
-        },
-        {
-          "minQuantity": 100,
-          "price": 60000
-        }
-      ],
-      "time": "5-7 hari",
-      "rating": 4.7,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
-      "id": 105,
-      "name": "Baju PDH",
-      "image": "/product-image/Merch/baju-pdh.webp",
-      "additionalImages": [],
-      "description": "Baju PDH custom berkualitas untuk keperluan organisasi/komunitas.",
-      "price": 120000,
-      "discountPrice": null,
-      "category": "Merchandise",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 120000
-        },
-        {
-          "minQuantity": 51,
-          "price": 115000
-        },
-        {
-          "minQuantity": 100,
-          "price": 110000
-        },
-        {
-          "minQuantity": 300,
-          "price": 105000
-        }
-      ],
-      "time": "2-4 Minggu",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true
-    },
-    {
       "id": 2100,
       "name": "Plakat Akrilik UV",
       "image": "/product-image/Merch/Plakat-UV/UV-1.webp",
@@ -1535,6 +1394,149 @@
       "unit": "order",
       "is_available": true,
       "isCustomizable": true
+    }
+  ],
+  "Apparel": [
+    {
+      "id": 101,
+      "name": "Gelang Tiket Kertas",
+      "image": "/product-image/New Product/GELANG-TIKET.webp",
+      "additionalImages": [],
+      "description": "Gelang tiket bahan kertas untuk event, konser, dan seminar.",
+      "price": 1000,
+      "discountPrice": null,
+      "category": "Apparel",
+      "priceThresholds": [
+        {
+          "minQuantity": 1,
+          "price": 1000
+        },
+        {
+          "minQuantity": 3000,
+          "price": 950
+        },
+        {
+          "minQuantity": 5000,
+          "price": 800
+        },
+        {
+          "minQuantity": 7000,
+          "price": 750
+        },
+        {
+          "minQuantity": 9000,
+          "price": 700
+        },
+        {
+          "minQuantity": 20001,
+          "price": 520
+        }
+      ],
+      "time": "3-5 hari",
+      "rating": 4.8,
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 102,
+      "name": "Gelang Tiket Tissue",
+      "image": "/product-image/New Product/GELANG-TIKET-TISSUE.webp",
+      "additionalImages": [
+        "/product-image/New Product/GELANG-TIKET-TISSUE-2.webp"
+      ],
+      "description": "Gelang tiket premium bahan tissue, nyaman dipakai. Sudah termasuk cetak, potong, dan pengunci.",
+      "price": 3500,
+      "discountPrice": null,
+      "category": "Apparel",
+      "priceThresholds": [
+        {
+          "minQuantity": 1,
+          "price": 3500
+        },
+        {
+          "minQuantity": 2001,
+          "price": 3000
+        },
+        {
+          "minQuantity": 5001,
+          "price": 2500
+        },
+        {
+          "minQuantity": 10001,
+          "price": 2000
+        }
+      ],
+      "time": "7-25 hari",
+      "rating": 4.9,
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 23,
+      "name": "Sablon Kaos DTF",
+      "image": "/product-image/t-shirt-1.webp",
+      "additionalImages": [
+        "/product-image/t-shirt-2.webp",
+        "/product-image/t-shirt-3.webp"
+      ],
+      "description": "Sablon Kaos DTF dengan kualitas warna solid dan sablon yang elastis tidak mudah pecah. Tersedia berbagai warna kaos.",
+      "price": 75000,
+      "discountPrice": null,
+      "category": "Apparel",
+      "priceThresholds": [
+        {
+          "minQuantity": 1,
+          "price": 75000
+        },
+        {
+          "minQuantity": 4,
+          "price": 70000
+        },
+        {
+          "minQuantity": 25,
+          "price": 65000
+        },
+        {
+          "minQuantity": 100,
+          "price": 60000
+        }
+      ],
+      "time": "5-7 hari",
+      "rating": 4.7,
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 105,
+      "name": "Baju PDH",
+      "image": "/product-image/Merch/baju-pdh.webp",
+      "additionalImages": [],
+      "description": "Baju PDH custom berkualitas untuk keperluan organisasi/komunitas.",
+      "price": 120000,
+      "discountPrice": null,
+      "category": "Apparel",
+      "priceThresholds": [
+        {
+          "minQuantity": 1,
+          "price": 120000
+        },
+        {
+          "minQuantity": 51,
+          "price": 115000
+        },
+        {
+          "minQuantity": 100,
+          "price": 110000
+        },
+        {
+          "minQuantity": 300,
+          "price": 105000
+        }
+      ],
+      "time": "2-4 Minggu",
+      "rating": 4.8,
+      "unit": "pcs",
+      "is_available": true
     }
   ]
 }
