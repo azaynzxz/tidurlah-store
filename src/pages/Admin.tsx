@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { LayoutDashboard, ShoppingCart, FileText } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
-import { OrdersTab } from "@/components/admin/OrdersTab";
+import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
 import { POSHeader } from "@/components/pos/POSHeader";
 
@@ -46,7 +46,7 @@ export default function Admin() {
             {/* Content */}
             <div className="max-w-4xl mx-auto p-4">
                 {activeTab === 'dashboard' && <DashboardTab />}
-                {activeTab === 'orders' && <OrdersTab />}
+                {activeTab === 'orders' && <OrderHistory />}
                 {activeTab === 'reports' && <ReportsTab />}
             </div>
         </div>

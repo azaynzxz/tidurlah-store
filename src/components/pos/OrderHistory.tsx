@@ -10,7 +10,7 @@ import { EditOrderModal } from "./EditOrderModal";
 import { submitPOSOrder } from "@/utils/api";
 
 interface OrderHistoryProps {
-  onBack: () => void;
+  onBack?: () => void;
   cashierName?: string;
 }
 
@@ -344,9 +344,11 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" onClick={onBack}>
-              <ArrowLeft className="w-4 h-4" />
-            </Button>
+            {onBack && (
+              <Button variant="ghost" size="sm" onClick={onBack}>
+                <ArrowLeft className="w-4 h-4" />
+              </Button>
+            )}
             <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
           </div>
           <Button variant="outline" size="sm" onClick={() => { refreshFromAPI(); }} disabled={isLoading} title="Refresh dari server">
