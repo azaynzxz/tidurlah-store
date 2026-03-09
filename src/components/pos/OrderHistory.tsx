@@ -282,12 +282,20 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       msg += `\n`;
     }
 
+    msg += `*Total Pesanan:* ${formatCurrency(order.total)}\n`;
+    if (order.downPayment > 0) {
+      msg += `*Sudah Dibayar (DP):* ${formatCurrency(order.downPayment)}\n`;
+      msg += `*Sisa Pembayaran:* ${formatCurrency(order.remainingBalance || 0)}\n\n`;
+    } else {
+      msg += `*Sisa Pembayaran:* ${formatCurrency(order.remainingBalance !== undefined ? order.remainingBalance : order.total)}\n\n`;
+    }
+
     if (hasShipping) {
       msg += `*Tujuan Pengiriman:*\n${shippingAddr}\n\n`;
       msg += `Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
       msg += `*Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
     } else {
-      msg += `*Pengambilan di Toko:*\nidcardlampung.com/hello\n\n`;
+      msg += `*Pengambilan di Toko:*\nhttps://idcardlampung.com/hello\n\n`;
       msg += `Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
       msg += `*Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
     }
