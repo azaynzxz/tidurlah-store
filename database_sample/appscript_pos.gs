@@ -306,7 +306,7 @@ function processNewOrder(data) {
     lock.waitLock(10000);
     
     var orderId = data.receiptId || ("TRX-" + Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyyMMddHHmmss"));
-    var timestamp = Utilities.formatDate(new Date(), "Asia/Jakarta", "dd/MM/yyyy HH:mm:ss");
+    var timestamp = Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss");
     var channel = data.channel || "pos";
     
     // Normalize phone number
@@ -908,18 +908,35 @@ function parseOrderDate(cellValue) {
     return cellValue;
   }
   
-  // If it's a string like "dd/MM/yyyy HH:mm:ss" or "M/d/yyyy HH:mm:ss"
+  // If it's a string like "dd/MM/yyyy HH:mm:ss" or "yyyy-MM-dd HH:mm:ss"
   var str = String(cellValue);
   var datePart = str.split(" ")[0];
   if (!datePart) return null;
   
   var parts = datePart.split("/");
-  if (parts.length < 3) return null;
+  var day, month, year;
   
-  // Try dd/MM/yyyy first (day/month/year)
-  var day = parseInt(parts[0]);
-  var month = parseInt(parts[1]);
-  var year = parseInt(parts[2]);
+  if (parts.length >= 3) {
+    // Try dd/MM/yyyy first (day/month/year)
+    day = parseInt(parts[0]);
+    month = parseInt(parts[1]);
+    year = parseInt(parts[2]);
+  } else {
+    parts = datePart.split("-");
+    if (parts.length >= 3) {
+      if (parts[0].length === 4) { // yyyy-MM-dd
+        year = parseInt(parts[0]);
+        month = parseInt(parts[1]);
+        day = parseInt(parts[2]);
+      } else { // dd-MM-yyyy
+        day = parseInt(parts[0]);
+        month = parseInt(parts[1]);
+        year = parseInt(parts[2]);
+      }
+    } else {
+      return null;
+    }
+  }
   
   if (year < 100) year += 2000;
   if (month >= 1 && month <= 12 && day >= 1 && day <= 31) {
@@ -1177,7 +1194,7 @@ function deleteOrder(data) {
     // Copy row to Trash with deletion metadata (all 22 order columns + 2 metadata)
     var orderRow = ordersData[foundRow];
     var trashRow = orderRow.slice(); // Clone
-    trashRow.push(Utilities.formatDate(new Date(), "Asia/Jakarta", "dd/MM/yyyy HH:mm:ss")); // Deleted At
+    trashRow.push(Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss")); // Deleted At
     trashRow.push(data.deletedBy || "Unknown"); // Deleted By
     trashSheet.appendRow(trashRow);
     
