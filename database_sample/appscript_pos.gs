@@ -649,6 +649,28 @@ function getRecentOrders(e) {
       }
     }
     
+    // Build deliveries mapping: orderId -> delivery object
+    var deliveriesMap = {};
+    var dSheet = ss.getSheetByName("Deliveries");
+    var tdSheet = ss.getSheetByName("Trash_Deliveries");
+    
+    function mapDeliveries(sheet) {
+      if (sheet && sheet.getLastRow() > 1) {
+        var dData = sheet.getDataRange().getValues();
+        for (var i = 1; i < dData.length; i++) {
+          deliveriesMap[dData[i][0]] = {
+            recipientName: dData[i][1],
+            recipientPhone: dData[i][2],
+            address: dData[i][3],
+            shippingCost: dData[i][4],
+            status: dData[i][5]
+          };
+        }
+      }
+    }
+    mapDeliveries(dSheet);
+    mapDeliveries(tdSheet);
+    
     // Filter and map orders
     var orders = [];
     
@@ -702,6 +724,7 @@ function getRecentOrders(e) {
         isShipping: row[19],
         address: row[20],
         deadline: row[21],
+        delivery: deliveriesMap[orderId] || null,
         items: itemsMap[orderId] || []
       });
     }

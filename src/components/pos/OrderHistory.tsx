@@ -1,7 +1,8 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check } from "lucide-react";
+import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
@@ -263,15 +264,42 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     if (!order.customerPhone) return;
     const phone = formatPhoneForWA(order.customerPhone);
     const name = order.customerName || 'Pelanggan';
-    const hasShipping = !!order.address;
-    let msg = `Halo kak ${name}, pesanan kakak dengan nomor invoice ${order.orderId} sudah selesai di proses.`;
-    if (hasShipping) {
-      msg += ` Untuk pengiriman, akan kami proses segera ya kak.\n\nDimohon untuk melakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Cek kembali pesanan kakak, barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
-    } else {
-      msg += ` Pengambilan bisa di toko: tidurlah.com/hello\n\nDimohon untuk konfirmasi kapan ingin mengambil, dan melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar/dikembalikan.`;
+
+    // Check for shipping address (from order.address or nested order.delivery.address)
+    const shippingAddr = order.delivery?.address || order.address;
+    const hasShipping = !!shippingAddr;
+
+    let msg = `*PESANAN SELESAI* \u2705\n\n`;
+    msg += `Halo Kak *${name}*,\n`;
+    msg += `Pesanan dengan nomor invoice *${order.orderId}* sudah selesai diproses.\n\n`;
+
+    // Add items list
+    if (order.items && order.items.length > 0) {
+      msg += `*Detail Pesanan:*\n`;
+      order.items.forEach(item => {
+        msg += `- ${item.name} (${item.quantity}x)\n`;
+      });
+      msg += `\n`;
     }
-    msg += `\n\nSalam,\nTidurlah Grafika`;
+
+    if (hasShipping) {
+      msg += `\uD83D\uDCCD *Tujuan Pengiriman:*\n${shippingAddr}\n\n`;
+      msg += `\uD83D\uDCE6 Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
+      msg += `\u26A0\uFE0F *Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+    } else {
+      msg += `\uD83C\uDFEA *Pengambilan di Toko:*\n\uD83D\uDCCD tidurlah.com/hello\n\n`;
+      msg += `\uD83D\uDCAC Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
+      msg += `\u26A0\uFE0F *Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+    }
+
+    msg += `\n\nTerima kasih atas kepercayaannya! \uD83D\uDE4F\n*ID Card Lampung by Tidurlah Grafika*`;
+
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
+  };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success("Teks disalin ke clipboard!");
   };
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
@@ -606,6 +634,22 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           <div className="text-gray-500">DP</div><div>{formatCurrency(order.downPayment)}</div>
                           <div className="text-gray-500">Sisa</div><div className="font-medium text-red-600">{formatCurrency(order.remainingBalance)}</div>
                         </>}
+                        {(order.delivery?.address || order.address) && (
+                          <>
+                            <div className="text-gray-500">Alamat</div>
+                            <div className="flex items-center gap-1.5 group">
+                              <span className="truncate max-w-[150px] inline-block" title={order.delivery?.address || order.address}>
+                                {order.delivery?.address || order.address}
+                              </span>
+                              <button
+                                onClick={(e) => { e.stopPropagation(); copyToClipboard(order.delivery?.address || order.address || ''); }}
+                                className="p-0.5 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600 transition-colors"
+                              >
+                                <Copy className="w-3 h-3" />
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </div>
 
                       {order.items && order.items.length > 0 && (

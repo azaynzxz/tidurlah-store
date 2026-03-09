@@ -270,6 +270,13 @@ export interface OrderHistoryItem {
     dimensionText?: string;
     area?: string;
   }[];
+  delivery?: {
+    recipientName: string;
+    recipientPhone: string;
+    address: string;
+    shippingCost: number;
+    status: string;
+  } | null;
 }
 
 export const fetchOrderHistory = async (
