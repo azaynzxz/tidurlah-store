@@ -213,6 +213,74 @@ function setupSpreadsheet() {
   Logger.log("Next step: Deploy as Web App and update POS_GOOGLE_SHEETS_URL");
 }
 
+/**
+ * ============================================================
+ * ONE-TIME UTILITY: FIX SWAPPED DATES
+ * ============================================================
+ * Run this function ONCE from the Apps Script editor to fix orders
+ * where Google Sheets confused the day and month (e.g. Sept 3rd instead of March 9th).
+ */
+function fixSwappedDates() {
+  var ss = getSpreadsheet();
+  var ordersSheet = ss.getSheetByName("Orders");
+  var data = ordersSheet.getDataRange().getValues();
+  
+  var updatedCount = 0;
+  for (var i = 1; i < data.length; i++) {
+    var cellValue = data[i][1]; // Column B (Timestamp)
+    
+    if (!cellValue) continue;
+    
+    // 1) If Google Sheets parsed it as a Date object but swapped day/month
+    if (cellValue instanceof Date) {
+      var d = cellValue.getDate();
+      var m = cellValue.getMonth() + 1;
+      var y = cellValue.getFullYear();
+      
+      // Since your app launched recently, any month after March (m > 3) is likely reversed!
+      // Example: "09/03/2026" became September 3rd (Month 9, Day 3).
+      // It should be March 9th (Month 3, Day 9).
+      if (m > 3 && y === 2026) {
+        // Swap them back, ignoring time totally
+        var correctMonth = d;
+        var correctDay = m;
+        
+        var pad2 = function(n) { return (n < 10 ? '0' : '') + n; };
+        var newDateStr = y + "-" + pad2(correctMonth) + "-" + pad2(correctDay);
+        
+        ordersSheet.getRange(i + 1, 2).setValue(newDateStr);
+        updatedCount++;
+      }
+    } 
+    // 2) If it's a raw string in the old dd/MM/yyyy format, convert it to yyyy-MM-dd
+    else if (typeof cellValue === "string") {
+      var str = cellValue.trim();
+      
+      // Ignore the time format entirely, just grab the date.
+      // E.g., "07/03/2026 12:01:53" -> "07/03/2026"
+      var datePart = str.split(" ")[0];
+      
+      if (datePart.indexOf("/") !== -1) {
+        var dateParts = datePart.split("/");
+        if (dateParts.length === 3) {
+          // Indonesian format is explicitly dd/MM/yyyy
+          var day = dateParts[0];
+          var month = dateParts[1];
+          var year = dateParts[2];
+          
+          var pad2Str = function(n) { return (parseInt(n) < 10 && String(n).length === 1 ? '0' : '') + n; };
+          var newDateStr = year + "-" + pad2Str(month) + "-" + pad2Str(day); // Only output yyyy-MM-dd
+          
+          ordersSheet.getRange(i + 1, 2).setValue(newDateStr);
+          updatedCount++;
+        }
+      }
+    }
+  }
+  
+  Logger.log("✅ Done fixing dates! Updated " + updatedCount + " rows.");
+}
+
 
 // ============================================================
 // WEB APP HANDLERS — These handle incoming requests
@@ -908,34 +976,43 @@ function parseOrderDate(cellValue) {
     return cellValue;
   }
   
-  // If it's a string like "dd/MM/yyyy HH:mm:ss" or "yyyy-MM-dd HH:mm:ss"
-  var str = String(cellValue);
-  var datePart = str.split(" ")[0];
+  var str = String(cellValue).trim();
+  var datePart = str.split(" ")[0]; // handles "2026-03-02" or "10/7/2025" or "10/7/2025 11:03:36"
   if (!datePart) return null;
   
-  var parts = datePart.split("/");
+  var partsSlash = datePart.split("/");
+  var partsDash = datePart.split("-");
   var day, month, year;
   
-  if (parts.length >= 3) {
-    // Try dd/MM/yyyy first (day/month/year)
-    day = parseInt(parts[0]);
-    month = parseInt(parts[1]);
-    year = parseInt(parts[2]);
-  } else {
-    parts = datePart.split("-");
-    if (parts.length >= 3) {
-      if (parts[0].length === 4) { // yyyy-MM-dd
-        year = parseInt(parts[0]);
-        month = parseInt(parts[1]);
-        day = parseInt(parts[2]);
-      } else { // dd-MM-yyyy
-        day = parseInt(parts[0]);
-        month = parseInt(parts[1]);
-        year = parseInt(parts[2]);
-      }
+  if (partsSlash.length >= 3) {
+    var p0 = parseInt(partsSlash[0], 10);
+    var p1 = parseInt(partsSlash[1], 10);
+    year = parseInt(partsSlash[2], 10);
+    
+    // US format MM/dd/yyyy if year is 2025 (migrated data) or if p0 <= 12 and p1 > 12
+    if ((year === 2025 && p0 <= 12 && p1 <= 31) || (p0 <= 12 && p1 > 12)) {
+      month = p0;
+      day = p1;
     } else {
-      return null;
+      // Indonesian format dd/MM/yyyy
+      day = p0;
+      month = p1;
     }
+  } else if (partsDash.length >= 3) {
+    var d0 = parseInt(partsDash[0], 10);
+    var d1 = parseInt(partsDash[1], 10);
+    var d2 = parseInt(partsDash[2], 10);
+    
+    if (String(partsDash[0]).length === 4) { // yyyy-MM-dd
+      year = d0; month = d1; day = d2;
+    } else { // dd-MM-yyyy
+      day = d0; month = d1; year = d2;
+    }
+  } else {
+    // Ultimate fallback for custom or standard date formats correctly parsed by JS natively
+    var d = new Date(str);
+    if (!isNaN(d.getTime())) return d;
+    return null;
   }
   
   if (year < 100) year += 2000;
