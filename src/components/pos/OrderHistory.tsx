@@ -27,7 +27,6 @@ const CHANNEL_OPTIONS = [
   { value: 'pos', label: 'POS' },
   { value: 'website', label: 'Web' },
   { value: 'migrated', label: 'Old' },
-  { value: 'trash', label: 'Terhapus' },
 ];
 
 function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
@@ -411,12 +410,31 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           <select
             value={sortMode}
             onChange={e => setSortMode(e.target.value)}
-            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01] ml-1"
+            className={`text-xs font-semibold border rounded-lg px-2 py-1 bg-white cursor-pointer focus:outline-none focus:ring-1 ml-1 ${channelFilter === 'trash' ? 'border-gray-200 text-gray-400 opacity-50' : 'border-gray-300 text-gray-700 focus:ring-[#FF5E01] focus:border-[#FF5E01]'
+              }`}
+            disabled={channelFilter === 'trash'}
           >
             <option value="priority">Status</option>
             <option value="deadline_asc">Deadline Terdekat</option>
             <option value="name_asc">Nama (A-Z)</option>
           </select>
+
+          {/* Tong Sampah Button */}
+          <button
+            onClick={() => {
+              setChannelFilter(channelFilter === 'trash' ? 'all' : 'trash');
+              // Auto reset status filter when entering trash view
+              if (channelFilter !== 'trash') setStatusFilter('all');
+            }}
+            title="Lihat Pesanan Terhapus"
+            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold transition-all ml-1 border ${channelFilter === 'trash'
+              ? 'bg-red-500 text-white border-red-500 shadow-sm'
+              : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300'
+              }`}
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span className="hidden sm:inline">Sampah</span>
+          </button>
 
           {/* Results count + view toggle */}
           <div className="flex flex-1 sm:flex-none items-center justify-between sm:justify-end gap-3 ml-auto">
