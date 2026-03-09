@@ -344,8 +344,13 @@ function doPost(e) {
     if (data.action === "deleteOrder") {
       return deleteOrder(data);
     }
+
+    // Check if it's a restore
+    if (data.action === "restoreOrder") {
+      return restoreOrder(data);
+    }
     
-    // Otherwise, treat as new order submission
+    // Otherwise, treat as new order submission or order edit.
     return processNewOrder(data);
     
   } catch (error) {
@@ -380,6 +385,44 @@ function processNewOrder(data) {
     // Normalize phone number
     var phone = normalizePhone(data.phoneNumber || "");
     
+    // If it's an edit, we delete the existing order completely first.
+    if (data.isEdit) {
+      var oSheet = ss.getSheetByName("Orders");
+      var iSheet = ss.getSheetByName("Order_Items");
+      var dSheet = ss.getSheetByName("Deliveries");
+      var tTrash = ss.getSheetByName("Trash");
+      
+      // Delete from Orders
+      var oData = oSheet.getDataRange().getValues();
+      for (var o = oData.length - 1; o >= 1; o--) {
+        if (String(oData[o][0]) === String(orderId)) oSheet.deleteRow(o + 1);
+      }
+      
+      // Delete from Order_Items
+      if (iSheet) {
+        var iData = iSheet.getDataRange().getValues();
+        for (var o = iData.length - 1; o >= 1; o--) {
+          if (String(iData[o][0]) === String(orderId)) iSheet.deleteRow(o + 1);
+        }
+      }
+      
+      // Delete from Deliveries
+      if (dSheet) {
+        var dData = dSheet.getDataRange().getValues();
+        for (var o = dData.length - 1; o >= 1; o--) {
+          if (String(dData[o][0]) === String(orderId)) dSheet.deleteRow(o + 1);
+        }
+      }
+
+      // Also ensure it is removed from Trash if it was deleted previously
+      if (tTrash) {
+        var tData = tTrash.getDataRange().getValues();
+        for (var o = tData.length - 1; o >= 1; o--) {
+          if (String(tData[o][0]) === String(orderId)) tTrash.deleteRow(o + 1);
+        }
+      }
+    }
+
     // --- 1. Write to Orders sheet ---
     var ordersSheet = ss.getSheetByName("Orders");
     
@@ -608,13 +651,30 @@ function getRecentOrders(e) {
     
     // Filter and map orders
     var orders = [];
-    for (var j = allOrders.length - 1; j >= 0 && orders.length < limit; j--) {
-      var row = allOrders[j];
+    
+    // To support Trash viewer, if includeTrash filter is passed we search the Trash sheet instead
+    var isTrashView = (e && e.parameter && e.parameter.channel === "trash");
+    
+    var sourceOrdersData = allOrders;
+    var activeSheetName = "Orders";
+
+    if (isTrashView) {
+      var trashSheet = ss.getSheetByName("Trash");
+      if (trashSheet && trashSheet.getLastRow() > 1) {
+        sourceOrdersData = trashSheet.getRange(2, 1, trashSheet.getLastRow() - 1, 22).getValues();
+        activeSheetName = "Trash";
+      } else {
+        sourceOrdersData = [];
+      }
+    }
+
+    for (var j = sourceOrdersData.length - 1; j >= 0 && orders.length < limit; j--) {
+      var row = sourceOrdersData[j];
       var orderId = row[0];
       if (!orderId) continue;
       
-      // Apply channel filter
-      if (channelFilter && row[2] !== channelFilter) continue;
+      // Apply channel filter (skip if we are looking at Trash explicitly since ALL items mapped from Trash get "deleted" status visually)
+      if (!isTrashView && channelFilter && row[2] !== channelFilter) continue;
       
       // Apply cashier filter
       if (cashierFilter && row[3] !== cashierFilter) continue;
@@ -633,7 +693,7 @@ function getRecentOrders(e) {
         downPayment: row[10],
         remainingBalance: row[11],
         paymentMethod: row[12],
-        orderStatus: row[13],
+        orderStatus: isTrashView ? "deleted" : row[13],
         itemCount: row[14],
         itemsSummary: row[15],
         promoCode: row[16],
@@ -1278,24 +1338,35 @@ function deleteOrder(data) {
     // Delete from Orders
     ordersSheet.deleteRow(foundRow + 1);
     
-    // Also delete related items from Order_Items
+    // Also delete related items from Order_Items and copy to Trash_Items
     var itemsSheet = ss.getSheetByName("Order_Items");
+    var trashItemsSheet = getOrCreateSheet(ss, "Trash_Items");
+    
     if (itemsSheet) {
+      if (trashItemsSheet.getLastRow() === 0) {
+        trashItemsSheet.appendRow(itemsSheet.getRange(1, 1, 1, itemsSheet.getLastColumn()).getValues()[0]);
+      }
       var itemsData = itemsSheet.getDataRange().getValues();
       // Delete from bottom to top to avoid row shifting issues
       for (var j = itemsData.length - 1; j >= 1; j--) {
         if (String(itemsData[j][0]) === String(orderId)) {
+          trashItemsSheet.appendRow(itemsData[j]);
           itemsSheet.deleteRow(j + 1);
         }
       }
     }
     
-    // Also delete from Deliveries if exists
+    // Also delete from Deliveries and copy to Trash_Deliveries if exists
     var deliveriesSheet = ss.getSheetByName("Deliveries");
+    var trashDeliveriesSheet = getOrCreateSheet(ss, "Trash_Deliveries");
     if (deliveriesSheet) {
+      if (trashDeliveriesSheet.getLastRow() === 0) {
+        trashDeliveriesSheet.appendRow(deliveriesSheet.getRange(1, 1, 1, deliveriesSheet.getLastColumn()).getValues()[0]);
+      }
       var delData = deliveriesSheet.getDataRange().getValues();
       for (var k = delData.length - 1; k >= 1; k--) {
         if (String(delData[k][0]) === String(orderId)) {
+          trashDeliveriesSheet.appendRow(delData[k]);
           deliveriesSheet.deleteRow(k + 1);
         }
       }
@@ -1310,5 +1381,82 @@ function deleteOrder(data) {
     
   } catch (error) {
     return createJsonResponse({ success: false, error: "Delete error: " + error.message });
+  }
+}
+
+/**
+ * Restore an order from Trash back to Orders
+ */
+function restoreOrder(data) {
+  var ss = getSpreadsheet();
+  var lock = LockService.getScriptLock();
+  
+  try {
+    lock.waitLock(10000);
+    
+    var orderId = data.orderId;
+    if (!orderId) {
+      return createJsonResponse({ success: false, error: "orderId is required" });
+    }
+    
+    var trashSheet = ss.getSheetByName("Trash");
+    var ordersSheet = ss.getSheetByName("Orders");
+    
+    if (!trashSheet || !ordersSheet) {
+      return createJsonResponse({ success: false, error: "Sheets not found" });
+    }
+    
+    var trashData = trashSheet.getDataRange().getValues();
+    var foundRow = -1;
+    for (var i = 1; i < trashData.length; i++) {
+        if (String(trashData[i][0]) === String(orderId)) {
+            foundRow = i;
+            break;
+        }
+    }
+
+    if (foundRow === -1) {
+      return createJsonResponse({ success: false, error: "Order not found in Trash: " + orderId });
+    }
+
+    // Move back to Orders (strip the 2 deleted metadata columns)
+    var orderRow = trashData[foundRow].slice(0, 22);
+    ordersSheet.appendRow(orderRow);
+    trashSheet.deleteRow(foundRow + 1);
+
+    // Restore Items
+    var trashItemsSheet = ss.getSheetByName("Trash_Items");
+    var itemsSheet = ss.getSheetByName("Order_Items");
+    if (trashItemsSheet && itemsSheet) {
+      var tItemsData = trashItemsSheet.getDataRange().getValues();
+      for (var j = tItemsData.length - 1; j >= 1; j--) {
+        if (String(tItemsData[j][0]) === String(orderId)) {
+          itemsSheet.appendRow(tItemsData[j]);
+          trashItemsSheet.deleteRow(j + 1);
+        }
+      }
+    }
+
+    // Restore Deliveries
+    var trashDelSheet = ss.getSheetByName("Trash_Deliveries");
+    var delSheet = ss.getSheetByName("Deliveries");
+    if (trashDelSheet && delSheet) {
+      var tDelData = trashDelSheet.getDataRange().getValues();
+      for (var k = tDelData.length - 1; k >= 1; k--) {
+        if (String(tDelData[k][0]) === String(orderId)) {
+          delSheet.appendRow(tDelData[k]);
+          trashDelSheet.deleteRow(k + 1);
+        }
+      }
+    }
+
+    lock.releaseLock();
+    
+    return createJsonResponse({
+      success: true,
+      message: "Order restored successfully"
+    });
+  } catch (error) {
+    return createJsonResponse({ success: false, error: "Restore error: " + error.message });
   }
 }

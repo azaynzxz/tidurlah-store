@@ -5,7 +5,9 @@ import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, Ch
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
-import { updateOrderStatus, deleteOrder, clearAdminCache } from "@/utils/adminApi";
+import { updateOrderStatus, deleteOrder, clearAdminCache, restoreOrder } from "@/utils/adminApi";
+import { EditOrderModal } from "./EditOrderModal";
+import { submitPOSOrder } from "@/utils/api";
 
 interface OrderHistoryProps {
   onBack: () => void;
@@ -25,6 +27,7 @@ const CHANNEL_OPTIONS = [
   { value: 'pos', label: 'POS' },
   { value: 'website', label: 'Web' },
   { value: 'migrated', label: 'Old' },
+  { value: 'trash', label: 'Terhapus' },
 ];
 
 function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
@@ -88,12 +91,16 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const [statusFilter, setStatusFilter] = useState<string>('partial');
   const [channelFilter, setChannelFilter] = useState<string>('all');
+  const [sortMode, setSortMode] = useState<string>('priority');
+  const [editingOrder, setEditingOrder] = useState<OrderHistoryItem | null>(null);
 
   useEffect(() => {
-    // Cache-first: load from localStorage cache immediately
-    const cached = localStorage.getItem('orderHistory_cache');
-    if (cached) {
-      try { setOrders(JSON.parse(cached)); } catch { }
+    // Cache-first: load from localStorage cache immediately (unless trash is selected)
+    if (channelFilter !== 'trash') {
+      const cached = localStorage.getItem('orderHistory_cache');
+      if (cached) {
+        try { setOrders(JSON.parse(cached)); } catch { }
+      }
     }
     loadImages();
   }, []);
@@ -110,15 +117,19 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     }
   };
 
-  // Only fetch from API when user clicks refresh
-  const refreshFromAPI = async () => {
+  // Only fetch from API when user clicks refresh or changes to trash tab
+  const refreshFromAPI = async (forceChannel?: string) => {
     setIsLoading(true);
     setLoadError("");
     try {
-      const result = await fetchOrderHistory({ limit: 100 });
-      if (result.success && result.orders.length > 0) {
+      const activeChannel = forceChannel ?? channelFilter;
+      const chParam = activeChannel === 'trash' ? 'trash' : undefined;
+      const result = await fetchOrderHistory({ limit: 100, channel: chParam });
+      if (result.success && result.orders) {
         setOrders(result.orders);
-        localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
+        if (activeChannel !== 'trash') {
+          localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
+        }
       } else if (result.error) {
         setLoadError("Gagal memuat: " + result.error);
       }
@@ -128,6 +139,19 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (channelFilter === 'trash') {
+      refreshFromAPI('trash');
+    } else {
+      // when switching back from trash, load cache fast, then refresh
+      const cached = localStorage.getItem('orderHistory_cache');
+      if (cached) {
+        try { setOrders(JSON.parse(cached)); } catch { }
+      }
+      refreshFromAPI(channelFilter);
+    }
+  }, [channelFilter]);
 
   // Compute status counts for filter badges
   const statusCounts = useMemo(() => {
@@ -148,7 +172,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     }
 
     // Channel filter
-    if (channelFilter !== 'all') {
+    if (channelFilter !== 'all' && channelFilter !== 'trash') {
       result = result.filter(o => (o.channel || '') === channelFilter);
     }
 
@@ -162,15 +186,40 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       );
     }
 
-    // Priority sort: pending → partial → done
-    result = [...result].sort((a, b) => {
-      const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
-      const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
-      return pa - pb;
-    });
+    // Sort
+    if (sortMode === 'deadline_asc') {
+      result = [...result].sort((a, b) => {
+        const da = a.deadline ? new Date(a.deadline).getTime() : Infinity;
+        const db = b.deadline ? new Date(b.deadline).getTime() : Infinity;
+        if (da === db) {
+          const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
+          const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
+          return pa - pb;
+        }
+        return da - db;
+      });
+    } else if (sortMode === 'name_asc') {
+      result = [...result].sort((a, b) => {
+        const na = (a.customerName || '').toLowerCase();
+        const nb = (b.customerName || '').toLowerCase();
+        if (na === nb) {
+          const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
+          const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
+          return pa - pb;
+        }
+        return na.localeCompare(nb);
+      });
+    } else {
+      // Priority sort: pending → partial → done
+      result = [...result].sort((a, b) => {
+        const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
+        const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
+        return pa - pb;
+      });
+    }
 
     return result;
-  }, [orders, search, statusFilter, channelFilter]);
+  }, [orders, search, statusFilter, channelFilter, sortMode]);
 
   const handleDownloadReceipt = async (order: OrderHistoryItem) => {
     setDownloadingId(order.orderId);
@@ -247,15 +296,37 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     if (result.success) {
       setOrders(prev => prev.filter(o => o.orderId !== orderId));
       setConfirmDeleteId(null);
-      // Clear all caches
       clearAdminCache();
-      // Refresh from API after a delay
       setTimeout(() => refreshFromAPI(), 1500);
+    } else {
+      alert("Gagal menghapus pesanan");
     }
     setDeletingId(null);
   };
 
+  const handleRestore = async (orderId: string) => {
+    setUpdatingId(orderId);
+    const result = await restoreOrder(orderId);
+    if (result.success) {
+      setOrders(prev => prev.filter(o => o.orderId !== orderId)); // Remove from trash view
+      clearAdminCache();
+    } else {
+      alert("Gagal mengembalikan pesanan");
+    }
+    setUpdatingId(null);
+  };
+
+  const handleSaveEdit = async (updatedOrderData: any) => {
+    clearAdminCache();
+    // submitPOSOrder will send 'isEdit: true' since we appended it inside EditOrderModal
+    await submitPOSOrder(updatedOrderData as any);
+    refreshFromAPI();
+  };
+
   const getStatusBadge = (status: string) => {
+    if ((status || '').toLowerCase() === 'deleted') {
+      return <span className="px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 font-medium">Terhapus</span>;
+    }
     const opt = STATUS_OPTIONS.find(s => s.value === (status || '').toLowerCase());
     if (opt) return <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${opt.className}`}>{opt.label}</span>;
     return <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">{status}</span>;
@@ -337,11 +408,19 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
             ))}
           </select>
 
-          {/* Spacer */}
-          <div className="flex-1" />
+          {/* Sort Dropdown */}
+          <select
+            value={sortMode}
+            onChange={e => setSortMode(e.target.value)}
+            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01] ml-1"
+          >
+            <option value="priority">Status</option>
+            <option value="deadline_asc">Deadline Terdekat</option>
+            <option value="name_asc">Nama (A-Z)</option>
+          </select>
 
           {/* Results count + view toggle */}
-          <div className="flex items-center gap-2">
+          <div className="flex flex-1 sm:flex-none items-center justify-between sm:justify-end gap-3 ml-auto">
             <p className="text-xs text-gray-500 font-medium">{filteredOrders.length} pesanan</p>
             <div className="flex bg-gray-200 p-0.5 rounded-lg">
               <button
@@ -512,48 +591,63 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
 
                       {/* Actions */}
                       <div className="flex items-center gap-2 pt-2 border-t border-gray-200 flex-wrap">
-                        {/* Status dropdown */}
-                        <select
-                          value={(order.orderStatus || '').toLowerCase()}
-                          onChange={e => handleStatusChange(order.orderId, e.target.value)}
-                          disabled={updatingId === order.orderId}
-                          className="text-xs border rounded px-2 py-1 bg-white"
-                        >
-                          {STATUS_OPTIONS.map(s => (
-                            <option key={s.value} value={s.value}>{s.label}</option>
-                          ))}
-                        </select>
-
-                        {/* Auto-download receipt */}
-                        <Button
-                          size="sm" variant="outline" className="h-7 text-xs"
-                          onClick={() => handleDownloadReceipt(order)}
-                          disabled={downloadingId === order.orderId}
-                        >
-                          {downloadingId === order.orderId
-                            ? <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Membuat...</>
-                            : <><Download className="w-3 h-3 mr-1" /> Struk</>
-                          }
-                        </Button>
-
-                        {order.customerPhone && (
-                          <Button size="sm" variant="outline" className="h-7 text-xs text-green-600" onClick={() => handleChatCustomer(order)}>
-                            <MessageCircle className="w-3 h-3 mr-1" /> WA
-                          </Button>
-                        )}
-
-                        {/* Delete */}
-                        {confirmDeleteId === order.orderId ? (
-                          <div className="flex gap-1 ml-auto">
-                            <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
-                              {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya, Hapus'}
+                        {order.orderStatus === 'deleted' ? (
+                          <div className="flex gap-2 w-full">
+                            <Button size="sm" variant="outline" className="h-7 text-xs flex-1 text-blue-600" onClick={() => handleRestore(order.orderId)} disabled={updatingId === order.orderId}>
+                              {updatingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />} Restore
                             </Button>
-                            <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
                           </div>
                         ) : (
-                          <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500 ml-auto" onClick={() => setConfirmDeleteId(order.orderId)}>
-                            <Trash2 className="w-3 h-3 mr-1" /> Hapus
-                          </Button>
+                          <>
+                            {/* Status dropdown */}
+                            <select
+                              value={(order.orderStatus || '').toLowerCase()}
+                              onChange={e => handleStatusChange(order.orderId, e.target.value)}
+                              disabled={updatingId === order.orderId}
+                              className="text-xs border rounded px-2 py-1 bg-white"
+                            >
+                              {STATUS_OPTIONS.map(s => (
+                                <option key={s.value} value={s.value}>{s.label}</option>
+                              ))}
+                            </select>
+
+                            {/* Edit Order */}
+                            <Button size="sm" variant="outline" className="h-7 text-xs text-blue-600" onClick={() => setEditingOrder(order)}>
+                              Edit
+                            </Button>
+
+                            {/* Auto-download receipt */}
+                            <Button
+                              size="sm" variant="outline" className="h-7 text-xs"
+                              onClick={() => handleDownloadReceipt(order)}
+                              disabled={downloadingId === order.orderId}
+                            >
+                              {downloadingId === order.orderId
+                                ? <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Membuat...</>
+                                : <><Download className="w-3 h-3 mr-1" /> Struk</>
+                              }
+                            </Button>
+
+                            {order.customerPhone && (
+                              <Button size="sm" variant="outline" className="h-7 text-xs text-green-600" onClick={() => handleChatCustomer(order)}>
+                                <MessageCircle className="w-3 h-3 mr-1" /> WA
+                              </Button>
+                            )}
+
+                            {/* Delete */}
+                            {confirmDeleteId === order.orderId ? (
+                              <div className="flex gap-1 ml-auto">
+                                <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
+                                  {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya, Hapus'}
+                                </Button>
+                                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                              </div>
+                            ) : (
+                              <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500 ml-auto" onClick={() => setConfirmDeleteId(order.orderId)}>
+                                <Trash2 className="w-3 h-3 mr-1" /> Hapus
+                              </Button>
+                            )}
+                          </>
                         )}
                       </div>
                     </div>
@@ -570,6 +664,13 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           </div>
         )}
       </div>
+
+      <EditOrderModal
+        order={editingOrder}
+        isOpen={editingOrder !== null}
+        onClose={() => setEditingOrder(null)}
+        onSave={handleSaveEdit}
+      />
     </div>
   );
 }
