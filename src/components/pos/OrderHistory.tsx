@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil } from "lucide-react";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
@@ -349,9 +349,8 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
               <ArrowLeft className="w-4 h-4" />
             </Button>
             <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
-            {orders.length > 0 && <span className="text-sm text-gray-400">({orders.length})</span>}
           </div>
-          <Button variant="outline" size="sm" onClick={refreshFromAPI} disabled={isLoading} title="Refresh dari server">
+          <Button variant="outline" size="sm" onClick={() => { refreshFromAPI(); }} disabled={isLoading} title="Refresh dari server">
             <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
           </Button>
         </div>
@@ -459,7 +458,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           <div className="text-center text-gray-500 py-12">
             <p className="text-base mb-2">Belum ada riwayat pesanan</p>
             <p className="text-xs mb-4">Klik tombol refresh untuk memuat data dari server</p>
-            <Button variant="outline" onClick={refreshFromAPI}>
+            <Button variant="outline" onClick={() => { refreshFromAPI(); }}>
               <RefreshCw className="w-4 h-4 mr-2" /> Muat Data
             </Button>
           </div>
@@ -483,7 +482,14 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                             {getStatusBadge(order.orderStatus)}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5">
-                            <span className="text-sm font-medium truncate">{order.customerName || '-'}</span>
+                            <span className="text-sm font-medium truncate flex items-center gap-1.5">
+                              {order.customerName || '-'}
+                              {order.orderStatus !== 'deleted' && (
+                                <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
+                                  <Pencil className="w-3 h-3" />
+                                </button>
+                              )}
+                            </span>
                             <span className="text-xs text-gray-400">•</span>
                             <span className="text-xs text-gray-500">{order.itemCount || order.items?.length || 0} item</span>
                           </div>
@@ -514,7 +520,14 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           </div>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-base font-bold text-gray-800 truncate">{order.customerName || '-'}</span>
+                          <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
+                            {order.customerName || '-'}
+                            {order.orderStatus !== 'deleted' && (
+                              <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
+                                <Pencil className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                          </span>
                           <span className="text-[10px] text-gray-400">{order.timestamp}</span>
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-gray-50">
@@ -610,11 +623,6 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                                 <option key={s.value} value={s.value}>{s.label}</option>
                               ))}
                             </select>
-
-                            {/* Edit Order */}
-                            <Button size="sm" variant="outline" className="h-7 text-xs text-blue-600" onClick={() => setEditingOrder(order)}>
-                              Edit
-                            </Button>
 
                             {/* Auto-download receipt */}
                             <Button
