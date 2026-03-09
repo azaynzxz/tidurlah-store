@@ -281,6 +281,7 @@ export const fetchOrderHistory = async (
     if (options.limit) params.set('limit', options.limit.toString());
     if (options.channel) params.set('channel', options.channel);
     if (options.cashier) params.set('cashier', options.cashier);
+    params.set('t', new Date().getTime().toString()); // Cache buster
 
     const response = await fetch(`${POS_GOOGLE_SHEETS_URL}?${params.toString()}`);
     const data = await response.json();

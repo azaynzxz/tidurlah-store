@@ -64,7 +64,8 @@ export const fetchDashboardData = async (useCache = true): Promise<DashboardData
     }
 
     try {
-        const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=dashboard`);
+        const t = new Date().getTime();
+        const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=dashboard&t=${t}`);
         const data = await res.json();
         if (data.success) localStorage.setItem(CACHE_DASHBOARD, JSON.stringify(data));
         return data;
@@ -95,7 +96,8 @@ export const fetchMonthlyReport = async (month: number, year: number, useCache =
     }
 
     try {
-        const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=monthly&month=${month}&year=${year}`);
+        const t = new Date().getTime();
+        const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=monthly&month=${month}&year=${year}&t=${t}`);
         const data = await res.json();
         if (data.success) localStorage.setItem(cacheKey, JSON.stringify(data));
         return data;
