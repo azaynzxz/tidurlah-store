@@ -269,7 +269,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     const shippingAddr = order.delivery?.address || order.address;
     const hasShipping = !!shippingAddr;
 
-    let msg = `*PESANAN SELESAI* \u2705\n\n`;
+    let msg = `*PESANAN SELESAI*\n\n`;
     msg += `Halo Kak *${name}*,\n`;
     msg += `Pesanan dengan nomor invoice *${order.orderId}* sudah selesai diproses.\n\n`;
 
@@ -283,16 +283,16 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     }
 
     if (hasShipping) {
-      msg += `\uD83D\uDCCD *Tujuan Pengiriman:*\n${shippingAddr}\n\n`;
-      msg += `\uD83D\uDCE6 Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
-      msg += `\u26A0\uFE0F *Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      msg += `*Tujuan Pengiriman:*\n${shippingAddr}\n\n`;
+      msg += `Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
+      msg += `*Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
     } else {
-      msg += `\uD83C\uDFEA *Pengambilan di Toko:*\n\uD83D\uDCCD tidurlah.com/hello\n\n`;
-      msg += `\uD83D\uDCAC Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
-      msg += `\u26A0\uFE0F *Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      msg += `*Pengambilan di Toko:*\nidcardlampung.com/hello\n\n`;
+      msg += `Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
+      msg += `*Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
     }
 
-    msg += `\n\nTerima kasih atas kepercayaannya! \uD83D\uDE4F\n*ID Card Lampung by Tidurlah Grafika*`;
+    msg += `\n\nTerima kasih atas kepercayaannya!\n*ID Card Lampung by Tidurlah Grafika*`;
 
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
