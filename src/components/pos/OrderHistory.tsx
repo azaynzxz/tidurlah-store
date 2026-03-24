@@ -1,12 +1,12 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
-import { updateOrderStatus, deleteOrder, clearAdminCache, restoreOrder } from "@/utils/adminApi";
+import { updateOrderStatus, deleteOrder, clearAdminCache, restoreOrder, assignDesigner } from "@/utils/adminApi";
 import { EditOrderModal } from "./EditOrderModal";
 import { submitPOSOrder } from "@/utils/api";
 
@@ -94,6 +94,14 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [sortMode, setSortMode] = useState<string>('priority');
   const [editingOrder, setEditingOrder] = useState<OrderHistoryItem | null>(null);
 
+  // Designer Assignment State
+  const DEFAULT_DESIGNERS = ["Fitri", "Windy", "Stevan"];
+  const [customDesigners, setCustomDesigners] = useState<string[]>([]);
+  const [assigningId, setAssigningId] = useState<string | null>(null);
+  const [selectedDesignerForOrder, setSelectedDesignerForOrder] = useState<Record<string, string>>({});
+  const [isAddingNewDesigner, setIsAddingNewDesigner] = useState<string | null>(null);
+  const [newDesignerName, setNewDesignerName] = useState("");
+
   useEffect(() => {
     // Cache-first: load from localStorage cache immediately (unless trash is selected)
     if (channelFilter !== 'trash') {
@@ -103,6 +111,11 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       }
     }
     loadImages();
+
+    try {
+      const savedDesigners = localStorage.getItem('customDesigners');
+      if (savedDesigners) setCustomDesigners(JSON.parse(savedDesigners));
+    } catch { }
   }, []);
 
   const loadImages = async () => {
@@ -374,6 +387,103 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     return null;
   };
 
+  const handleAssignDesigner = async (orderId: string, designerName: string) => {
+    if (!designerName) return;
+    setAssigningId(orderId);
+
+    setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, designer: designerName } : o));
+
+    const result = await assignDesigner(orderId, designerName);
+    if (result.success) {
+      toast.success(`Desainer ditetapkan ke ${designerName}`);
+      clearAdminCache();
+    } else {
+      toast.error("Gagal menetapkan desainer");
+    }
+    setAssigningId(null);
+  };
+
+  const handleAddNewDesigner = (orderId: string, e?: React.FormEvent) => {
+    e?.preventDefault();
+    const name = newDesignerName.trim();
+    if (name) {
+      if (!DEFAULT_DESIGNERS.includes(name) && !customDesigners.includes(name)) {
+        const added = [...customDesigners, name];
+        setCustomDesigners(added);
+        localStorage.setItem('customDesigners', JSON.stringify(added));
+      }
+      setSelectedDesignerForOrder(prev => ({ ...prev, [orderId]: name }));
+      setIsAddingNewDesigner(null);
+      setNewDesignerName("");
+    }
+  };
+
+  const handleDeleteDesigner = (nameToDelete: string, e: React.MouseEvent) => {
+    e.stopPropagation();
+    e.preventDefault();
+    if (window.confirm(`Hapus ${nameToDelete} dari daftar?`)) {
+      const filtered = customDesigners.filter(d => d !== nameToDelete);
+      setCustomDesigners(filtered);
+      localStorage.setItem('customDesigners', JSON.stringify(filtered));
+    }
+  };
+
+  const renderDesignerAssignment = (order: OrderHistoryItem) => {
+    const hasJasaDesain = order.items?.some(i => i.name.toLowerCase().includes("jasa desain"));
+    if (!hasJasaDesain || order.orderStatus === 'deleted') return null;
+
+    const currentAssigned = selectedDesignerForOrder[order.orderId] ?? order.designer ?? "";
+
+    return (
+      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
+        {isAddingNewDesigner === order.orderId ? (
+          <form onSubmit={(e) => handleAddNewDesigner(order.orderId, e)} className="flex items-center gap-1">
+            <Input autoFocus size={1} className="h-6 w-24 text-[10px] px-1" placeholder="Nama..." value={newDesignerName} onChange={e => setNewDesignerName(e.target.value)} />
+            <button type="submit" className="text-green-600 bg-green-50 p-1 rounded hover:bg-green-100"><Check className="w-3 h-3" /></button>
+            <button type="button" onClick={() => setIsAddingNewDesigner(null)} className="text-red-500 bg-red-50 p-1 rounded hover:bg-red-100"><X className="w-3 h-3" /></button>
+          </form>
+        ) : (
+          <div className="flex items-center gap-1 bg-amber-50 rounded pl-1 pr-0.5 border border-amber-200 h-6">
+            <select
+              className="bg-transparent text-[10px] font-medium text-amber-800 outline-none cursor-pointer border-r border-amber-200 pr-1 max-w-[80px]"
+              value={currentAssigned}
+              onChange={(e) => {
+                if (e.target.value === "ADD_NEW") {
+                  setIsAddingNewDesigner(order.orderId);
+                  setNewDesignerName("");
+                } else {
+                  setSelectedDesignerForOrder(prev => ({ ...prev, [order.orderId]: e.target.value }));
+                }
+              }}
+            >
+              <option value="" disabled>Pilih Desainer</option>
+              {DEFAULT_DESIGNERS.map(d => <option key={d} value={d}>{d}</option>)}
+              {customDesigners.length > 0 && <optgroup label="Tersimpan">
+                {customDesigners.map(d => <option key={d} value={d}>{d}</option>)}
+              </optgroup>}
+              <option value="ADD_NEW">+ Tambah Baru...</option>
+            </select>
+
+            <button
+              className="p-1 rounded text-amber-700 hover:bg-amber-200 disabled:opacity-50 transition-colors ml-0.5"
+              onClick={() => handleAssignDesigner(order.orderId, currentAssigned)}
+              disabled={assigningId === order.orderId || !currentAssigned || currentAssigned === order.designer}
+              title="Simpan Pilihan"
+            >
+              {assigningId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
+            </button>
+
+            {customDesigners.includes(currentAssigned) && (
+              <button type="button" onClick={(e) => handleDeleteDesigner(currentAssigned, e)} className="p-0.5 ml-0.5 text-red-500 hover:bg-red-100 rounded" title="Hapus dari daftar">
+                <Trash2 className="w-2.5 h-2.5" />
+              </button>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div className="h-full overflow-y-auto p-4">
       <div className="max-w-2xl mx-auto">
@@ -537,7 +647,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                             {getChannelBadge(order.channel)}
                             {getStatusBadge(order.orderStatus)}
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5">
+                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
                             <span className="text-sm font-medium truncate flex items-center gap-1.5">
                               {order.customerName || '-'}
                               {order.orderStatus !== 'deleted' && (
@@ -546,8 +656,9 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                                 </button>
                               )}
                             </span>
-                            <span className="text-xs text-gray-400">•</span>
-                            <span className="text-xs text-gray-500">{order.itemCount || order.items?.length || 0} item</span>
+                            {renderDesignerAssignment(order)}
+                            <span className="text-xs text-gray-400 hidden sm:inline">•</span>
+                            <span className="text-xs text-gray-500 hidden sm:inline">{order.itemCount || order.items?.length || 0} item</span>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 ml-2">
@@ -576,14 +687,17 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           </div>
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
-                            {order.customerName || '-'}
-                            {order.orderStatus !== 'deleted' && (
-                              <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
-                                <Pencil className="w-3.5 h-3.5" />
-                              </button>
-                            )}
-                          </span>
+                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                            <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
+                              {order.customerName || '-'}
+                              {order.orderStatus !== 'deleted' && (
+                                <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
+                                  <Pencil className="w-3.5 h-3.5" />
+                                </button>
+                              )}
+                            </span>
+                            {renderDesignerAssignment(order)}
+                          </div>
                           <span className="text-[10px] text-gray-400">{order.timestamp}</span>
                         </div>
                         <div className="flex items-center justify-between pt-1 border-t border-gray-50">

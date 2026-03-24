@@ -212,10 +212,20 @@ Total: Rp ${(calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DE
 // POS Order submission function
 export const submitPOSOrder = async (posOrderData: POSOrderData) => {
   try {
-    // Add channel identifier for POS orders
+    // Detect if order contains Jasa Desain (product ID 200) or Express (product ID 2001)
+    const hasJasaDesain = posOrderData.items?.some(
+      item => item.productId === 200 || item.name?.toLowerCase().includes('jasa desain')
+    );
+    const hasExpressPrint = posOrderData.items?.some(
+      item => item.productId === 2001 || item.name?.toLowerCase().includes('jasa express') || item.name?.toLowerCase().includes('cetak express')
+    );
+
+    // Add channel identifier and service flags for POS orders
     const dataWithChannel = {
       ...posOrderData,
-      channel: 'pos'
+      channel: 'pos',
+      requestJasaDesain: hasJasaDesain || false,
+      isExpressPrint: hasExpressPrint || false,
     };
 
     // Send as POST request with JSON body to unified endpoint
@@ -256,6 +266,7 @@ export interface OrderHistoryItem {
   isShipping: string;
   address: string;
   deadline?: string;
+  designer?: string | null;
   items: {
     productId: number | string;
     name: string;

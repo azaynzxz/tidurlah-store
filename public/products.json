@@ -495,6 +495,51 @@
       "rating": 4.7,
       "unit": "pcs",
       "is_available": true
+    },
+    {
+      "id": 2200,
+      "name": "Casing ID Card",
+      "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+      "additionalImages": [
+        "/product-image/case-variant/Case Bening.jpg",
+        "/product-image/case-variant/case-leather kulit.jpg"
+      ],
+      "description": "Casing ID Card tersedia dalam berbagai jenis: Case Reguler Colorful, Case Bening Reguler, Case Putih Susu, Case Premium Bening, dan Case Kulit premium.",
+      "price": 2000,
+      "discountPrice": null,
+      "category": "ID Card & Lanyard",
+      "priceThresholds": [],
+      "time": "Ready stock",
+      "rating": 4.8,
+      "models": [
+        {
+          "code": "Case Reg Colorful",
+          "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+          "price": 2000
+        },
+        {
+          "code": "Case Bening Reg",
+          "image": "/product-image/case-variant/Case Bening reg.jfif",
+          "price": 2000
+        },
+        {
+          "code": "Case Putih Susu",
+          "image": "/product-image/case-variant/Case Putih Susu.jfif",
+          "price": 2000
+        },
+        {
+          "code": "Case Premium",
+          "image": "/product-image/case-variant/Case Bening.jpg",
+          "price": 7000
+        },
+        {
+          "code": "Case Kulit",
+          "image": "/product-image/case-variant/case-leather kulit.jpg",
+          "price": 5000
+        }
+      ],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Media Promosi": [

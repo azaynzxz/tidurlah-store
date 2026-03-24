@@ -192,6 +192,22 @@ function setupSpreadsheet() {
   setupSheetHeaders(trashSheet, trashHeaders, "#EA4335");
   trashSheet.setFrozenRows(1);
   
+  // --- Sheet 5: Jasa_Desain ---
+  var desainSheet = getOrCreateSheet(ss, "Jasa_Desain");
+  var desainHeaders = [
+    "Order ID", "Timestamp", "Customer Name", "Phone", "Items Summary", "Designer", "Notes"
+  ];
+  setupSheetHeaders(desainSheet, desainHeaders, "#8E24AA");
+  
+  desainSheet.setColumnWidth(1, 220);  // Order ID
+  desainSheet.setColumnWidth(2, 180);  // Timestamp
+  desainSheet.setColumnWidth(3, 180);  // Customer Name
+  desainSheet.setColumnWidth(4, 160);  // Phone
+  desainSheet.setColumnWidth(5, 300);  // Items Summary
+  desainSheet.setColumnWidth(6, 150);  // Designer
+  desainSheet.setColumnWidth(7, 200);  // Notes
+  desainSheet.setFrozenRows(1);
+  
   // Remove the default "Sheet1" if it's empty
   var defaultSheet = ss.getSheetByName("Sheet1");
   if (defaultSheet && ss.getSheets().length > 4) {
@@ -209,6 +225,7 @@ function setupSpreadsheet() {
   Logger.log("   📄 Order_Items (13 columns)");
   Logger.log("   📄 Deliveries (6 columns)");
   Logger.log("   📄 Trash (24 columns)");
+  Logger.log("   📄 Jasa_Desain (7 columns)");
   Logger.log("");
   Logger.log("Next step: Deploy as Web App and update POS_GOOGLE_SHEETS_URL");
 }
@@ -349,6 +366,11 @@ function doPost(e) {
     if (data.action === "restoreOrder") {
       return restoreOrder(data);
     }
+
+    // Check if it's assigning designer
+    if (data.action === "assignDesigner") {
+      return assignDesigner(data);
+    }
     
     // Otherwise, treat as new order submission or order edit.
     return processNewOrder(data);
@@ -411,6 +433,15 @@ function processNewOrder(data) {
         var dData = dSheet.getDataRange().getValues();
         for (var o = dData.length - 1; o >= 1; o--) {
           if (String(dData[o][0]) === String(orderId)) dSheet.deleteRow(o + 1);
+        }
+      }
+
+      // Delete from Jasa_Desain
+      var jSheet = ss.getSheetByName("Jasa_Desain");
+      if (jSheet) {
+        var jData = jSheet.getDataRange().getValues();
+        for (var o = jData.length - 1; o >= 1; o--) {
+          if (String(jData[o][0]) === String(orderId)) jSheet.deleteRow(o + 1);
         }
       }
 
@@ -526,6 +557,43 @@ function processNewOrder(data) {
       deliveriesSheet.appendRow(deliveryRow);
     }
     
+    // --- 4. Write to Jasa_Desain sheet if order contains Jasa Desain ---
+    var hasJasaDesain = data.requestJasaDesain || false;
+    if (!hasJasaDesain) {
+      for (var k = 0; k < items.length; k++) {
+        if (items[k].productId == 200 || 
+            (items[k].name && items[k].name.toLowerCase().indexOf("jasa desain") !== -1)) {
+          hasJasaDesain = true;
+          break;
+        }
+      }
+    }
+    
+    if (hasJasaDesain) {
+      var desainSheet = ss.getSheetByName("Jasa_Desain");
+      if (desainSheet) {
+        // Build items summary WITHOUT Jasa Desain itself (just the actual products)
+        var productItems = (data.items || []).filter(function(item) {
+          return item.productId != 200 && 
+                 !(item.name && item.name.toLowerCase().indexOf("jasa desain") !== -1);
+        });
+        var productsSummary = productItems.map(function(item) {
+          return item.name + " (" + item.quantity + ")";
+        }).join(", ");
+        
+        var desainRow = [
+          orderId,
+          timestamp,
+          data.customerName || "",
+          phone,
+          productsSummary || itemsSummary,
+          data.designer || "",
+          data.designNote || ""
+        ];
+        desainSheet.appendRow(desainRow);
+      }
+    }
+    
     Logger.log("✅ Order saved: " + orderId + " (" + items.length + " items)");
     
     return createJsonResponse({
@@ -600,6 +668,58 @@ function updateOrderStatus(data) {
   }
 }
 
+/**
+ * Assign a designer to an order
+ * POST body: { action: "assignDesigner", orderId: "...", designer: "Fitri" }
+ */
+function assignDesigner(data) {
+  var ss = getSpreadsheet();
+  var lock = LockService.getScriptLock();
+  
+  try {
+    lock.waitLock(10000);
+    var orderId = data.orderId;
+    var designer = data.designer;
+    
+    if (!orderId) {
+      return createJsonResponse({ success: false, error: "orderId is required" });
+    }
+    
+    var desainSheet = ss.getSheetByName("Jasa_Desain");
+    if (!desainSheet) {
+      return createJsonResponse({ success: false, error: "Jasa_Desain sheet not found" });
+    }
+    
+    var dData = desainSheet.getDataRange().getValues();
+    var found = false;
+    
+    for (var i = 1; i < dData.length; i++) {
+      if (String(dData[i][0]) === String(orderId)) {
+        desainSheet.getRange(i + 1, 6).setValue(designer); // Column F = Designer
+        found = true;
+        break;
+      }
+    }
+    
+    lock.releaseLock();
+    
+    if (found) {
+      return createJsonResponse({
+        success: true,
+        message: "Designer assigned successfully"
+      });
+    } else {
+      return createJsonResponse({
+        success: false,
+        error: "Order not found in Jasa_Desain"
+      });
+    }
+    
+  } catch (error) {
+    return createJsonResponse({ success: false, error: "Assign Designer error: " + error.message });
+  }
+}
+
 
 /**
  * Get recent orders with their items
@@ -671,6 +791,16 @@ function getRecentOrders(e) {
     mapDeliveries(dSheet);
     mapDeliveries(tdSheet);
     
+    // Build Jasa_Desain mapping: orderId -> designer
+    var designersMap = {};
+    var jasDesSheet = ss.getSheetByName("Jasa_Desain");
+    if (jasDesSheet && jasDesSheet.getLastRow() > 1) {
+      var jData = jasDesSheet.getDataRange().getValues();
+      for (var i = 1; i < jData.length; i++) {
+        designersMap[jData[i][0]] = jData[i][5]; // Column F = Designer
+      }
+    }
+    
     // Filter and map orders
     var orders = [];
     
@@ -725,6 +855,7 @@ function getRecentOrders(e) {
         address: row[20],
         deadline: row[21],
         delivery: deliveriesMap[orderId] || null,
+        designer: designersMap[orderId] || null,
         items: itemsMap[orderId] || []
       });
     }
@@ -780,10 +911,7 @@ function getOrCreateSheet(ss, name) {
  * Set up sheet headers with formatting
  */
 function setupSheetHeaders(sheet, headers, color) {
-  // Clear existing content
-  sheet.clear();
-  
-  // Write headers
+  // Write headers (non-destructive to data rows)
   var headerRange = sheet.getRange(1, 1, 1, headers.length);
   headerRange.setValues([headers]);
   
@@ -1391,6 +1519,17 @@ function deleteOrder(data) {
         if (String(delData[k][0]) === String(orderId)) {
           trashDeliveriesSheet.appendRow(delData[k]);
           deliveriesSheet.deleteRow(k + 1);
+        }
+      }
+    }
+    
+    // Also delete from Jasa_Desain if exists
+    var jasaDesainSheet = ss.getSheetByName("Jasa_Desain");
+    if (jasaDesainSheet && jasaDesainSheet.getLastRow() > 1) {
+      var jasaData = jasaDesainSheet.getDataRange().getValues();
+      for (var m = jasaData.length - 1; m >= 1; m--) {
+        if (String(jasaData[m][0]) === String(orderId)) {
+          jasaDesainSheet.deleteRow(m + 1);
         }
       }
     }

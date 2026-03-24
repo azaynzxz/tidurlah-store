@@ -166,6 +166,23 @@ export const restoreOrder = async (orderId: string): Promise<{ success: boolean 
 };
 
 /**
+ * Assign designer to an order - uses no-cors
+ */
+export const assignDesigner = async (orderId: string, designer: string): Promise<{ success: boolean }> => {
+    try {
+        await fetch(POS_GOOGLE_SHEETS_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'assignDesigner', orderId, designer }),
+            mode: 'no-cors',
+        });
+        return { success: true };
+    } catch (error) {
+        console.error('Assign designer error:', error);
+        return { success: false };
+    }
+};
+
+/**
  * Clear all admin caches — call after status change or delete
  */
 export const clearAdminCache = () => {

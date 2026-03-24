@@ -145,7 +145,7 @@ const Katalog = () => {
         img.src = image.src;
         // Fallback to placeholder if main image fails
         img.onerror = () => {
-          const placeholderUrl = `https://via.placeholder.com/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
+          const placeholderUrl = `https://placehold.co/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
           img.src = placeholderUrl;
         };
       });
@@ -208,8 +208,8 @@ const Katalog = () => {
                     }
                   }}
                   className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedCategory === category
-                      ? "bg-[#FF5E01] text-white shadow-md"
-                      : "bg-white/60 backdrop-blur-sm text-foreground/80 border border-border/50 hover:bg-white/80"
+                    ? "bg-[#FF5E01] text-white shadow-md"
+                    : "bg-white/60 backdrop-blur-sm text-foreground/80 border border-border/50 hover:bg-white/80"
                     }`}
                 >
                   {category}
@@ -251,8 +251,8 @@ const Katalog = () => {
                         onError={(e) => {
                           // Show placeholder if image doesn't exist
                           const target = e.target as HTMLImageElement;
-                          const placeholderUrl = `https://via.placeholder.com/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
-                          if (!target.src.includes('placeholder.com')) {
+                          const placeholderUrl = `https://placehold.co/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
+                          if (!target.src.includes('placehold.co')) {
                             target.src = placeholderUrl;
                           }
                         }}
@@ -343,7 +343,7 @@ const Katalog = () => {
                 const target = e.target as HTMLImageElement;
                 const image = galleryImages.find(img => img.id === selectedImage);
                 if (image) {
-                  const placeholderUrl = `https://via.placeholder.com/600x800/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
+                  const placeholderUrl = `https://placehold.co/600x800/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
                   target.src = placeholderUrl;
                 }
               }}
