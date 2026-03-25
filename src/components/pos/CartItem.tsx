@@ -26,7 +26,7 @@ interface Product {
   minHeight?: number;
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
-  models?: { code: string; image: string }[];
+  models?: { code: string; image: string; price?: number }[];
   is_available: boolean;
   unit: string;
 }
@@ -46,6 +46,7 @@ interface CartItemType {
     area?: string;
     customPrice?: number;
     overridePrice?: number;
+    customPricePerSqm?: number;
   };
 }
 
@@ -101,7 +102,7 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
   // Handle option updates
   const handleOptionUpdate = (optionKey: string, value: any) => {
     const updatedOptions = { ...item.options, [optionKey]: value };
-    
+
     // Update dimension text and area for dimensional products
     if (item.product.pricingMethod === "dimensional" && (optionKey === 'width' || optionKey === 'height')) {
       const width = optionKey === 'width' ? value : item.options?.width || 1;
@@ -109,7 +110,7 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
       updatedOptions.dimensionText = `${width}m x ${height}m`;
       updatedOptions.area = `${width * height} m²`;
     }
-    
+
     onUpdateOptionsById(item.cartItemId, updatedOptions);
   };
 
@@ -137,6 +138,16 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
       return options.overridePrice;
     }
 
+    let basePrice = product.discountPrice || product.price;
+
+    // Apply model price if a model with a price is selected
+    if (options?.modelCode && product.models) {
+      const selectedModel = product.models.find(m => m.code === options.modelCode);
+      if (selectedModel && selectedModel.price !== undefined) {
+        basePrice = selectedModel.price;
+      }
+    }
+
     // Handle regular price thresholds
     if (product.priceThresholds && product.priceThresholds.length > 0) {
       const applicableThreshold = product.priceThresholds
@@ -149,7 +160,7 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
       }
     }
 
-    return product.discountPrice || product.price;
+    return basePrice;
   };
 
   const price = getApplicablePrice(item.product, item.quantity, item.options);

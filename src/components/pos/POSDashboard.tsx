@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
+import { ChevronRight, ChevronLeft } from "lucide-react";
 import { POSHeader } from "./POSHeader";
 import { CategoryTabs } from "./CategoryTabs";
 import { ProductGrid } from "./ProductGrid";
@@ -68,7 +69,7 @@ interface Product {
   minHeight?: number;
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
-  models?: { code: string; image: string }[];
+  models?: { code: string; image: string; price?: number }[];
   is_available: boolean;
   unit: string;
 }
@@ -88,6 +89,7 @@ interface CartItem {
     area?: string;
     customPrice?: number;
     overridePrice?: number;
+    customPricePerSqm?: number;
   };
 }
 
@@ -112,6 +114,7 @@ export function POSDashboard() {
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
   const [notificationsShown, setNotificationsShown] = useState<Set<string>>(new Set());
   const [showMobileCart, setShowMobileCart] = useState(false);
+  const [showCart, setShowCart] = useState(true);
 
   // Helper to determine if a product should be treated as a banner/dimensional
   const isBanner = (product: Product) => product.pricingMethod === "dimensional";
@@ -584,6 +587,16 @@ export function POSDashboard() {
       return options.overridePrice;
     }
 
+    let basePrice = product.discountPrice || product.price;
+
+    // Apply model price if a model with a price is selected
+    if (options?.modelCode && product.models) {
+      const selectedModel = product.models.find(m => m.code === options.modelCode);
+      if (selectedModel && selectedModel.price !== undefined) {
+        basePrice = selectedModel.price;
+      }
+    }
+
     // Handle regular price thresholds
     if (product.priceThresholds && product.priceThresholds.length > 0) {
       // Find the appropriate price threshold
@@ -597,7 +610,7 @@ export function POSDashboard() {
       }
     }
 
-    return product.discountPrice || product.price;
+    return basePrice;
   };
 
   // Add ongkir to cart with custom price
@@ -1277,17 +1290,19 @@ export function POSDashboard() {
             </div>
 
             {/* Product Grid - Scrollable */}
-            <div className="flex-1 bg-gray-50 rounded-lg overflow-hidden">
+            <div className="flex-1 bg-gray-50 rounded-lg overflow-hidden relative">
               <ProductGrid
                 products={filteredProducts}
                 onAddToCart={handleAddProductToCart}
                 selectedProducts={selectedProducts}
+                isCartVisible={showCart}
               />
             </div>
           </div>
 
-          {/* Desktop Cart - Hidden on mobile */}
-          <div className="hidden md:flex w-[50%] bg-background border-l border-gray-200 flex-col">
+          {/* Desktop Cart - Toggleable on desktop */}
+          <div className={`hidden md:flex bg-background border-l border-gray-200 flex-col transition-all duration-300 ease-in-out ${showCart ? "w-1/2" : "w-0 overflow-hidden border-l-0"
+            }`}>
             <Cart
               items={cartItems}
               onUpdateQuantityById={handleUpdateQuantityById}
@@ -1303,6 +1318,27 @@ export function POSDashboard() {
               isBluetoothSupported={isBluetoothSupported()}
             />
           </div>
+
+          {/* Toggle Cart Button - Floating on the right edge */}
+          <button
+            onClick={() => setShowCart(!showCart)}
+            className={`hidden md:flex absolute top-1/2 -translate-y-1/2 z-30 w-6 h-12 bg-white border border-gray-200 shadow-md rounded-l-lg items-center justify-center transition-all duration-300 hover:bg-orange-50 group ${showCart ? "right-1/2" : "right-0"
+              }`}
+            title={showCart ? "Sembunyikan Keranjang" : "Tampilkan Keranjang"}
+          >
+            {showCart ? (
+              <ChevronRight className="w-4 h-4 text-[#FF5E01] transition-transform group-hover:translate-x-0.5" />
+            ) : (
+              <div className="relative">
+                <ChevronLeft className="w-4 h-4 text-[#FF5E01] transition-transform group-hover:-translate-x-0.5" />
+                {cartItems.length > 0 && (
+                  <div className="absolute -top-6 -left-2 bg-[#FF5E01] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center border border-white shadow-sm">
+                    {cartItems.length}
+                  </div>
+                )}
+              </div>
+            )}
+          </button>
         </div>
       )}
 

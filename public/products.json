@@ -513,7 +513,27 @@
       "rating": 4.8,
       "models": [
         {
-          "code": "Case Reg Colorful",
+          "code": "Case Reg Merah",
+          "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+          "price": 2000
+        },
+        {
+          "code": "Case Reg Hijau",
+          "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+          "price": 2000
+        },
+        {
+          "code": "Case Reg Biru",
+          "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+          "price": 2000
+        },
+        {
+          "code": "Case Reg Putih",
+          "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
+          "price": 2000
+        },
+        {
+          "code": "Case Reg Kuning",
           "image": "/product-image/case-variant/case-reguler-color (black, white, semi transparent putih susu, ble, green, red, transparent).jpg",
           "price": 2000
         },
@@ -896,29 +916,24 @@
         "/product-image/ganci-tali-2.webp"
       ],
       "description": "Ganci custom cetak dengan tambahan tali.",
-      "price": 5000,
+      "price": 4000,
       "discountPrice": null,
       "category": "Merchandise",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 5000
-        },
-        {
-          "minQuantity": 4,
-          "price": 4500
-        },
-        {
-          "minQuantity": 25,
-          "price": 3500
-        },
-        {
-          "minQuantity": 100,
-          "price": 3000
-        }
-      ],
+      "priceThresholds": [],
       "time": "1-2 hari",
       "rating": 4.8,
+      "models": [
+        {
+          "code": "1 Sisi",
+          "image": "/product-image/ganci-tali.webp",
+          "price": 4000
+        },
+        {
+          "code": "2 Sisi",
+          "image": "/product-image/ganci-tali.webp",
+          "price": 5000
+        }
+      ],
       "unit": "pcs",
       "is_available": true
     },

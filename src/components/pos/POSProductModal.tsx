@@ -27,7 +27,7 @@ interface Product {
   minHeight?: number;
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
-  models?: { code: string; image: string }[];
+  models?: { code: string; image: string; price?: number }[];
 }
 
 interface POSProductModalProps {
@@ -92,6 +92,15 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
   };
 
   const getApplicablePrice = (product: Product, quantity: number) => {
+    let basePrice = product.discountPrice || product.price;
+
+    if (selectedModel && product.models) {
+      const model = product.models.find(m => m.code === selectedModel);
+      if (model && model.price !== undefined) {
+        basePrice = model.price;
+      }
+    }
+
     if (product.priceThresholds && product.priceThresholds.length > 0) {
       // Find the appropriate price threshold
       const applicableThreshold = product.priceThresholds
@@ -104,7 +113,7 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
       }
     }
 
-    return product.discountPrice || product.price;
+    return basePrice;
   };
 
   // Use the same calculation logic as the main system
@@ -220,21 +229,21 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                   {/* Navigation buttons */}
                   {((product.models && product.models.length > 1) ||
                     (product.additionalImages && product.additionalImages.length > 0)) && (
-                    <>
-                      <button
-                        onClick={prevImage}
-                        className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all"
-                      >
-                        <ChevronLeft className="h-5 w-5" />
-                      </button>
-                      <button
-                        onClick={nextImage}
-                        className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all"
-                      >
-                        <ChevronRight className="h-5 w-5" />
-                      </button>
-                    </>
-                  )}
+                      <>
+                        <button
+                          onClick={prevImage}
+                          className="absolute left-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all"
+                        >
+                          <ChevronLeft className="h-5 w-5" />
+                        </button>
+                        <button
+                          onClick={nextImage}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 bg-white bg-opacity-80 hover:bg-white h-8 w-8 rounded-full flex items-center justify-center transition-all"
+                        >
+                          <ChevronRight className="h-5 w-5" />
+                        </button>
+                      </>
+                    )}
                 </div>
 
                 {/* Model Selector */}
@@ -246,11 +255,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                         <button
                           key={model.code}
                           onClick={() => setSelectedModel(model.code)}
-                          className={`px-2 py-1.5 rounded-lg text-xs transition-colors text-center ${
-                            selectedModel === model.code
+                          className={`px-2 py-1.5 rounded-lg text-xs transition-colors text-center ${selectedModel === model.code
                               ? "bg-[#FF5E01] text-white"
                               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                          }`}
+                            }`}
                         >
                           {model.code}
                         </button>
@@ -266,9 +274,8 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                       product.models.slice(0, 6).map((model, index) => (
                         <div
                           key={index}
-                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
-                            model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
-                          }`}
+                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                            }`}
                           onClick={() => setSelectedModel(model.code)}
                         >
                           <img
@@ -282,9 +289,8 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                       [product.image, ...product.additionalImages].map((image, index) => (
                         <div
                           key={index}
-                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${
-                            index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
-                          }`}
+                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                            }`}
                           onClick={() => setCurrentImageIndex(index)}
                         >
                           <img
@@ -313,11 +319,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                       <button
                         key={variant.code}
                         onClick={() => setSelectedCase(variant.code)}
-                        className={`px-3 py-2 rounded-lg text-xs transition-colors ${
-                          selectedCase === variant.code
+                        className={`px-3 py-2 rounded-lg text-xs transition-colors ${selectedCase === variant.code
                             ? "bg-[#FF5E01] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {variant.name}
                       </button>
@@ -335,11 +340,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                       <button
                         key={lamination.type}
                         onClick={() => setSelectedLamination(lamination.type)}
-                        className={`px-3 py-2 rounded-lg text-xs transition-colors ${
-                          selectedLamination === lamination.type
+                        className={`px-3 py-2 rounded-lg text-xs transition-colors ${selectedLamination === lamination.type
                             ? "bg-[#FF5E01] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
                         {lamination.type}
                       </button>
@@ -419,11 +423,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                     {[...Array(5)].map((_, i) => (
                       <span
                         key={i}
-                        className={`text-sm ${
-                          i < Math.floor(product.rating)
+                        className={`text-sm ${i < Math.floor(product.rating)
                             ? "text-yellow-400"
                             : "text-gray-300"
-                        }`}
+                          }`}
                       >
                         ★
                       </span>

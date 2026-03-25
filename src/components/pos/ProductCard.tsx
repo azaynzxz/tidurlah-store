@@ -50,50 +50,36 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
 
   return (
     <div
-      className={`relative bg-white rounded-lg border transition-all duration-200 cursor-pointer hover:shadow-lg group overflow-hidden ${
-        !product.is_available
-          ? 'opacity-50 cursor-not-allowed'
-          : isSelected
-          ? 'border-[#FF5E01] shadow-md bg-orange-50'
-          : 'border-gray-200 hover:border-[#FF5E01]/50'
-      }`}
+      className={`relative bg-white rounded-lg border transition-all duration-200 cursor-pointer overflow-hidden flex flex-col h-full group ${!product.is_available
+        ? 'opacity-60 cursor-not-allowed grayscale-[0.5]'
+        : isSelected
+          ? 'border-[#FF5E01] shadow-md ring-1 ring-[#FF5E01] bg-[#fffaf5]'
+          : 'border-gray-200 hover:border-[#FF5E01] hover:shadow-lg hover:-translate-y-0.5'
+        }`}
       onClick={handleClick}
     >
       {!product.is_available && (
-        <Badge variant="destructive" className="absolute top-1 right-1 text-xs z-10">
+        <div className="absolute top-2 left-0 right-0 mx-auto w-max px-2 py-0.5 bg-red-500 text-white text-[10px] rounded-full font-bold z-20 shadow-sm uppercase tracking-wide">
           Habis
-        </Badge>
+        </div>
       )}
 
-      {/* Mobile: Simplified vertical layout */}
-      <div className="md:hidden flex flex-col">
-        {/* Image */}
+      {/* Mobile: Perfect Vertical Layout from Original */}
+      <div className="md:hidden flex flex-col h-full">
         <div className="relative w-full aspect-square">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover rounded-t-lg"
+            className="w-full h-full object-cover rounded-t-lg transition-transform duration-500 group-hover:scale-105"
           />
-          {product.is_available && (
-            <div className="absolute bottom-2 right-2">
-              <div className={`rounded-full p-2 shadow-lg ${
-                isSelected
-                  ? "bg-[#FF5E01] text-white"
-                  : "bg-white text-[#FF5E01]"
-              }`}>
-                <Plus className="w-4 h-4" />
-              </div>
-            </div>
-          )}
         </div>
 
-        {/* Product Info */}
-        <div className="p-1.5 space-y-0.5">
+        <div className="p-1.5 space-y-0.5 flex flex-col flex-1">
           <h3 className="font-semibold text-gray-800 text-xs leading-snug line-clamp-2 min-h-[1.75rem]">
             {product.name}
           </h3>
-          
-          <div className="flex items-baseline gap-1 flex-wrap">
+
+          <div className="flex items-baseline gap-1 flex-wrap mt-auto">
             {product.discountPrice ? (
               <>
                 <span className="text-sm font-bold text-[#FF5E01] break-all">
@@ -110,103 +96,83 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
             )}
           </div>
 
-          {/* Special indicators - compact */}
           <div className="flex items-center gap-0.5 flex-wrap mt-0.5">
             {product.pricingMethod === "dimensional" && (
-              <div className="w-4 h-4 rounded-full bg-orange-100 flex items-center justify-center" title="Dimensional">
-                <Ruler className="w-2.5 h-2.5 text-orange-700" />
+              <div className="w-4 h-4 rounded-full bg-orange-100 flex items-center justify-center shadow-sm" title="Dimensional">
+                <Ruler className="w-2.5 h-2.5 text-[#FF5E01]" />
               </div>
             )}
             {product.models && product.models.length > 0 && (
-              <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center" title="Model">
-                <Package className="w-2.5 h-2.5 text-blue-700" />
+              <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center shadow-sm" title="Model Tersedia">
+                <Package className="w-2.5 h-2.5 text-blue-600" />
               </div>
             )}
-            {(product.id === 1 || product.id === 2 || product.id === 6 || product.id === 7 || product.id === 8) && (
-              <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center" title="Casing">
-                <Layers className="w-2.5 h-2.5 text-green-700" />
+            {[1, 2, 6, 7, 8].includes(product.id) && (
+              <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center shadow-sm" title="Pilihan Casing">
+                <Layers className="w-2.5 h-2.5 text-green-600" />
               </div>
             )}
           </div>
         </div>
       </div>
 
-      {/* Desktop: Original layout */}
-      <div className="hidden md:block p-3 space-y-2">
-        <div className="flex items-start gap-2">
+      {/* Desktop: Enhanced Side-by-side Layout */}
+      <div className="hidden md:flex p-2.5 gap-3 h-full items-stretch relative">
+        {/* Left Column: Bigger Image */}
+        <div className="w-[84px] lg:w-[96px] shrink-0 relative rounded-lg overflow-hidden border border-gray-100 bg-white shadow-sm flex items-center justify-center">
           <img
             src={product.image}
             alt={product.name}
-            className="w-14 h-14 rounded-lg object-cover border border-gray-200 flex-shrink-0"
+            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
           />
-          <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-gray-800 text-xs leading-tight line-clamp-2">
-              {product.name}
-            </h3>
-            <p className="text-[10px] text-gray-600 mt-0.5 line-clamp-2">
-              {product.description}
-            </p>
-          </div>
         </div>
 
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex-1 min-w-0 space-y-0.5">
-            {product.discountPrice ? (
-              <div className="space-y-0.5">
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] text-gray-500 line-through break-all">
-                    {formatCurrency(product.price)}
-                  </span>
-                </div>
-                <span className="text-sm font-bold text-[#FF5E01] break-all block">
-                  {formatCurrency(product.discountPrice)}
-                </span>
-              </div>
-            ) : (
-              <span className="text-sm font-bold text-[#FF5E01] break-all block">
-                {formatCurrency(product.price)}
-              </span>
-            )}
-            <div className="text-[10px] text-gray-500">
-              per {product.unit}
-            </div>
+        {/* Right Column: Product Info */}
+        <div className="flex flex-col flex-1 min-w-0 justify-between py-0.5">
+          <div className="relative relative w-full pr-5">
+            <h3 className="font-bold text-gray-800 text-xs leading-snug line-clamp-3">
+              {product.name}
+            </h3>
 
-            {/* Special product indicators */}
-            <div className="flex items-center gap-0.5 mt-0.5 flex-wrap">
+            {/* Desktop Floating Indicators absolutely positioned locally to top right */}
+            <div className="absolute top-0 -right-1 flex flex-col gap-1 z-10">
               {product.pricingMethod === "dimensional" && (
-                <Badge variant="secondary" className="text-[10px] bg-orange-100 text-orange-700 px-1 py-0 h-4">
-                  <Ruler className="w-2.5 h-2.5 mr-0.5" />
-                  Ukuran
-                </Badge>
+                <div className="w-4 h-4 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Dimensional">
+                  <Ruler className="w-2.5 h-2.5 text-[#FF5E01]" />
+                </div>
               )}
               {product.models && product.models.length > 0 && (
-                <Badge variant="secondary" className="text-[10px] bg-blue-100 text-blue-700 px-1 py-0 h-4">
-                  <Package className="w-2.5 h-2.5 mr-0.5" />
-                  Model
-                </Badge>
+                <div className="w-4 h-4 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Model Tersedia">
+                  <Package className="w-2.5 h-2.5 text-blue-600" />
+                </div>
               )}
-              {(product.id === 1 || product.id === 2 || product.id === 6 || product.id === 7 || product.id === 8) && (
-                <Badge variant="secondary" className="text-[10px] bg-green-100 text-green-700 px-1 py-0 h-4">
-                  <Layers className="w-2.5 h-2.5 mr-0.5" />
-                  Casing
-                </Badge>
+              {[1, 2, 6, 7, 8].includes(product.id) && (
+                <div className="w-4 h-4 rounded-full bg-green-50 border border-green-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Pilihan Casing">
+                  <Layers className="w-2.5 h-2.5 text-green-600" />
+                </div>
               )}
             </div>
           </div>
 
-          {product.is_available && (
-            <Button
-              size="sm"
-              variant={isSelected ? "default" : "secondary"}
-              className={`flex-shrink-0 group-hover:scale-105 transition-transform duration-200 h-8 w-8 p-0 ${
-                isSelected
-                  ? "bg-[#FF5E01] hover:bg-[#e54d00] text-white"
-                  : "bg-[#FF5E01] hover:bg-[#e54d00] text-white"
-              }`}
-            >
-              <Plus className="w-4 h-4" />
-            </Button>
-          )}
+          <div className="mt-auto pt-2">
+            <div className="flex flex-col">
+              {product.discountPrice ? (
+                <>
+                  <div className="text-[10px] text-gray-400 line-through leading-none mb-0.5">
+                    {formatCurrency(product.price)}
+                  </div>
+                  <div className="text-[15px] font-black text-[#FF5E01] leading-none mb-0.5">
+                    {formatCurrency(product.discountPrice)}
+                  </div>
+                </>
+              ) : (
+                <div className="text-[15px] font-black text-[#FF5E01] leading-none mb-0.5">
+                  {formatCurrency(product.price)}
+                </div>
+              )}
+              <div className="text-[9px] text-gray-500 font-medium">per {product.unit}</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -31,7 +31,7 @@ interface Product {
   minHeight?: number;
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
-  models?: { code: string; image: string }[];
+  models?: { code: string; image: string; price?: number }[];
   is_available: boolean;
   unit: string;
 }
@@ -46,6 +46,9 @@ interface CartItemType {
     laminationVariant?: string;
     width?: number;
     height?: number;
+    customPrice?: number;
+    overridePrice?: number;
+    customPricePerSqm?: number;
     isDimensionalProduct?: boolean;
     dimensionText?: string;
     area?: string;
@@ -147,6 +150,16 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return options.overridePrice;
     }
 
+    let basePrice = product.discountPrice || product.price;
+
+    // Apply model price if a model with a price is selected
+    if (options?.modelCode && product.models) {
+      const selectedModel = product.models.find(m => m.code === options.modelCode);
+      if (selectedModel && selectedModel.price !== undefined) {
+        basePrice = selectedModel.price;
+      }
+    }
+
     // Handle regular price thresholds
     if (product.priceThresholds && product.priceThresholds.length > 0) {
       // Find the appropriate price threshold
@@ -160,7 +173,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
     }
 
-    return product.discountPrice || product.price;
+    return basePrice;
   };
 
   const subtotal = items.reduce((total, item) => {

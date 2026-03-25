@@ -29,13 +29,17 @@ interface ProductGridProps {
   products: Product[];
   onAddToCart: (product: Product) => void;
   selectedProducts: Set<number>;
+  isCartVisible?: boolean;
 }
 
-export function ProductGrid({ products, onAddToCart, selectedProducts }: ProductGridProps) {
+export function ProductGrid({ products, onAddToCart, selectedProducts, isCartVisible = true }: ProductGridProps) {
   return (
     <div className="h-full overflow-y-auto">
-      {/* 3 columns on all screen sizes */}
-      <div className="grid grid-cols-3 gap-2 md:gap-4 p-2 md:p-4">
+      {/* Dynamic columns based on cart visibility */}
+      <div className={`grid gap-2 md:gap-4 p-2 md:p-4 transition-all duration-300 ${isCartVisible
+          ? "grid-cols-2 lg:grid-cols-3"
+          : "grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6"
+        }`}>
         {products.map((product) => (
           <ProductCard
             key={product.id}
@@ -45,7 +49,7 @@ export function ProductGrid({ products, onAddToCart, selectedProducts }: Product
           />
         ))}
       </div>
-      
+
       {/* Empty State */}
       {products.length === 0 && (
         <div className="flex flex-col items-center justify-center h-64 text-gray-500 px-4">

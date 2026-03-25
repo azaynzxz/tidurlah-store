@@ -106,17 +106,13 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
               title="Kembali ke website utama"
             >
               <img
-                src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
+                src="/product-image/Logo Tidurlah Grafika 1x1 outlined.webp"
                 alt="TIDURLAH GRAFIKA"
-                className="h-6 w-6 object-contain bg-white rounded p-0.5"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
+                className="h-6 w-6 object-contain"
               />
-              <div>
-                <h1 className="text-sm font-bold text-white leading-tight">TIDURLAH GRAFIKA</h1>
-                <p className="text-[10px] text-orange-100 leading-tight">POS System</p>
-              </div>
+              <span className="text-white border-l border-white/30 pl-2 font-bold text-sm tracking-tight whitespace-nowrap">
+                POS
+              </span>
             </a>
 
             <div className="flex-1"></div>
@@ -249,24 +245,21 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
         {/* Desktop Layout - Original Grid */}
         <div className="hidden md:grid grid-cols-3 items-center">
           {/* Left section - Logo and Title */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center">
             <a
               href="/"
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               title="Kembali ke website utama"
             >
               <img
-                src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
+                src="/product-image/Tidurlah Logo Horizontal.webp"
                 alt="TIDURLAH GRAFIKA"
-                className="h-8 w-8 object-contain bg-white rounded p-0.5"
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
+                className="h-7 w-auto object-contain"
+                style={{ filter: 'brightness(0) invert(1)' }}
               />
-              <div>
-                <h1 className="text-lg font-bold text-white leading-tight">TIDURLAH GRAFIKA</h1>
-                <p className="text-xs text-orange-100 leading-tight">Point of Sale System</p>
-              </div>
+              <span className="text-white border-l border-white/30 pl-3 font-bold text-lg tracking-tight whitespace-nowrap">
+                POS System
+              </span>
             </a>
           </div>
 
