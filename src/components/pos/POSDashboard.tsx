@@ -374,8 +374,17 @@ export function POSDashboard() {
       return;
     }
 
-    // Non-dimensional: merge by product id (increase quantity)
-    const existingItem = cartItems.find(item => item.product.id === product.id);
+    // Non-dimensional: merge by product id and matching options
+    const defaultOptions = getDefaultOptions(product);
+    const existingItem = cartItems.find(item => {
+      if (item.product.id !== product.id) return false;
+      const opts1 = item.options || {};
+      const opts2 = defaultOptions || {};
+      return opts1.modelCode === opts2.modelCode &&
+        opts1.caseVariant === opts2.caseVariant &&
+        opts1.laminationVariant === opts2.laminationVariant;
+    });
+
     if (existingItem) {
       handleUpdateQuantityById(existingItem.cartItemId, existingItem.quantity + 1);
       return;
@@ -448,14 +457,21 @@ export function POSDashboard() {
         return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
       }
 
-      // Non-dimensional: merge by product id
-      const existingItem = prevItems.find(item => item.product.id === product.id);
-      if (existingItem) {
-        return prevItems.map(item =>
-          item.product.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
-        );
+      // Non-dimensional: merge by product id and matching options
+      const existingItemIndex = prevItems.findIndex(item => {
+        if (item.product.id !== product.id) return false;
+        const opts1 = item.options || {};
+        const opts2 = options || {};
+        return opts1.modelCode === opts2.modelCode &&
+          opts1.caseVariant === opts2.caseVariant &&
+          opts1.laminationVariant === opts2.laminationVariant;
+      });
+
+      if (existingItemIndex !== -1) {
+        const updated = [...prevItems];
+        const existing = updated[existingItemIndex];
+        updated[existingItemIndex] = { ...existing, quantity: existing.quantity + quantity };
+        return updated;
       }
       return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
     });

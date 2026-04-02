@@ -7,6 +7,7 @@ import { blogPost as designGuide } from "./special/design-guide";
 import { blogPost as faq } from "./special/faq";
 import { blogPost as privacyPolicy } from "./special/privacy-policy";
 import { blogPost as returnPolicy } from "./special/return-policy";
+import { blogPost as easterPromo } from "./special/easter-promo";
 
 // Import components
 import DesignGuideComponent from "./components/DesignGuideComponent";
@@ -41,6 +42,7 @@ export const blogPosts: BlogPostData[] = [
   faq,
   privacyPolicy,
   returnPolicy,
+  easterPromo,
   // Add more blog posts here as they are created
 ];
 
@@ -93,11 +95,11 @@ export const getTopCategories = (limit: number = 3): string[] => {
 export const getTopCategoryPosts = (limit: number = 3, postsPerCategory: number = 6): Record<string, BlogPostData[]> => {
   const topCategories = getTopCategories(limit);
   const result: Record<string, BlogPostData[]> = {};
-  
+
   topCategories.forEach(category => {
     result[category] = getBlogPostsByCategory(category).slice(0, postsPerCategory);
   });
-  
+
   return result;
 };
 
