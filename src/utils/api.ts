@@ -1,10 +1,14 @@
-import type { OrderData } from '@/types/product';
+import type { OrderData, CartItem, CaseVariant } from '@/types/product';
 import { JASA_DESAIN_PRICE, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { createOrder, fetchOrders, editOrder } from '@/services/orders';
+import { submitApplicationToSupabase } from '@/services/applications';
 
 // POS Order Data interface
 export interface POSOrderData {
   receiptId: string;
   cashier: string;
+  cashierUserId?: string;
   customerName?: string;
   phoneNumber?: string;
   institution?: string;
@@ -41,7 +45,7 @@ export const submitToGoogleSheet = async (orderData: OrderData) => {
   try {
     // Build normalized items array
     const items: POSOrderData['items'] = [
-      ...orderData.cartItems.map((item: any) => ({
+      ...orderData.cartItems.map((item) => ({
         productId: item.id,
         name: item.name,
         quantity: item.quantity,
@@ -94,23 +98,66 @@ export const submitToGoogleSheet = async (orderData: OrderData) => {
       deadline: orderData.deadline || '',
     };
 
+    // ── Dual-write: Supabase primary, Google Sheets backup ──
+    let supabaseInvoice: string | null = null;
+    if (isSupabaseConfigured()) {
+      try {
+        const sbResult = await createOrder({
+          orderId: orderData.invoiceNumber,
+          channel: 'website',
+          cashier: 'Website',
+          customerName: orderData.customerName,
+          customerPhone: orderData.phoneNumber,
+          institution: orderData.instansi || '',
+          items: items.map(i => ({
+            productId: i.productId,
+            name: i.name,
+            quantity: i.quantity,
+            price: i.price,
+            subtotal: i.subtotal,
+            modelCode: i.modelCode || '',
+            caseVariant: i.caseVariant || '',
+            lamination: i.laminationVariant || '',
+            width: i.width,
+            height: i.height,
+            dimensionText: i.dimensionText || '',
+            area: i.area || '',
+          })),
+          subtotal: orderData.subtotal,
+          discount: 0,
+          total: orderData.total,
+          promoCode: orderData.promoCode || '',
+          promoDiscount: orderData.promoDiscount || 0,
+          designNote: orderData.designNote || '',
+          isShipping: orderData.isShipping || false,
+          address: orderData.address || '',
+          deadline: orderData.deadline || '',
+          hasJasaDesain: orderData.requestJasaDesain || false,
+        });
+        supabaseInvoice = sbResult.invoiceNumber;
+      } catch (err) {
+        console.warn('[api] Supabase write failed, falling back to Sheets only:', err);
+      }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     await fetch(POS_GOOGLE_SHEETS_URL, {
       method: 'POST',
       body: JSON.stringify(normalizedData),
       mode: 'no-cors'
     });
 
-    return { success: true };
-  } catch (error) {
+    return { success: true, invoiceNumber: supabaseInvoice || orderData.invoiceNumber };
+  } catch (error: unknown) {
     console.error('Error submitting website order:', error);
-    throw new Error(`Error sending to Google Sheets: ${error.message}`);
+    throw new Error(`Error sending to Google Sheets: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
 // WhatsApp redirection function
 export const handleWhatsAppRedirect = async (
   orderData: OrderData,
-  cartItems: any[],
+  cartItems: CartItem[],
   promoCode: string,
   promoDiscount: number,
   JASA_DESAIN_PRICE: number,
@@ -125,9 +172,9 @@ export const handleWhatsAppRedirect = async (
   setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>,
   setWhatsAppUrl: React.Dispatch<React.SetStateAction<string>>,
   setShowOrderSuccess: React.Dispatch<React.SetStateAction<boolean>>,
-  calculateTotal: (cartItems: any[], promoCode: string) => number,
-  calculateTotalSavings: (cartItems: any[]) => number,
-  caseVariants: any[]
+  calculateTotal: (cartItems: CartItem[], promoCode: string) => number,
+  calculateTotalSavings: (cartItems: CartItem[]) => number,
+  caseVariants: CaseVariant[]
 ) => {
   // Prevent multiple submissions
   if (orderData.cartItems.length === 0) {
@@ -228,17 +275,98 @@ export const submitPOSOrder = async (posOrderData: POSOrderData) => {
       isExpressPrint: hasExpressPrint || false,
     };
 
-    // Send as POST request with JSON body to unified endpoint
+    // ── Dual-write: Supabase primary, Google Sheets backup ──
+    let supabaseInvoice: string | null = null;
+    const isEditMode = !!(posOrderData as POSOrderData & { isEdit?: boolean }).isEdit;
+
+    if (isSupabaseConfigured()) {
+      try {
+        if (isEditMode) {
+          const itemRows = (posOrderData.items || []).map(i => ({
+            order_id: posOrderData.receiptId,
+            product_id: i.productId || undefined,
+            product_name: i.name,
+            quantity: i.quantity,
+            unit_price: i.price,
+            subtotal: i.subtotal,
+            model_code: i.modelCode || '',
+            case_variant: i.caseVariant || '',
+            lamination: i.laminationVariant || '',
+            width: i.width || undefined,
+            height: i.height || undefined,
+            dimension_text: i.dimensionText || '',
+            area: i.area || '',
+          }));
+          await editOrder({
+            orderId: posOrderData.receiptId,
+            customerName: posOrderData.customerName || '',
+            customerPhone: posOrderData.phoneNumber || '',
+            institution: posOrderData.institution || '',
+            items: itemRows,
+            subtotal: posOrderData.subtotal,
+            discount: posOrderData.discount,
+            total: posOrderData.total,
+            downPayment: posOrderData.downPayment || 0,
+            remainingBalance: posOrderData.remainingBalance ?? posOrderData.total,
+            deadline: posOrderData.deadline || '',
+          });
+          supabaseInvoice = posOrderData.receiptId;
+        } else {
+          const sbResult = await createOrder({
+            orderId: posOrderData.receiptId,
+            channel: 'pos',
+            cashier: posOrderData.cashier || '',
+            cashierUserId: posOrderData.cashierUserId,
+            customerName: posOrderData.customerName || '',
+            customerPhone: posOrderData.phoneNumber || '',
+            institution: posOrderData.institution || '',
+            items: (posOrderData.items || []).map(i => ({
+              productId: i.productId,
+              name: i.name,
+              quantity: i.quantity,
+              price: i.price,
+              subtotal: i.subtotal,
+              modelCode: i.modelCode || '',
+              caseVariant: i.caseVariant || '',
+              lamination: i.laminationVariant || '',
+              width: i.width,
+              height: i.height,
+              dimensionText: i.dimensionText || '',
+              area: i.area || '',
+            })),
+            subtotal: posOrderData.subtotal,
+            discount: posOrderData.discount,
+            total: posOrderData.total,
+            downPayment: posOrderData.downPayment || 0,
+            remainingBalance: posOrderData.remainingBalance ?? posOrderData.total,
+            paymentMethod: posOrderData.paymentMethod || 'Cash',
+            promoCode: (dataWithChannel as Record<string, unknown>).promoCode as string || '',
+            promoDiscount: (dataWithChannel as Record<string, unknown>).promoDiscount as number || 0,
+            designNote: (dataWithChannel as Record<string, unknown>).designNote as string || '',
+            isShipping: !!posOrderData.delivery,
+            address: posOrderData.delivery?.address || '',
+            deadline: posOrderData.deadline || '',
+            hasJasaDesain: hasJasaDesain || false,
+            delivery: posOrderData.delivery,
+          });
+          supabaseInvoice = sbResult.invoiceNumber;
+        }
+      } catch (err) {
+        console.warn('[api] POS Supabase write failed, falling back to Sheets only:', err);
+      }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     const response = await fetch(POS_GOOGLE_SHEETS_URL, {
       method: 'POST',
       body: JSON.stringify(dataWithChannel),
       mode: 'no-cors'
     });
 
-    return { success: true };
-  } catch (error) {
+    return { success: true, invoiceNumber: supabaseInvoice };
+  } catch (error: unknown) {
     console.error('Error submitting POS order:', error);
-    throw new Error(`Error sending POS order to Google Sheets: ${error.message}`);
+    throw new Error(`Error sending POS order to Google Sheets: ${error instanceof Error ? error.message : String(error)}`);
   }
 };
 
@@ -291,8 +419,30 @@ export interface OrderHistoryItem {
 }
 
 export const fetchOrderHistory = async (
-  options: { limit?: number; channel?: string; cashier?: string } = {}
+  options: { limit?: number; offset?: number; channel?: string; cashier?: string } = {}
 ): Promise<{ success: boolean; orders: OrderHistoryItem[]; total: number; error?: string }> => {
+  // Supabase is the primary data source (all historical data has been migrated)
+  if (isSupabaseConfigured()) {
+    try {
+      const result = await fetchOrders({
+        limit: options.limit,
+        offset: options.offset,
+        channel: options.channel,
+        cashier: options.cashier,
+      });
+      if (result?.success) {
+        return {
+          success: true,
+          orders: result.orders as unknown as OrderHistoryItem[],
+          total: result.total,
+        };
+      }
+    } catch (err) {
+      console.warn('[fetchOrderHistory] Supabase read failed, falling back to Google Sheets:', err);
+    }
+  }
+
+  // Fallback to Google Sheets (if Supabase is down or not configured)
   try {
     const params = new URLSearchParams();
     params.set('action', 'orders');
@@ -304,9 +454,9 @@ export const fetchOrderHistory = async (
     const response = await fetch(`${POS_GOOGLE_SHEETS_URL}?${params.toString()}`);
     const data = await response.json();
     return data;
-  } catch (error) {
-    console.error('Error fetching order history:', error);
-    return { success: false, orders: [], total: 0, error: error.message };
+  } catch (error: unknown) {
+    const msg = error instanceof Error ? error.message : String(error);
+    return { success: false, orders: [], total: 0, error: msg };
   }
 };
 
@@ -380,6 +530,22 @@ export const submitJobApplication = async (
 
     startProgress();
 
+    // --- Supabase dual-write (non-blocking) ---
+    try {
+      submitApplicationToSupabase({
+        fullName: applicationData.nama,
+        email: applicationData.email,
+        phone: applicationData.nomor,
+        position: applicationData.posisi || '',
+        infoSource: applicationData.source || '',
+        address: applicationData.alamat || '',
+        cv: applicationData.cv || undefined,
+        portfolio: applicationData.portfolio || undefined,
+      }).catch(err => console.error('[Applications] Supabase submit failed:', err));
+    } catch {
+      // Non-critical — continue with Google Sheets
+    }
+
     // Convert CV file to base64 if provided
     let cvBase64 = '';
     let cvMimeType = '';
@@ -408,7 +574,7 @@ export const submitJobApplication = async (
     }
 
     // Prepare data for Google Apps Script
-    const payload: any = {
+    const payload: Record<string, string> = {
       nama: applicationData.nama,
       email: applicationData.email,
       nomor: applicationData.nomor,
@@ -476,23 +642,47 @@ export const submitJobApplication = async (
       // With 'no-cors' mode, we can't read the response,
       // but if the fetch succeeds, we assume it's successful
       return { success: true };
-    } catch (fetchError: any) {
+    } catch (fetchError: unknown) {
       console.error('Fetch error:', fetchError);
 
+      const fetchMsg = fetchError instanceof Error ? fetchError.message : String(fetchError);
+
       // Check for specific error types
-      if (fetchError.message?.includes('403') || fetchError.message?.includes('Forbidden')) {
+      if (fetchMsg.includes('403') || fetchMsg.includes('Forbidden')) {
         throw new Error('Akses ditolak. Pastikan Google Apps Script sudah di-deploy dengan pengaturan "Who has access: Anyone"');
       }
 
-      if (fetchError.message?.includes('Failed to fetch') || fetchError.message?.includes('NetworkError')) {
+      if (fetchMsg.includes('Failed to fetch') || fetchMsg.includes('NetworkError')) {
         throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau URL API.');
       }
 
-      throw new Error(`Gagal mengirim lamaran: ${fetchError.message || 'Terjadi kesalahan tidak diketahui'}`);
+      throw new Error(`Gagal mengirim lamaran: ${fetchMsg || 'Terjadi kesalahan tidak diketahui'}`);
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error submitting job application:', error);
     throw error; // Re-throw to preserve the error message
   }
 };
+
+// Replace the plain JSON cache pattern with a TTL-aware wrapper:
+const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+
+function readCache<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data as T;
+  } catch { return null; }
+}
+
+function writeCache(key: string, data: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+  } catch { /* quota exceeded — ignore */ }
+}
 

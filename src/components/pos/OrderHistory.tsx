@@ -84,7 +84,9 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
   const [loadError, setLoadError] = useState("");
+  const [totalOrders, setTotalOrders] = useState(0);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
@@ -131,15 +133,18 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   };
 
   // Only fetch from API when user clicks refresh or changes to trash tab
+  const PAGE_SIZE = 50;
+
   const refreshFromAPI = async (forceChannel?: string) => {
     setIsLoading(true);
     setLoadError("");
     try {
       const activeChannel = forceChannel ?? channelFilter;
       const chParam = activeChannel === 'trash' ? 'trash' : undefined;
-      const result = await fetchOrderHistory({ limit: 100, channel: chParam });
+      const result = await fetchOrderHistory({ limit: PAGE_SIZE, channel: chParam });
       if (result.success && result.orders) {
         setOrders(result.orders);
+        setTotalOrders(result.total || result.orders.length);
         if (activeChannel !== 'trash') {
           localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
         }
@@ -150,6 +155,37 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       setLoadError("Gagal memuat dari server");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const loadMoreOrders = async () => {
+    setIsLoadingMore(true);
+    try {
+      const chParam = channelFilter === 'trash' ? 'trash' : undefined;
+      const result = await fetchOrderHistory({
+        limit: PAGE_SIZE,
+        offset: orders.length,
+        channel: chParam,
+      });
+      if (result.success && result.orders) {
+        const existingIds = new Set(orders.map(o => o.orderId));
+        const newOrders = result.orders.filter(o => !existingIds.has(o.orderId));
+        if (newOrders.length > 0) {
+          const merged = [...orders, ...newOrders];
+          setOrders(merged);
+          setTotalOrders(result.total || merged.length);
+          if (channelFilter !== 'trash') {
+            localStorage.setItem('orderHistory_cache', JSON.stringify(merged));
+          }
+        } else {
+          // No new orders found — we've reached the end
+          setTotalOrders(orders.length);
+        }
+      }
+    } catch {
+      toast.error("Gagal memuat lebih banyak pesanan");
+    } finally {
+      setIsLoadingMore(false);
     }
   };
 
@@ -629,6 +665,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
             </Button>
           </div>
         ) : (
+          <>
           <div className={viewMode === 'list' ? "space-y-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start"}>
             {filteredOrders.map(order => {
               const isExpanded = expandedOrder === order.orderId;
@@ -856,6 +893,26 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
               </div>
             )}
           </div>
+
+          {/* Load More */}
+          {orders.length < totalOrders && !isLoading && (
+            <div className="text-center mt-4 mb-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={loadMoreOrders}
+                disabled={isLoadingMore}
+                className="text-xs"
+              >
+                {isLoadingMore ? (
+                  <><Loader2 className="w-3 h-3 animate-spin mr-1.5" /> Memuat...</>
+                ) : (
+                  <>Muat Lebih Banyak ({orders.length}/{totalOrders})</>
+                )}
+              </Button>
+            </div>
+          )}
+        </>
         )}
       </div>
 

@@ -21,6 +21,7 @@ import { Helmet } from 'react-helmet-async';
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
+import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
 import { ModelSelector } from "@/components/product/ModelSelector";
@@ -123,21 +124,33 @@ const Index = () => {
     setInvoiceNumber(generateInvoiceNumber());
   }, []);
 
-  // Load products from JSON
+  // Load products — try Supabase first, fall back to products.json
   useEffect(() => {
     const fetchProducts = async () => {
+      try {
+        // Try Supabase first
+        const sbData = await fetchProductsFromSupabase();
+        if (sbData && Object.keys(sbData).length > 0) {
+          setProducts(sbData);
+          setFilteredProducts(JSON.parse(JSON.stringify(sbData)));
+          setTimeout(() => setIsProductsLoading(false), 150);
+          return;
+        }
+      } catch (err) {
+        console.warn('[Index] Supabase products failed, falling back to JSON:', err);
+      }
+
+      // Fallback to static JSON
       try {
         const response = await fetch(`/products.json?v=${PRODUCT_VERSION}`);
         const data = await response.json();
 
-        // Ensure we create fresh copies to prevent reference issues
         const productsCopy = JSON.parse(JSON.stringify(data));
         const filteredProductsCopy = JSON.parse(JSON.stringify(data));
 
         setProducts(productsCopy);
         setFilteredProducts(filteredProductsCopy);
 
-        // Add a small delay for smooth loading animation
         setTimeout(() => {
           setIsProductsLoading(false);
         }, 150);
@@ -271,8 +284,8 @@ const Index = () => {
   };
 
   // Validate and apply promo code
-  const handlePromoCodeCallback = (code: string) => {
-    handlePromoCodeChange(
+  const handlePromoCodeCallback = async (code: string) => {
+    await handlePromoCodeChange(
       code,
       cartItems,
       setPromoCode,
@@ -786,7 +799,7 @@ const Index = () => {
                             onClick={() => setShowShippingTooltip(!showShippingTooltip)}
                             className="text-gray-400 hover:text-gray-600 focus:outline-none"
                           >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                            <span className="border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
                           </button>
                         </div>
                         {showShippingTooltip && (
@@ -815,7 +828,7 @@ const Index = () => {
                             onClick={() => setShowJasaDesainTooltip(!showJasaDesainTooltip)}
                             className="text-gray-400 hover:text-gray-600 focus:outline-none"
                           >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                            <span className="border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
                           </button>
                         </div>
                         {showJasaDesainTooltip && (
@@ -845,7 +858,7 @@ const Index = () => {
                             onClick={() => setShowExpressTooltip(!showExpressTooltip)}
                             className="text-gray-400 hover:text-gray-600 focus:outline-none"
                           >
-                            <span className="text-sm border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
+                            <span className="border border-gray-400 rounded-full w-4 h-4 flex items-center justify-center text-xs">?</span>
                           </button>
                         </div>
                         {showExpressTooltip && (

@@ -10,8 +10,10 @@ import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { submitPOSOrder } from "@/utils/api";
 import type { POSOrderData } from "@/utils/api";
+import { fetchProductsFromSupabase } from "@/services/products";
 import { exportReceiptToPDF } from "@/utils/receiptPDF";
 import { generateReceiptHTML } from "@/utils/receiptTemplate";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Web Bluetooth API type declarations
 declare global {
@@ -95,6 +97,7 @@ interface CartItem {
 
 export function POSDashboard() {
   const navigate = useNavigate();
+  const { profile } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
   const [activeCategory, setActiveCategory] = useState("Semua Produk");
@@ -270,18 +273,28 @@ export function POSDashboard() {
     return () => clearInterval(interval);
   }, [cashierName, notificationsShown]);
 
-  // Load products from JSON file
+  // Load products — try Supabase first, fall back to products.json
   useEffect(() => {
     const loadProducts = async () => {
       try {
+        // Try Supabase first
+        const sbData = await fetchProductsFromSupabase();
+        if (sbData && Object.keys(sbData).length > 0) {
+          const allProducts = Object.values(sbData).flat() as Product[];
+          setProducts(allProducts);
+          setFilteredProducts(allProducts);
+          setLoading(false);
+          return;
+        }
+      } catch (err) {
+        console.warn('[POS] Supabase products failed, falling back to JSON:', err);
+      }
+
+      // Fallback to static JSON
+      try {
         const response = await fetch('/products.json?v=' + Date.now());
         const data = await response.json();
-
-        // Flatten the product data from the new format
         const allProducts = Object.values(data).flat() as Product[];
-
-
-
         setProducts(allProducts);
         setFilteredProducts(allProducts);
       } catch (error) {
@@ -319,13 +332,17 @@ export function POSDashboard() {
     loadImages();
   }, []);
 
-  // Load cashier name from localStorage on component mount
+  // Load cashier name: prefer auth profile, then localStorage
   useEffect(() => {
+    if (profile?.full_name) {
+      setCashierName(profile.full_name);
+      return;
+    }
     const savedCashierName = localStorage.getItem('posCashierName');
     if (savedCashierName) {
       setCashierName(savedCashierName);
     }
-  }, []);
+  }, [profile]);
 
   // Get unique categories
   const categories = ["Semua Produk", ...Array.from(new Set(products.map(p => p.category)))];
@@ -1032,6 +1049,7 @@ export function POSDashboard() {
       const posOrderData: POSOrderData = {
         receiptId,
         cashier: cashierName || "POS Kasir",
+        cashierUserId: profile?.id,
         customerName: customerDetails.name,
         phoneNumber: customerDetails.phone,
         institution: customerDetails.instansi,

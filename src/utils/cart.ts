@@ -1,7 +1,25 @@
 import type { Product, CartItem, PromoCodeType } from '@/types/product';
 import { getApplicablePrice, calculateSavings, calculateBannerPrice } from './product';
 import { validPromoCodes, idCardWithCaseIds, stikerWithLaminationIds, caseVariants } from '@/constants';
+import { validatePromoCode as validatePromoCodeSupabase } from '@/services/products';
 import { toast } from 'sonner';
+
+// Module-level cache for Supabase-resolved promos — entries expire after PROMO_CACHE_TTL_MS
+const PROMO_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
+const resolvedPromos: Record<string, { data: PromoCodeType; cachedAt: number }> = {};
+
+/**
+ * Get promo info for a code — checks Supabase cache first, then hardcoded constants.
+ */
+function getPromoInfo(code: string): PromoCodeType | undefined {
+  const cached = resolvedPromos[code];
+  if (cached && Date.now() - cached.cachedAt < PROMO_CACHE_TTL_MS) {
+    return cached.data;
+  }
+  // Expired — remove stale entry
+  if (cached) delete resolvedPromos[code];
+  return validPromoCodes[code as keyof typeof validPromoCodes];
+}
 
 export interface FlyingBubble {
   id: string;
@@ -386,8 +404,8 @@ export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
     // Start with threshold-adjusted price (from getApplicablePrice)
     let itemPrice = item.appliedPrice * item.quantity;
 
-    if (promoCode && validPromoCodes[promoCode]) {
-      const promoInfo = validPromoCodes[promoCode];
+    if (promoCode && getPromoInfo(promoCode)) {
+      const promoInfo = getPromoInfo(promoCode)!;
       const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
       const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
@@ -426,8 +444,8 @@ export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
  * @returns Effective price per unit after promo application
  */
 export const getEffectivePrice = (item: CartItem, promoCode: string): number => {
-  if (promoCode && validPromoCodes[promoCode]) {
-    const promoInfo = validPromoCodes[promoCode];
+  if (promoCode && getPromoInfo(promoCode)) {
+    const promoInfo = getPromoInfo(promoCode)!;
     const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
     const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
@@ -469,9 +487,9 @@ export const calculateTotalSavings = (cartItems: CartItem[]) => {
  * @returns Total discount amount in Rupiah
  */
 export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string) => {
-  if (!promoCode || !validPromoCodes[promoCode]) return 0;
+  if (!promoCode || !getPromoInfo(promoCode)) return 0;
 
-  const promoInfo = validPromoCodes[promoCode];
+  const promoInfo = getPromoInfo(promoCode)!;
   return cartItems.reduce((discount, item) => {
     const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
     const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
@@ -499,16 +517,15 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
  * Validate and apply promo code to cart
  * 
  * VALIDATION FLOW:
- * 0. Check date validity for date-restricted promos (e.g., HUT3TH: Nov 20-25, 2025)
- * 1. Check if promo code exists
- * 2. If promo targets specific products: verify at least one matching product in cart
- * 3. If promo has minQuantity: verify quantity requirement met
- * 4. Apply promo if all checks pass
+ * 1. Try Supabase validation first (populates module-level cache with TTL)
+ * 2. If promo code exists (Supabase or hardcoded):
+ *    a. Check product eligibility — verify at least one matching product in cart
+ *    b. Check minimum quantity requirement
+ *    c. Apply promo if all checks pass
  * 
  * ⚠️ LIMITATIONS:
  * - Only ONE promo code can be active at a time
- * - Promo validation happens client-side only
- * - HUT3TH promo is only valid on Nov 20-25, 2025
+ * - Promos validated via Supabase are cached for 5 minutes
  * 
  * @param code - Promo code string (empty string clears promo)
  * @param cartItems - Current cart items
@@ -518,7 +535,7 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
  * 
  * @see validPromoCodes in constants/index.ts for promo definitions
  */
-export const handlePromoCodeChange = (
+export const handlePromoCodeChange = async (
   code: string,
   cartItems: CartItem[],
   setPromoCode: React.Dispatch<React.SetStateAction<string>>,
@@ -534,21 +551,26 @@ export const handlePromoCodeChange = (
     return;
   }
 
-  const promo = validPromoCodes[code as keyof typeof validPromoCodes];
-  if (promo) {
-    // VALIDATION STEP 0: Check date validity for HUT3TH promo (Nov 20-25, 2025)
-    if (code === "HUT3TH") {
-      const promoStartDate = new Date('2025-11-20T00:00:00');
-      const promoEndDate = new Date('2025-11-25T23:59:59');
-      const now = new Date();
-
-      if (now < promoStartDate || now > promoEndDate) {
-        setPromoDiscount(0);
-        setPromoCodeError("Kode promo HUT3TH hanya berlaku pada tanggal 20-25 November 2025.");
-        return;
-      }
+  // Try Supabase first — populate module cache
+  try {
+    const sbPromo = await validatePromoCodeSupabase(code);
+    if (sbPromo) {
+      resolvedPromos[code] = {
+        data: {
+          discount: sbPromo.discount,
+          productIds: sbPromo.productIds,
+          minQuantity: sbPromo.minQuantity,
+          overridePrices: sbPromo.overridePrices,
+        },
+        cachedAt: Date.now(),
+      };
     }
+  } catch (err) {
+    console.warn('[Promo] Supabase validation failed, falling back to hardcoded:', err);
+  }
 
+  const promo = getPromoInfo(code);
+  if (promo) {
     // VALIDATION STEP 1: Check product eligibility
     // If promo targets specific products, verify at least one is in cart
     if (promo.productIds && Array.isArray(promo.productIds)) {

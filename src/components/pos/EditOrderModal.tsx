@@ -5,18 +5,24 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogD
 import { Save, Loader2, Plus, Trash2 } from "lucide-react";
 import { toast } from "sonner";
 import type { OrderHistoryItem } from "@/utils/api";
+import type { Product } from '@/types/product';
+import { fetchProductsFromSupabase } from '@/services/products';
+
+type EditOrderFormData = OrderHistoryItem & {
+    [key: string]: unknown;
+};
 
 interface EditOrderModalProps {
     order: OrderHistoryItem | null;
     isOpen: boolean;
     onClose: () => void;
-    onSave: (updatedOrder: any) => Promise<void>;
+    onSave: (updatedOrder: Record<string, unknown>) => Promise<void>;
 }
 
 export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModalProps) {
-    const [formData, setFormData] = useState<any>(null);
+    const [formData, setFormData] = useState<EditOrderFormData | null>(null);
     const [isSaving, setIsSaving] = useState(false);
-    const [availableProducts, setAvailableProducts] = useState<any[]>([]);
+    const [availableProducts, setAvailableProducts] = useState<Product[]>([]);
 
     useEffect(() => {
         if (order) {
@@ -28,17 +34,14 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
         // Fetch products
         const fetchProducts = async () => {
             try {
-                const res = await fetch('/products.json');
-                const data = await res.json();
+                const sbProducts = await fetchProductsFromSupabase();
+                const source = sbProducts || await fetch('/products.json').then(r => r.json());
 
                 // Flatten the categorized products for easy dropdown
-                const flatProducts: any[] = [];
-                Object.values(data).forEach((categoryProducts: any) => {
-                    flatProducts.push(...categoryProducts);
-                });
+                const flatProducts: Product[] = Object.values(source).flat() as Product[];
 
                 // Sort alphabetically
-                flatProducts.sort((a, b) => a.name.localeCompare(b.name));
+                flatProducts.sort((a: Product, b: Product) => a.name.localeCompare(b.name));
                 setAvailableProducts(flatProducts);
             } catch (err) {
                 console.error("Gagal load produk", err);
@@ -49,11 +52,11 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
 
     if (!formData || !order) return null;
 
-    const handleChange = (field: string, value: any) => {
-        setFormData((prev: any) => ({ ...prev, [field]: value }));
+    const handleChange = (field: string, value: string | number) => {
+        setFormData((prev) => prev ? ({ ...prev, [field]: value }) : prev);
     };
 
-    const handleItemChange = (index: number, field: string, value: any) => {
+    const handleItemChange = (index: number, field: string, value: string | number) => {
         const newItems = [...formData.items];
         newItems[index] = { ...newItems[index], [field]: value };
 
@@ -71,12 +74,12 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
             newItems[index].subtotal = Number(newItems[index].price) * Number(newItems[index].quantity);
         }
 
-        setFormData((prev: any) => ({ ...prev, items: newItems }));
+        setFormData((prev) => prev ? ({ ...prev, items: newItems }) : prev);
     };
 
     const handleRemoveItem = (index: number) => {
-        const newItems = formData.items.filter((_: any, i: number) => i !== index);
-        setFormData((prev: any) => ({ ...prev, items: newItems }));
+        const newItems = formData.items.filter((_: OrderHistoryItem['items'][number], i: number) => i !== index);
+        setFormData((prev) => prev ? ({ ...prev, items: newItems }) : prev);
     };
 
     const handleSave = async () => {
@@ -84,7 +87,7 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
             setIsSaving(true);
 
             // Recalculate totals
-            const newSubtotal = formData.items.reduce((acc: number, item: any) => acc + (Number(item.subtotal) || 0), 0);
+            const newSubtotal = formData.items.reduce((acc: number, item: OrderHistoryItem['items'][number]) => acc + (Number(item.subtotal) || 0), 0);
             const newTotal = newSubtotal - (formData.discount || 0);
             const newRemaining = newTotal - (formData.downPayment || 0);
 
@@ -94,7 +97,7 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
                 subtotal: newSubtotal,
                 total: newTotal,
                 remainingBalance: newRemaining > 0 ? newRemaining : 0,
-                orderStatus: formData.downPayment > 0 && formData.downPayment < newTotal ? 'partial' : 'done',
+                orderStatus: (formData.downPayment || 0) > 0 && (formData.downPayment || 0) < newTotal ? 'partial' : 'done',
                 isEdit: true,
                 receiptId: order.orderId
             };
@@ -143,7 +146,7 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
                     <div className="border border-gray-200 rounded-lg overflow-hidden">
                         <div className="bg-gray-100 px-3 py-2 text-xs font-bold text-gray-600 border-b">Detail Item</div>
                         <div className="p-3 space-y-3 bg-gray-50/50">
-                            {formData.items.map((item: any, idx: number) => (
+                            {formData.items.map((item: OrderHistoryItem['items'][number], idx: number) => (
                                 <div key={idx} className="flex flex-col sm:flex-row gap-2 sm:items-center bg-white p-2 rounded border sm:border-transparent sm:bg-transparent">
                                     <div className="w-full sm:w-1/3 flex flex-col gap-1">
                                         <label className="text-[10px] sm:hidden font-semibold text-gray-500">Nama Produk</label>
@@ -181,10 +184,10 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
                             ))}
 
                             <Button variant="outline" size="sm" className="w-full mt-2 border-dashed h-9" onClick={() => {
-                                setFormData((prev: any) => ({
+                                setFormData((prev) => prev ? ({
                                     ...prev,
-                                    items: [...prev.items, { name: 'Pilih Produk', quantity: 1, price: 0, subtotal: 0 }]
-                                }));
+                                    items: [...prev.items, { productId: 0, name: 'Pilih Produk', quantity: 1, price: 0, subtotal: 0 }]
+                                }) : prev);
                             }}>
                                 <Plus className="w-4 h-4 mr-2 text-gray-500" /> Tambah Item Lainnya
                             </Button>

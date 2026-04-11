@@ -1,4 +1,7 @@
 import { POS_GOOGLE_SHEETS_URL } from '@/constants';
+import { isSupabaseConfigured } from '@/lib/supabase';
+import { fetchDashboardDataSupabase, fetchMonthlyReportSupabase } from '@/services/admin';
+import { updateOrderStatusSupabase, softDeleteOrder, restoreOrderSupabase, assignDesignerSupabase } from '@/services/orders';
 
 // ============================================================
 // DASHBOARD API — Fetch analytics from Google Sheets
@@ -51,34 +54,72 @@ export interface MonthlyReportData {
 const CACHE_DASHBOARD = 'admin_dashboard_cache';
 const CACHE_MONTHLY_PREFIX = 'admin_monthly_';
 
+const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
+
+function readCache<T>(key: string): T | null {
+  try {
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    const { data, ts } = JSON.parse(raw);
+    if (Date.now() - ts > CACHE_TTL_MS) {
+      localStorage.removeItem(key);
+      return null;
+    }
+    return data as T;
+  } catch { return null; }
+}
+
+function writeCache(key: string, data: unknown) {
+  try {
+    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
+  } catch { /* quota exceeded — ignore */ }
+}
+
 /**
  * Fetch dashboard KPI data (with cache)
  */
 export const fetchDashboardData = async (useCache = true): Promise<DashboardData> => {
     // Try cache first
     if (useCache) {
-        const cached = localStorage.getItem(CACHE_DASHBOARD);
+        const cached = readCache<DashboardData>(CACHE_DASHBOARD);
         if (cached) {
-            try { return JSON.parse(cached); } catch { }
+            return cached;
         }
     }
 
+    // Supabase is the primary data source (all historical data has been migrated)
+    if (isSupabaseConfigured()) {
+        try {
+            const sbData = await fetchDashboardDataSupabase();
+            if (sbData?.success) {
+                writeCache(CACHE_DASHBOARD, sbData);
+                return sbData;
+            }
+        } catch (err) {
+            console.warn('[Dashboard] Supabase read failed, falling back to Sheets:', err);
+        }
+    }
+
+    // Fallback to Google Sheets (if Supabase is down or not configured)
     try {
         const t = new Date().getTime();
         const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=dashboard&t=${t}`);
         const data = await res.json();
-        if (data.success) localStorage.setItem(CACHE_DASHBOARD, JSON.stringify(data));
-        return data;
-    } catch (error) {
-        console.error('Dashboard fetch error:', error);
+        if (data.success) {
+            writeCache(CACHE_DASHBOARD, data);
+            return data;
+        }
         return {
             success: false,
             today: { orders: 0, revenue: 0 },
             thisWeek: { orders: 0, revenue: 0 },
             thisMonth: { orders: 0, revenue: 0 },
             allTime: { orders: 0, revenue: 0 },
-            error: error.message,
+            error: data.error || 'Unknown error',
         };
+    } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : String(err);
+        return { success: false, today: { orders: 0, revenue: 0 }, thisWeek: { orders: 0, revenue: 0 }, thisMonth: { orders: 0, revenue: 0 }, allTime: { orders: 0, revenue: 0 }, error: msg };
     }
 };
 
@@ -89,18 +130,41 @@ export const fetchMonthlyReport = async (month: number, year: number, useCache =
     const cacheKey = `${CACHE_MONTHLY_PREFIX}${month}_${year}`;
 
     if (useCache) {
-        const cached = localStorage.getItem(cacheKey);
+        const cached = readCache<MonthlyReportData>(cacheKey);
         if (cached) {
-            try { return JSON.parse(cached); } catch { }
+            return cached;
         }
     }
 
+    // Supabase is the primary data source (all historical data has been migrated)
+    if (isSupabaseConfigured()) {
+        try {
+            const sbData = await fetchMonthlyReportSupabase(month, year);
+            if (sbData?.success) {
+                writeCache(cacheKey, sbData);
+                return sbData;
+            }
+        } catch (err) {
+            console.warn('[MonthlyReport] Supabase read failed, falling back to Sheets:', err);
+        }
+    }
+
+    // Fallback to Google Sheets (if Supabase is down or not configured)
     try {
         const t = new Date().getTime();
         const res = await fetch(`${POS_GOOGLE_SHEETS_URL}?action=monthly&month=${month}&year=${year}&t=${t}`);
         const data = await res.json();
-        if (data.success) localStorage.setItem(cacheKey, JSON.stringify(data));
-        return data;
+        if (data.success) {
+            writeCache(cacheKey, data);
+            return data;
+        }
+        return {
+            success: false,
+            month, year,
+            totals: { orders: 0, revenue: 0, avgOrderValue: 0 },
+            dailyBreakdown: [], topProducts: [], byCashier: [],
+            error: data.error || 'Unknown error',
+        };
     } catch (error) {
         console.error('Monthly report error:', error);
         return {
@@ -108,7 +172,7 @@ export const fetchMonthlyReport = async (month: number, year: number, useCache =
             month, year,
             totals: { orders: 0, revenue: 0, avgOrderValue: 0 },
             dailyBreakdown: [], topProducts: [], byCashier: [],
-            error: error.message,
+            error: error instanceof Error ? error.message : String(error),
         };
     }
 };
@@ -117,13 +181,23 @@ export const fetchMonthlyReport = async (month: number, year: number, useCache =
  * Update order status — uses no-cors since we can't read GAS POST responses
  */
 export const updateOrderStatus = async (orderId: string, status: string): Promise<{ success: boolean }> => {
+    // Write to Supabase first
+    if (isSupabaseConfigured()) {
+        try {
+            const result = await updateOrderStatusSupabase(orderId, status);
+            if (!result.success) console.warn('[updateOrderStatus] Supabase write failed:', result.error);
+        } catch (err) {
+            console.warn('[updateOrderStatus] Supabase write error:', err);
+        }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     try {
         await fetch(POS_GOOGLE_SHEETS_URL, {
             method: 'POST',
             body: JSON.stringify({ action: 'updateStatus', orderId, status }),
             mode: 'no-cors',
         });
-        // With no-cors we can't read response, assume success if no error thrown
         return { success: true };
     } catch (error) {
         console.error('Update status error:', error);
@@ -135,6 +209,17 @@ export const updateOrderStatus = async (orderId: string, status: string): Promis
  * Soft-delete an order — uses no-cors
  */
 export const deleteOrder = async (orderId: string, deletedBy: string = 'Admin'): Promise<{ success: boolean }> => {
+    // Write to Supabase first
+    if (isSupabaseConfigured()) {
+        try {
+            const result = await softDeleteOrder(orderId, deletedBy);
+            if (!result.success) console.warn('[deleteOrder] Supabase write failed:', result.error);
+        } catch (err) {
+            console.warn('[deleteOrder] Supabase write error:', err);
+        }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     try {
         await fetch(POS_GOOGLE_SHEETS_URL, {
             method: 'POST',
@@ -152,6 +237,17 @@ export const deleteOrder = async (orderId: string, deletedBy: string = 'Admin'):
  * Restore an order — uses no-cors
  */
 export const restoreOrder = async (orderId: string): Promise<{ success: boolean }> => {
+    // Write to Supabase first
+    if (isSupabaseConfigured()) {
+        try {
+            const result = await restoreOrderSupabase(orderId);
+            if (!result.success) console.warn('[restoreOrder] Supabase write failed:', result.error);
+        } catch (err) {
+            console.warn('[restoreOrder] Supabase write error:', err);
+        }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     try {
         await fetch(POS_GOOGLE_SHEETS_URL, {
             method: 'POST',
@@ -169,6 +265,17 @@ export const restoreOrder = async (orderId: string): Promise<{ success: boolean 
  * Assign designer to an order - uses no-cors
  */
 export const assignDesigner = async (orderId: string, designer: string): Promise<{ success: boolean }> => {
+    // Write to Supabase first
+    if (isSupabaseConfigured()) {
+        try {
+            const result = await assignDesignerSupabase(orderId, designer);
+            if (!result.success) console.warn('[assignDesigner] Supabase write failed:', result.error);
+        } catch (err) {
+            console.warn('[assignDesigner] Supabase write error:', err);
+        }
+    }
+
+    // Always write to Google Sheets (backup during transition)
     try {
         await fetch(POS_GOOGLE_SHEETS_URL, {
             method: 'POST',

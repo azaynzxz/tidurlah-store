@@ -1,15 +1,21 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, FileText, Package, Tag } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
+import { ProductsTab } from "@/components/admin/ProductsTab";
+import { PromosTab } from "@/components/admin/PromosTab";
 import { POSHeader } from "@/components/pos/POSHeader";
+import { useAuth } from "@/contexts/AuthContext";
+import { useOrderNotifications } from "@/hooks/useOrderNotifications";
 
 const TABS = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'orders', label: 'Pesanan', icon: ShoppingCart },
+    { id: 'products', label: 'Produk', icon: Package },
+    { id: 'promos', label: 'Promo', icon: Tag },
     { id: 'reports', label: 'Laporan', icon: FileText },
 ] as const;
 
@@ -18,11 +24,13 @@ type TabId = typeof TABS[number]['id'];
 export default function Admin() {
     const [activeTab, setActiveTab] = useState<TabId>('dashboard');
     const navigate = useNavigate();
+    const { profile } = useAuth();
+    useOrderNotifications();
 
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <POSHeader cashierName="Admin" />
+            <POSHeader cashierName={profile?.full_name || "Admin"} />
 
             {/* Tab Navigation */}
             <div className="bg-white border-b shadow-sm">
@@ -47,6 +55,8 @@ export default function Admin() {
             <div className="max-w-4xl mx-auto p-4">
                 {activeTab === 'dashboard' && <DashboardTab />}
                 {activeTab === 'orders' && <OrderHistory />}
+                {activeTab === 'products' && <ProductsTab />}
+                {activeTab === 'promos' && <PromosTab />}
                 {activeTab === 'reports' && <ReportsTab />}
             </div>
         </div>

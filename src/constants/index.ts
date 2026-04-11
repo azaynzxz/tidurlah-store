@@ -42,26 +42,12 @@ export const validPromoCodes: Record<string, PromoCodeType> = {
  * 
  * @default true
  */
-export const PROMO_BANNER_ENABLED = true;
+export const PROMO_BANNER_ENABLED = false;
 
 // Define promoted products with end dates
 
-export const promotedProducts: PromotedProductType[] = [
-  {
-    id: 8,
-    discount: 40,
-    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    promoCode: "HUT3TH",
-    description: "Promo ulang tahun 3 tahun! Harga spesial untuk Paket IDC LYD 2S."
-  },
-  {
-    id: 7,
-    discount: 35,
-    endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days from now
-    promoCode: "HUT3TH",
-    description: "Promo ulang tahun 3 tahun! Harga spesial untuk Paket IDC LYD 1S."
-  }
-];
+// Promoted products — managed via Supabase admin panel. Keep empty when no active campaign.
+export const promotedProducts: PromotedProductType[] = [];
 
 // Add case variants
 export const caseVariants: CaseVariant[] = [
@@ -89,16 +75,16 @@ export const categories = [
   { id: "Apparel", name: "Apparel", icon: (props: any) => React.createElement('span', { className: `material-symbols-outlined ${props.className || ''}` }, 'apparel'), color: "bg-[#FF5E01]", hoverColor: "hover:bg-[#FF5E01]/90", textColor: "text-white", inactiveColor: "bg-muted", inactiveText: "text-foreground" }
 ];
 
-// Product version for cache busting
-export const PRODUCT_VERSION = Date.now();
+// Product version for cache busting — use a stable version string (bump manually on product data changes)
+export const PRODUCT_VERSION = '2025.1';
 
-// Google Sheets URL — Unified endpoint for both website and POS orders
+// @deprecated — Google Sheets dual-write. Will be removed after Supabase migration is verified.
 export const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpwKU0n3iS-HK9uRUlhkwZUUCRPGnPYI512cch3G8wIi06WzvvYw0UWiqXtWXQZIvg/exec';
 
-// POS Google Sheets URL — Same unified endpoint
+// @deprecated — Google Sheets dual-write. Will be removed after Supabase migration is verified.
 export const POS_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpwKU0n3iS-HK9uRUlhkwZUUCRPGnPYI512cch3G8wIi06WzvvYw0UWiqXtWXQZIvg/exec';
 
-// Loker (Job Application) Google Sheets submission URL
+// @deprecated — Google Sheets dual-write. Will be removed after Supabase migration is verified.
 export const LOKER_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzuEkPrBkPbhKZDwD5AtnNdx-_oxiElFcNP5LfKNdmu7AzMBeGcwqXwuoRenSHNRq0u/exec';
 
 // WhatsApp number

@@ -1,3 +1,5 @@
+import type React from 'react';
+
 export interface Product {
   id: number;
   name: string;
@@ -19,6 +21,9 @@ export interface Product {
   maxHeight?: number;
   laminationOptions?: { type: string; price: number }[];
   models?: { code: string; image: string; price?: number }[];
+  unit?: string;
+  is_available?: boolean;
+  isCustomizable?: boolean;
 }
 
 export type PromoCodeType = {
@@ -89,7 +94,7 @@ export interface CaseVariant {
 export type CategoryItem = {
   id: string;
   name: string;
-  icon: any; // Using any for now since LucideIcon might not be available in all environments
+  icon: React.ComponentType<{ className?: string }>;
   color: string;
   hoverColor: string;
   textColor: string;

@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { submitSurveyToSupabase } from '@/services/applications';
 import { CheckCircle, Sparkles, ChevronLeft, ChevronRight } from "lucide-react";
 import Header from "@/components/common/Header";
 
@@ -349,6 +350,12 @@ export default function Survey() {
       };
 
       const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxeEysy_pAP8Fofda7quz07j6OIxPcptmb6NxLq0nGpuC5mDyTGCQNBSaSP7fjB1Gu2/exec';
+
+      // Supabase dual-write (non-blocking)
+      submitSurveyToSupabase({
+        respondentName: formattedData.Name,
+        responses: formattedData,
+      }).catch(err => console.error('[Survey] Supabase submit failed:', err));
       
       const formData = new URLSearchParams();
       Object.entries(formattedData).forEach(([key, value]) => {

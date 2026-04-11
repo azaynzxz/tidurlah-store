@@ -23,14 +23,33 @@ import TwibbonMaker from "./pages/TwibbonMaker";
 import Layout from "./pages/Layout";
 import Katalog from "./pages/Katalog";
 import Admin from "./pages/Admin";
+import Login from "./pages/Login";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedRoute } from "@/components/common/ProtectedRoute";
+import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 import { HelmetProvider } from 'react-helmet-async';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 10000),
+      staleTime: 60_000,        // 1 min default
+      gcTime: 5 * 60_000,       // 5 min garbage collect
+      refetchOnWindowFocus: false,
+    },
+    mutations: {
+      retry: 1,
+    },
+  },
+});
 
 const App = () => (
+  <ErrorBoundary>
   <HelmetProvider>
     <QueryClientProvider client={queryClient}>
+      <AuthProvider>
       <HalloweenThemeProvider>
         <DialogProvider>
           <PromoBannerProvider>
@@ -48,14 +67,23 @@ const App = () => (
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:title" element={<BlogPost />} />
                   <Route path="/hello" element={<Spotlight />} />
-                  <Route path="/cashier" element={<Cashier />} />
+                  <Route path="/cashier" element={
+                    <ProtectedRoute allowedRoles={['admin', 'cashier']}>
+                      <Cashier />
+                    </ProtectedRoute>
+                  } />
                   <Route path="/receipt" element={<Receipt />} />
                   <Route path="/loker" element={<Loker />} />
                   <Route path="/loker/:jobSlug" element={<Loker />} />
                   <Route path="/twibbon-hut-3-id-card-lampung" element={<TwibbonMaker />} />
                   <Route path="/layout" element={<Layout />} />
                   <Route path="/katalog" element={<Katalog />} />
-                  <Route path="/admin" element={<Admin />} />
+                  <Route path="/admin" element={
+                    <ProtectedRoute allowedRoles={['admin']}>
+                      <Admin />
+                    </ProtectedRoute>
+                  } />
+                  <Route path="/login" element={<Login />} />
                   <Route path="/login-blocked" element={<LoginBlocked />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
@@ -65,8 +93,10 @@ const App = () => (
           </PromoBannerProvider>
         </DialogProvider>
       </HalloweenThemeProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </HelmetProvider>
+  </ErrorBoundary>
 );
 
 export default App;
