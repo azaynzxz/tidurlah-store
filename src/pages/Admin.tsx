@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText, Package, Tag } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
@@ -24,7 +24,12 @@ type TabId = typeof TABS[number]['id'];
 export default function Admin() {
     const [activeTab, setActiveTab] = useState<TabId>('dashboard');
     const navigate = useNavigate();
-    const { profile } = useAuth();
+    const { profile, signOut } = useAuth();
+
+    const handleLogout = async () => {
+        await signOut();
+        navigate('/login');
+    };
     useOrderNotifications();
 
     return (
@@ -34,7 +39,8 @@ export default function Admin() {
 
             {/* Tab Navigation */}
             <div className="bg-white border-b shadow-sm">
-                <div className="max-w-4xl mx-auto px-4 flex gap-1 pt-2">
+                <div className="max-w-4xl mx-auto px-4 flex items-center justify-between pt-2">
+                    <div className="flex gap-1">
                     {TABS.map(tab => (
                         <button
                             key={tab.id}
@@ -48,6 +54,16 @@ export default function Admin() {
                             {tab.label}
                         </button>
                     ))}
+                    </div>
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={handleLogout}
+                        className="text-gray-500 hover:text-red-600 mb-1"
+                    >
+                        <LogOut className="w-4 h-4 mr-1.5" />
+                        Logout
+                    </Button>
                 </div>
             </div>
 
