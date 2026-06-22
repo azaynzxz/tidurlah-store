@@ -12,14 +12,18 @@ import {
   updateProduct,
   deleteProduct,
 } from '@/services/products';
+import { uploadFile, getPublicUrl } from '@/services/storage';
 import { useAdminProducts } from '@/hooks/useSupabaseQuery';
 import type { Database } from '@/types/supabase';
 
 type ProductRow = Database['public']['Tables']['products']['Row'];
 
 const CATEGORIES = [
-  'Plakat', 'Papan Bunga', 'Merchandise', 'Banner & Spanduk',
-  'Undangan', 'Stiker', 'Packaging', 'Percetakan',
+  'ID Card & Lanyard',
+  'Media Promosi',
+  'Merchandise',
+  'Papan Bunga',
+  'Apparel',
 ];
 
 const emptyForm = {
@@ -29,7 +33,7 @@ const emptyForm = {
   description: '',
   price: 0,
   discount_price: null as number | null,
-  category: 'Plakat',
+  category: 'ID Card & Lanyard',
   time: '',
   rating: 5,
   bestseller: false,
@@ -49,6 +53,36 @@ export function ProductsTab() {
   const [saving, setSaving] = useState(false);
   const [deletingId, setDeletingId] = useState<number | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<number | null>(null);
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  async function handleImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const uploadedPath = await uploadFile('products', filePath, file);
+      if (!uploadedPath) {
+        throw new Error('Upload failed');
+      }
+
+      const publicUrl = getPublicUrl('products', uploadedPath);
+      if (!publicUrl) {
+        throw new Error('Failed to get public URL');
+      }
+
+      setForm(f => ({ ...f, image: publicUrl }));
+      toast.success('Gambar berhasil diunggah');
+    } catch (err: unknown) {
+      toast.error('Gagal mengunggah gambar: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setUploadingImage(false);
+    }
+  }
 
   function openCreate() {
     setEditingProduct(null);
@@ -325,7 +359,37 @@ export function ProductsTab() {
               </div>
               <div className="col-span-2">
                 <Label className="text-xs">URL Gambar</Label>
-                <Input value={form.image} onChange={e => setForm(f => ({ ...f, image: e.target.value }))} placeholder="/product-image/..." className="mt-1" />
+                <div className="flex gap-2 mt-1">
+                  <Input
+                    value={form.image}
+                    onChange={e => setForm(f => ({ ...f, image: e.target.value }))}
+                    placeholder="/product-image/... atau https://..."
+                    className="flex-1"
+                  />
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="product-image-upload"
+                      className="hidden"
+                      onChange={handleImageUpload}
+                      disabled={uploadingImage}
+                    />
+                    <Label htmlFor="product-image-upload" className="cursor-pointer">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-9 px-3"
+                        disabled={uploadingImage}
+                        asChild
+                      >
+                        <span>
+                          {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Unggah'}
+                        </span>
+                      </Button>
+                    </Label>
+                  </div>
+                </div>
               </div>
               <div className="col-span-2">
                 <Label className="text-xs">Deskripsi</Label>

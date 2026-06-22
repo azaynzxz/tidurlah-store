@@ -45,6 +45,7 @@ export async function createOrder(params: {
   address?: string;
   deadline?: string;
   hasJasaDesain?: boolean;
+  cabang?: string;
   delivery?: {
     recipientName: string;
     recipientPhone: string;
@@ -87,6 +88,7 @@ export async function createOrder(params: {
     address: params.address || '',
     deadline: params.deadline || undefined,
     has_jasa_desain: params.hasJasaDesain || false,
+    cabang: params.cabang || null,
   };
 
   const { error: orderError } = await supabase
@@ -289,6 +291,7 @@ export async function editOrder(params: {
   remainingBalance?: number;
   deadline?: string;
   designNote?: string;
+  cabang?: string;
 }): Promise<{ success: boolean; error?: string }> {
   if (!supabase || !isSupabaseConfigured()) return { success: false, error: 'Not configured' };
 
@@ -304,6 +307,7 @@ export async function editOrder(params: {
   if (params.remainingBalance !== undefined) updates.remaining_balance = params.remainingBalance;
   if (params.deadline !== undefined) updates.deadline = params.deadline;
   if (params.designNote !== undefined) updates.design_note = params.designNote;
+  if (params.cabang !== undefined) updates.cabang = params.cabang;
 
   if (Object.keys(updates).length > 0) {
     // Also update items summary

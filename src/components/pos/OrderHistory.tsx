@@ -35,6 +35,7 @@ function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
     receiptId: order.orderId,
     timestamp: order.timestamp,
     cashier: order.cashier || "Kasir",
+    cabang: order.cabang || undefined,
     customer: order.customerName ? {
       name: order.customerName,
       phone: String(order.customerPhone || ''),
@@ -80,7 +81,9 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
-  const [logoBase64, setLogoBase64] = useState<string>("");
+  const [logoTidurlah, setLogoTidurlah] = useState<string>("");
+  const [logoUnila, setLogoUnila] = useState<string>("");
+  const [logoBelwis, setLogoBelwis] = useState<string>("");
   const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -93,6 +96,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
   const [statusFilter, setStatusFilter] = useState<string>('partial');
   const [channelFilter, setChannelFilter] = useState<string>('all');
+  const [cabangFilter, setCabangFilter] = useState<string>('all');
   const [sortMode, setSortMode] = useState<string>('priority');
   const [editingOrder, setEditingOrder] = useState<OrderHistoryItem | null>(null);
 
@@ -122,12 +126,21 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
 
   const loadImages = async () => {
     try {
-      const logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
-      setLogoBase64(logo);
+      const logoT = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
+      setLogoTidurlah(logoT);
+      
+      const logoU = await convertImageToBase64('/logo_nono.jpeg');
+      setLogoUnila(logoU);
+
+      const logoB = await convertImageToBase64('/logo-idcard-lampung.jpg');
+      setLogoBelwis(logoB);
+
       const qr = await convertImageToBase64('/product-image/survey-qr.png');
       setSurveyQRBase64(qr);
     } catch {
-      setLogoBase64('/product-image/Tidurlah Logo Horizontal.png');
+      setLogoTidurlah('/product-image/Tidurlah Logo Horizontal.png');
+      setLogoUnila('/logo_nono.jpeg');
+      setLogoBelwis('/logo-idcard-lampung.jpg');
       setSurveyQRBase64('/product-image/survey-qr.png');
     }
   };
@@ -135,17 +148,23 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   // Only fetch from API when user clicks refresh or changes to trash tab
   const PAGE_SIZE = 50;
 
-  const refreshFromAPI = async (forceChannel?: string) => {
+  const refreshFromAPI = async (forceChannel?: string, forceSearch?: string) => {
     setIsLoading(true);
     setLoadError("");
     try {
       const activeChannel = forceChannel ?? channelFilter;
       const chParam = activeChannel === 'trash' ? 'trash' : undefined;
-      const result = await fetchOrderHistory({ limit: PAGE_SIZE, channel: chParam });
+      const searchParam = forceSearch !== undefined ? forceSearch : search;
+      
+      const result = await fetchOrderHistory({ 
+        limit: PAGE_SIZE, 
+        channel: chParam,
+        search: searchParam.trim() || undefined
+      });
       if (result.success && result.orders) {
         setOrders(result.orders);
         setTotalOrders(result.total || result.orders.length);
-        if (activeChannel !== 'trash') {
+        if (activeChannel !== 'trash' && !searchParam.trim()) {
           localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
         }
       } else if (result.error) {
@@ -166,6 +185,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
         limit: PAGE_SIZE,
         offset: orders.length,
         channel: chParam,
+        search: search.trim() || undefined
       });
       if (result.success && result.orders) {
         const existingIds = new Set(orders.map(o => o.orderId));
@@ -174,7 +194,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           const merged = [...orders, ...newOrders];
           setOrders(merged);
           setTotalOrders(result.total || merged.length);
-          if (channelFilter !== 'trash') {
+          if (channelFilter !== 'trash' && !search.trim()) {
             localStorage.setItem('orderHistory_cache', JSON.stringify(merged));
           }
         } else {
@@ -188,6 +208,14 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       setIsLoadingMore(false);
     }
   };
+
+  // Debounced search trigger
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      refreshFromAPI(channelFilter, search);
+    }, 350);
+    return () => clearTimeout(handler);
+  }, [search]);
 
   useEffect(() => {
     if (channelFilter === 'trash') {
@@ -204,13 +232,18 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
 
   // Compute status counts for filter badges
   const statusCounts = useMemo(() => {
-    const counts: Record<string, number> = { all: orders.length, pending: 0, partial: 0, done: 0 };
-    orders.forEach(o => {
+    // Filter orders by active branch first so the count badges align with the branch selection
+    const branchFiltered = cabangFilter === 'all' 
+      ? orders 
+      : orders.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
+
+    const counts: Record<string, number> = { all: branchFiltered.length, pending: 0, partial: 0, done: 0 };
+    branchFiltered.forEach(o => {
       const s = (o.orderStatus || '').toLowerCase();
       if (counts[s] !== undefined) counts[s]++;
     });
     return counts;
-  }, [orders]);
+  }, [orders, cabangFilter]);
 
   const filteredOrders = useMemo(() => {
     let result = orders;
@@ -225,13 +258,18 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
       result = result.filter(o => (o.channel || '') === channelFilter);
     }
 
+    // Cabang filter
+    if (cabangFilter !== 'all') {
+      result = result.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
+    }
+
     // Search filter
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(o =>
-        (o.orderId || '').toLowerCase().includes(q) ||
-        (o.customerName || '').toLowerCase().includes(q) ||
-        String(o.customerPhone || '').includes(q)
+          (o.orderId || '').toLowerCase().includes(q) ||
+          (o.customerName || '').toLowerCase().includes(q) ||
+          String(o.customerPhone || '').includes(q)
       );
     }
 
@@ -268,7 +306,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     }
 
     return result;
-  }, [orders, search, statusFilter, channelFilter, sortMode]);
+  }, [orders, search, statusFilter, channelFilter, cabangFilter, sortMode]);
 
   const handleDownloadReceipt = async (order: OrderHistoryItem) => {
     setDownloadingId(order.orderId);
@@ -276,7 +314,8 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
 
     try {
       const div = document.createElement('div');
-      div.innerHTML = generateReceiptHTML(receiptData, logoBase64, surveyQRBase64);
+      const topLogo = order.cabang === 'Cabang Unila' ? logoUnila : logoBelwis;
+      div.innerHTML = generateReceiptHTML(receiptData, topLogo, surveyQRBase64, logoTidurlah);
       div.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:350px;background:white;padding:0;margin:0;box-sizing:border-box;';
       document.body.appendChild(div);
       const imgs = div.querySelectorAll('img');
@@ -421,6 +460,18 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     if (ch === 'pos') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-700 font-medium">POS</span>;
     if (ch === 'migrated') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500 font-medium">Old</span>;
     return null;
+  };
+
+  const getCabangBadge = (cabang?: string | null) => {
+    const branchName = cabang || 'Cabang Belwis';
+    const isUnila = branchName.toLowerCase().includes('unila');
+    return (
+      <span className={`px-1.5 py-0.5 text-[10px] rounded font-medium border ${
+        isUnila ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-sky-50 text-sky-700 border-sky-200'
+      }`}>
+        {branchName}
+      </span>
+    );
   };
 
   const handleAssignDesigner = async (orderId: string, designerName: string) => {
@@ -590,6 +641,17 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
             ))}
           </select>
 
+          {/* Cabang Filter Dropdown */}
+          <select
+            value={cabangFilter}
+            onChange={e => setCabangFilter(e.target.value)}
+            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01] ml-1"
+          >
+            <option value="all">Semua Cabang</option>
+            <option value="Cabang Belwis">Cabang Belwis</option>
+            <option value="Cabang Unila">Cabang Unila</option>
+          </select>
+
           {/* Sort Dropdown */}
           <select
             value={sortMode}
@@ -682,6 +744,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           <div className="flex items-center gap-1.5">
                             <span className="font-mono text-[10px] text-gray-500 truncate">{order.orderId}</span>
                             {getChannelBadge(order.channel)}
+                            {getCabangBadge(order.cabang)}
                             {getStatusBadge(order.orderStatus)}
                           </div>
                           <div className="flex items-center gap-2 mt-0.5 flex-wrap">
@@ -720,6 +783,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           <span className="font-mono text-[10px] text-gray-400 truncate max-w-[120px]">{order.orderId}</span>
                           <div className="flex gap-1">
                             {getChannelBadge(order.channel)}
+                            {getCabangBadge(order.cabang)}
                             {getStatusBadge(order.orderStatus)}
                           </div>
                         </div>
@@ -786,6 +850,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                           })() : 'Belum ditentukan'}
                         </div>
                         <div className="text-gray-500">Kasir</div><div>{order.cashier}</div>
+                        {order.cabang && <><div className="text-gray-500 font-semibold">Cabang</div><div className="font-medium text-gray-800">{order.cabang}</div></>}
                         {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
                         {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
                         {order.paymentMethod && <><div className="text-gray-500">Pembayaran</div><div>{order.paymentMethod}</div></>}

@@ -304,6 +304,7 @@ create table if not exists public.orders (
   is_shipping boolean not null default false,
   address text not null default '',
   deadline timestamptz,
+  cabang text,
 
   -- Designer assignment (replaces Jasa_Desain sheet)
   designer text,
@@ -455,6 +456,7 @@ begin
           'deadline', o.deadline,
           'designer', o.designer,
           'notes', o.notes,
+          'cabang', o.cabang,
           'items', coalesce((
             select json_agg(json_build_object(
               'productId', oi.product_id,

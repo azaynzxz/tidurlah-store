@@ -12,12 +12,15 @@ interface POSHeaderProps {
   searchTerm?: string;
   cashierName?: string;
   onCashierNameChange?: (name: string) => void;
+  cabang?: string;
+  onCabangChange?: (cabang: string) => void;
 }
 
-export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierName, onCashierNameChange }: POSHeaderProps) {
+export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierName, onCashierNameChange, cabang, onCabangChange }: POSHeaderProps) {
   const [internalSearchTerm, setInternalSearchTerm] = useState(searchTerm || "");
   const [showCashierDialog, setShowCashierDialog] = useState(false);
   const [tempCashierName, setTempCashierName] = useState(cashierName || "");
+  const [tempCabang, setTempCabang] = useState(cabang || "");
   const [showToolsMenu, setShowToolsMenu] = useState(false);
   const location = useLocation();
 
@@ -46,13 +49,20 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
     if (onCashierNameChange) {
       onCashierNameChange(tempCashierName);
     }
+    if (onCabangChange) {
+      onCabangChange(tempCabang);
+    }
     setShowCashierDialog(false);
   };
 
-  // Update temp name when cashier name changes from parent
+  // Update temp state when cashier info changes from parent
   useEffect(() => {
     setTempCashierName(cashierName || "");
   }, [cashierName]);
+
+  useEffect(() => {
+    setTempCabang(cabang || "");
+  }, [cabang]);
 
   return (
     <header className="bg-[#FF5E01] text-white">
@@ -76,6 +86,22 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
                 />
                 <p className="text-xs text-gray-500">
                   Nama ini akan muncul di struk dan riwayat pesanan
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="cashier-cabang">Cabang Default POS</Label>
+                <select
+                  id="cashier-cabang"
+                  value={tempCabang}
+                  onChange={(e) => setTempCabang(e.target.value)}
+                  className="w-full h-10 px-3 text-sm border rounded-md bg-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer text-gray-800"
+                >
+                  <option value="" disabled>Pilih Cabang Default</option>
+                  <option value="Cabang Belwis">Cabang Belwis</option>
+                  <option value="Cabang Unila">Cabang Unila</option>
+                </select>
+                <p className="text-xs text-gray-500">
+                  Cabang default yang akan otomatis terpilih saat transaksi
                 </p>
               </div>
               <div className="flex justify-end gap-2">
@@ -136,11 +162,16 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
               <Button
                 variant="secondary"
                 size="sm"
-                className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2"
+                className="bg-white text-[#FF5E01] hover:bg-orange-50 h-7 px-2 flex items-center gap-1"
                 title="Pengaturan Kasir"
                 onClick={() => setShowCashierDialog(true)}
               >
-                <Settings className="w-3 h-3" />
+                <Settings className="w-3 h-3 text-[#FF5E01]" />
+                {cabang && (
+                  <span className="text-[10px] font-bold max-w-[80px] truncate text-[#FF5E01]">
+                    {cabang.replace('Cabang ', '')}
+                  </span>
+                )}
               </Button>
 
               {/* Tools Menu */}
@@ -300,7 +331,9 @@ export function POSHeader({ onShowOrderHistory, onSearch, searchTerm, cashierNam
               onClick={() => setShowCashierDialog(true)}
             >
               <User className="w-3 h-3" />
-              <span className="max-w-20 truncate">{cashierName || "Kasir"}</span>
+              <span className="max-w-28 truncate">
+                {cashierName || "Kasir"} {cabang ? `(${cabang.replace('Cabang ', '')})` : ''}
+              </span>
               <Settings className="w-3 h-3" />
             </Button>
 

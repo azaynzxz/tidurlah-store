@@ -25,7 +25,7 @@ import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
 import { ModelSelector } from "@/components/product/ModelSelector";
-import { submitToGoogleSheet, handleWhatsAppRedirect } from "@/utils/api";
+import { submitWebsiteOrder, handleWhatsAppRedirect } from "@/utils/api";
 import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, prevImage, generateInvoiceNumber, handleSearch } from "@/utils/form";
 
 // Set document title and load Google Fonts
@@ -359,9 +359,9 @@ const Index = () => {
     prevImage(selectedProduct, currentImageIndex, setCurrentImageIndex);
   };
 
-  // Google Sheet submission function using extracted logic
-  const submitToGoogleSheetCallback = async (orderData: OrderData) => {
-    return await submitToGoogleSheet(orderData);
+  // Supabase order submission function using extracted logic
+  const submitWebsiteOrderCallback = async (orderData: OrderData) => {
+    return await submitWebsiteOrder(orderData);
   };
 
   // WhatsApp redirection function using extracted logic

@@ -220,6 +220,7 @@ export interface Database {
           notes: string;
           deleted_at: string | null;
           deleted_by: string | null;
+          cabang: string | null;
           created_at: string;
           updated_at: string;
         };
@@ -253,6 +254,7 @@ export interface Database {
           notes?: string;
           deleted_at?: string | null;
           deleted_by?: string | null;
+          cabang?: string | null;
           created_at?: string;
           updated_at?: string;
         };
@@ -286,6 +288,7 @@ export interface Database {
           notes?: string;
           deleted_at?: string | null;
           deleted_by?: string | null;
+          cabang?: string | null;
           updated_at?: string;
         };
         Relationships: [];

@@ -94,6 +94,7 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
             const payload = {
                 ...formData,
                 phoneNumber: formData.customerPhone || '', // Explicitly map to phoneNumber expected by Apps Script
+                cabang: formData.cabang || '',
                 subtotal: newSubtotal,
                 total: newTotal,
                 remainingBalance: newRemaining > 0 ? newRemaining : 0,
@@ -140,6 +141,18 @@ export function EditOrderModal({ order, isOpen, onClose, onSave }: EditOrderModa
                         <div className="space-y-1">
                             <label className="text-xs font-semibold text-gray-600">Deadline</label>
                             <Input type="datetime-local" value={formData.deadline ? String(formData.deadline).substring(0, 16) : ''} onChange={e => handleChange('deadline', e.target.value)} />
+                        </div>
+                        <div className="space-y-1">
+                            <label className="text-xs font-semibold text-gray-600">Cabang</label>
+                            <select
+                                value={String(formData.cabang || '')}
+                                onChange={e => handleChange('cabang', e.target.value)}
+                                className="w-full h-10 px-3 text-sm border rounded-md bg-white border-gray-200 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01]"
+                            >
+                                <option value="" disabled>Pilih Cabang</option>
+                                <option value="Cabang Belwis">Cabang Belwis</option>
+                                <option value="Cabang Unila">Cabang Unila</option>
+                            </select>
                         </div>
                     </div>
 

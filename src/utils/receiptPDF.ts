@@ -7,7 +7,7 @@ import { generateReceiptHTML, type ReceiptData } from './receiptTemplate';
  * Export receipt to PDF with enhanced readability
  * Uses Version 2 receipt template with bigger fonts
  */
-export const exportReceiptToPDF = async (receiptData: any, logoBase64?: string, surveyQRBase64?: string) => {
+export const exportReceiptToPDF = async (receiptData: any, logoBase64?: string, surveyQRBase64?: string, bottomLogoBase64?: string) => {
   let fontLink: HTMLLinkElement | null = null;
 
   try {
@@ -27,7 +27,7 @@ export const exportReceiptToPDF = async (receiptData: any, logoBase64?: string, 
     document.head.appendChild(fontLink);
 
     // Generate receipt HTML with shared universal template
-    tempContainer.innerHTML = generateReceiptHTML(receiptData, logoBase64, surveyQRBase64);
+    tempContainer.innerHTML = generateReceiptHTML(receiptData, logoBase64, surveyQRBase64, bottomLogoBase64);
 
     document.body.appendChild(tempContainer);
 

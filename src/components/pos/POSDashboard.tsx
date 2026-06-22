@@ -108,10 +108,13 @@ export function POSDashboard() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showReceipt, setShowReceipt] = useState(false);
   const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
-  const [logoBase64, setLogoBase64] = useState<string>("");
+  const [logoTidurlah, setLogoTidurlah] = useState<string>("");
+  const [logoUnila, setLogoUnila] = useState<string>("");
+  const [logoBelwis, setLogoBelwis] = useState<string>("");
   const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
   const [receiptData, setReceiptData] = useState<any>(null);
   const [cashierName, setCashierName] = useState<string>("");
+  const [cabang, setCabang] = useState<string>("");
   const receiptRef = useRef<HTMLDivElement>(null);
   const [bluetoothDevice, setBluetoothDevice] = useState<any>(null);
   const [isBluetoothConnected, setIsBluetoothConnected] = useState(false);
@@ -173,8 +176,18 @@ export function POSDashboard() {
       // 9 AM - Morning motivation
       if (currentHour === 9 && currentMinute === 0) {
         const randomQuote = morningQuotes[Math.floor(Math.random() * morningQuotes.length)];
+        const notifId = 'morning-motivation';
         toast.success(
-          <div className="space-y-2">
+          <div className="space-y-2 relative pr-6">
+            <button
+              onClick={() => toast.dismiss(notifId)}
+              className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <p className="font-bold text-base">☀️ Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
@@ -184,6 +197,7 @@ export function POSDashboard() {
             </div>
           </div>,
           {
+            id: notifId,
             position: 'top-center',
             duration: 15000,
             style: { marginTop: '60px', minWidth: '350px' }
@@ -196,8 +210,18 @@ export function POSDashboard() {
       // 12 PM - Lunch break
       if (currentHour === 12 && currentMinute === 0) {
         const randomQuote = lunchQuotes[Math.floor(Math.random() * lunchQuotes.length)];
+        const notifId = 'lunch-break';
         toast.info(
-          <div className="space-y-2">
+          <div className="space-y-2 relative pr-6">
+            <button
+              onClick={() => toast.dismiss(notifId)}
+              className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <p className="font-bold text-base">🍽️ Waktu Istirahat Makan Siang!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
@@ -207,6 +231,7 @@ export function POSDashboard() {
             </div>
           </div>,
           {
+            id: notifId,
             position: 'top-center',
             duration: 15000,
             style: { marginTop: '60px', minWidth: '350px' }
@@ -218,8 +243,18 @@ export function POSDashboard() {
 
       // 3 PM - Afternoon check
       if (currentHour === 15 && currentMinute === 0) {
+        const notifId = 'afternoon-check';
         toast.warning(
-          <div className="space-y-2">
+          <div className="space-y-2 relative pr-6">
+            <button
+              onClick={() => toast.dismiss(notifId)}
+              className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <p className="font-bold text-base">📦 Cek Pesanan Sore Hari</p>
             <div className="text-sm space-y-1 mt-2">
               <p>✅ Periksa pesanan yang masuk hari ini</p>
@@ -229,6 +264,7 @@ export function POSDashboard() {
             </div>
           </div>,
           {
+            id: notifId,
             position: 'top-center',
             duration: 12000,
             style: { marginTop: '60px', minWidth: '350px' }
@@ -240,8 +276,18 @@ export function POSDashboard() {
 
       // 5 PM - Closing time
       if (currentHour === 17 && currentMinute === 0) {
+        const notifId = 'closing-time';
         toast.success(
-          <div className="space-y-2">
+          <div className="space-y-2 relative pr-6">
+            <button
+              onClick={() => toast.dismiss(notifId)}
+              className="absolute -top-1 -right-1 p-1 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label="Close"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
             <p className="font-bold text-base">🏠 Waktu Penutupan Toko!</p>
             <div className="text-sm space-y-1 mt-2">
               <p>📦 Siapkan barang-barang kamu</p>
@@ -254,6 +300,7 @@ export function POSDashboard() {
             </div>
           </div>,
           {
+            id: notifId,
             position: 'top-center',
             duration: 15000,
             style: { marginTop: '60px', minWidth: '350px' }
@@ -315,34 +362,60 @@ export function POSDashboard() {
   useEffect(() => {
     const loadImages = async () => {
       try {
-        // Load horizontal logo for PDF
-        const base64Logo = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
-        setLogoBase64(base64Logo);
+        const logoT = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
+        setLogoTidurlah(logoT);
+        
+        const logoU = await convertImageToBase64('/logo_nono.jpeg');
+        setLogoUnila(logoU);
 
-        // Load survey QR code
-        const base64SurveyQR = await convertImageToBase64('/product-image/survey-qr.png');
-        setSurveyQRBase64(base64SurveyQR);
+        const logoB = await convertImageToBase64('/logo-idcard-lampung.jpg');
+        setLogoBelwis(logoB);
+
+        const qr = await convertImageToBase64('/product-image/survey-qr.png');
+        setSurveyQRBase64(qr);
       } catch (error) {
         console.error('Failed to load images:', error);
-        // Fallback to original image paths if conversion fails
-        setLogoBase64('/product-image/Tidurlah Logo Horizontal.png');
+        setLogoTidurlah('/product-image/Tidurlah Logo Horizontal.png');
+        setLogoUnila('/logo_nono.jpeg');
+        setLogoBelwis('/logo-idcard-lampung.jpg');
         setSurveyQRBase64('/product-image/survey-qr.png');
       }
     };
     loadImages();
   }, []);
 
-  // Load cashier name: prefer auth profile, then localStorage
+  // Load cashier name and cabang: prefer auth profile, then localStorage
   useEffect(() => {
     if (profile?.full_name) {
       setCashierName(profile.full_name);
-      return;
+    } else {
+      const savedCashierName = localStorage.getItem('posCashierName');
+      if (savedCashierName) {
+        setCashierName(savedCashierName);
+      }
     }
-    const savedCashierName = localStorage.getItem('posCashierName');
-    if (savedCashierName) {
-      setCashierName(savedCashierName);
-    }
+    const savedCabang = localStorage.getItem('posCabang') || "";
+    setCabang(savedCabang);
   }, [profile]);
+
+  const handleCabangChange = (newCabang: string) => {
+    setCabang(newCabang);
+    localStorage.setItem('posCabang', newCabang);
+  };
+
+  // Add theme class to document.body based on active branch
+  useEffect(() => {
+    if (cabang === 'Cabang Unila') {
+      document.body.classList.add('branch-unila');
+      document.body.classList.remove('branch-belwis');
+    } else {
+      document.body.classList.add('branch-belwis');
+      document.body.classList.remove('branch-unila');
+    }
+    return () => {
+      document.body.classList.remove('branch-unila', 'branch-belwis');
+    };
+  }, [cabang]);
 
   // Get unique categories
   const categories = ["Semua Produk", ...Array.from(new Set(products.map(p => p.category)))];
@@ -498,7 +571,7 @@ export function POSDashboard() {
       position: 'top-center',
       duration: 2000,
       style: {
-        backgroundColor: '#FF5E01',
+        backgroundColor: cabang === 'Cabang Unila' ? '#464E2E' : '#FF5E01',
         color: 'white',
         fontSize: '12px',
         padding: '6px 10px',
@@ -687,10 +760,12 @@ export function POSDashboard() {
       if (data) {
         // Create a temporary div to render the receipt
         const receiptDiv = document.createElement('div');
+        const topLogo = data.cabang === 'Cabang Unila' ? logoUnila : logoBelwis;
         receiptDiv.innerHTML = generateReceiptHTML(
           data,
-          logoBase64 || '/product-image/Tidurlah Logo Horizontal.png',
-          surveyQRBase64 || '/product-image/survey-qr.png'
+          topLogo,
+          surveyQRBase64 || '/product-image/survey-qr.png',
+          logoTidurlah
         );
         receiptDiv.style.position = 'absolute';
         receiptDiv.style.left = '-9999px';
@@ -969,7 +1044,7 @@ export function POSDashboard() {
   };
 
   // Process order with receipt generation (modified to handle print mode)
-  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number; deadline?: string }, printMode: boolean = false) => {
+  const handleProcessOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number; deadline?: string; cabang?: string }, printMode: boolean = false) => {
     if (cartItems.length === 0) {
       toast.error("Keranjang masih kosong!");
       return;
@@ -1012,6 +1087,7 @@ export function POSDashboard() {
           hour12: false
         }),
         cashier: cashierName || "POS Kasir",
+        cabang: customerDetails.cabang,
         customer: customerDetails, // Now includes customer info
         items: cartItems.map(item => {
           const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
@@ -1081,7 +1157,8 @@ export function POSDashboard() {
         downPayment: customerDetails.downPayment || 0,
         remainingBalance: subtotal - (customerDetails.downPayment || 0),
         paymentMethod: 'Cash',
-        deadline: customerDetails.deadline || ''
+        deadline: customerDetails.deadline || '',
+        cabang: customerDetails.cabang || ''
       };
 
       // Save to localStorage for order history immediately
@@ -1164,7 +1241,7 @@ export function POSDashboard() {
 
 
   // Handle complete print order (process + print via Bluetooth)
-  const handlePrintOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }) => {
+  const handlePrintOrder = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number; cabang?: string }) => {
     try {
       // First process the order in print mode (generates receipt data, no auto-download)
       await handleProcessOrder(customerDetails, true);
@@ -1203,7 +1280,7 @@ export function POSDashboard() {
   };
 
   // Handle PDF export with V2 template (bigger fonts)
-  const handleExportPDF = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number }) => {
+  const handleExportPDF = async (customerDetails: { name: string; phone: string; instansi: string; delivery?: { recipientName: string; recipientPhone: string; address: string }; downPayment?: number; cabang?: string }) => {
     try {
       // First process the order to generate receipt data (but don't submit to sheets yet)
       const receiptId = generateInvoiceId(customerDetails.name, cartItems.length);
@@ -1224,6 +1301,7 @@ export function POSDashboard() {
           hour12: false
         }),
         cashier: cashierName || "POS Kasir",
+        cabang: customerDetails.cabang,
         customer: customerDetails,
         items: cartItems.map(item => {
           const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
@@ -1252,7 +1330,8 @@ export function POSDashboard() {
       };
 
       // Export to PDF using V2 template (bigger fonts)
-      const exportSuccess = await exportReceiptToPDF(pdfReceiptData, logoBase64, surveyQRBase64);
+      const topLogo = pdfReceiptData.cabang === 'Cabang Unila' ? logoUnila : logoBelwis;
+      const exportSuccess = await exportReceiptToPDF(pdfReceiptData, topLogo, surveyQRBase64, logoTidurlah);
 
       if (exportSuccess) {
         // Now submit the order to Google Sheets
@@ -1303,6 +1382,8 @@ export function POSDashboard() {
         searchTerm={searchTerm}
         cashierName={cashierName}
         onCashierNameChange={handleCashierNameChange}
+        cabang={cabang}
+        onCabangChange={handleCabangChange}
       />
 
       {showOrderHistory ? (
@@ -1350,6 +1431,7 @@ export function POSDashboard() {
               onAddExpressService={handleAddExpressService}
               onAddOngkir={handleAddOngkir}
               isBluetoothSupported={isBluetoothSupported()}
+              defaultCabang={cabang}
             />
           </div>
 
@@ -1434,6 +1516,7 @@ export function POSDashboard() {
                 isBluetoothSupported={isBluetoothSupported()}
                 isMobile={true}
                 onClose={() => setShowMobileCart(false)}
+                defaultCabang={cabang}
               />
             </div>
           </div>
@@ -1461,211 +1544,24 @@ export function POSDashboard() {
                 <div
                   className="receipt-content"
                   style={{
-                    fontSize: '13px',
-                    lineHeight: '1.3',
                     width: '100%',
                     maxWidth: '350px',
                     margin: '0 auto',
                     minWidth: '300px',
-                    fontFamily: 'Courier New, Consolas, Monaco, Lucida Console, monospace',
-                    color: '#000000',
+                    backgroundColor: 'white',
                     overflow: 'visible',
                     wordWrap: 'break-word',
-                    backgroundColor: 'white',
-                    padding: '8px 6px',
                     boxSizing: 'border-box'
                   }}
-                >
-                  {/* Store Header */}
-                  <div className="receipt-header">
-                    <div className="receipt-logo-section">
-                      <div className="flex justify-center items-center mb-2">
-                        {logoBase64 ? (
-                          <img
-                            src={logoBase64}
-                            alt="TIDURLAH GRAFIKA"
-                            className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px]"
-                            crossOrigin="anonymous"
-                          />
-                        ) : (
-                          <div className="max-h-10 sm:max-h-12 md:max-h-14 w-auto object-contain max-w-[140px] sm:max-w-[160px] md:max-w-[180px] flex items-center justify-center bg-gray-200 rounded">
-                            <span className="text-xs text-gray-500">Loading...</span>
-                          </div>
-                        )}
-                      </div>
-                      <h2 className="receipt-store-title">TIDURLAH GRAFIKA</h2>
-                      <p className="receipt-slogan">"Cetak apa aja, Tidurlah Grafika!"</p>
-                      <p className="receipt-address">Jl. Perum Pemda Wayhui, Way Hui</p>
-                      <p className="receipt-address">Kec. Jati Agung, Lampung Selatan 35365</p>
-                    </div>
-                    <div className="receipt-separator"></div>
-                    <div className="receipt-contact">
-                      <p>WhatsApp: 085172157808</p>
-                      <p>Instagram: @tidurlah_grafika | @idcard_lampung</p>
-                    </div>
-                  </div>
-
-                  {/* Transaction Details */}
-                  <div className="receipt-meta">
-                    <div className="receipt-meta-row">
-                      <span>No. Transaksi:</span>
-                      <span className="font-bold">{receiptData?.receiptId}</span>
-                    </div>
-                    <div className="receipt-meta-row">
-                      <span>Tanggal:</span>
-                      <span>{receiptData?.timestamp}</span>
-                    </div>
-                    <div className="receipt-meta-row">
-                      <span>Kasir:</span>
-                      <span>{receiptData?.cashier}</span>
-                    </div>
-                    {receiptData?.customer && (
-                      <>
-                        <div className="receipt-separator"></div>
-                        <div className="receipt-meta-row">
-                          <span>Pelanggan:</span>
-                          <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.name}</span>
-                        </div>
-                        <div className="receipt-meta-row">
-                          <span>Telepon:</span>
-                          <span>{receiptData.customer.phone}</span>
-                        </div>
-                        {receiptData.customer.instansi && (
-                          <div className="receipt-meta-row">
-                            <span>Instansi:</span>
-                            <span>{receiptData.customer.instansi}</span>
-                          </div>
-                        )}
-                        {receiptData.customer.delivery && (
-                          <>
-                            <div className="receipt-separator"></div>
-                            <div className="receipt-meta-row" style={{ fontWeight: '900', textAlign: 'center', fontSize: '13px', marginBottom: '2px' }}>
-                              <span>INFORMASI PENGIRIMAN</span>
-                            </div>
-                            <div className="receipt-meta-row">
-                              <span>Penerima:</span>
-                              <span style={{ fontWeight: '900', fontSize: '15px', textShadow: '0.5px 0.5px 0px #000' }}>{receiptData.customer.delivery.recipientName}</span>
-                            </div>
-                            <div className="receipt-meta-row">
-                              <span>Telepon:</span>
-                              <span>{receiptData.customer.delivery.recipientPhone}</span>
-                            </div>
-                            <div className="receipt-meta-row">
-                              <span>Alamat:</span>
-                            </div>
-                            <div style={{ lineHeight: '1.2', paddingLeft: '4px', wordWrap: 'break-word' }}>
-                              {receiptData.customer.delivery.address}
-                            </div>
-                          </>
-                        )}
-                      </>
-                    )}
-                  </div>
-
-                  {/* Items */}
-                  <div className="receipt-items">
-                    <div className="receipt-items-title">DETAIL PEMBELIAN</div>
-                    <div className="receipt-items-list">
-                      {receiptData?.items?.map((item: any, index: number) => (
-                        <div key={index} className="receipt-item">
-                          <div className="receipt-item-name">
-                            {item.name}
-                            {item.width && item.height && (
-                              <span className="receipt-item-dimension"> ({item.width}m x {item.height}m)</span>
-                            )}
-                            {item.modelCode && (
-                              <span className="receipt-item-model"> [{item.modelCode}]</span>
-                            )}
-                          </div>
-                          {item.caseVariant && (
-                            <div className="receipt-item-detail">
-                              Casing: {item.caseVariant}
-                            </div>
-                          )}
-                          {item.laminationVariant && (
-                            <div className="receipt-item-detail">
-                              Laminasi: {item.laminationVariant}
-                            </div>
-                          )}
-                          <div className="receipt-item-pricing">
-                            <span>{item.quantity} x Rp {item.price.toLocaleString('id-ID')}</span>
-                            <span>Rp {item.subtotal.toLocaleString('id-ID')}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Totals */}
-                  <div className="receipt-summary">
-                    <div className="receipt-summary-row">
-                      <span>Subtotal:</span>
-                      <span>Rp {receiptData?.summary?.subtotal?.toLocaleString('id-ID')}</span>
-                    </div>
-
-                    {receiptData?.summary?.discount > 0 && (
-                      <div className="receipt-summary-row receipt-discount">
-                        <span>Diskon:</span>
-                        <span>-Rp {receiptData?.summary?.discount?.toLocaleString('id-ID')}</span>
-                      </div>
-                    )}
-
-                    <div className="receipt-summary-row receipt-total">
-                      <span>TOTAL:</span>
-                      <span>Rp {receiptData?.summary?.total?.toLocaleString('id-ID')}</span>
-                    </div>
-
-                    {receiptData?.summary?.downPayment > 0 && (
-                      <>
-                        <div className="receipt-summary-row" style={{ color: '#10B981', fontWeight: 'bold' }}>
-                          <span>DP (Down Payment):</span>
-                          <span>Rp {receiptData?.summary?.downPayment?.toLocaleString('id-ID')}</span>
-                        </div>
-                        <div className="receipt-summary-row" style={{ color: '#2563EB', fontWeight: 'bold', fontSize: '14px' }}>
-                          <span>SISA BAYAR:</span>
-                          <span>Rp {receiptData?.summary?.remainingBalance?.toLocaleString('id-ID')}</span>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Survey Section */}
-                  <div className="receipt-separator"></div>
-                  <div style={{ padding: '6px 4px', backgroundColor: '#f8f8f8', marginTop: '6px', borderRadius: '4px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                    <div style={{ flexShrink: 0 }}>
-                      <img
-                        src="/product-image/survey-qr.png"
-                        alt="Survey QR Code"
-                        style={{ width: '70px', height: '70px', border: '1px solid #ddd', borderRadius: '4px' }}
-                        crossOrigin="anonymous"
-                      />
-                    </div>
-                    <div style={{ flex: 1, textAlign: 'left' }}>
-                      <div style={{ fontWeight: 'bold', fontSize: '12px', marginBottom: '2px', color: '#333', lineHeight: '1.2' }}>
-                        Seberapa baikkah pelayanan kami?
-                      </div>
-                      <div style={{ fontSize: '10px', lineHeight: '1.3', marginBottom: '3px', color: '#555' }}>
-                        Kami ingin mendengar pendapat Anda. Pindai QR atau kunjungi:
-                      </div>
-                      <div style={{ fontWeight: 'bold', fontSize: '11px', color: '#ff6b35' }}>
-                        tidurlah.com/survey
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="receipt-separator"></div>
-
-                  {/* Footer */}
-                  <div className="receipt-footer">
-                    <div className="receipt-thank-you">Terima kasih telah berbelanja!</div>
-                    <div className="receipt-disclaimer">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-
-
-                    <div className="receipt-timestamp">
-                      Struk ini dibuat secara otomatis pada {new Date().toLocaleString('id-ID')}
-                    </div>
-                  </div>
-                </div>
+                  dangerouslySetInnerHTML={{
+                    __html: receiptData ? generateReceiptHTML(
+                      receiptData,
+                      receiptData.cabang === 'Cabang Unila' ? logoUnila : logoBelwis,
+                      surveyQRBase64,
+                      logoTidurlah
+                    ) : ''
+                  }}
+                />
               </div>
             </div>
 

@@ -70,6 +70,7 @@ interface CartProps {
   isBluetoothSupported?: boolean;
   isMobile?: boolean;
   onClose?: () => void;
+  defaultCabang?: string;
 }
 
 interface DeliveryInfo {
@@ -86,15 +87,17 @@ interface CustomerDetails {
   downPayment?: number;
   deadline: string;
   deadlineTime?: string;
+  cabang: string;
 }
 
-export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll, onProcessOrder, onUpdateOptionsById, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose }: CartProps) {
+export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll, onProcessOrder, onUpdateOptionsById, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose, defaultCabang }: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
     instansi: '',
     deadline: '',
-    deadlineTime: ''
+    deadlineTime: '',
+    cabang: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
   const [isPrinting, setIsPrinting] = useState(false);
@@ -113,6 +116,13 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     const expressServiceInCart = items.some(item => item.product.id === 2001);
     setIsExpressSelected(expressServiceInCart);
   }, [items]);
+
+  // Sync defaultCabang with customer details
+  useEffect(() => {
+    if (defaultCabang) {
+      setCustomerDetails(prev => ({ ...prev, cabang: defaultCabang }));
+    }
+  }, [defaultCabang]);
 
 
   const formatCurrency = (amount: number) => {
@@ -302,6 +312,14 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return;
     }
 
+    if (!customerDetails.cabang) {
+      toast.error("Mohon pilih cabang.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
     if (!customerDetails.deadline) {
       toast.error("Mohon tentukan deadline pesanan.", {
         position: 'top-center',
@@ -352,7 +370,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
 
       // Reset customer details and DP after successful order
-      setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
+      setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
       setDownPayment(0);
       setDpDisplayValue('');
       setIsExpressSelected(false);
@@ -400,6 +418,14 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return;
     }
 
+    if (!customerDetails.cabang) {
+      toast.error("Mohon pilih cabang.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
     // Validate required options for each item (same as process order)
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     const stikerWithLaminationIds = [15];
@@ -433,7 +459,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
 
       if (printSuccess) {
         // Reset customer details and DP after successful print
-        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
+        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
         setDownPayment(0);
         setDpDisplayValue('');
         setIsExpressSelected(false);
@@ -482,6 +508,14 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return;
     }
 
+    if (!customerDetails.cabang) {
+      toast.error("Mohon pilih cabang.", {
+        position: 'top-center',
+        style: { marginTop: '60px' }
+      });
+      return;
+    }
+
     // Validate required options for each item
     const idCardWithCaseIds = [1, 2, 6, 7, 8];
     const stikerWithLaminationIds = [15];
@@ -515,7 +549,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
 
       if (exportSuccess) {
         // Reset customer details and DP after successful export
-        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '' });
+        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
         setDownPayment(0);
         setDpDisplayValue('');
         setIsExpressSelected(false);
@@ -715,18 +749,36 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                         </div>
                       </div>
 
-                      <div>
-                        <Label htmlFor="customer-instansi" className="text-xs font-medium text-gray-600">
-                          Instansi/Alias (Opsional)
-                        </Label>
-                        <Input
-                          id="customer-instansi"
-                          type="text"
-                          placeholder="Nama sekolah, kampus, atau perusahaan"
-                          value={customerDetails.instansi}
-                          onChange={(e) => setCustomerDetails(prev => ({ ...prev, instansi: e.target.value }))}
-                          className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-                        />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div>
+                          <Label htmlFor="customer-cabang" className="text-xs font-semibold text-gray-700">
+                            Cabang *
+                          </Label>
+                          <select
+                            id="customer-cabang"
+                            value={customerDetails.cabang}
+                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, cabang: e.target.value }))}
+                            className="mt-0.5 w-full h-8 text-xs border border-[#FF5E01] rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer font-medium"
+                            required
+                          >
+                            <option value="" disabled>Pilih Cabang</option>
+                            <option value="Cabang Belwis">Cabang Belwis</option>
+                            <option value="Cabang Unila">Cabang Unila</option>
+                          </select>
+                        </div>
+                        <div>
+                          <Label htmlFor="customer-instansi" className="text-xs font-medium text-gray-600">
+                            Instansi (Opsional)
+                          </Label>
+                          <Input
+                            id="customer-instansi"
+                            type="text"
+                            placeholder="Sekolah, kampus, dll"
+                            value={customerDetails.instansi}
+                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, instansi: e.target.value }))}
+                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                          />
+                        </div>
                       </div>
 
                       {/* Deadline Section */}
@@ -859,7 +911,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                       <Button
                         className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
                         onClick={handleProcessOrder}
-                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.deadline}
+                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.deadline || !customerDetails.cabang}
                       >
                         {isProcessing ? "Memproses..." : "Proses Pesanan"}
                       </Button>
@@ -878,7 +930,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                         <Button
                           className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
                           onClick={handlePrintReceipt}
-                          disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                          disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.cabang}
                         >
                           <span className="material-icons text-lg">bluetooth</span>
                           {isPrinting ? "Mencetak..." : "Cetak"}
@@ -900,7 +952,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                       <Button
                         className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
                         onClick={handleExportPDF}
-                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim()}
+                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.cabang}
                       >
                         <FileText className="h-4 w-4" />
                         {isExportingPDF ? "Membuat PDF..." : "PDF"}
