@@ -29,3 +29,11 @@ EOF
 # Google Apps Script files (sensitive)
 # Archive
 archive/
+
+# Temporary binaries and spreadsheets
+*.xlsx
+*.exe
+*.tar.gz
+logo-idcard-lampung.jpg
+logo_nono.jpeg
+src/pages/Untitled-1.txt
