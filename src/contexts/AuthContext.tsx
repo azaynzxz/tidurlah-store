@@ -139,6 +139,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Mark timestamp so onAuthStateChange skips the duplicate SIGNED_IN event.
     if (data.user) {
       const profile = await fetchProfile(data.user.id);
+      localStorage.setItem('session_login_time', Date.now().toString());
       safeSetState({
         user: data.user,
         session: data.session,
@@ -158,9 +159,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Sign out
   const signOut = useCallback(async () => {
     if (!supabase) return;
+    localStorage.removeItem('session_login_time');
     await supabase.auth.signOut();
     safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
   }, [safeSetState]);
+
+  // Shift-based auto-logout (8 hours) check
+  useEffect(() => {
+    if (!state.user) return;
+
+    const checkSessionExpiry = () => {
+      const loginTimeStr = localStorage.getItem('session_login_time');
+      if (loginTimeStr) {
+        const loginTime = parseInt(loginTimeStr, 10);
+        const elapsed = Date.now() - loginTime;
+        const EIGHT_HOURS = 8 * 60 * 60 * 1000;
+        
+        if (elapsed >= EIGHT_HOURS) {
+          console.log('[Auth] Session expired (8-hour shift limit reached). Logging out...');
+          signOut();
+        }
+      } else {
+        // Fallback: If logged in but no time set (e.g. page refreshed), set it now
+        localStorage.setItem('session_login_time', Date.now().toString());
+      }
+    };
+
+    checkSessionExpiry();
+
+    const interval = setInterval(checkSessionExpiry, 60000);
+    return () => clearInterval(interval);
+  }, [state.user, signOut]);
 
   const value: AuthContextType = {
     ...state,
