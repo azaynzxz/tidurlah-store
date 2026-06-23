@@ -41,13 +41,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const mountedRef = useRef(true);
+  const currentUserRef = useRef<User | null>(null);
+  const isSigningInRef = useRef(false);
 
   useEffect(() => {
     return () => { mountedRef.current = false; };
   }, []);
 
   const safeSetState = useCallback((updater: AuthState | ((prev: AuthState) => AuthState)) => {
-    if (mountedRef.current) setState(updater);
+    if (mountedRef.current) {
+      setState(prev => {
+        const next = typeof updater === 'function' ? (updater as (p: AuthState) => AuthState)(prev) : updater;
+        currentUserRef.current = next.user;
+        return next;
+      });
+    }
   }, []);
 
   const clearError = useCallback(() => {
@@ -55,10 +63,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [safeSetState]);
 
   // Fetch user profile from profiles table
-  const fetchProfile = useCallback(async (userId: string): Promise<Profile | null> => {
-    if (!supabase) return null;
+  const fetchProfile = useCallback(async (userId: string): Promise<{ profile: Profile | null, error: string | null }> => {
+    if (!supabase) return { profile: null, error: 'Supabase tidak dikonfigurasi.' };
     try {
-      const { data, error } = await supabase
+      const { data, error } = await (supabase as any)
         .from('profiles')
         .select('*')
         .eq('id', userId)
@@ -66,19 +74,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('[Auth] Failed to fetch profile:', error.message);
-        return null;
+        return { profile: null, error: error.message };
       }
-      return data;
+      return { profile: data as Profile, error: null };
     } catch (err) {
       console.error('[Auth] Profile fetch exception:', err);
-      return null;
+      return { profile: null, error: err instanceof Error ? err.message : 'Kesalahan tidak dikenal saat mengambil profil.' };
     }
   }, []);
 
   // Refresh profile data (e.g. after role change)
   const refreshProfile = useCallback(async () => {
     if (!state.user) return;
-    const profile = await fetchProfile(state.user.id);
+    const { profile } = await fetchProfile(state.user.id);
     safeSetState(prev => ({ ...prev, profile }));
   }, [state.user, fetchProfile, safeSetState]);
 
@@ -89,35 +97,57 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return;
     }
 
-    // Use Supabase's recommended pattern: listen first, then get session.
-    // onAuthStateChange fires INITIAL_SESSION synchronously which handles
-    // the existing-session case, so we don't need a separate getSession call.
+    let isSubscribed = true;
+
+    // Listen for changes — Supabase client will fire INITIAL_SESSION synchronously on subscription
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (event, session) => {
-        // signIn() handles SIGNED_IN directly — skip here to prevent race condition.
-        // INITIAL_SESSION handles page refresh, TOKEN_REFRESHED handles token renewal.
-        if (event === 'SIGNED_IN') return;
+        try {
+          if (!isSubscribed) return;
 
-        if (
-          (event === 'INITIAL_SESSION' || event === 'TOKEN_REFRESHED') &&
-          session?.user
-        ) {
-          const profile = await fetchProfile(session.user.id);
-          safeSetState({
-            user: session.user,
-            session,
-            profile,
-            isLoading: false,
-            authError: profile ? null : 'Gagal memuat profil. Hubungi admin.',
-          });
-        } else if (event === 'INITIAL_SESSION' || event === 'SIGNED_OUT') {
-          // No session on initial load, or user signed out
-          safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
+          // Skip if manual sign-in is currently processing (signIn handles it)
+          if (event === 'SIGNED_IN' && isSigningInRef.current) {
+            return;
+          }
+
+          // If user is unchanged, only update session details to avoid redundant profile fetches
+          if (session?.user && currentUserRef.current?.id === session.user.id) {
+            safeSetState(prev => ({ ...prev, session }));
+            return;
+          }
+
+          if (session?.user) {
+            const { profile, error: fetchErr } = await fetchProfile(session.user.id);
+            if (!isSubscribed) return;
+
+            const errorMsg = fetchErr 
+              ? `Gagal memuat profil dari database: ${fetchErr}`
+              : (profile ? null : 'Profil tidak ditemukan di database. Hubungi admin.');
+
+            safeSetState({
+              user: session.user,
+              session,
+              profile,
+              isLoading: false,
+              authError: errorMsg,
+            });
+          } else {
+            // No session or signed out — clear state and ensure loading is false
+            safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
+          }
+        } catch (err) {
+          console.error('[Auth] Error in onAuthStateChange handler:', err);
+          if (isSubscribed) {
+            safeSetState(prev => ({ ...prev, isLoading: false }));
+          }
         }
       }
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      isSubscribed = false;
+      subscription.unsubscribe();
+    };
   }, [fetchProfile, safeSetState]);
 
   // Sign in with email/password
@@ -127,41 +157,63 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     safeSetState(prev => ({ ...prev, isLoading: true, authError: null }));
+    isSigningInRef.current = true;
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    if (error) {
-      safeSetState(prev => ({ ...prev, isLoading: false }));
-      return { error };
-    }
-
-    // Auth succeeded — fetch profile directly for immediate state update.
-    // Mark timestamp so onAuthStateChange skips the duplicate SIGNED_IN event.
-    if (data.user) {
-      const profile = await fetchProfile(data.user.id);
-      localStorage.setItem('session_login_time', Date.now().toString());
-      safeSetState({
-        user: data.user,
-        session: data.session,
-        profile,
-        isLoading: false,
-        authError: profile ? null : 'Login berhasil, tapi profil tidak ditemukan. Hubungi admin.',
-      });
-
-      if (!profile) {
-        return { error: new Error('Profil tidak ditemukan di database. Hubungi admin.') };
+      if (error) {
+        safeSetState(prev => ({ ...prev, isLoading: false }));
+        isSigningInRef.current = false;
+        return { error };
       }
-    }
 
-    return { error: null };
+      // Auth succeeded — fetch profile directly for immediate state update.
+      if (data.user) {
+        const { profile, error: fetchErr } = await fetchProfile(data.user.id);
+        localStorage.setItem('session_login_time', Date.now().toString());
+
+        const errorMsg = fetchErr 
+          ? `Login berhasil, tetapi gagal memuat profil: ${fetchErr}`
+          : (profile ? null : 'Login berhasil, tapi profil tidak ditemukan di database. Hubungi admin.');
+
+        safeSetState({
+          user: data.user,
+          session: data.session,
+          profile,
+          isLoading: false,
+          authError: errorMsg,
+        });
+
+        isSigningInRef.current = false;
+
+        if (!profile) {
+          return { error: new Error(errorMsg || 'Profil tidak ditemukan.') };
+        }
+      } else {
+        isSigningInRef.current = false;
+      }
+
+      return { error: null };
+    } catch (err) {
+      console.error('[Auth] signIn exception:', err);
+      isSigningInRef.current = false;
+      safeSetState(prev => ({ ...prev, isLoading: false }));
+      return { error: err instanceof Error ? err : new Error('Terjadi kesalahan saat login.') };
+    }
   }, [fetchProfile, safeSetState]);
 
   // Sign out
   const signOut = useCallback(async () => {
     if (!supabase) return;
     localStorage.removeItem('session_login_time');
-    await supabase.auth.signOut();
-    safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn('[Auth] Supabase signOut failed, clearing local state anyway:', err);
+    } finally {
+      safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
+    }
   }, [safeSetState]);
 
   // Shift-based auto-logout (8 hours) check
@@ -191,13 +243,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => clearInterval(interval);
   }, [state.user, signOut]);
 
+  const devBypass = import.meta.env.DEV && localStorage.getItem('dev_bypass_auth') === 'true';
+
   const value: AuthContextType = {
     ...state,
     signIn,
     signOut,
-    isAdmin: state.profile?.role === 'admin',
-    isCashier: state.profile?.role === 'cashier',
-    isAuthenticated: !!state.user && !!state.profile,
+    isAdmin: state.profile?.role === 'admin' || devBypass,
+    isCashier: state.profile?.role === 'cashier' || devBypass,
+    isAuthenticated: (!!state.user && !!state.profile) || devBypass,
     refreshProfile,
     clearError,
   };

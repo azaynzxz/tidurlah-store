@@ -36,4 +36,6 @@ archive/
 *.tar.gz
 logo-idcard-lampung.jpg
 logo_nono.jpeg
-src/pages/Untitled-1.txt
+src/pages/Untitled-1.txt
+scripts/test-supabase.ts
+scripts/test-anon.ts

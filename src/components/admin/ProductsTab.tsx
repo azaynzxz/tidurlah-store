@@ -249,80 +249,103 @@ export function ProductsTab() {
       </div>
 
       {/* Product List */}
-      <div className="space-y-2">
+      <div>
         {filtered.length === 0 ? (
           <div className="text-center py-12 text-gray-400">
             <Package className="w-10 h-10 mx-auto mb-2 opacity-50" />
             <p className="text-sm">Tidak ada produk ditemukan</p>
           </div>
         ) : (
-          filtered.map(product => (
-            <div
-              key={product.id}
-              className={`bg-white border rounded-lg p-3 flex items-center gap-3 ${!product.is_active ? 'opacity-50' : ''}`}
-            >
-              {/* Thumbnail */}
-              <div className="w-12 h-12 rounded-md overflow-hidden bg-gray-100 flex-shrink-0">
-                {product.image ? (
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-300">
-                    <Package className="w-5 h-5" />
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {filtered.map(product => (
+              <div
+                key={product.id}
+                className={`bg-white border rounded-lg p-2.5 flex flex-col justify-between gap-2.5 relative ${!product.is_active ? 'opacity-60' : ''}`}
+              >
+                {/* Product Thumbnail */}
+                <div className="aspect-[4/3] w-full rounded-md overflow-hidden bg-gray-100 flex-shrink-0 relative">
+                  {product.image ? (
+                    <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-300">
+                      <Package className="w-8 h-8" />
+                    </div>
+                  )}
+                  
+                  {/* Badge Overlay */}
+                  <div className="absolute top-1 left-1 flex flex-col gap-1 z-10">
+                    {product.bestseller && <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4 bg-yellow-400 text-yellow-900 border-none font-bold">Best</Badge>}
+                    {!product.is_active && <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-red-50 text-red-500 border-red-200">Nonaktif</Badge>}
                   </div>
-                )}
-              </div>
-
-              {/* Info */}
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-medium truncate">{product.name}</span>
-                  {product.bestseller && <Badge variant="secondary" className="text-[10px] h-4">Best</Badge>}
-                  {!product.is_active && <Badge variant="outline" className="text-[10px] h-4 text-red-500">Nonaktif</Badge>}
+                  
+                  <div className="absolute bottom-1 right-1 z-10">
+                    <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-white/80 backdrop-blur-xs text-gray-700">
+                      #{product.sort_order}
+                    </Badge>
+                  </div>
                 </div>
-                <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                  <span>{product.category}</span>
-                  <span>•</span>
-                  <span className="font-medium text-green-600">
-                    {product.discount_price ? (
-                      <><s className="text-gray-400">{formatCurrency(product.price)}</s> {formatCurrency(product.discount_price)}</>
-                    ) : formatCurrency(product.price)}
-                  </span>
-                  <span>•</span>
-                  <span>#{product.sort_order}</span>
-                </div>
-              </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-1">
-                <Switch
-                  checked={product.is_active}
-                  onCheckedChange={() => handleToggleActive(product)}
-                  className="scale-75"
-                />
-                <Button size="sm" variant="ghost" className="h-8 w-8 p-0" onClick={() => openEdit(product)}>
-                  <Pencil className="w-3.5 h-3.5" />
-                </Button>
-                {confirmDeleteId === product.id ? (
-                  <div className="flex gap-1">
-                    <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => handleDelete(product.id)} disabled={deletingId === product.id}>
-                      {deletingId === product.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
+                {/* Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <h3 className="text-xs font-semibold text-gray-800 line-clamp-2 min-h-[2.25rem] leading-tight" title={product.name}>
+                      {product.name}
+                    </h3>
+                    <p className="text-[10px] text-gray-400 mt-0.5 truncate">{product.category}</p>
+                  </div>
+                  <div className="mt-1.5">
+                    <div className="text-xs font-bold text-green-600">
+                      {product.discount_price ? (
+                        <span className="flex flex-col">
+                          <s className="text-[9px] text-gray-400 font-normal leading-none mb-0.5">{formatCurrency(product.price)}</s>
+                          <span className="leading-none">{formatCurrency(product.discount_price)}</span>
+                        </span>
+                      ) : (
+                        <span className="leading-none">{formatCurrency(product.price)}</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Actions Footer */}
+                <div className="flex items-center justify-between pt-2 border-t border-gray-100 gap-1 flex-wrap">
+                  <div className="flex items-center gap-1">
+                    <Switch
+                      checked={product.is_active}
+                      onCheckedChange={() => handleToggleActive(product)}
+                      className="scale-75 origin-left"
+                    />
+                    <span className="text-[9px] text-gray-400 font-medium select-none">
+                      {product.is_active ? 'Aktif' : 'Off'}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-0.5">
+                    <Button size="sm" variant="ghost" className="h-7 w-7 p-0" onClick={() => openEdit(product)} title="Edit">
+                      <Pencil className="w-3.5 h-3.5" />
                     </Button>
-                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                    {confirmDeleteId === product.id ? (
+                      <div className="flex gap-1">
+                        <Button size="sm" variant="destructive" className="h-6 px-1.5 text-[9px] font-bold" onClick={() => handleDelete(product.id)} disabled={deletingId === product.id}>
+                          {deletingId === product.id ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
+                        </Button>
+                        <Button size="sm" variant="outline" className="h-6 px-1.5 text-[9px]" onClick={() => setConfirmDeleteId(null)}>No</Button>
+                      </div>
+                    ) : (
+                      <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 hover:text-red-600 hover:bg-red-50" onClick={() => setConfirmDeleteId(product.id)} title="Hapus">
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    )}
                   </div>
-                ) : (
-                  <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500" onClick={() => setConfirmDeleteId(product.id)}>
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </Button>
-                )}
+                </div>
               </div>
-            </div>
-          ))
+            ))}
+          </div>
         )}
       </div>
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-lg max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-hide">
           <DialogHeader>
             <DialogTitle>{editingProduct ? 'Edit Produk' : 'Tambah Produk'}</DialogTitle>
           </DialogHeader>

@@ -249,7 +249,7 @@ export function PromosTab() {
 
       {/* Create/Edit Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto">
+        <DialogContent className="max-w-md max-h-[85vh] overflow-y-auto overflow-x-hidden scrollbar-hide">
           <DialogHeader>
             <DialogTitle>{editingPromo ? 'Edit Promo' : 'Tambah Promo'}</DialogTitle>
           </DialogHeader>

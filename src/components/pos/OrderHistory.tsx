@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode } from "lucide-react";
 import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
@@ -85,6 +85,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [logoUnila, setLogoUnila] = useState<string>("");
   const [logoBelwis, setLogoBelwis] = useState<string>("");
   const [surveyQRBase64, setSurveyQRBase64] = useState<string>("");
+  const [qrisBase64, setQrisBase64] = useState<string>("");
   const [downloadingId, setDownloadingId] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -137,11 +138,15 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
 
       const qr = await convertImageToBase64('/product-image/survey-qr.png');
       setSurveyQRBase64(qr);
+
+      const qris = await convertImageToBase64('/qris.jpeg');
+      setQrisBase64(qris);
     } catch {
       setLogoTidurlah('/product-image/Tidurlah Logo Horizontal.png');
       setLogoUnila('/logo_nono.jpeg');
       setLogoBelwis('/logo-idcard-lampung.jpg');
       setSurveyQRBase64('/product-image/survey-qr.png');
+      setQrisBase64('/qris.jpeg');
     }
   };
 
@@ -308,14 +313,14 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     return result;
   }, [orders, search, statusFilter, channelFilter, cabangFilter, sortMode]);
 
-  const handleDownloadReceipt = async (order: OrderHistoryItem) => {
+  const handleDownloadReceipt = async (order: OrderHistoryItem, showQRIS: boolean = false) => {
     setDownloadingId(order.orderId);
     const receiptData = apiOrderToReceiptData(order);
 
     try {
       const div = document.createElement('div');
       const topLogo = order.cabang === 'Cabang Unila' ? logoUnila : logoBelwis;
-      div.innerHTML = generateReceiptHTML(receiptData, topLogo, surveyQRBase64, logoTidurlah);
+      div.innerHTML = generateReceiptHTML(receiptData, topLogo, surveyQRBase64, logoTidurlah, showQRIS, qrisBase64);
       div.style.cssText = 'position:absolute;left:-9999px;top:-9999px;width:350px;background:white;padding:0;margin:0;box-sizing:border-box;';
       document.body.appendChild(div);
       const imgs = div.querySelectorAll('img');
@@ -333,7 +338,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
           const url = URL.createObjectURL(blob);
           const link = document.createElement('a');
           link.href = url;
-          link.download = `receipt-${receiptData.receiptId}.jpg`;
+          link.download = `receipt-${showQRIS ? 'qris-' : ''}${receiptData.receiptId}.jpg`;
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
@@ -357,6 +362,8 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     const shippingAddr = order.delivery?.address || order.address;
     const hasShipping = !!shippingAddr;
 
+    const isPaid = (order.remainingBalance !== undefined ? order.remainingBalance : (order.total - (order.downPayment || 0))) <= 0;
+
     let msg = `*PESANAN SELESAI*\n\n`;
     msg += `Halo Kak *${name}*,\n`;
     msg += `Pesanan dengan nomor invoice *${order.orderId}* sudah selesai diproses.\n\n`;
@@ -373,19 +380,29 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
     msg += `*Total Pesanan:* ${formatCurrency(order.total)}\n`;
     if (order.downPayment > 0) {
       msg += `*Sudah Dibayar (DP):* ${formatCurrency(order.downPayment)}\n`;
-      msg += `*Sisa Pembayaran:* ${formatCurrency(order.remainingBalance || 0)}\n\n`;
+      msg += `*Sisa Pembayaran:* ${isPaid ? 'Lunas' : formatCurrency(order.remainingBalance || 0)}\n\n`;
     } else {
-      msg += `*Sisa Pembayaran:* ${formatCurrency(order.remainingBalance !== undefined ? order.remainingBalance : order.total)}\n\n`;
+      msg += `*Sisa Pembayaran:* ${isPaid ? 'Lunas' : formatCurrency(order.remainingBalance !== undefined ? order.remainingBalance : order.total)}\n\n`;
     }
 
     if (hasShipping) {
       msg += `*Tujuan Pengiriman:*\n${shippingAddr}\n\n`;
-      msg += `Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
-      msg += `*Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      if (isPaid) {
+        msg += `Untuk pengiriman akan segera kami proses ya Kak.\n\n`;
+        msg += `*Catatan:* Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      } else {
+        msg += `Untuk pengiriman akan kami proses segera setelah pelunasan ya Kak.\n\n`;
+        msg += `*Catatan:* Mohon lakukan pelunasan terlebih dahulu sebelum paket dikirimkan. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      }
     } else {
       msg += `*Pengambilan di Toko:*\nhttps://idcardlampung.com/hello\n\n`;
-      msg += `Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
-      msg += `*Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      if (isPaid) {
+        msg += `Pesanan Kakak sudah dapat diambil di toko ya Kak. Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini.\n\n`;
+        msg += `*Catatan:* Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      } else {
+        msg += `Mohon konfirmasi kembali kapan Kakak ingin mengambil pesanan ini ya.\n\n`;
+        msg += `*Catatan:* Mohon melakukan pelunasan terlebih dahulu. Barang yang sudah diterima tidak dapat ditukar atau dikembalikan.`;
+      }
     }
 
     msg += `\n\nTerima kasih atas kepercayaannya!\n*ID Card Lampung by Tidurlah Grafika*`;
@@ -849,7 +866,8 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                             } catch { return String(order.deadline); }
                           })() : 'Belum ditentukan'}
                         </div>
-                        <div className="text-gray-500">Kasir</div><div>{order.cashier}</div>
+                        <div className="text-gray-500">Kasir</div>
+                        <div>{order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}</div>
                         {order.cabang && <><div className="text-gray-500 font-semibold">Cabang</div><div className="font-medium text-gray-800">{order.cabang}</div></>}
                         {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
                         {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
@@ -891,11 +909,11 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                       )}
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 pt-2 border-t border-gray-200 flex-wrap">
+                      <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200 justify-between">
                         {order.orderStatus === 'deleted' ? (
                           <div className="flex gap-2 w-full">
                             <Button size="sm" variant="outline" className="h-7 text-xs flex-1 text-blue-600" onClick={() => handleRestore(order.orderId)} disabled={updatingId === order.orderId}>
-                              {updatingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin mr-1" /> : <RefreshCw className="w-3 h-3 mr-1" />} Restore
+                              {updatingId === order.orderId ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <RefreshCw className="w-3.5 h-3.5 mr-1" />} Restore
                             </Button>
                           </div>
                         ) : (
@@ -905,47 +923,63 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
                               value={(order.orderStatus || '').toLowerCase()}
                               onChange={e => handleStatusChange(order.orderId, e.target.value)}
                               disabled={updatingId === order.orderId}
-                              className="text-xs border rounded px-2 py-1 bg-white"
+                              className="text-xs border rounded px-1.5 py-1 bg-white h-7 max-w-[85px] truncate cursor-pointer font-medium"
                             >
                               {STATUS_OPTIONS.map(s => (
                                 <option key={s.value} value={s.value}>{s.label}</option>
                               ))}
                             </select>
 
-                            {/* Auto-download receipt */}
-                            <Button
-                              size="sm" variant="outline" className="h-7 text-xs"
-                              onClick={() => handleDownloadReceipt(order)}
-                              disabled={downloadingId === order.orderId}
-                            >
-                              {downloadingId === order.orderId
-                                ? <><Loader2 className="w-3 h-3 animate-spin mr-1" /> Membuat...</>
-                                : <><Download className="w-3 h-3 mr-1" /> Struk</>
-                              }
-                            </Button>
-
-                            {order.customerPhone && (
-                              <Button size="sm" variant="outline" className="h-7 text-xs text-green-600" onClick={() => handleChatCustomer(order)}>
-                                <MessageCircle className="w-3 h-3 mr-1" /> WA
+                            <div className="flex items-center gap-1.5">
+                              {/* Auto-download receipt */}
+                              <Button
+                                size="sm" variant="outline" className="h-7 w-7 p-0"
+                                onClick={() => handleDownloadReceipt(order)}
+                                disabled={downloadingId === order.orderId}
+                                title="Download Struk"
+                              >
+                                {downloadingId === order.orderId
+                                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  : <Download className="w-3.5 h-3.5" />
+                                }
                               </Button>
-                            )}
+
+                              {order.customerPhone && (
+                                <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-green-600 border-green-200 hover:bg-green-50" onClick={() => handleChatCustomer(order)} title="Chat WA">
+                                  <MessageCircle className="w-3.5 h-3.5" />
+                                </Button>
+                              )}
+
+                              <Button
+                                size="sm" variant="outline" className="h-7 w-7 p-0 text-orange-600 border-orange-200 hover:bg-orange-50"
+                                onClick={() => handleDownloadReceipt(order, true)}
+                                disabled={downloadingId === order.orderId}
+                                title="Struk QRIS"
+                              >
+                                {downloadingId === order.orderId
+                                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                  : <QrCode className="w-3.5 h-3.5" />
+                                }
+                              </Button>
+                            </div>
 
                             {/* Delete */}
                             {confirmDeleteId === order.orderId ? (
                               <div className="flex gap-1 ml-auto">
-                                <Button size="sm" variant="destructive" className="h-7 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
-                                  {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya, Hapus'}
+                                <Button size="sm" variant="destructive" className="h-7 px-2 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
+                                  {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
                                 </Button>
-                                <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                                <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
                               </div>
                             ) : (
-                              <Button size="sm" variant="ghost" className="h-7 text-xs text-red-500 ml-auto" onClick={() => setConfirmDeleteId(order.orderId)}>
-                                <Trash2 className="w-3 h-3 mr-1" /> Hapus
+                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 ml-auto hover:bg-red-50 hover:text-red-600" onClick={() => setConfirmDeleteId(order.orderId)} title="Hapus">
+                                <Trash2 className="w-3.5 h-3.5" />
                               </Button>
                             )}
                           </>
                         )}
                       </div>
+
                     </div>
                   )}
                 </div>

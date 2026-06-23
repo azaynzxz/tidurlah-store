@@ -13,7 +13,7 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /** Default request timeout (ms) – avoids indefinite hangs. */
-const REQUEST_TIMEOUT = 15_000;
+const REQUEST_TIMEOUT = 10_000;
 
 /**
  * Fetch wrapper that enforces a timeout via AbortController.
@@ -32,6 +32,10 @@ export const supabase = supabaseUrl && supabaseAnonKey
         autoRefreshToken: true,
         persistSession: true,
         detectSessionInUrl: true,
+        // Bypasses navigator.locks by using a no-op lock function to prevent timeout errors
+        lock: async (name, acquireTimeout, fn) => {
+          return await fn();
+        },
       },
       global: {
         fetch: fetchWithTimeout,

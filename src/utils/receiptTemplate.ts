@@ -16,6 +16,64 @@ function maskPhoneNumber(phone: string | number): string {
   return masked + lastFour;
 }
 
+function formatCashierName(cashier: string): string {
+  if (!cashier) return 'Kasir';
+  if (cashier.includes('@')) {
+    return cashier.split('@')[0];
+  }
+  return cashier;
+}
+
+function formatReceiptTimestamp(timestampStr: string): string {
+  if (!timestampStr) return '';
+  try {
+    let d = new Date(timestampStr);
+    if (isNaN(d.getTime())) {
+      // Clean time dots to colons and handle custom formats
+      let cleaned = timestampStr.replace(/(\d{2})\.(\d{2})\.(\d{2})/, '$1:$2:$3');
+      const monthsIndo = {
+        'jan': 'Jan', 'feb': 'Feb', 'mar': 'Mar', 'apr': 'Apr', 'mei': 'May', 'jun': 'Jun',
+        'jul': 'Jul', 'agu': 'Aug', 'sep': 'Sep', 'okt': 'Oct', 'nov': 'Nov', 'des': 'Dec'
+      };
+      Object.entries(monthsIndo).forEach(([indo, eng]) => {
+        const regex = new RegExp(indo, 'gi');
+        cleaned = cleaned.replace(regex, eng);
+      });
+      d = new Date(cleaned);
+    }
+    if (!isNaN(d.getTime())) {
+      const pad = (n: number) => String(n).padStart(2, '0');
+      return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} / Date : ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+    }
+  } catch (err) {
+    console.error('Error formatting timestamp:', err);
+  }
+  return timestampStr;
+}
+
+function generateDashedLineHTML(): string {
+  return `
+    <div style="border-top: 1px dashed #000; margin: 5px 0; height: 0; line-height: 0; font-size: 0; clear: both;"></div>
+  `;
+}
+
+function generateQRISHTML(showQRIS?: boolean, qrisBase64?: string): string {
+  if (!showQRIS) return '';
+  const qrisImg = qrisBase64 || '/qris.jpeg';
+  return `
+    <div style="text-align: center; margin: 2px 0; padding: 0;">
+      <div style="font-weight: 700; font-size: 12.5px; margin-bottom: 2px; color: #000; letter-spacing: 0.5px; line-height: 1.4;">PEMBAYARAN QRIS</div>
+      <img 
+        src="${qrisImg}" 
+        alt="QRIS Code" 
+        style="width: 145px; height: 145px; object-fit: contain; margin: 4px auto; display: block;"
+      />
+      <div style="font-weight: 700; font-size: 11px; color: #000; line-height: 1.4;">Tidurlah Grafika</div>
+      <div style="font-size: 10px; color: #000; font-weight: 500; line-height: 1.4; margin-top: 1px;">NMID : ID1025408510978</div>
+    </div>
+  `;
+}
+
 export interface ReceiptData {
   receiptId: string;
   timestamp: string;
@@ -69,12 +127,12 @@ function generateItemsDetailHTML(items: ReceiptData['items']): string {
     }
 
     return `
-      <div style="margin: 4px 0; padding: 3px 0;">
-        <div style="font-size: 14px; margin-bottom: 2px; color: #000;">
+      <div style="margin: 6px 0; padding: 1px 0;">
+        <div style="font-size: 12px; margin-bottom: 2px; color: #000; line-height: 1.45;">
           <span style="font-weight: 700;">${item.name}</span>
           ${additionalInfo.length > 0 ? `<span style="font-weight: 500;"> (${additionalInfo.join(', ')})</span>` : ''}
         </div>
-        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 14px;">
+        <div style="display: flex; justify-content: space-between; margin-top: 2px; font-size: 12px; line-height: 1.45;">
           <span style="color: #000; font-weight: 500;">${item.quantity} x Rp ${item.price.toLocaleString('id-ID')}</span>
           <span style="font-weight: 700; color: #000;">Rp ${item.subtotal.toLocaleString('id-ID')}</span>
         </div>
@@ -85,57 +143,56 @@ function generateItemsDetailHTML(items: ReceiptData['items']): string {
 
 // Shared helper to generate customer info HTML
 function generateCustomerInfoHTML(data: ReceiptData): string {
+  const cashierName = formatCashierName(data.cashier);
   return `
-    <div style="padding-bottom: 2px; margin-bottom: 8px;">
+    <div style="padding-bottom: 2px; margin-bottom: 2px;">
       <!-- Transaction ID (Full Width) -->
-      <div style="margin: 3px 0 6px 0; text-align: center;">
-        <div style="color: #000; font-weight: 700; font-size: 14px; word-break: break-all; line-height: 1.3;">${data.receiptId}</div>
+      <div style="margin: 2px 0 4px 0; text-align: center;">
+        <div style="color: #000; font-weight: 700; font-size: 12.5px; word-break: break-all; line-height: 1.45; letter-spacing: 0.5px;">${data.receiptId}</div>
       </div>
       
       ${data.customer ? `
         <!-- Two Column Layout -->
         <div style="display: flex; justify-content: space-between; gap: 8px;">
           <!-- Left Column: Transaction Info -->
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 3px;">
-            <div style="font-size: 14px; color: #000; font-weight: 500;">Kasir: ${data.cashier}</div>
-            ${data.cabang ? `<div style="font-size: 14px; color: #000; font-weight: 500;">Cabang: ${data.cabang}</div>` : ''}
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
+            <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">Kasir: ${cashierName}</div>
           </div>
           
           <!-- Right Column: Customer Info -->
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 3px; text-align: right;">
-            <div style="font-size: 14px; color: #000; font-weight: 700;">${data.customer.name}</div>
-            <div style="font-size: 14px; color: #000; margin-top: 0px; font-weight: 500;">${maskPhoneNumber(data.customer.phone)}</div>
+          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; text-align: right;">
+            <div style="font-size: 12px; color: #000; font-weight: 700; line-height: 1.45;">${data.customer.name}</div>
+            <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">${maskPhoneNumber(data.customer.phone)}</div>
             ${data.customer.instansi ? `
-              <div style="font-size: 14px; color: #000; margin-top: 0px; font-weight: 500;">${data.customer.instansi}</div>
+              <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">${data.customer.instansi}</div>
             ` : ''}
           </div>
         </div>
         
         <!-- Delivery Information -->
         ${data.customer.delivery ? `
-          <div style="margin-top: 8px; padding-top: 6px;">
-            <div style="font-weight: 700; text-align: center; font-size: 14px; margin-bottom: 4px; color: #000;">INFORMASI PENGIRIMAN</div>
-            <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 14px;">
+          <div style="margin-top: 6px; padding-top: 6px; border-top: 1px dashed #000;">
+            <div style="font-weight: 700; text-align: center; font-size: 12px; margin-bottom: 4px; color: #000; line-height: 1.4;">INFORMASI PENGIRIMAN</div>
+            <div style="display: flex; justify-content: space-between; margin: 2px 0; font-size: 12px; line-height: 1.4;">
               <span style="color: #000; font-weight: 500;">Penerima:</span>
               <span style="font-weight: 700; color: #000;">${data.customer.delivery.recipientName}</span>
             </div>
-            <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 14px;">
+            <div style="display: flex; justify-content: space-between; margin: 2px 0; font-size: 12px; line-height: 1.4;">
               <span style="color: #000; font-weight: 500;">Telepon:</span>
               <span style="font-weight: 500; color: #000;">${maskPhoneNumber(data.customer.delivery.recipientPhone)}</span>
             </div>
-            <div style="margin: 3px 0; font-size: 14px;">
+            <div style="margin: 2px 0; font-size: 12px; line-height: 1.4;">
               <span style="color: #000; font-weight: 500;">Alamat:</span>
             </div>
-            <div style="font-size: 14px; line-height: 1.3; padding-left: 4px; word-wrap: break-word; color: #000; font-weight: 500;">
+            <div style="font-size: 11px; line-height: 1.4; padding-left: 4px; word-wrap: break-word; color: #000; font-weight: 500;">
               ${data.customer.delivery.address}
             </div>
           </div>
         ` : ''}
       ` : `
         <!-- No Customer: Just show transaction info -->
-        <div style="display: flex; flex-direction: column; gap: 3px;">
-          <div style="font-size: 14px; color: #000; font-weight: 500;">Kasir: ${data.cashier}</div>
-          ${data.cabang ? `<div style="font-size: 14px; color: #000; font-weight: 500;">Cabang: ${data.cabang}</div>` : ''}
+        <div style="display: flex; flex-direction: column; gap: 4px;">
+          <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">Kasir: ${cashierName}</div>
         </div>
       `}
     </div>
@@ -145,29 +202,29 @@ function generateCustomerInfoHTML(data: ReceiptData): string {
 // Shared helper to generate totals summary HTML
 function generateTotalsHTML(summary: ReceiptData['summary']): string {
   return `
-    <div style="padding-bottom: 8px; margin-bottom: 8px;">
+    <div style="padding-bottom: 2px; margin-bottom: 2px;">
       ${summary.discount > 0 ? `
-        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 14px; color: #000;">
+        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 12px; color: #000; line-height: 1.4;">
           <span style="font-weight: 500;">Anda Hemat:</span>
           <span style="font-weight: 500;">Rp ${summary.discount.toLocaleString('id-ID')}</span>
         </div>
       ` : ''}
 
-      <div style="margin-top: 6px; padding-top: 6px;">
-        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 14px; padding: 4px 0; margin: 5px 0;">
+      <div style="margin-top: 4px;">
+        <div style="display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; padding: 2px 0; margin: 3px 0; line-height: 1.4;">
           <span style="color: #000;">TOTAL:</span>
           <span style="color: #000;">Rp ${summary.total.toLocaleString('id-ID')}</span>
         </div>
       </div>
 
       ${summary.downPayment && summary.downPayment > 0 ? `
-        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 14px; color: #000; font-weight: 700;">
-          <span>DP (Down Payment):</span>
+        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 12px; color: #000; font-weight: 700; line-height: 1.4;">
+          <span>DP:</span>
           <span>Rp ${summary.downPayment.toLocaleString('id-ID')}</span>
         </div>
-        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 14px; color: #000; font-weight: 700;">
+        <div style="display: flex; justify-content: space-between; margin: 3px 0; font-size: 12px; color: #000; font-weight: 700; line-height: 1.4;">
           <span>SISA BAYAR:</span>
-          <span>Rp ${summary.remainingBalance?.toLocaleString('id-ID') || '0'}</span>
+          <span style="color: #ff0000;">Rp ${summary.remainingBalance?.toLocaleString('id-ID') || '0'}</span>
         </div>
       ` : ''}
     </div>
@@ -178,14 +235,14 @@ function generateTotalsHTML(summary: ReceiptData['summary']): string {
 function generateSurveyHTML(surveyQRBase64?: string): string {
   if (!surveyQRBase64) return '';
   return `
-    <div style="padding: 0px 0px; margin-bottom: 0px; background-color: none; border-radius: 4px; text-align: center;">
-      <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: #000; line-height: 1;">
+    <div style="padding: 2px 0; margin: 4px 0; text-align: center;">
+      <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px; color: #000; line-height: 1.4;">
         Seberapa baikkah pelayanan kami?
       </div>
-      <div style="font-size: 14px; line-height: 1; margin-bottom: 0px; color: #000; font-weight: 500;">
+      <div style="font-size: 11px; line-height: 1.4; margin-bottom: 4px; color: #000; font-weight: 500;">
         Kami ingin mendengar pendapat Anda. Kunjungi:
       </div>
-      <div style="font-weight: 900; margin-top: 15px; font-size: 16px; color: #000; letter-spacing: 0px;">
+      <div style="font-weight: 900; margin-top: 6px; font-size: 13.5px; color: #000; letter-spacing: 0.5px; line-height: 1.4;">
         idcardlampung.com/survey
       </div>
     </div>
@@ -195,7 +252,7 @@ function generateSurveyHTML(surveyQRBase64?: string): string {
 /**
  * Generate receipt HTML for Cabang Belwis (Default Design)
  */
-export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, bottomLogoBase64?: string): string {
+export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, bottomLogoBase64?: string, showQRIS?: boolean, qrisBase64?: string): string {
   // If topLogo is not provided, or matches the placeholder of Tidurlah logo, fall back to Belwis top logo path
   let topLogo = logoBase64;
   if (!topLogo || topLogo.includes('Tidurlah%20Logo') || topLogo.includes('Tidurlah Logo')) {
@@ -203,9 +260,6 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
   }
 
   // Determine bottom logo (Tidurlah logo):
-  // If bottomLogoBase64 is passed, use it.
-  // If not, but logoBase64 is the Tidurlah logo, use logoBase64.
-  // Otherwise, use fallback path.
   let bottomLogo = bottomLogoBase64;
   if (!bottomLogo) {
     if (logoBase64 && (logoBase64.includes('Tidurlah%20Logo') || logoBase64.includes('Tidurlah Logo') || logoBase64.startsWith('data:image/png;base64'))) {
@@ -216,54 +270,75 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
   }
 
   return `
-    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 15px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 8px 6px; box-sizing: border-box;">
+    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 8px; box-sizing: border-box;">
       <!-- Store Header -->
-      <div style="text-align: center; padding-bottom: 10px; margin-bottom: 10px;">
-        <div style="margin-bottom: 10px;">
+      <div style="padding-bottom: 4px; margin-bottom: 4px;">
+        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+          <!-- Left Logo -->
           ${topLogo ? `
             <img 
               src="${topLogo}" 
               alt="Cabang Belwis" 
-              style="max-height: 60px; width: auto; object-fit: contain; margin: 0 auto 8px auto; display: block;"
+              style="max-height: 42px; width: auto; object-fit: contain;"
             />
           ` : ''}
-          <p style="font-size: 14px; font-style: italic; margin: 0px 0; color: #000; font-weight: 500;">"ID Card Cepat, Jalur Pintas!"</p>
-          <p style="font-size: 14px; margin: 0px 0; color: #000; font-weight: 500;">Jl. Perum Pemda Wayhui, Way Hui</p>
-          <p style="font-size: 14px; margin: 0px 0; color: #000; font-weight: 500;">Kec. Jati Agung, Lampung Selatan 35365</p>
+          <!-- Right Address -->
+          <div style="text-align: right; font-size: 11px; line-height: 1.3; color: #000; font-weight: 500; flex: 1;">
+            <p style="margin: 0; font-style: italic; font-weight: 700;">"ID Card Cepat, Jalur Pintas!"</p>
+            <p style="margin: 1px 0 0 0;">Jl. Perum Pemda Wayhui, Way Hui</p>
+            <p style="margin: 1px 0 0 0;">Kec. Jati Agung, Lamsel 35365</p>
+          </div>
         </div>
-        <div style="margin: 0px 0;"></div>
-        <div style="text-align: center; font-size: 14px; color: #000; font-weight: 500;">
-          WA: 085172157808 | IG: @tidurlah_grafika | @idcard_lampung
+        <!-- Socials Row -->
+        <div style="text-align: center; font-size: 11px; color: #000; font-weight: 500; margin-top: 4px; line-height: 1.35;">
+          WA: 085172157808 | @idcard_lampung | IG: @tidurlah_grafika
         </div>
       </div>
+
+      ${generateDashedLineHTML()}
 
       <!-- Transaction & Customer Info -->
       ${generateCustomerInfoHTML(data)}
 
+      ${generateDashedLineHTML()}
+
       <!-- Items -->
-      <div style="padding-bottom: 8px; margin-bottom: 10px;">
-        <div style="text-align: center; font-weight: 700; font-size: 14px; margin-bottom: 8px; letter-spacing: 1.5px; color: #000;">DETAIL PEMBELIAN</div>
+      <div style="padding-bottom: 4px; margin-bottom: 4px;">
+        <div style="text-align: center; font-weight: 700; font-size: 12px; margin: 6px 0; letter-spacing: 1.5px; color: #000;">DETAIL PEMBELIAN</div>
         <div>
           ${generateItemsDetailHTML(data.items)}
         </div>
       </div>
 
+      ${generateDashedLineHTML()}
+
       <!-- Totals -->
       ${generateTotalsHTML(data.summary)}
 
+      <!-- QRIS Section -->
+      ${showQRIS ? `
+        ${generateDashedLineHTML()}
+        ${generateQRISHTML(showQRIS, qrisBase64)}
+      ` : ''}
+
       <!-- Survey Section -->
-      ${generateSurveyHTML(surveyQRBase64)}
+      ${surveyQRBase64 ? `
+        ${generateDashedLineHTML()}
+        ${generateSurveyHTML(surveyQRBase64)}
+      ` : ''}
+
+      ${generateDashedLineHTML()}
 
       <!-- Footer -->
-      <div style="text-align: center; padding-top: 10px;">
-        <div style="font-size: 14px; color: #000; margin: 0px 0; font-style: italic; font-weight: 0px;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-        <div style="font-size: 14px; color: #000; margin-top: 15px; font-weight: 500;">${data.timestamp}</div>
+      <div style="text-align: center; padding-top: 4px;">
+        <div style="font-size: 11px; color: #000; margin: 0; font-style: italic; line-height: 1.35;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+        <div style="font-size: 11px; color: #000; margin-top: 4px; font-weight: 500; line-height: 1.35;">${formatReceiptTimestamp(data.timestamp)}</div>
         <!-- Tidurlah Grafika logo made small at the bottom -->
         ${bottomLogo ? `
           <img 
             src="${bottomLogo}" 
             alt="Tidurlah Grafika" 
-            style="max-height: 25px; width: auto; object-fit: contain; margin: 12px auto 0 auto; display: block; opacity: 0.8;"
+            style="max-height: 18px; width: auto; object-fit: contain; margin: 5px auto 0 auto; display: block; opacity: 0.8;"
           />
         ` : ''}
       </div>
@@ -274,59 +349,73 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
 /**
  * Generate receipt HTML for Cabang Unila (Unila Design: no address, no Tidurlah logo, custom socials)
  */
-export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string): string {
+export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, showQRIS?: boolean, qrisBase64?: string): string {
   let topLogo = logoBase64;
   if (!topLogo || topLogo.includes('Tidurlah%20Logo') || topLogo.includes('Tidurlah Logo')) {
     topLogo = '/logo_nono.jpeg';
   }
 
   return `
-    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 15px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 8px 6px; box-sizing: border-box;">
+    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 8px; box-sizing: border-box;">
       <!-- Store Header -->
-      <div style="text-align: center; padding-bottom: 10px; margin-bottom: 10px;">
-        <div style="margin-bottom: 10px;">
+      <div style="text-align: center; padding-bottom: 4px; margin-bottom: 4px;">
+        <div style="margin-bottom: 4px;">
           ${topLogo ? `
             <img 
               src="${topLogo}" 
               alt="Cabang Unila" 
-              style="max-height: 60px; width: auto; object-fit: contain; margin: 0 auto 8px auto; display: block;"
+              style="max-height: 42px; width: auto; object-fit: contain; margin: 0 auto; display: block;"
             />
           ` : ''}
         </div>
-        <div style="margin: 0px 0;"></div>
-        <div style="text-align: center; font-size: 14px; color: #000; font-weight: 500;">
+        <div style="text-align: center; font-size: 11px; color: #000; font-weight: 500; line-height: 1.3;">
           WA: +62 857-1802-5415 | IG: @lanyard_balam
         </div>
       </div>
 
+      ${generateDashedLineHTML()}
+
       <!-- Transaction & Customer Info -->
       ${generateCustomerInfoHTML(data)}
 
+      ${generateDashedLineHTML()}
+
       <!-- Items -->
-      <div style="padding-bottom: 8px; margin-bottom: 10px;">
-        <div style="text-align: center; font-weight: 700; font-size: 14px; margin-bottom: 8px; letter-spacing: 1.5px; color: #000;">DETAIL PEMBELIAN</div>
+      <div style="padding-bottom: 4px; margin-bottom: 4px;">
+        <div style="text-align: center; font-weight: 700; font-size: 12px; margin: 6px 0; letter-spacing: 1.5px; color: #000;">DETAIL PEMBELIAN</div>
         <div>
           ${generateItemsDetailHTML(data.items)}
         </div>
       </div>
 
+      ${generateDashedLineHTML()}
+
       <!-- Totals -->
       ${generateTotalsHTML(data.summary)}
 
+      <!-- QRIS Section -->
+      ${showQRIS ? `
+        ${generateDashedLineHTML()}
+        ${generateQRISHTML(showQRIS, qrisBase64)}
+      ` : ''}
+
       <!-- Survey Section Unila (Text only feedback prompt) -->
-      <div style="padding: 0px 0px; margin-bottom: 0px; background-color: none; border-radius: 4px; text-align: center;">
-        <div style="font-weight: 700; font-size: 14px; margin-bottom: 4px; color: #000; line-height: 1.2;">
+      ${generateDashedLineHTML()}
+      <div style="padding: 2px 0; margin: 2px 0; text-align: center;">
+        <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px; color: #000; line-height: 1.4;">
           Seberapa baikkah pelayanan kami?
         </div>
-        <div style="font-size: 14px; line-height: 1.3; margin-bottom: 0px; color: #000; font-weight: 500;">
+        <div style="font-size: 11px; line-height: 1.4; margin-bottom: 4px; color: #000; font-weight: 500;">
           Sampaikan kritik dan saran +62 857-1802-5415 (CS)
         </div>
       </div>
 
+      ${generateDashedLineHTML()}
+
       <!-- Footer -->
-      <div style="text-align: center; padding-top: 10px;">
-        <div style="font-size: 14px; color: #000; margin: 0px 0; font-style: italic; font-weight: 0px;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-        <div style="font-size: 14px; color: #000; margin-top: 15px; font-weight: 500;">${data.timestamp}</div>
+      <div style="text-align: center; padding-top: 4px;">
+        <div style="font-size: 11px; color: #000; margin: 0; font-style: italic; line-height: 1.35;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+        <div style="font-size: 11px; color: #000; margin-top: 4px; font-weight: 500; line-height: 1.35;">${formatReceiptTimestamp(data.timestamp)}</div>
       </div>
     </div>
   `;
@@ -335,11 +424,11 @@ export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string,
 /**
  * Dispatcher to route receipt generation based on branches
  */
-export function generateReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, bottomLogoBase64?: string): string {
+export function generateReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, bottomLogoBase64?: string, showQRIS?: boolean, qrisBase64?: string): string {
   const branch = data.cabang || 'Cabang Belwis';
   if (branch === 'Cabang Unila') {
-    return generateUnilaReceiptHTML(data, logoBase64, surveyQRBase64);
+    return generateUnilaReceiptHTML(data, logoBase64, surveyQRBase64, showQRIS, qrisBase64);
   } else {
-    return generateBelwisReceiptHTML(data, logoBase64, surveyQRBase64, bottomLogoBase64);
+    return generateBelwisReceiptHTML(data, logoBase64, surveyQRBase64, bottomLogoBase64, showQRIS, qrisBase64);
   }
 }
