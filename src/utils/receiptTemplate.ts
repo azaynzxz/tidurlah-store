@@ -66,10 +66,11 @@ function generateQRISHTML(showQRIS?: boolean, qrisBase64?: string): string {
       <img 
         src="${qrisImg}" 
         alt="QRIS Code" 
-        style="width: 145px; height: 145px; object-fit: contain; margin: 4px auto; display: block;"
+        style="width: 100%; height: auto; max-width: 300px; object-fit: contain; margin: 4px auto; display: block;"
       />
-      <div style="font-weight: 700; font-size: 11px; color: #000; line-height: 1.4;">Tidurlah Grafika</div>
-      <div style="font-size: 10px; color: #000; font-weight: 500; line-height: 1.4; margin-top: 1px;">NMID : ID1025408510978</div>
+      <div style="font-size: 11px; color: #000; line-height: 1.4; margin-top: 1px;">
+        <span style="font-weight: 700;">Tidurlah Grafika</span> - <span style="font-size: 10px; font-weight: 500;">NMID : ID1025408510978</span>
+      </div>
     </div>
   `;
 }
@@ -152,21 +153,14 @@ function generateCustomerInfoHTML(data: ReceiptData): string {
       </div>
       
       ${data.customer ? `
-        <!-- Two Column Layout -->
-        <div style="display: flex; justify-content: space-between; gap: 8px;">
-          <!-- Left Column: Transaction Info -->
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px;">
-            <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">Kasir: ${cashierName}</div>
-          </div>
-          
-          <!-- Right Column: Customer Info -->
-          <div style="flex: 1; display: flex; flex-direction: column; gap: 4px; text-align: right;">
-            <div style="font-size: 12px; color: #000; font-weight: 700; line-height: 1.45;">${data.customer.name}</div>
-            <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">${maskPhoneNumber(data.customer.phone)}</div>
-            ${data.customer.instansi ? `
-              <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">${data.customer.instansi}</div>
-            ` : ''}
-          </div>
+        <!-- Compact Layout -->
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 2px;">
+          <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">Kasir: ${cashierName}</div>
+          <div style="font-size: 12px; color: #000; font-weight: 700; line-height: 1.45; text-align: right;">${data.customer.name}</div>
+        </div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-start;">
+          <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45;">${data.customer.instansi || ''}</div>
+          <div style="font-size: 12px; color: #000; font-weight: 500; line-height: 1.45; text-align: right;">${maskPhoneNumber(data.customer.phone)}</div>
         </div>
         
         <!-- Delivery Information -->
@@ -236,14 +230,8 @@ function generateSurveyHTML(surveyQRBase64?: string): string {
   if (!surveyQRBase64) return '';
   return `
     <div style="padding: 2px 0; margin: 4px 0; text-align: center;">
-      <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px; color: #000; line-height: 1.4;">
-        Seberapa baikkah pelayanan kami?
-      </div>
-      <div style="font-size: 11px; line-height: 1.4; margin-bottom: 4px; color: #000; font-weight: 500;">
-        Kami ingin mendengar pendapat Anda. Kunjungi:
-      </div>
-      <div style="font-weight: 900; margin-top: 6px; font-size: 13.5px; color: #000; letter-spacing: 0.5px; line-height: 1.4;">
-        idcardlampung.com/survey
+      <div style="font-size: 12px; color: #000; line-height: 1.4;">
+        <span style="font-weight: 700;">Kritik dan saran:</span> <span style="font-weight: 900; font-size: 13.5px; letter-spacing: 0.5px;">idcardlampung.com/survey</span>
       </div>
     </div>
   `;
@@ -270,7 +258,7 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
   }
 
   return `
-    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 8px; box-sizing: border-box;">
+    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 16px; box-sizing: border-box;">
       <!-- Store Header -->
       <div style="padding-bottom: 4px; margin-bottom: 4px;">
         <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
@@ -323,7 +311,6 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
 
       <!-- Survey Section -->
       ${surveyQRBase64 ? `
-        ${generateDashedLineHTML()}
         ${generateSurveyHTML(surveyQRBase64)}
       ` : ''}
 
@@ -356,7 +343,7 @@ export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string,
   }
 
   return `
-    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 8px; box-sizing: border-box;">
+    <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 16px; box-sizing: border-box;">
       <!-- Store Header -->
       <div style="text-align: center; padding-bottom: 4px; margin-bottom: 4px;">
         <div style="margin-bottom: 4px;">
@@ -400,7 +387,6 @@ export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string,
       ` : ''}
 
       <!-- Survey Section Unila (Text only feedback prompt) -->
-      ${generateDashedLineHTML()}
       <div style="padding: 2px 0; margin: 2px 0; text-align: center;">
         <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px; color: #000; line-height: 1.4;">
           Seberapa baikkah pelayanan kami?

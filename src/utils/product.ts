@@ -1,16 +1,19 @@
 import type { Product, CartItem } from '@/types/product';
 
-// Convert image to base64 for html2canvas compatibility
 export const convertImageToBase64 = (src: string): Promise<string> => {
   return new Promise((resolve, reject) => {
     const img = new Image();
-    img.crossOrigin = 'anonymous';
+    // Only set crossOrigin for external URLs to prevent CORS issues on same-origin files (like Cloudflare Pages)
+    if (src.startsWith('http') && !src.includes(window.location.origin)) {
+      img.crossOrigin = 'anonymous';
+    }
     img.onload = () => {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
+      if (!ctx) return reject(new Error('Failed to get canvas context'));
       canvas.width = img.width;
       canvas.height = img.height;
-      ctx?.drawImage(img, 0, 0);
+      ctx.drawImage(img, 0, 0);
       resolve(canvas.toDataURL('image/png'));
     };
     img.onerror = reject;
