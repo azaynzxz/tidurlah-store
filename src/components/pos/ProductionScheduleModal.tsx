@@ -733,64 +733,69 @@ export function ProductionScheduleModal({
               boxSizing: "border-box",
             }}
           >
-            {/* Header with Branch Logo */}
-            <div style={{ textAlign: "center", paddingBottom: "8px", borderBottom: "2px solid #000000", marginBottom: "8px" }}>
-              {topLogo && (
-                <div style={{ marginBottom: "6px" }}>
-                  <img
-                    src={topLogo}
-                    alt={isUnila ? "Cabang Unila" : "Cabang Belwis"}
+            {/* Header with Branch Logo (2-Column Layout) */}
+            <div style={{ paddingBottom: "8px", borderBottom: "2px solid #000000", marginBottom: "8px" }}>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "10px" }}>
+                {/* Left Column: Logo */}
+                {topLogo && (
+                  <div style={{ flexShrink: 0, width: "110px", textAlign: "left" }}>
+                    <img
+                      src={topLogo}
+                      alt={isUnila ? "Cabang Unila" : "Cabang Belwis"}
+                      style={{
+                        maxHeight: "56px",
+                        maxWidth: "110px",
+                        width: "auto",
+                        objectFit: "contain",
+                        display: "block",
+                      }}
+                    />
+                  </div>
+                )}
+                
+                {/* Right Column: Info */}
+                <div style={{ flex: 1, minWidth: 0, textAlign: "right" }}>
+                  <div
                     style={{
-                      maxHeight: "52px",
-                      width: "auto",
-                      objectFit: "contain",
-                      margin: "0 auto",
-                      display: "block",
+                      fontSize: "13px",
+                      fontWeight: "900",
+                      letterSpacing: "0.5px",
+                      textTransform: "uppercase",
+                      color: "#000000",
+                      lineHeight: "1.2",
                     }}
-                  />
-                </div>
-              )}
-              
-              <div
-                style={{
-                  fontSize: "14px",
-                  fontWeight: "900",
-                  letterSpacing: "1.5px",
-                  textTransform: "uppercase",
-                  color: "#000000",
-                  marginBottom: "2px",
-                }}
-              >
-                JADWAL PRODUKSI HARIAN
-              </div>
-              
-              <div style={{ fontSize: "12px", fontWeight: "700", color: "#000000" }}>
-                {formatDateIndonesian(selectedDate)}
-              </div>
+                  >
+                    JADWAL PRODUKSI HARIAN
+                  </div>
+                  <div style={{ fontSize: "11px", fontWeight: "700", color: "#000000", marginTop: "2px" }}>
+                    {formatDateIndonesian(selectedDate)}
+                  </div>
 
-              {!isUnila ? (
-                <>
-                  <div style={{ fontSize: "9px", fontWeight: "800", background: "#000000", color: "#ffffff", padding: "2px 8px", display: "inline-block", borderRadius: "2px", marginTop: "4px", textTransform: "uppercase" }}>
-                    CABANG BELWIS
-                  </div>
-                  <div style={{ fontSize: "10px", fontStyle: "italic", fontWeight: "700", color: "#000000", marginTop: "4px" }}>
-                    "ID Card Cepat, Jalur Pintas!"
-                  </div>
-                  <div style={{ fontSize: "9.5px", color: "#333333", marginTop: "2px", fontWeight: "500", lineHeight: "1.3" }}>
-                    Jl. Perum Pemda Wayhui, Way Hui, Kec. Jati Agung, Lamsel 35365<br/>
-                    WA: 085172157808 | IG: @idcard_lampung | @papan_idcraft
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div style={{ fontSize: "9px", fontWeight: "800", background: "#000000", color: "#ffffff", padding: "2px 8px", display: "inline-block", borderRadius: "2px", marginTop: "4px", textTransform: "uppercase" }}>
-                    CABANG UNILA
-                  </div>
-                  <div style={{ fontSize: "9.5px", color: "#333333", marginTop: "4px", fontWeight: "500", lineHeight: "1.3" }}>
-                    WA: +62 857-1802-5415 | IG: @lanyard_balam
-                  </div>
-                </>
-              )}
+                  {!isUnila ? (
+                    <>
+                      <div style={{ fontSize: "10px", fontWeight: "800", color: "#000000", marginTop: "3px", textTransform: "uppercase" }}>
+                        CABANG BELWIS
+                      </div>
+                      <div style={{ fontSize: "9.5px", fontStyle: "italic", fontWeight: "700", color: "#000000", marginTop: "2px" }}>
+                        "ID Card Cepat, Jalur Pintas!"
+                      </div>
+                      <div style={{ fontSize: "9px", color: "#333333", marginTop: "2px", fontWeight: "500", lineHeight: "1.3" }}>
+                        Jl. Perum Pemda Wayhui, Way Hui, Kec. Jati Agung, Lamsel 35365<br/>
+                        WA: 085172157808 | IG: @idcard_lampung | @papan_idcraft
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div style={{ fontSize: "10px", fontWeight: "800", color: "#000000", marginTop: "3px", textTransform: "uppercase" }}>
+                        CABANG UNILA
+                      </div>
+                      <div style={{ fontSize: "9px", color: "#333333", marginTop: "3px", fontWeight: "500", lineHeight: "1.3" }}>
+                        WA: +62 857-1802-5415 | IG: @lanyard_balam
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
             </div>
 
             {/* Dashed Separator */}
