@@ -113,6 +113,7 @@ export function ProductionScheduleModal({
   const [newTaskTitle, setNewTaskTitle] = useState("");
   const [newTaskDesc, setNewTaskDesc] = useState("");
   const [newTaskPriority, setNewTaskPriority] = useState(0);
+  const [newTaskDeadline, setNewTaskDeadline] = useState("");
 
   const exportRef = useRef<HTMLDivElement>(null);
 
@@ -147,9 +148,7 @@ export function ProductionScheduleModal({
 
   const autoPopulateFromOrders = (date: string) => {
     const pendingOrders = orders.filter(
-      (o) =>
-        (o.orderStatus === "pending" || o.orderStatus === "partial") &&
-        o.orderStatus !== "deleted"
+      (o) => o.orderStatus === "pending" || o.orderStatus === "partial"
     );
 
     const autoTasks: LocalTask[] = pendingOrders.map((order, idx) => ({
@@ -240,7 +239,7 @@ export function ProductionScheduleModal({
       priority: newTaskPriority,
       is_completed: false,
       sort_order: tasks.length,
-      deadline: null,
+      deadline: newTaskDeadline ? new Date(newTaskDeadline).toISOString() : null,
       customer_name: "",
       items_summary: "",
       cabang: cabang || null,
@@ -251,6 +250,7 @@ export function ProductionScheduleModal({
     setNewTaskTitle("");
     setNewTaskDesc("");
     setNewTaskPriority(0);
+    setNewTaskDeadline("");
     setShowAddForm(false);
   };
 
@@ -445,6 +445,15 @@ export function ProductionScheduleModal({
                 onChange={(e) => setNewTaskDesc(e.target.value)}
                 className="h-8 text-sm"
               />
+              <div className="flex flex-col gap-1">
+                <label className="text-[10px] font-semibold text-gray-500">Deadline (opsional):</label>
+                <Input
+                  type="datetime-local"
+                  value={newTaskDeadline}
+                  onChange={(e) => setNewTaskDeadline(e.target.value)}
+                  className="h-8 text-sm"
+                />
+              </div>
               <div className="flex items-center justify-between">
                 <button
                   onClick={() => setNewTaskPriority(newTaskPriority === 1 ? 0 : 1)}
@@ -487,7 +496,7 @@ export function ProductionScheduleModal({
               {tasks.map((task, idx) => (
                 <div
                   key={task.id}
-                  className={`flex items-start gap-2 p-2.5 rounded-lg border transition-all ${
+                  className={`flex items-center justify-between gap-3 p-1.5 px-2.5 rounded-lg border transition-all ${
                     task.is_completed
                       ? "bg-gray-50 border-gray-200 opacity-60"
                       : task.priority === 1
@@ -495,54 +504,56 @@ export function ProductionScheduleModal({
                         : "bg-white border-gray-200 hover:border-gray-300"
                   }`}
                 >
-                  {/* Checkbox */}
-                  <button
-                    onClick={() => handleToggleComplete(task.id)}
-                    className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
-                      task.is_completed
-                        ? "bg-green-500 border-green-500 text-white"
-                        : "border-gray-300 hover:border-[#FF5E01]"
-                    }`}
-                  >
-                    {task.is_completed && <Check className="w-3 h-3" />}
-                  </button>
+                  <div className="flex items-start gap-2 flex-1 min-w-0">
+                    {/* Checkbox */}
+                    <button
+                      onClick={() => handleToggleComplete(task.id)}
+                      className={`mt-0.5 w-5 h-5 rounded border-2 flex items-center justify-center shrink-0 transition-colors ${
+                        task.is_completed
+                          ? "bg-green-500 border-green-500 text-white"
+                          : "border-gray-300 hover:border-[#FF5E01]"
+                      }`}
+                    >
+                      {task.is_completed && <Check className="w-3 h-3" />}
+                    </button>
 
-                  {/* Content */}
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <span className="text-xs text-gray-400 font-mono">
-                        {idx + 1}.
-                      </span>
-                      {task.priority === 1 && (
-                        <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Prioritas Tinggi" />
+                    {/* Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5">
+                        <span className="text-xs text-gray-400 font-mono">
+                          {idx + 1}.
+                        </span>
+                        {task.priority === 1 && (
+                          <span className="w-2 h-2 rounded-full bg-red-500 shrink-0" title="Prioritas Tinggi" />
+                        )}
+                        <span
+                          className={`text-sm font-medium truncate ${
+                            task.is_completed ? "line-through text-gray-400" : "text-gray-800"
+                          }`}
+                        >
+                          {task.title}
+                        </span>
+                      </div>
+                      {task.description && (
+                        <p className="text-xs text-gray-500 mt-0.5 truncate">
+                          {task.description}
+                        </p>
                       )}
-                      <span
-                        className={`text-sm font-medium truncate ${
-                          task.is_completed ? "line-through text-gray-400" : "text-gray-800"
-                        }`}
-                      >
-                        {task.title}
-                      </span>
+                      {task.deadline && (
+                        <p className="text-[10px] text-gray-400 mt-0.5 font-medium">
+                          Deadline: {formatDeadlineShort(task.deadline)}
+                        </p>
+                      )}
+                      {!task.order_id && (
+                        <span className="text-[9px] font-semibold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded mt-1 inline-block">
+                          TUGAS CUSTOM
+                        </span>
+                      )}
                     </div>
-                    {task.description && (
-                      <p className="text-xs text-gray-500 mt-0.5 truncate">
-                        {task.description}
-                      </p>
-                    )}
-                    {task.deadline && (
-                      <p className="text-[10px] text-gray-400 mt-0.5 font-medium">
-                        Deadline: {formatDeadlineShort(task.deadline)}
-                      </p>
-                    )}
-                    {!task.order_id && (
-                      <span className="text-[9px] font-semibold text-orange-600 bg-orange-100 px-1.5 py-0.5 rounded mt-1 inline-block">
-                        TUGAS CUSTOM
-                      </span>
-                    )}
                   </div>
 
                   {/* Actions */}
-                  <div className="flex flex-col gap-0.5 shrink-0">
+                  <div className="flex items-center gap-0.5 shrink-0">
                     <button
                       onClick={() => handleTogglePriority(task.id)}
                       className={`p-1 rounded transition-colors ${
