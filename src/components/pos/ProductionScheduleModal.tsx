@@ -734,9 +734,9 @@ export function ProductionScheduleModal({
             }}
           >
             {/* Header with Branch Logo */}
-            <div style={{ textAlign: "center", paddingBottom: "6px", marginBottom: "6px" }}>
+            <div style={{ textAlign: "center", paddingBottom: "8px", borderBottom: "2px solid #000000", marginBottom: "8px" }}>
               {topLogo && (
-                <div style={{ marginBottom: "8px" }}>
+                <div style={{ marginBottom: "6px" }}>
                   <img
                     src={topLogo}
                     alt={isUnila ? "Cabang Unila" : "Cabang Belwis"}
@@ -750,32 +750,47 @@ export function ProductionScheduleModal({
                   />
                 </div>
               )}
+              
               <div
                 style={{
                   fontSize: "14px",
-                  fontWeight: "800",
-                  letterSpacing: "1px",
+                  fontWeight: "900",
+                  letterSpacing: "1.5px",
                   textTransform: "uppercase",
-                  color: "#000",
+                  color: "#000000",
                   marginBottom: "2px",
                 }}
               >
                 JADWAL PRODUKSI HARIAN
               </div>
-              <div
-                style={{
-                  fontSize: "11px",
-                  fontStyle: "italic",
-                  fontWeight: "700",
-                  color: "#000",
-                  marginBottom: "3px",
-                }}
-              >
-                "ID Card Cepat, Jalur Pintas!"
-              </div>
-              <div style={{ fontSize: "12px", fontWeight: "600", color: "#333" }}>
+              
+              <div style={{ fontSize: "12px", fontWeight: "700", color: "#000000" }}>
                 {formatDateIndonesian(selectedDate)}
               </div>
+
+              {!isUnila ? (
+                <>
+                  <div style={{ fontSize: "9px", fontWeight: "800", background: "#000000", color: "#ffffff", padding: "2px 8px", display: "inline-block", borderRadius: "2px", marginTop: "4px", textTransform: "uppercase" }}>
+                    CABANG BELWIS
+                  </div>
+                  <div style={{ fontSize: "10px", fontStyle: "italic", fontWeight: "700", color: "#000000", marginTop: "4px" }}>
+                    "ID Card Cepat, Jalur Pintas!"
+                  </div>
+                  <div style={{ fontSize: "9.5px", color: "#333333", marginTop: "2px", fontWeight: "500", lineHeight: "1.3" }}>
+                    Jl. Perum Pemda Wayhui, Way Hui, Kec. Jati Agung, Lamsel 35365<br/>
+                    WA: 085172157808 | IG: @idcard_lampung | @papan_idcraft
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div style={{ fontSize: "9px", fontWeight: "800", background: "#000000", color: "#ffffff", padding: "2px 8px", display: "inline-block", borderRadius: "2px", marginTop: "4px", textTransform: "uppercase" }}>
+                    CABANG UNILA
+                  </div>
+                  <div style={{ fontSize: "9.5px", color: "#333333", marginTop: "4px", fontWeight: "500", lineHeight: "1.3" }}>
+                    WA: +62 857-1802-5415 | IG: @lanyard_balam
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Dashed Separator */}
@@ -839,48 +854,53 @@ export function ProductionScheduleModal({
             />
 
             {/* Footer */}
-            <div style={{ textAlign: "center", paddingTop: "4px" }}>
+            <div style={{ paddingTop: "6px" }}>
               <div
                 style={{
+                  display: "flex",
+                  justifyContent: "space-between",
                   fontSize: "11px",
-                  color: "#000",
-                  fontWeight: "600",
-                  marginBottom: "2px",
-                }}
-              >
-                Total: {tasks.length} tugas
-              </div>
-              <div
-                style={{
-                  fontSize: "11px",
+                  fontWeight: "800",
                   color: "#000000",
                   marginBottom: "4px",
+                  borderBottom: "1px dashed #000000",
+                  paddingBottom: "4px",
                 }}
               >
-                Dibuat oleh: {cashierName || "Admin"}
+                <span>TOTAL: {tasks.length} TUGAS</span>
+                <span>KASIR: {(cashierName || "ADMIN").toUpperCase()}</span>
               </div>
               <div
                 style={{
-                  fontSize: "11px",
-                  color: "#000",
-                  fontWeight: "500",
+                  fontSize: "10px",
+                  color: "#000000",
+                  fontWeight: "700",
+                  textAlign: "center",
                   marginBottom: "6px",
                 }}
               >
-                {formatTimestamp()}
+                CETAK: {formatTimestamp()}
               </div>
-              {logoTidurlah && (
-                <img
-                  src={logoTidurlah}
-                  alt="Tidurlah Grafika"
-                  style={{
-                    maxHeight: "26px",
-                    width: "auto",
-                    objectFit: "contain",
-                    margin: "0 auto",
-                    display: "block",
-                  }}
-                />
+
+              {!isUnila ? (
+                logoTidurlah && (
+                  <img
+                    src={logoTidurlah}
+                    alt="Tidurlah Grafika"
+                    style={{
+                      maxHeight: "26px",
+                      width: "auto",
+                      objectFit: "contain",
+                      margin: "0 auto",
+                      display: "block",
+                    }}
+                  />
+                )
+              ) : (
+                <div style={{ textAlign: "center", fontSize: "9.5px", borderTop: "1px dashed #000000", paddingTop: "6px", marginTop: "4px" }}>
+                  <div style={{ fontWeight: "700", color: "#000000" }}>Kritik & Saran Layanan (CS):</div>
+                  <div style={{ fontWeight: "800", color: "#000000", marginTop: "1px" }}>+62 857-1802-5415</div>
+                </div>
               )}
             </div>
           </div>
