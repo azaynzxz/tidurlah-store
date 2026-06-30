@@ -14,6 +14,7 @@ import { submitPOSOrder } from "@/utils/api";
 interface OrderHistoryProps {
   onBack?: () => void;
   cashierName?: string;
+  cabang?: string;
 }
 
 const STATUS_OPTIONS = [
@@ -78,7 +79,7 @@ const formatPhoneForWA = (phone: string | number): string => {
   return '62' + cleaned;
 };
 
-export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
+export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps) {
   const [orders, setOrders] = useState<OrderHistoryItem[]>([]);
   const [search, setSearch] = useState("");
   const [expandedOrder, setExpandedOrder] = useState<string | null>(null);
@@ -1041,7 +1042,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
         onClose={() => setShowScheduleModal(false)}
         orders={orders}
         cashierName={cashierName || ''}
-        cabang={orders[0]?.cabang || 'Cabang Belwis'}
+        cabang={cabang || localStorage.getItem('posCabang') || orders[0]?.cabang || 'Cabang Belwis'}
         logoBelwis={logoBelwis}
         logoUnila={logoUnila}
         logoTidurlah={logoTidurlah}

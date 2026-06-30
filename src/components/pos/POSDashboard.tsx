@@ -1388,7 +1388,7 @@ export function POSDashboard() {
 
       {showOrderHistory ? (
         <div className="flex-1 overflow-hidden bg-gray-50">
-          <OrderHistory onBack={() => setShowOrderHistory(false)} cashierName={cashierName} />
+          <OrderHistory onBack={() => setShowOrderHistory(false)} cashierName={cashierName} cabang={cabang} />
         </div>
       ) : (
         /* Main Content Area - Responsive Layout */
