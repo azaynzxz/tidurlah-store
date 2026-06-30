@@ -366,9 +366,91 @@ export function ProductionScheduleModal({
   const isUnila = (cabang || "").toLowerCase().includes("unila");
   const topLogo = isUnila ? logoUnila : logoBelwis;
 
-  // ──────────────────────────────────────────
-  // Render
-  // ──────────────────────────────────────────
+  const renderTaskItem = (task: LocalTask, idx: number) => (
+    <div
+      key={task.id}
+      style={{
+        padding: "5px 0",
+        display: "flex",
+        gap: "6px",
+        alignItems: "flex-start",
+      }}
+    >
+      {/* Checkbox */}
+      <span
+        style={{
+          fontFamily: "'Courier New', Consolas, monospace",
+          fontSize: "13px",
+          fontWeight: "700",
+          flexShrink: 0,
+          minWidth: "30px",
+        }}
+      >
+        {task.is_completed ? "[x]" : task.priority === 1 ? "[!]" : "[ ]"}
+      </span>
+      {/* Content */}
+      <div style={{ flex: 1, minWidth: 0 }}>
+        <div
+          style={{
+            fontSize: "12px",
+            fontWeight: "700",
+            color: "#000000",
+            textDecoration: task.is_completed ? "line-through" : "none",
+            lineHeight: "1.35",
+          }}
+        >
+          {idx + 1}. {task.title}
+        </div>
+        {task.description && (
+          <div
+            style={{
+              fontSize: "10.5px",
+              color: "#000000",
+              marginTop: "1px",
+              lineHeight: "1.3",
+              fontWeight: "600",
+            }}
+          >
+            {task.description}
+          </div>
+        )}
+        {task.deadline && (
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#000000",
+              marginTop: "2px",
+              fontWeight: "800",
+              backgroundColor: "#f3f4f6",
+              padding: "1px 4px",
+              borderRadius: "2px",
+              display: "inline-block",
+              border: "1px solid #000000",
+            }}
+          >
+            DEADLINE: {formatDeadlineShort(task.deadline)}
+          </div>
+        )}
+        {!task.order_id && (
+          <div
+            style={{
+              fontSize: "9px",
+              fontWeight: "800",
+              color: "#000000",
+              marginTop: "2px",
+              textTransform: "uppercase",
+              border: "1px solid #000000",
+              padding: "0px 3px",
+              display: "inline-block",
+            }}
+          >
+            [CUSTOM]
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Dialog open={isOpen} onOpenChange={onClose}>
@@ -637,7 +719,7 @@ export function ProductionScheduleModal({
         <div
           ref={exportRef}
           style={{
-            width: "380px",
+            width: tasks.length > 10 ? "680px" : "380px",
             background: "#ffffff",
             padding: "0",
             margin: "0",
@@ -649,7 +731,7 @@ export function ProductionScheduleModal({
               fontFamily: "'Roboto', 'Arial', 'Helvetica', sans-serif",
               fontSize: "13px",
               lineHeight: "1.4",
-              maxWidth: "380px",
+              maxWidth: tasks.length > 10 ? "680px" : "380px",
               background: "white",
               color: "#000000",
               padding: "12px 16px",
@@ -710,94 +792,48 @@ export function ProductionScheduleModal({
             />
 
             {/* Task List */}
-            {tasks.map((task, idx) => (
-              <div key={task.id}>
-                <div
-                  style={{
-                    padding: "5px 0",
-                    display: "flex",
-                    gap: "6px",
-                    alignItems: "flex-start",
-                  }}
-                >
-                  {/* Checkbox */}
-                  <span
-                    style={{
-                      fontFamily: "'Courier New', Consolas, monospace",
-                      fontSize: "13px",
-                      fontWeight: "700",
-                      flexShrink: 0,
-                      minWidth: "30px",
-                    }}
-                  >
-                    {task.is_completed
-                      ? "[x]"
-                      : task.priority === 1
-                        ? "[!]"
-                        : "[ ]"}
-                  </span>
-                  {/* Content */}
-                  <div style={{ flex: 1 }}>
+            {tasks.length <= 10 ? (
+              tasks.map((task, idx) => (
+                <div key={task.id}>
+                  {renderTaskItem(task, idx)}
+                  {idx < tasks.length - 1 && (
                     <div
                       style={{
-                        fontSize: "12px",
-                        fontWeight: "600",
-                        color: "#000",
-                        textDecoration: task.is_completed ? "line-through" : "none",
-                        lineHeight: "1.35",
+                        borderTop: "1px dashed #000",
+                        margin: "0",
                       }}
-                    >
-                      {idx + 1}. {task.title}
-                    </div>
-                    {task.description && (
-                      <div
-                        style={{
-                          fontSize: "10.5px",
-                          color: "#555",
-                          marginTop: "1px",
-                          lineHeight: "1.3",
-                        }}
-                      >
-                        {task.description}
-                      </div>
-                    )}
-                    {task.deadline && (
-                      <div
-                        style={{
-                          fontSize: "10px",
-                          color: "#777",
-                          marginTop: "1px",
-                          fontWeight: "500",
-                        }}
-                      >
-                        Deadline: {formatDeadlineShort(task.deadline)}
-                      </div>
-                    )}
-                    {!task.order_id && (
-                      <div
-                        style={{
-                          fontSize: "9px",
-                          fontWeight: "700",
-                          color: "#FF5E01",
-                          marginTop: "2px",
-                          textTransform: "uppercase",
-                        }}
-                      >
-                        [TUGAS CUSTOM]
-                      </div>
-                    )}
-                  </div>
+                    />
+                  )}
                 </div>
-                {idx < tasks.length - 1 && (
-                  <div
-                    style={{
-                      borderTop: "1px dashed #ccc",
-                      margin: "0",
-                    }}
-                  />
-                )}
+              ))
+            ) : (
+              <div style={{ display: "flex", gap: "20px", alignItems: "stretch" }}>
+                <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {tasks.slice(0, Math.ceil(tasks.length / 2)).map((task, idx) => (
+                    <div key={task.id}>
+                      {renderTaskItem(task, idx)}
+                      {idx < Math.ceil(tasks.length / 2) - 1 && (
+                        <div style={{ borderTop: "1px dashed #ccc", margin: "0" }} />
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <div style={{ borderLeft: "1.5px dashed #000", alignSelf: "stretch" }} />
+                <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
+                  {tasks.slice(Math.ceil(tasks.length / 2)).map((task, idx) => {
+                    const actualIdx = Math.ceil(tasks.length / 2) + idx;
+                    return (
+                      <div key={task.id}>
+                        {renderTaskItem(task, actualIdx)}
+                        {actualIdx < tasks.length - 1 && (
+                          <div style={{ borderTop: "1px dashed #ccc", margin: "0" }} />
+                        )}
+                      </div>
+                    );
+                  })}
+                </div>
               </div>
-            ))}
+            )}
 
             {/* Bottom Separator */}
             <div
@@ -822,7 +858,7 @@ export function ProductionScheduleModal({
               <div
                 style={{
                   fontSize: "11px",
-                  color: "#555",
+                  color: "#000000",
                   marginBottom: "4px",
                 }}
               >
@@ -848,7 +884,6 @@ export function ProductionScheduleModal({
                     objectFit: "contain",
                     margin: "0 auto",
                     display: "block",
-                    opacity: 0.8,
                   }}
                 />
               )}
