@@ -43,7 +43,7 @@ function formatReceiptTimestamp(timestampStr: string): string {
     }
     if (!isNaN(d.getTime())) {
       const pad = (n: number) => String(n).padStart(2, '0');
-      return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())} / Date : ${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()}`;
+      return `${pad(d.getDate())}/${pad(d.getMonth() + 1)}/${d.getFullYear()} | ${pad(d.getHours())}:${pad(d.getMinutes())}`;
     }
   } catch (err) {
     console.error('Error formatting timestamp:', err);
@@ -260,28 +260,52 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
   return `
     <div style="font-family: 'Roboto', 'Arial', 'Helvetica', sans-serif; font-size: 13px; line-height: 1.4; max-width: 350px; background: white; color: #000000; padding: 6px 16px; box-sizing: border-box;">
       <!-- Store Header -->
-      <div style="padding-bottom: 4px; margin-bottom: 4px;">
-        <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
-          <!-- Left Logo -->
-          ${topLogo ? `
-            <img 
-              src="${topLogo}" 
-              alt="Cabang Belwis" 
-              style="max-height: 42px; width: auto; object-fit: contain;"
-            />
-          ` : ''}
-          <!-- Right Address -->
-          <div style="text-align: right; font-size: 11px; line-height: 1.3; color: #000; font-weight: 500; flex: 1;">
-            <p style="margin: 0; font-style: italic; font-weight: 700;">"ID Card Cepat, Jalur Pintas!"</p>
-            <p style="margin: 1px 0 0 0;">Jl. Perum Pemda Wayhui, Way Hui</p>
-            <p style="margin: 1px 0 0 0;">Kec. Jati Agung, Lamsel 35365</p>
+      ${showQRIS ? `
+        <div style="padding-bottom: 4px; margin-bottom: 4px;">
+          <div style="display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-bottom: 4px;">
+            <!-- Left Logo -->
+            ${topLogo ? `
+              <img 
+                src="${topLogo}" 
+                alt="Cabang Belwis" 
+                style="max-height: 52px; max-width: 110px; width: auto; object-fit: contain; flex-shrink: 0;"
+              />
+            ` : ''}
+            <!-- Right Address & Socials -->
+            <div style="text-align: right; font-size: 10px; line-height: 1.35; color: #000; font-weight: 500; flex: 1;">
+              <p style="margin: 0; font-style: italic; font-weight: 700; font-size: 11px;">"ID Card Cepat, Jalur Pintas!"</p>
+              <p style="margin: 2px 0 0 0;">Jl. Perum Pemda Wayhui, Way Hui</p>
+              <p style="margin: 2px 0 0 0;">Kec. Jati Agung, Lamsel 35365</p>
+              <p style="margin: 3px 0 0 0; font-size: 9.5px;">WA: 085172157808</p>
+              <p style="margin: 1.5px 0 0 0; font-size: 9.5px;">IG: @idcard_lampung | @papan_idcraft | @tidurlah_grafika</p>
+            </div>
           </div>
         </div>
-        <!-- Socials Row -->
-        <div style="text-align: center; font-size: 11px; color: #000; font-weight: 500; margin-top: 4px; line-height: 1.35;">
-          WA: 085172157808 | @idcard_lampung | IG: @tidurlah_grafika
+      ` : `
+        <div style="text-align: center; padding-bottom: 4px; margin-bottom: 4px;">
+          <!-- Centered Logo -->
+          ${topLogo ? `
+            <div style="margin-bottom: 6px;">
+              <img 
+                src="${topLogo}" 
+                alt="Cabang Belwis" 
+                style="max-height: 52px; width: auto; object-fit: contain; margin: 0 auto; display: block;"
+              />
+            </div>
+          ` : ''}
+          <!-- Centered Info -->
+          <div style="font-size: 11px; line-height: 1.35; color: #000; font-weight: 500; margin-bottom: 4px;">
+            <p style="margin: 0; font-style: italic; font-weight: 700; font-size: 11.5px;">"ID Card Cepat, Jalur Pintas!"</p>
+            <p style="margin: 3px 0 0 0;">Jl. Perum Pemda Wayhui, Way Hui</p>
+            <p style="margin: 1px 0 0 0;">Kec. Jati Agung, Lampung Selatan 35365</p>
+          </div>
+          <!-- Socials Row -->
+          <div style="text-align: center; font-size: 11px; color: #000; font-weight: 500; margin-top: 4px; line-height: 1.45;">
+            WA: 085172157808 | IG: @idcard_lampung |<br/>
+            @papan_idcraft | @tidurlah_grafika
+          </div>
         </div>
-      </div>
+      `}
 
       ${generateDashedLineHTML()}
 
@@ -318,16 +342,16 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
 
       <!-- Footer -->
       <div style="text-align: center; padding-top: 4px;">
-        <div style="font-size: 11px; color: #000; margin: 0; font-style: italic; line-height: 1.35;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
-        <div style="font-size: 11px; color: #000; margin-top: 4px; font-weight: 500; line-height: 1.35;">${formatReceiptTimestamp(data.timestamp)}</div>
-        <!-- Tidurlah Grafika logo made small at the bottom -->
+        <!-- Tidurlah Grafika logo first -->
         ${bottomLogo ? `
           <img 
             src="${bottomLogo}" 
             alt="Tidurlah Grafika" 
-            style="max-height: 18px; width: auto; object-fit: contain; margin: 5px auto 0 auto; display: block; opacity: 0.8;"
+            style="max-height: 26px; width: auto; object-fit: contain; margin: 0 auto 6px auto; display: block; opacity: 0.8;"
           />
         ` : ''}
+        <div style="font-size: 11px; color: #000; margin: 0; font-style: italic; line-height: 1.35;">Barang yang sudah dibeli tidak dapat dikembalikan</div>
+        <div style="font-size: 11px; color: #000; margin-top: 4px; font-weight: 500; line-height: 1.35;">${formatReceiptTimestamp(data.timestamp)}</div>
       </div>
     </div>
   `;
