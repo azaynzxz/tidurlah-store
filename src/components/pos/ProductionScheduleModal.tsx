@@ -370,9 +370,9 @@ export function ProductionScheduleModal({
     <div
       key={task.id}
       style={{
-        padding: "5px 0",
+        padding: "6px 0",
         display: "flex",
-        gap: "6px",
+        gap: "8px",
         alignItems: "flex-start",
       }}
     >
@@ -384,6 +384,8 @@ export function ProductionScheduleModal({
           fontWeight: "700",
           flexShrink: 0,
           minWidth: "30px",
+          display: "inline-block",
+          lineHeight: "1.35",
         }}
       >
         {task.is_completed ? "[x]" : task.priority === 1 ? "[!]" : "[ ]"}
@@ -406,7 +408,7 @@ export function ProductionScheduleModal({
             style={{
               fontSize: "10.5px",
               color: "#000000",
-              marginTop: "1px",
+              marginTop: "2px",
               lineHeight: "1.3",
               fontWeight: "600",
             }}
@@ -415,36 +417,39 @@ export function ProductionScheduleModal({
           </div>
         )}
         {task.deadline && (
-          <div
-            style={{
-              fontSize: "11px",
-              color: "#000000",
-              marginTop: "2px",
-              fontWeight: "800",
-              backgroundColor: "#f3f4f6",
-              padding: "1px 4px",
-              borderRadius: "2px",
-              display: "inline-block",
-              border: "1px solid #000000",
-            }}
-          >
-            DEADLINE: {formatDeadlineShort(task.deadline)}
+          <div style={{ marginTop: "5px", display: "block" }}>
+            <span
+              style={{
+                fontSize: "10px",
+                color: "#000000",
+                fontWeight: "800",
+                backgroundColor: "#f3f4f6",
+                padding: "2px 5px",
+                borderRadius: "2px",
+                display: "inline-block",
+                border: "1px solid #000000",
+                lineHeight: "1.2",
+              }}
+            >
+              DEADLINE: {formatDeadlineShort(task.deadline)}
+            </span>
           </div>
         )}
         {!task.order_id && (
-          <div
-            style={{
-              fontSize: "9px",
-              fontWeight: "800",
-              color: "#000000",
-              marginTop: "2px",
-              textTransform: "uppercase",
-              border: "1px solid #000000",
-              padding: "0px 3px",
-              display: "inline-block",
-            }}
-          >
-            [CUSTOM]
+          <div style={{ marginTop: "4px", display: "block" }}>
+            <span
+              style={{
+                fontSize: "9px",
+                fontWeight: "800",
+                color: "#000000",
+                border: "1px solid #000000",
+                padding: "1px 4px",
+                display: "inline-block",
+                lineHeight: "1.2",
+              }}
+            >
+              [CUSTOM]
+            </span>
           </div>
         )}
       </div>
@@ -719,7 +724,7 @@ export function ProductionScheduleModal({
         <div
           ref={exportRef}
           style={{
-            width: tasks.length > 10 ? "680px" : "380px",
+            width: tasks.length > 10 ? "720px" : "380px",
             background: "#ffffff",
             padding: "0",
             margin: "0",
@@ -731,7 +736,7 @@ export function ProductionScheduleModal({
               fontFamily: "'Roboto', 'Arial', 'Helvetica', sans-serif",
               fontSize: "13px",
               lineHeight: "1.4",
-              maxWidth: tasks.length > 10 ? "680px" : "380px",
+              maxWidth: tasks.length > 10 ? "720px" : "380px",
               background: "white",
               color: "#000000",
               padding: "12px 16px",
@@ -799,21 +804,21 @@ export function ProductionScheduleModal({
                   {idx < tasks.length - 1 && (
                     <div
                       style={{
-                        borderTop: "1px dashed #000",
-                        margin: "0",
+                        borderTop: "1.5px dashed #000",
+                        margin: "6px 0",
                       }}
                     />
                   )}
                 </div>
               ))
             ) : (
-              <div style={{ display: "flex", gap: "20px", alignItems: "stretch" }}>
+              <div style={{ display: "flex", gap: "24px", alignItems: "stretch" }}>
                 <div style={{ flex: 1, minWidth: 0, display: "flex", flexDirection: "column", gap: "4px" }}>
                   {tasks.slice(0, Math.ceil(tasks.length / 2)).map((task, idx) => (
                     <div key={task.id}>
                       {renderTaskItem(task, idx)}
                       {idx < Math.ceil(tasks.length / 2) - 1 && (
-                        <div style={{ borderTop: "1px dashed #ccc", margin: "0" }} />
+                        <div style={{ borderTop: "1px dashed #ccc", margin: "6px 0" }} />
                       )}
                     </div>
                   ))}
@@ -826,7 +831,7 @@ export function ProductionScheduleModal({
                       <div key={task.id}>
                         {renderTaskItem(task, actualIdx)}
                         {actualIdx < tasks.length - 1 && (
-                          <div style={{ borderTop: "1px dashed #ccc", margin: "0" }} />
+                          <div style={{ borderTop: "1px dashed #ccc", margin: "6px 0" }} />
                         )}
                       </div>
                     );
