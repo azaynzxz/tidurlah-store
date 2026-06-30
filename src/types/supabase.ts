@@ -445,6 +445,57 @@ export interface Database {
         };
         Relationships: [];
       };
+      production_tasks: {
+        Row: {
+          id: string;
+          schedule_date: string;
+          order_id: string | null;
+          title: string;
+          description: string;
+          priority: number;
+          is_completed: boolean;
+          sort_order: number;
+          created_by: string;
+          deadline: string | null;
+          customer_name: string;
+          items_summary: string;
+          cabang: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          schedule_date: string;
+          order_id?: string | null;
+          title: string;
+          description?: string;
+          priority?: number;
+          is_completed?: boolean;
+          sort_order?: number;
+          created_by?: string;
+          deadline?: string | null;
+          customer_name?: string;
+          items_summary?: string;
+          cabang?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          schedule_date?: string;
+          order_id?: string | null;
+          title?: string;
+          description?: string;
+          priority?: number;
+          is_completed?: boolean;
+          sort_order?: number;
+          created_by?: string;
+          deadline?: string | null;
+          customer_name?: string;
+          items_summary?: string;
+          cabang?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
     };
     Views: Record<string, never>;
     Functions: {
@@ -491,6 +542,7 @@ export type OrderItem = Database['public']['Tables']['order_items']['Row'];
 export type OrderDelivery = Database['public']['Tables']['order_deliveries']['Row'];
 export type JobApplication = Database['public']['Tables']['job_applications']['Row'];
 export type SurveyResponse = Database['public']['Tables']['survey_responses']['Row'];
+export type ProductionTask = Database['public']['Tables']['production_tasks']['Row'];
 
 // Insert types
 export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
@@ -498,3 +550,4 @@ export type OrderItemInsert = Database['public']['Tables']['order_items']['Inser
 export type OrderDeliveryInsert = Database['public']['Tables']['order_deliveries']['Insert'];
 export type ProductInsert = Database['public']['Tables']['products']['Insert'];
 export type JobApplicationInsert = Database['public']['Tables']['job_applications']['Insert'];
+export type ProductionTaskInsert = Database['public']['Tables']['production_tasks']['Insert'];

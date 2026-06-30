@@ -1,13 +1,14 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode, ClipboardList } from "lucide-react";
 import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
 import { updateOrderStatus, deleteOrder, clearAdminCache, restoreOrder, assignDesigner } from "@/utils/adminApi";
 import { EditOrderModal } from "./EditOrderModal";
+import { ProductionScheduleModal } from "./ProductionScheduleModal";
 import { submitPOSOrder } from "@/utils/api";
 
 interface OrderHistoryProps {
@@ -100,6 +101,7 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
   const [cabangFilter, setCabangFilter] = useState<string>('all');
   const [sortMode, setSortMode] = useState<string>('priority');
   const [editingOrder, setEditingOrder] = useState<OrderHistoryItem | null>(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
 
   // Designer Assignment State
   const DEFAULT_DESIGNERS = ["Fitri", "Windy", "Stevan"];
@@ -601,9 +603,21 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
             )}
             <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
           </div>
-          <Button variant="outline" size="sm" onClick={() => { refreshFromAPI(); }} disabled={isLoading} title="Refresh dari server">
-            <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowScheduleModal(true)}
+              title="Jadwal Produksi"
+              className="gap-1.5 text-xs font-semibold"
+            >
+              <ClipboardList className="w-4 h-4" />
+              <span className="hidden sm:inline">Jadwal Produksi</span>
+            </Button>
+            <Button variant="outline" size="sm" onClick={() => { refreshFromAPI(); }} disabled={isLoading} title="Refresh dari server">
+              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            </Button>
+          </div>
         </div>
 
         {/* Search */}
@@ -1020,6 +1034,17 @@ export function OrderHistory({ onBack, cashierName }: OrderHistoryProps) {
         isOpen={editingOrder !== null}
         onClose={() => setEditingOrder(null)}
         onSave={handleSaveEdit}
+      />
+
+      <ProductionScheduleModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        orders={orders}
+        cashierName={cashierName || ''}
+        cabang={orders[0]?.cabang || 'Cabang Belwis'}
+        logoBelwis={logoBelwis}
+        logoUnila={logoUnila}
+        logoTidurlah={logoTidurlah}
       />
     </div>
   );
