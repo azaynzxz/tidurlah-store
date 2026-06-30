@@ -887,25 +887,18 @@ export function ProductionScheduleModal({
                 CETAK: {formatTimestamp()}
               </div>
 
-              {!isUnila ? (
-                logoTidurlah && (
-                  <img
-                    src={logoTidurlah}
-                    alt="Tidurlah Grafika"
-                    style={{
-                      maxHeight: "26px",
-                      width: "auto",
-                      objectFit: "contain",
-                      margin: "0 auto",
-                      display: "block",
-                    }}
-                  />
-                )
-              ) : (
-                <div style={{ textAlign: "center", fontSize: "9.5px", borderTop: "1px dashed #000000", paddingTop: "6px", marginTop: "4px" }}>
-                  <div style={{ fontWeight: "700", color: "#000000" }}>Kritik & Saran Layanan (CS):</div>
-                  <div style={{ fontWeight: "800", color: "#000000", marginTop: "1px" }}>+62 857-1802-5415</div>
-                </div>
+              {!isUnila && logoTidurlah && (
+                <img
+                  src={logoTidurlah}
+                  alt="Tidurlah Grafika"
+                  style={{
+                    maxHeight: "26px",
+                    width: "auto",
+                    objectFit: "contain",
+                    margin: "0 auto",
+                    display: "block",
+                  }}
+                />
               )}
             </div>
           </div>
