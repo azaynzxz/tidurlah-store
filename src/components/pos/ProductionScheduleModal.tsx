@@ -417,39 +417,29 @@ export function ProductionScheduleModal({
           </div>
         )}
         {task.deadline && (
-          <div style={{ marginTop: "5px", display: "block" }}>
-            <span
-              style={{
-                fontSize: "10px",
-                color: "#000000",
-                fontWeight: "800",
-                backgroundColor: "#f3f4f6",
-                padding: "2px 5px",
-                borderRadius: "2px",
-                display: "inline-block",
-                border: "1px solid #000000",
-                lineHeight: "1.2",
-              }}
-            >
-              DEADLINE: {formatDeadlineShort(task.deadline)}
-            </span>
+          <div
+            style={{
+              fontSize: "11px",
+              color: "#000000",
+              marginTop: "4px",
+              fontWeight: "800",
+              lineHeight: "1.3",
+            }}
+          >
+            DEADLINE: {formatDeadlineShort(task.deadline)}
           </div>
         )}
         {!task.order_id && (
-          <div style={{ marginTop: "4px", display: "block" }}>
-            <span
-              style={{
-                fontSize: "9px",
-                fontWeight: "800",
-                color: "#000000",
-                border: "1px solid #000000",
-                padding: "1px 4px",
-                display: "inline-block",
-                lineHeight: "1.2",
-              }}
-            >
-              [CUSTOM]
-            </span>
+          <div
+            style={{
+              fontSize: "10px",
+              fontWeight: "800",
+              color: "#000000",
+              marginTop: "2px",
+              lineHeight: "1.2",
+            }}
+          >
+            [CUSTOM TASK]
           </div>
         )}
       </div>
