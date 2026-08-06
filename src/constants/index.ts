@@ -85,7 +85,7 @@ export const GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpw
 export const POS_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbw0cpwKU0n3iS-HK9uRUlhkwZUUCRPGnPYI512cch3G8wIi06WzvvYw0UWiqXtWXQZIvg/exec';
 
 // @deprecated — Google Sheets dual-write. Will be removed after Supabase migration is verified.
-export const LOKER_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzuEkPrBkPbhKZDwD5AtnNdx-_oxiElFcNP5LfKNdmu7AzMBeGcwqXwuoRenSHNRq0u/exec';
+export const LOKER_GOOGLE_SHEETS_URL = 'https://script.google.com/macros/s/AKfycbzSaagXuJc7nLHya80XHnbnA7afnvBKJHYiaTXnPM8zlKxqF4NIDfHb6Ju2m71PCvF6/exec';
 
 // WhatsApp number
 export const WHATSAPP_NUMBER = '6285172157808';
