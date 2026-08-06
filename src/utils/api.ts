@@ -441,10 +441,6 @@ export interface JobApplicationData {
 // Progress callback type
 export type ProgressCallback = (progress: number, message: string) => void;
 
-/**
- * Job Application submission function with progress tracking
- * Submits job application data directly to Supabase and uploads files to Supabase Storage.
- */
 export const submitJobApplication = async (
   applicationData: JobApplicationData,
   onProgress?: ProgressCallback
@@ -460,14 +456,12 @@ export const submitJobApplication = async (
 
     const startProgress = () => {
       progressInterval = setInterval(() => {
-        if (onProgress && currentProgress < 95) {
-          // Smooth progress animation
+        if (onProgress && currentProgress < 85) {
           let increment = 0.5;
           if (currentProgress >= 20 && currentProgress < 60) increment = 1.0;
           else if (currentProgress >= 60 && currentProgress < 85) increment = 0.8;
-          else if (currentProgress >= 85) increment = 0.3;
-
-          currentProgress = Math.min(currentProgress + increment, 95);
+          
+          currentProgress = Math.min(currentProgress + increment, 85);
           onProgress(Math.round(currentProgress), 'Mengunggah berkas lamaran...');
         }
       }, 80);
@@ -475,16 +469,53 @@ export const submitJobApplication = async (
 
     startProgress();
 
-    // Call Supabase service (inserts row + uploads attachments directly to Storage)
-    const applicationId = await submitApplicationToSupabase({
-      fullName: applicationData.nama,
+    // Convert files to base64
+    const fileToBase64 = (file: File): Promise<string> => {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => {
+          const result = reader.result as string;
+          // Extract base64 part
+          const base64 = result.split(',')[1];
+          resolve(base64);
+        };
+        reader.onerror = error => reject(error);
+      });
+    };
+
+    const cvBase64 = await fileToBase64(applicationData.cv);
+    let portfolioBase64 = '';
+    
+    if (applicationData.portfolio) {
+      portfolioBase64 = await fileToBase64(applicationData.portfolio);
+    }
+
+    // Prepare payload for Google Apps Script
+    const payload = {
+      nama: applicationData.nama,
       email: applicationData.email,
-      phone: applicationData.nomor,
-      position: applicationData.posisi || '',
-      infoSource: applicationData.source || '',
-      address: applicationData.alamat || '',
-      cv: applicationData.cv,
-      portfolio: applicationData.portfolio || undefined,
+      nomor: applicationData.nomor,
+      source: applicationData.source || '',
+      alamat: applicationData.alamat || '',
+      posisi: applicationData.posisi || '',
+      cvBase64: cvBase64,
+      cvMimeType: applicationData.cv.type,
+      cvFileName: applicationData.cv.name,
+      fileBase64: portfolioBase64,
+      fileMimeType: applicationData.portfolio?.type || '',
+      fileName: applicationData.portfolio?.name || ''
+    };
+
+    // Submit to Google Apps Script
+    const response = await fetch(LOKER_GOOGLE_SHEETS_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      cache: 'no-cache',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(payload),
     });
 
     if (progressInterval) {
@@ -509,10 +540,18 @@ export const submitJobApplication = async (
     // Wait slightly to show 100% completion in UI
     await new Promise(resolve => setTimeout(resolve, 600));
 
-    return { success: !!applicationId };
+    // For no-cors mode, we just assume success if no error was thrown
+    return { success: true };
   } catch (error: unknown) {
     console.error('Error submitting job application:', error);
-    throw error;
+    const fetchMsg = error instanceof Error ? error.message : String(error);
+    if (fetchMsg.includes('403') || fetchMsg.includes('Forbidden')) {
+      throw new Error('Akses ditolak. Pastikan Google Apps Script sudah di-deploy dengan pengaturan "Who has access: Anyone"');
+    }
+    if (fetchMsg.includes('Failed to fetch') || fetchMsg.includes('NetworkError')) {
+      throw new Error('Gagal terhubung ke server. Periksa koneksi internet Anda atau URL API.');
+    }
+    throw new Error(`Gagal mengirim lamaran: ${fetchMsg || 'Terjadi kesalahan tidak diketahui'}`);
   }
 };
 
