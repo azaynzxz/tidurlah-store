@@ -510,13 +510,17 @@ export const submitJobApplication = async (
     // Submit to Google Apps Script
     const response = await fetch(LOKER_GOOGLE_SHEETS_URL, {
       method: 'POST',
-      mode: 'no-cors',
-      cache: 'no-cache',
       headers: {
-        'Content-Type': 'application/json',
+        'Content-Type': 'text/plain;charset=utf-8',
       },
       body: JSON.stringify(payload),
     });
+
+    const result = await response.json();
+    
+    if (result.status !== 'success') {
+       throw new Error(result.message || 'Unknown error from Apps Script');
+    }
 
     if (progressInterval) {
       clearInterval(progressInterval);
