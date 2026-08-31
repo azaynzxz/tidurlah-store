@@ -167,7 +167,7 @@ const BlogSidebarWidgets = () => {
           />
         </div>
         <p className="text-sm text-gray-600 mt-3 leading-relaxed">
-          Jl. Perum Pemda Wayhui, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
+          Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
         </p>
       </div>
 

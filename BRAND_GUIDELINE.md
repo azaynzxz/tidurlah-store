@@ -25,7 +25,7 @@ While ID Card Lampung focuses on ID card products, Tidurlah Grafika is for merch
 - **Website**: https://tidurlah.com
 
 ### Contact Information
-- **Address**: Perum. Korpri Raya, Blok D3. No. 3, Sukarame, Bandar Lampung
+- **Address**: Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
 - **WhatsApp**: 085172157808 / 6285172157808
 - **Instagram**: @tidurlah_grafika
 - **Google Maps**: [View Location](https://maps.app.goo.gl/VUTUHS7BXC48fr2s7)
@@ -178,7 +178,7 @@ ID Card Lampung specializes exclusively in ID card products and related services
    - Facebook Messages
 
 3. **In-Person**
-   - Store Location: Perum. Korpri Raya, Blok D3. No. 3, Sukarame, Bandar Lampung
+   - Store Location: Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
 
 ### Service Standards
 - Responsive communication via WhatsApp

@@ -35,6 +35,18 @@ Allow: /loker/*
 Disallow: /cashier
 Disallow: /receipt
 
+# AI Crawlers
+User-agent: ClaudeBot
+Allow: /
+Allow: /blog
+Allow: /blog/*
+Allow: /survey
+Allow: /hello
+Allow: /loker
+Allow: /loker/*
+Disallow: /cashier
+Disallow: /receipt
+
 # Social media crawlers
 User-agent: Twitterbot
 Allow: /

@@ -24,6 +24,7 @@ import Layout from "./pages/Layout";
 import Katalog from "./pages/Katalog";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
+import About from "./pages/About";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
@@ -85,6 +86,7 @@ const App = () => (
                   } />
                   <Route path="/login" element={<Login />} />
                   <Route path="/login-blocked" element={<LoginBlocked />} />
+                  <Route path="/about" element={<About />} />
                   {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>

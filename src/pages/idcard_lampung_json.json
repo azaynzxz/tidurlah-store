@@ -8,6 +8,100 @@
     "h1": "Karena kami menawarkan bahan terbaik, desain kreatif, dan layanan cepat. Hubungi kami sekarang untuk mewujudkan desain impian Anda dengan hasil memuaskan!",
     "cta": "Hubungi Admin Sekarang!"
   },
+  "about": {
+    "seo": {
+      "title": "Tentang Kami | Tidurlah Grafika & ID Card Lampung",
+      "description": "Cerita dibalik Tidurlah Grafika dan ID Card Lampung. Kami menawarkan bahan terbaik, desain kreatif, dan layanan cepat.",
+      "keywords": "percetakan lampung, id card lampung, cetak id card, lanyard bandar lampung, tidurlah grafika"
+    },
+    "mission": "Menyediakan layanan cetak dan merchandise berkualitas tinggi, kreatif, dan cepat untuk pelanggan di Lampung dan sekitarnya dengan fokus utama pada kepuasan pelanggan dan keunggulan produk.",
+    "vision": "Menjadi penyedia layanan percetakan dan merchandise terdepan di Lampung yang dikenal luas atas kualitas premium, kreativitas tanpa batas, serta pelayanan pelanggan terbaik.",
+    "company_quote": "Cetak apa aja, Tidurlah Grafika! ID Card Cepat Jalur Pintas.",
+    "the_story": {
+      "title": "The Story",
+      "subtitle": "Apa yang kami yakini?",
+      "content": "Kami percaya bahwa setiap karya cetak membawa identitas dan makna. Misi kami adalah menghadirkan produk berkualitas premium dengan desain kreatif dan layanan yang cepat untuk setiap pelanggan. Cetak apa aja, Tidurlah Grafika! ID Card Cepat Jalur Pintas."
+    },
+    "the_characters": {
+      "title": "The Characters",
+      "subtitle": "Siapa di balik brand ini?",
+      "team": [
+        {
+          "name": "Stevan Ronald Gulo, S.Si",
+          "role": "Founder & Owner",
+          "description": "Berasal dari Pulau Nias dan merupakan lulusan program studi Kimia dari ITERA. Beliau membangun Tidurlah Grafika dengan semangat inovasi dan komitmen terhadap kualitas layanan cetak premium."
+        },
+        {
+          "name": "Achmad",
+          "role": "Co-Founder",
+          "description": "Berperan utama dalam bidang IT dan Marketing. Mengembangkan ekosistem digital untuk memastikan kemudahan pemesanan 24/7 dan memberikan pengalaman terbaik bagi pelanggan."
+        }
+      ]
+    },
+    "the_conflict": {
+      "title": "The Conflict",
+      "subtitle": "Mengapa kami memulai perusahaan ini?",
+      "content": "Bermula dari keresahan akan sulitnya mencari tempat cetak ID Card dan merchandise yang cepat, berkualitas, namun tetap terjangkau di Bandar Lampung. Kami melihat banyak kebutuhan dari organisasi dan bisnis yang memerlukan layanan cetak yang bisa diandalkan kapan saja."
+    },
+    "the_resolution": {
+      "title": "The Resolution",
+      "subtitle": "Bagaimana kami menyelesaikannya?",
+      "features": [
+        {
+          "title": "Kualitas Premium",
+          "description": "Menggunakan bahan terbaik untuk hasil yang memuaskan dan tahan lama.",
+          "icon": "award"
+        },
+        {
+          "title": "Desain Kreatif",
+          "description": "Menawarkan solusi desain inovatif yang estetik dan menarik.",
+          "icon": "palette"
+        },
+        {
+          "title": "Layanan Cepat",
+          "description": "Pengerjaan efisien 1-3 hari dengan jaminan hasil berkualitas.",
+          "icon": "zap"
+        },
+        {
+          "title": "Teknologi Modern",
+          "description": "Pemesanan otomatis dan terintegrasi 24/7 melalui website.",
+          "icon": "laptop"
+        }
+      ]
+    },
+    "the_sequel": {
+      "title": "The Sequel",
+      "subtitle": "Apa visi kami ke depan?",
+      "content": "Visi kami adalah menjadi penyedia layanan percetakan dan merchandise terdepan di Lampung, dikenal luas karena kualitas, kreativitas, dan layanan pelanggan yang luar biasa. Kami terus berinovasi untuk memberikan platform cetak digital terbaik untuk seluruh Indonesia."
+    },
+    "the_dialogue": {
+      "title": "The Dialogue",
+      "subtitle": "Seperti apa gaya bahasa kami?",
+      "description": "Professional yet approachable. Youthful, friendly, and customer-focused.",
+      "socials": [
+        {
+          "platform": "Instagram",
+          "handle": "@idcard_lampung"
+        },
+        {
+          "platform": "TikTok",
+          "handle": "@idcard_lampung"
+        }
+      ]
+    },
+    "the_setting": {
+      "title": "The Setting",
+      "subtitle": "Di mana kami berada?",
+      "address": "Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365",
+      "embed_url": "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3972.026!2d105.271!3d-5.382!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2z!5e0!3m2!1sid!2sid!4v1700000000000!5m2!1sid!2sid"
+    },
+    "the_credits": {
+      "title": "The Credits",
+      "subtitle": "Siap untuk mulai mencetak?",
+      "cta_text": "Hubungi Admin Sekarang",
+      "whatsapp": "62872157808"
+    }
+  },
   "buttons": {
     "contact": {
       "whatsapp": {
@@ -16,7 +110,7 @@
       },
       "pricelist": {
         "text": "pricelists",
-        "url": "https://tidurlah.com"
+        "url": "https://idcardlampung.com"
       }
     },
     "social_media": {
@@ -36,7 +130,7 @@
         },
         {
           "platform": "Google Maps",
-          "url": "https://maps.app.goo.gl/VUTUHS7BXC48fr2s7"
+          "url": "https://maps.app.goo.gl/EPsPTz73sbJr3sxBA"
         }
       ]
     },

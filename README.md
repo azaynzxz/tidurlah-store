@@ -323,7 +323,7 @@ This project is proprietary software for **Tidurlah Grafika**. All rights reserv
 - **Website**: [tidurlah.com](https://tidurlah.com)
 - **WhatsApp**: [085172157808](https://wa.me/6285172157808)
 - **Instagram**: [@tidurlah_grafika](https://instagram.com/tidurlah_grafika)
-- **Location**: Perum. Korpri Raya, Blok D3 No. 3, Sukarame, Bandar Lampung
+- **Location**: Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
 
 ## 🎨 Brand Colors
 
