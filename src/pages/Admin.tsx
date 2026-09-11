@@ -26,6 +26,16 @@ export default function Admin() {
     const navigate = useNavigate();
     const { profile, signOut } = useAuth();
 
+    // The user explicitly requested to restrict this to "Zayn and Stevan"
+    if (profile && !["Zayn", "Stevan", "Super Admin"].includes(profile.full_name)) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col gap-4">
+                <p className="text-gray-600">Anda tidak memiliki akses ke halaman ini.</p>
+                <Button onClick={() => navigate('/cashier')}>Kembali ke Kasir</Button>
+            </div>
+        );
+    }
+
     const handleLogout = async () => {
         await signOut();
         navigate('/login');

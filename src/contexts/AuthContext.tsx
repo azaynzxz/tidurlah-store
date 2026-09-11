@@ -120,14 +120,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             const { profile, error: fetchErr } = await fetchProfile(session.user.id);
             if (!isSubscribed) return;
 
-            const errorMsg = fetchErr 
+            const errorMsg = fetchErr
               ? `Gagal memuat profil dari database: ${fetchErr}`
               : (profile ? null : 'Profil tidak ditemukan di database. Hubungi admin.');
+
+            // Merge with user_metadata in case roles are assigned directly via Supabase Auth Dashboard
+            const mergedProfile = {
+              ...profile,
+              role: session.user.user_metadata?.role || profile?.role || 'cashier',
+              full_name: session.user.user_metadata?.full_name || profile?.full_name || session.user.email,
+              id: session.user.id,
+            } as Profile;
 
             safeSetState({
               user: session.user,
               session,
-              profile,
+              profile: mergedProfile,
               isLoading: false,
               authError: errorMsg,
             });
@@ -173,14 +181,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const { profile, error: fetchErr } = await fetchProfile(data.user.id);
         localStorage.setItem('session_login_time', Date.now().toString());
 
-        const errorMsg = fetchErr 
+        const errorMsg = fetchErr
           ? `Login berhasil, tetapi gagal memuat profil: ${fetchErr}`
           : (profile ? null : 'Login berhasil, tapi profil tidak ditemukan di database. Hubungi admin.');
+
+        // Merge with user_metadata
+        const mergedProfile = {
+          ...profile,
+          role: data.user.user_metadata?.role || profile?.role || 'cashier',
+          full_name: data.user.user_metadata?.full_name || profile?.full_name || data.user.email,
+          id: data.user.id,
+        } as Profile;
 
         safeSetState({
           user: data.user,
           session: data.session,
-          profile,
+          profile: mergedProfile,
           isLoading: false,
           authError: errorMsg,
         });
@@ -226,7 +242,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         const loginTime = parseInt(loginTimeStr, 10);
         const elapsed = Date.now() - loginTime;
         const EIGHT_HOURS = 8 * 60 * 60 * 1000;
-        
+
         if (elapsed >= EIGHT_HOURS) {
           console.log('[Auth] Session expired (8-hour shift limit reached). Logging out...');
           signOut();
