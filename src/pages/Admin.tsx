@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut, ArrowLeft } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
@@ -29,9 +29,47 @@ export default function Admin() {
     // The user explicitly requested to restrict this to "Zayn and Stevan"
     if (profile && !["Zayn", "Stevan", "Super Admin"].includes(profile.full_name)) {
         return (
-            <div className="min-h-screen flex items-center justify-center bg-gray-50 flex-col gap-4">
-                <p className="text-gray-600">Anda tidak memiliki akses ke halaman ini.</p>
-                <Button onClick={() => navigate('/cashier')}>Kembali ke Kasir</Button>
+            <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center px-4">
+                <div className="max-w-md w-full text-center">
+                    {/* Header with Logo */}
+                    <div className="mb-8">
+                        <img
+                            src="/product-image/Tidurlah Logo Horizontal.png"
+                            alt="TIDURLAH GRAFIKA"
+                            className="h-12 mx-auto mb-4 object-contain"
+                        />
+                    </div>
+
+                    <div className="bg-white rounded-2xl shadow-xl p-8 mb-6">
+                        <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                            Akses Ditolak
+                        </h1>
+                        <p className="text-gray-600 mb-8 leading-relaxed">
+                            Maaf, Anda tidak memiliki hak akses administrator untuk membuka halaman ini.
+                        </p>
+
+                        <div className="space-y-3">
+                            <button
+                                onClick={() => navigate('/cashier')}
+                                className="w-full bg-[#FF5E01] hover:bg-[#e54d00] text-white font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2 shadow-lg hover:shadow-xl transform hover:scale-[1.02]"
+                            >
+                                <ArrowLeft className="h-5 w-5" />
+                                Kembali ke Kasir
+                            </button>
+
+                            <button
+                                onClick={async () => {
+                                    await signOut();
+                                    navigate('/login');
+                                }}
+                                className="w-full bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium py-3 px-6 rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+                            >
+                                <LogOut className="h-5 w-5" />
+                                Ganti Akun / Logout
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     }
