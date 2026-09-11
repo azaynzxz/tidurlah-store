@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut, ClipboardCheck } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
 import { ProductsTab } from "@/components/admin/ProductsTab";
 import { PromosTab } from "@/components/admin/PromosTab";
+import { ClosingUpdateTab } from "@/components/admin/ClosingUpdateTab";
 import { POSHeader } from "@/components/pos/POSHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrderNotifications } from "@/hooks/useOrderNotifications";
@@ -17,6 +18,7 @@ const TABS = [
     { id: 'products', label: 'Produk', icon: Package },
     { id: 'promos', label: 'Promo', icon: Tag },
     { id: 'reports', label: 'Laporan', icon: FileText },
+    { id: 'closing', label: 'Closing', icon: ClipboardCheck },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -41,19 +43,19 @@ export default function Admin() {
             <div className="bg-white border-b shadow-sm sticky top-0 z-30">
                 <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4 pt-2">
                     <div className="flex gap-1 overflow-x-auto flex-nowrap no-scrollbar pb-1 select-none flex-1 -mb-px">
-                    {TABS.map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id)}
-                            className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-b-2 transition-colors flex-shrink-0 ${activeTab === tab.id
-                                ? 'border-[#FF5E01] text-[#FF5E01]'
-                                : 'border-transparent text-gray-500 hover:text-gray-700'
-                                }`}
-                        >
-                            <tab.icon className="w-4 h-4" />
-                            <span>{tab.label}</span>
-                        </button>
-                    ))}
+                        {TABS.map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id)}
+                                className={`flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs sm:text-sm font-medium border-b-2 transition-colors flex-shrink-0 ${activeTab === tab.id
+                                    ? 'border-[#FF5E01] text-[#FF5E01]'
+                                    : 'border-transparent text-gray-500 hover:text-gray-700'
+                                    }`}
+                            >
+                                <tab.icon className="w-4 h-4" />
+                                <span>{tab.label}</span>
+                            </button>
+                        ))}
                     </div>
                     <Button
                         variant="ghost"
@@ -75,6 +77,7 @@ export default function Admin() {
                 {activeTab === 'products' && <ProductsTab />}
                 {activeTab === 'promos' && <PromosTab />}
                 {activeTab === 'reports' && <ReportsTab />}
+                {activeTab === 'closing' && <ClosingUpdateTab />}
             </div>
         </div>
     );
