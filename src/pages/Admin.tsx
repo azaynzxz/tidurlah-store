@@ -1,13 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut, ClipboardCheck } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { ReportsTab } from "@/components/admin/ReportsTab";
 import { ProductsTab } from "@/components/admin/ProductsTab";
 import { PromosTab } from "@/components/admin/PromosTab";
-import { ClosingUpdateTab } from "@/components/admin/ClosingUpdateTab";
 import { POSHeader } from "@/components/pos/POSHeader";
 import { useAuth } from "@/contexts/AuthContext";
 import { useOrderNotifications } from "@/hooks/useOrderNotifications";
@@ -18,7 +17,6 @@ const TABS = [
     { id: 'products', label: 'Produk', icon: Package },
     { id: 'promos', label: 'Promo', icon: Tag },
     { id: 'reports', label: 'Laporan', icon: FileText },
-    { id: 'closing', label: 'Closing', icon: ClipboardCheck },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -77,7 +75,6 @@ export default function Admin() {
                 {activeTab === 'products' && <ProductsTab />}
                 {activeTab === 'promos' && <PromosTab />}
                 {activeTab === 'reports' && <ReportsTab />}
-                {activeTab === 'closing' && <ClosingUpdateTab />}
             </div>
         </div>
     );

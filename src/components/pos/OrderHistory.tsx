@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode, ClipboardList } from "lucide-react";
+import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode, ClipboardList, ClipboardCheck } from "lucide-react";
 import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
@@ -9,6 +9,7 @@ import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
 import { updateOrderStatus, deleteOrder, clearAdminCache, restoreOrder, assignDesigner } from "@/utils/adminApi";
 import { EditOrderModal } from "./EditOrderModal";
 import { ProductionScheduleModal } from "./ProductionScheduleModal";
+import { ClosingUpdateModal } from "./ClosingUpdateModal";
 import { submitPOSOrder } from "@/utils/api";
 
 interface OrderHistoryProps {
@@ -103,6 +104,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
   const [sortMode, setSortMode] = useState<string>('priority');
   const [editingOrder, setEditingOrder] = useState<OrderHistoryItem | null>(null);
   const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [showClosingModal, setShowClosingModal] = useState(false);
 
   // Designer Assignment State
   const DEFAULT_DESIGNERS = ["Fitri", "Windy", "Stevan"];
@@ -132,7 +134,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     try {
       const logoT = await convertImageToBase64('/product-image/Tidurlah Logo Horizontal.png');
       setLogoTidurlah(logoT);
-      
+
       const logoU = await convertImageToBase64('/logo_nono.jpeg');
       setLogoUnila(logoU);
 
@@ -163,9 +165,9 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
       const activeChannel = forceChannel ?? channelFilter;
       const chParam = activeChannel === 'trash' ? 'trash' : undefined;
       const searchParam = forceSearch !== undefined ? forceSearch : search;
-      
-      const result = await fetchOrderHistory({ 
-        limit: PAGE_SIZE, 
+
+      const result = await fetchOrderHistory({
+        limit: PAGE_SIZE,
         channel: chParam,
         search: searchParam.trim() || undefined
       });
@@ -241,8 +243,8 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
   // Compute status counts for filter badges
   const statusCounts = useMemo(() => {
     // Filter orders by active branch first so the count badges align with the branch selection
-    const branchFiltered = cabangFilter === 'all' 
-      ? orders 
+    const branchFiltered = cabangFilter === 'all'
+      ? orders
       : orders.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
 
     const counts: Record<string, number> = { all: branchFiltered.length, pending: 0, partial: 0, done: 0 };
@@ -275,9 +277,9 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(o =>
-          (o.orderId || '').toLowerCase().includes(q) ||
-          (o.customerName || '').toLowerCase().includes(q) ||
-          String(o.customerPhone || '').includes(q)
+        (o.orderId || '').toLowerCase().includes(q) ||
+        (o.customerName || '').toLowerCase().includes(q) ||
+        String(o.customerPhone || '').includes(q)
       );
     }
 
@@ -486,9 +488,8 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     const branchName = cabang || 'Cabang Belwis';
     const isUnila = branchName.toLowerCase().includes('unila');
     return (
-      <span className={`px-1.5 py-0.5 text-[10px] rounded font-medium border ${
-        isUnila ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-sky-50 text-sky-700 border-sky-200'
-      }`}>
+      <span className={`px-1.5 py-0.5 text-[10px] rounded font-medium border ${isUnila ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-sky-50 text-sky-700 border-sky-200'
+        }`}>
         {branchName}
       </span>
     );
@@ -605,6 +606,16 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
             <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
           </div>
           <div className="flex items-center gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowClosingModal(true)}
+              title="Laporan Closing"
+              className="gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 border-blue-200 hover:bg-blue-100"
+            >
+              <ClipboardCheck className="w-4 h-4" />
+              <span className="hidden sm:inline">Laporan Closing</span>
+            </Button>
             <Button
               variant="outline"
               size="sm"
@@ -760,84 +771,43 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
           </div>
         ) : (
           <>
-          <div className={viewMode === 'list' ? "space-y-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start"}>
-            {filteredOrders.map(order => {
-              const isExpanded = expandedOrder === order.orderId;
-              return (
-                <div key={order.orderId} className="bg-white border rounded-lg shadow-sm overflow-hidden">
-                  {/* Row / Card Header */}
-                  <div
-                    className={`px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors ${viewMode === 'list' ? 'flex items-center justify-between' : 'space-y-2'}`}
-                    onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
-                  >
-                    {viewMode === 'list' ? (
-                      <>
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-1.5">
-                            <span className="font-mono text-[10px] text-gray-500 truncate">{order.orderId}</span>
-                            {getChannelBadge(order.channel)}
-                            {getCabangBadge(order.cabang)}
-                            {getStatusBadge(order.orderStatus)}
+            <div className={viewMode === 'list' ? "space-y-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start"}>
+              {filteredOrders.map(order => {
+                const isExpanded = expandedOrder === order.orderId;
+                return (
+                  <div key={order.orderId} className="bg-white border rounded-lg shadow-sm overflow-hidden">
+                    {/* Row / Card Header */}
+                    <div
+                      className={`px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors ${viewMode === 'list' ? 'flex items-center justify-between' : 'space-y-2'}`}
+                      onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
+                    >
+                      {viewMode === 'list' ? (
+                        <>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono text-[10px] text-gray-500 truncate">{order.orderId}</span>
+                              {getChannelBadge(order.channel)}
+                              {getCabangBadge(order.cabang)}
+                              {getStatusBadge(order.orderStatus)}
+                            </div>
+                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
+                              <span className="text-sm font-medium truncate flex items-center gap-1.5">
+                                {order.customerName || '-'}
+                                {order.orderStatus !== 'deleted' && (
+                                  <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
+                                    <Pencil className="w-3 h-3" />
+                                  </button>
+                                )}
+                              </span>
+                              {renderDesignerAssignment(order)}
+                              <span className="text-xs text-gray-400 hidden sm:inline">•</span>
+                              <span className="text-xs text-gray-500 hidden sm:inline">{order.itemCount || order.items?.length || 0} item</span>
+                            </div>
                           </div>
-                          <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                            <span className="text-sm font-medium truncate flex items-center gap-1.5">
-                              {order.customerName || '-'}
-                              {order.orderStatus !== 'deleted' && (
-                                <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
-                                  <Pencil className="w-3 h-3" />
-                                </button>
-                              )}
-                            </span>
-                            {renderDesignerAssignment(order)}
-                            <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                            <span className="text-xs text-gray-500 hidden sm:inline">{order.itemCount || order.items?.length || 0} item</span>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 ml-2">
-                          <span className="text-sm font-bold text-green-600 whitespace-nowrap">{formatCurrency(order.total)}</span>
-                          <button
-                            className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
-                            title="Download Struk"
-                            onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
-                            disabled={downloadingId === order.orderId}
-                          >
-                            {downloadingId === order.orderId
-                              ? <Loader2 className="w-4 h-4 animate-spin" />
-                              : <Download className="w-4 h-4" />
-                            }
-                          </button>
-                          {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                        </div>
-                      </>
-                    ) : (
-                      <>
-                        <div className="flex items-center justify-between">
-                          <span className="font-mono text-[10px] text-gray-400 truncate max-w-[120px]">{order.orderId}</span>
-                          <div className="flex gap-1">
-                            {getChannelBadge(order.channel)}
-                            {getCabangBadge(order.cabang)}
-                            {getStatusBadge(order.orderStatus)}
-                          </div>
-                        </div>
-                        <div className="flex flex-col">
-                          <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                            <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
-                              {order.customerName || '-'}
-                              {order.orderStatus !== 'deleted' && (
-                                <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
-                                  <Pencil className="w-3.5 h-3.5" />
-                                </button>
-                              )}
-                            </span>
-                            {renderDesignerAssignment(order)}
-                          </div>
-                          <span className="text-[10px] text-gray-400">{order.timestamp}</span>
-                        </div>
-                        <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-                          <span className="text-sm font-extrabold text-green-600">{formatCurrency(order.total)}</span>
-                          <div className="flex items-center gap-1.5 text-gray-400 text-[10px]">
+                          <div className="flex items-center gap-2 ml-2">
+                            <span className="text-sm font-bold text-green-600 whitespace-nowrap">{formatCurrency(order.total)}</span>
                             <button
-                              className="p-1 rounded hover:bg-gray-200 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
+                              className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
                               title="Download Struk"
                               onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
                               disabled={downloadingId === order.orderId}
@@ -847,186 +817,227 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
                                 : <Download className="w-4 h-4" />
                               }
                             </button>
-                            {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
                           </div>
-                        </div>
-                      </>
-                    )}
-                  </div>
-
-                  {/* Expanded */}
-                  {isExpanded && (
-                    <div className="border-t px-3 py-2.5 bg-gray-50 space-y-2">
-                      <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                        <div className="text-gray-500 font-semibold">Deadline</div>
-                        <div className={`font-bold ${order.deadline ? 'text-orange-600' : 'text-gray-400 italic'}`}>
-                          {order.deadline ? (() => {
-                            try {
-                              const dl = String(order.deadline).trim();
-                              const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                              // Try parsing as Date (handles ISO strings like "2026-03-02T17:00:00.000Z")
-                              const d = new Date(dl);
-                              if (!isNaN(d.getTime())) {
-                                // Use local methods to match user-entered time exactly
-                                const day = d.getDate();
-                                const month = months[d.getMonth()];
-                                const year = d.getFullYear();
-                                const hours = d.getHours();
-                                const mins = d.getMinutes();
-                                const dateStr = `${day} ${month} ${year}`;
-                                // Only show time if it's not midnight (00:00)
-                                return (hours !== 0 || mins !== 0) ? `${dateStr}, ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}` : dateStr;
-                              }
-                              return dl;
-                            } catch { return String(order.deadline); }
-                          })() : 'Belum ditentukan'}
-                        </div>
-                        <div className="text-gray-500">Kasir</div>
-                        <div>{order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}</div>
-                        {order.cabang && <><div className="text-gray-500 font-semibold">Cabang</div><div className="font-medium text-gray-800">{order.cabang}</div></>}
-                        {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
-                        {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
-                        {order.paymentMethod && <><div className="text-gray-500">Pembayaran</div><div>{order.paymentMethod}</div></>}
-                        {order.downPayment > 0 && <>
-                          <div className="text-gray-500">DP</div><div>{formatCurrency(order.downPayment)}</div>
-                          <div className="text-gray-500">Sisa</div><div className="font-medium text-red-600">{formatCurrency(order.remainingBalance)}</div>
-                        </>}
-                        {(order.delivery?.address || order.address) && (
-                          <>
-                            <div className="text-gray-500">Alamat</div>
-                            <div className="flex items-center gap-1.5 group">
-                              <span className="truncate max-w-[150px] inline-block" title={order.delivery?.address || order.address}>
-                                {order.delivery?.address || order.address}
+                        </>
+                      ) : (
+                        <>
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono text-[10px] text-gray-400 truncate max-w-[120px]">{order.orderId}</span>
+                            <div className="flex gap-1">
+                              {getChannelBadge(order.channel)}
+                              {getCabangBadge(order.cabang)}
+                              {getStatusBadge(order.orderStatus)}
+                            </div>
+                          </div>
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
+                              <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
+                                {order.customerName || '-'}
+                                {order.orderStatus !== 'deleted' && (
+                                  <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
+                                    <Pencil className="w-3.5 h-3.5" />
+                                  </button>
+                                )}
                               </span>
+                              {renderDesignerAssignment(order)}
+                            </div>
+                            <span className="text-[10px] text-gray-400">{order.timestamp}</span>
+                          </div>
+                          <div className="flex items-center justify-between pt-1 border-t border-gray-50">
+                            <span className="text-sm font-extrabold text-green-600">{formatCurrency(order.total)}</span>
+                            <div className="flex items-center gap-1.5 text-gray-400 text-[10px]">
                               <button
-                                onClick={(e) => { e.stopPropagation(); copyToClipboard(order.delivery?.address || order.address || ''); }}
-                                className="p-0.5 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600 transition-colors"
-                              >
-                                <Copy className="w-3 h-3" />
-                              </button>
-                            </div>
-                          </>
-                        )}
-                      </div>
-
-                      {order.items && order.items.length > 0 && (
-                        <div className="pt-2 border-t border-gray-200">
-                          <p className="text-xs font-medium text-gray-500 mb-1">Items:</p>
-                          {order.items.map((item, idx) => (
-                            <div key={idx} className="flex justify-between text-xs py-0.5">
-                              <span className="text-gray-700 truncate mr-2">
-                                {item.name} {item.modelCode ? `[${item.modelCode}]` : ''} ×{item.quantity}
-                              </span>
-                              <span className="text-gray-600 whitespace-nowrap">{formatCurrency(item.subtotal || item.price * item.quantity)}</span>
-                            </div>
-                          ))}
-                        </div>
-                      )}
-
-                      {/* Actions */}
-                      <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200 justify-between">
-                        {order.orderStatus === 'deleted' ? (
-                          <div className="flex gap-2 w-full">
-                            <Button size="sm" variant="outline" className="h-7 text-xs flex-1 text-blue-600" onClick={() => handleRestore(order.orderId)} disabled={updatingId === order.orderId}>
-                              {updatingId === order.orderId ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <RefreshCw className="w-3.5 h-3.5 mr-1" />} Restore
-                            </Button>
-                          </div>
-                        ) : (
-                          <>
-                            {/* Status dropdown */}
-                            <select
-                              value={(order.orderStatus || '').toLowerCase()}
-                              onChange={e => handleStatusChange(order.orderId, e.target.value)}
-                              disabled={updatingId === order.orderId}
-                              className="text-xs border rounded px-1.5 py-1 bg-white h-7 max-w-[85px] truncate cursor-pointer font-medium"
-                            >
-                              {STATUS_OPTIONS.map(s => (
-                                <option key={s.value} value={s.value}>{s.label}</option>
-                              ))}
-                            </select>
-
-                            <div className="flex items-center gap-1.5">
-                              {/* Auto-download receipt */}
-                              <Button
-                                size="sm" variant="outline" className="h-7 w-7 p-0"
-                                onClick={() => handleDownloadReceipt(order)}
-                                disabled={downloadingId === order.orderId}
+                                className="p-1 rounded hover:bg-gray-200 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
                                 title="Download Struk"
+                                onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
+                                disabled={downloadingId === order.orderId}
                               >
                                 {downloadingId === order.orderId
-                                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  : <Download className="w-3.5 h-3.5" />
+                                  ? <Loader2 className="w-4 h-4 animate-spin" />
+                                  : <Download className="w-4 h-4" />
                                 }
-                              </Button>
+                              </button>
+                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                            </div>
+                          </div>
+                        </>
+                      )}
+                    </div>
 
-                              {order.customerPhone && (
-                                <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-green-600 border-green-200 hover:bg-green-50" onClick={() => handleChatCustomer(order)} title="Chat WA">
-                                  <MessageCircle className="w-3.5 h-3.5" />
+                    {/* Expanded */}
+                    {isExpanded && (
+                      <div className="border-t px-3 py-2.5 bg-gray-50 space-y-2">
+                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+                          <div className="text-gray-500 font-semibold">Deadline</div>
+                          <div className={`font-bold ${order.deadline ? 'text-orange-600' : 'text-gray-400 italic'}`}>
+                            {order.deadline ? (() => {
+                              try {
+                                const dl = String(order.deadline).trim();
+                                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+                                // Try parsing as Date (handles ISO strings like "2026-03-02T17:00:00.000Z")
+                                const d = new Date(dl);
+                                if (!isNaN(d.getTime())) {
+                                  // Use local methods to match user-entered time exactly
+                                  const day = d.getDate();
+                                  const month = months[d.getMonth()];
+                                  const year = d.getFullYear();
+                                  const hours = d.getHours();
+                                  const mins = d.getMinutes();
+                                  const dateStr = `${day} ${month} ${year}`;
+                                  // Only show time if it's not midnight (00:00)
+                                  return (hours !== 0 || mins !== 0) ? `${dateStr}, ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}` : dateStr;
+                                }
+                                return dl;
+                              } catch { return String(order.deadline); }
+                            })() : 'Belum ditentukan'}
+                          </div>
+                          <div className="text-gray-500">Kasir</div>
+                          <div>{order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}</div>
+                          {order.cabang && <><div className="text-gray-500 font-semibold">Cabang</div><div className="font-medium text-gray-800">{order.cabang}</div></>}
+                          {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
+                          {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
+                          {order.paymentMethod && <><div className="text-gray-500">Pembayaran</div><div>{order.paymentMethod}</div></>}
+                          {order.downPayment > 0 && <>
+                            <div className="text-gray-500">DP</div><div>{formatCurrency(order.downPayment)}</div>
+                            <div className="text-gray-500">Sisa</div><div className="font-medium text-red-600">{formatCurrency(order.remainingBalance)}</div>
+                          </>}
+                          {(order.delivery?.address || order.address) && (
+                            <>
+                              <div className="text-gray-500">Alamat</div>
+                              <div className="flex items-center gap-1.5 group">
+                                <span className="truncate max-w-[150px] inline-block" title={order.delivery?.address || order.address}>
+                                  {order.delivery?.address || order.address}
+                                </span>
+                                <button
+                                  onClick={(e) => { e.stopPropagation(); copyToClipboard(order.delivery?.address || order.address || ''); }}
+                                  className="p-0.5 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600 transition-colors"
+                                >
+                                  <Copy className="w-3 h-3" />
+                                </button>
+                              </div>
+                            </>
+                          )}
+                        </div>
+
+                        {order.items && order.items.length > 0 && (
+                          <div className="pt-2 border-t border-gray-200">
+                            <p className="text-xs font-medium text-gray-500 mb-1">Items:</p>
+                            {order.items.map((item, idx) => (
+                              <div key={idx} className="flex justify-between text-xs py-0.5">
+                                <span className="text-gray-700 truncate mr-2">
+                                  {item.name} {item.modelCode ? `[${item.modelCode}]` : ''} ×{item.quantity}
+                                </span>
+                                <span className="text-gray-600 whitespace-nowrap">{formatCurrency(item.subtotal || item.price * item.quantity)}</span>
+                              </div>
+                            ))}
+                          </div>
+                        )}
+
+                        {/* Actions */}
+                        <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200 justify-between">
+                          {order.orderStatus === 'deleted' ? (
+                            <div className="flex gap-2 w-full">
+                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 text-blue-600" onClick={() => handleRestore(order.orderId)} disabled={updatingId === order.orderId}>
+                                {updatingId === order.orderId ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <RefreshCw className="w-3.5 h-3.5 mr-1" />} Restore
+                              </Button>
+                            </div>
+                          ) : (
+                            <>
+                              {/* Status dropdown */}
+                              <select
+                                value={(order.orderStatus || '').toLowerCase()}
+                                onChange={e => handleStatusChange(order.orderId, e.target.value)}
+                                disabled={updatingId === order.orderId}
+                                className="text-xs border rounded px-1.5 py-1 bg-white h-7 max-w-[85px] truncate cursor-pointer font-medium"
+                              >
+                                {STATUS_OPTIONS.map(s => (
+                                  <option key={s.value} value={s.value}>{s.label}</option>
+                                ))}
+                              </select>
+
+                              <div className="flex items-center gap-1.5">
+                                {/* Auto-download receipt */}
+                                <Button
+                                  size="sm" variant="outline" className="h-7 w-7 p-0"
+                                  onClick={() => handleDownloadReceipt(order)}
+                                  disabled={downloadingId === order.orderId}
+                                  title="Download Struk"
+                                >
+                                  {downloadingId === order.orderId
+                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    : <Download className="w-3.5 h-3.5" />
+                                  }
+                                </Button>
+
+                                {order.customerPhone && (
+                                  <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-green-600 border-green-200 hover:bg-green-50" onClick={() => handleChatCustomer(order)} title="Chat WA">
+                                    <MessageCircle className="w-3.5 h-3.5" />
+                                  </Button>
+                                )}
+
+                                <Button
+                                  size="sm" variant="outline" className="h-7 w-7 p-0 text-orange-600 border-orange-200 hover:bg-orange-50"
+                                  onClick={() => handleDownloadReceipt(order, true)}
+                                  disabled={downloadingId === order.orderId}
+                                  title="Struk QRIS"
+                                >
+                                  {downloadingId === order.orderId
+                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                    : <QrCode className="w-3.5 h-3.5" />
+                                  }
+                                </Button>
+                              </div>
+
+                              {/* Delete */}
+                              {confirmDeleteId === order.orderId ? (
+                                <div className="flex gap-1 ml-auto">
+                                  <Button size="sm" variant="destructive" className="h-7 px-2 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
+                                    {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
+                                  </Button>
+                                  <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                                </div>
+                              ) : (
+                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 ml-auto hover:bg-red-50 hover:text-red-600" onClick={() => setConfirmDeleteId(order.orderId)} title="Hapus">
+                                  <Trash2 className="w-3.5 h-3.5" />
                                 </Button>
                               )}
+                            </>
+                          )}
+                        </div>
 
-                              <Button
-                                size="sm" variant="outline" className="h-7 w-7 p-0 text-orange-600 border-orange-200 hover:bg-orange-50"
-                                onClick={() => handleDownloadReceipt(order, true)}
-                                disabled={downloadingId === order.orderId}
-                                title="Struk QRIS"
-                              >
-                                {downloadingId === order.orderId
-                                  ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                  : <QrCode className="w-3.5 h-3.5" />
-                                }
-                              </Button>
-                            </div>
-
-                            {/* Delete */}
-                            {confirmDeleteId === order.orderId ? (
-                              <div className="flex gap-1 ml-auto">
-                                <Button size="sm" variant="destructive" className="h-7 px-2 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
-                                  {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
-                                </Button>
-                                <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
-                              </div>
-                            ) : (
-                              <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 ml-auto hover:bg-red-50 hover:text-red-600" onClick={() => setConfirmDeleteId(order.orderId)} title="Hapus">
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </Button>
-                            )}
-                          </>
-                        )}
                       </div>
+                    )}
+                  </div>
+                );
+              })}
 
-                    </div>
-                  )}
+              {filteredOrders.length === 0 && search && (
+                <div className="text-center py-8 text-gray-400 text-sm">
+                  Tidak ditemukan "{search}"
                 </div>
-              );
-            })}
+              )}
+            </div>
 
-            {filteredOrders.length === 0 && search && (
-              <div className="text-center py-8 text-gray-400 text-sm">
-                Tidak ditemukan "{search}"
+            {/* Load More */}
+            {orders.length < totalOrders && !isLoading && (
+              <div className="text-center mt-4 mb-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={loadMoreOrders}
+                  disabled={isLoadingMore}
+                  className="text-xs"
+                >
+                  {isLoadingMore ? (
+                    <><Loader2 className="w-3 h-3 animate-spin mr-1.5" /> Memuat...</>
+                  ) : (
+                    <>Muat Lebih Banyak ({orders.length}/{totalOrders})</>
+                  )}
+                </Button>
               </div>
             )}
-          </div>
-
-          {/* Load More */}
-          {orders.length < totalOrders && !isLoading && (
-            <div className="text-center mt-4 mb-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={loadMoreOrders}
-                disabled={isLoadingMore}
-                className="text-xs"
-              >
-                {isLoadingMore ? (
-                  <><Loader2 className="w-3 h-3 animate-spin mr-1.5" /> Memuat...</>
-                ) : (
-                  <>Muat Lebih Banyak ({orders.length}/{totalOrders})</>
-                )}
-              </Button>
-            </div>
-          )}
-        </>
+          </>
         )}
       </div>
 
@@ -1047,6 +1058,10 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
         logoUnila={logoUnila}
         logoTidurlah={logoTidurlah}
       />
+
+      {showClosingModal && (
+        <ClosingUpdateModal onClose={() => setShowClosingModal(false)} />
+      )}
     </div>
   );
 }
