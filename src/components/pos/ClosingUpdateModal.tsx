@@ -3,8 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Check, Loader2, RefreshCw, Edit2, X } from "lucide-react";
+import { Copy, Check, Loader2, RefreshCw, Edit2, X, ChevronDown } from "lucide-react";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 const formatCurrency = (n: number) => `Rp ${(n || 0).toLocaleString('id-ID')}`;
@@ -29,8 +30,8 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
     const [cashSistem, setCashSistem] = useState("");
     const [isCopied, setIsCopied] = useState(false);
     const [isEditingStats, setIsEditingStats] = useState(false);
-    const [manualSelesai, setManualSelesai] = useState("");
-    const [manualBelum, setManualBelum] = useState("");
+    const [manualSelesaiIds, setManualSelesaiIds] = useState<string[] | null>(null);
+    const [manualBelumIds, setManualBelumIds] = useState<string[] | null>(null);
 
     const loadOrders = async () => {
         setIsLoading(true);
@@ -76,8 +77,24 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
 
     // Use estimated cash as placeholder or pre-fill if cashSistem is empty, but let's just use it dynamically when generating
     const displayCash = cashSistem || formatCurrency(estimatedCash);
-    const displaySelesai = manualSelesai || completedOrders.length.toString();
-    const displayBelum = manualBelum || uncompletedOrders.length.toString();
+
+    const activeSelesaiIds = manualSelesaiIds ?? completedOrders.map(o => o.orderId);
+    const activeBelumIds = manualBelumIds ?? uncompletedOrders.map(o => o.orderId);
+
+    const toggleSelesai = (id: string) => {
+        const current = manualSelesaiIds || completedOrders.map(o => o.orderId);
+        if (current.includes(id)) setManualSelesaiIds(current.filter(i => i !== id));
+        else setManualSelesaiIds([...current, id]);
+    };
+
+    const toggleBelum = (id: string) => {
+        const current = manualBelumIds || uncompletedOrders.map(o => o.orderId);
+        if (current.includes(id)) setManualBelumIds(current.filter(i => i !== id));
+        else setManualBelumIds([...current, id]);
+    };
+
+    const displaySelesai = activeSelesaiIds.length.toString();
+    const displayBelum = activeBelumIds.length.toString();
 
     const getQty = (o: OrderHistoryItem) => {
         return o.items?.reduce((sum, item) => sum + item.quantity, 0) || o.itemCount || 0;
@@ -87,10 +104,14 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
         const now = new Date();
         const dateStr = now.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
         const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' });
+
+        const finalCompleted = activeSelesaiIds.map(id => todayOrders.find(o => o.orderId === id)).filter(Boolean) as OrderHistoryItem[];
+        const finalUncompleted = activeBelumIds.map(id => todayOrders.find(o => o.orderId === id)).filter(Boolean) as OrderHistoryItem[];
+
         let text = `Closing Update Sistem - ${dateStr} ${timeStr}\n\n`;
         text += `1. Apa orderan yang sudah selesai?\n`;
-        if (completedOrders.length > 0) {
-            completedOrders.forEach((o, i) => {
+        if (finalCompleted.length > 0) {
+            finalCompleted.forEach((o, i) => {
                 text += `   ${i + 1}. ${o.customerName || 'Pelanggan'} (${getQty(o)} pcs)\n`;
             });
         } else {
@@ -98,8 +119,8 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
         }
 
         text += `2. Apa orderan yang belum selesai?\n`;
-        if (uncompletedOrders.length > 0) {
-            uncompletedOrders.forEach((o, i) => {
+        if (finalUncompleted.length > 0) {
+            finalUncompleted.forEach((o, i) => {
                 text += `   ${i + 1}. ${o.customerName || 'Pelanggan'} (${getQty(o)} pcs) - ${o.orderStatus === 'partial' ? 'DP' : 'Belum Bayar'}\n`;
             });
         } else {
@@ -113,7 +134,7 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
         text += `   ${displayCash}`;
 
         return text;
-    }, [completedOrders, uncompletedOrders, kendala, displayCash]);
+    }, [activeSelesaiIds, activeBelumIds, todayOrders, kendala, displayCash]);
 
     const handleCopy = () => {
         navigator.clipboard.writeText(generatedText);
@@ -161,12 +182,24 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
                                     <div className="flex justify-between items-center bg-green-50 px-3 py-2 rounded-md border border-green-100 min-h-[44px]">
                                         <span className="text-sm text-green-800 font-medium">Order Selesai</span>
                                         {isEditingStats ? (
-                                            <Input
-                                                value={manualSelesai}
-                                                onChange={e => setManualSelesai(e.target.value)}
-                                                placeholder={completedOrders.length.toString()}
-                                                className="w-16 h-7 text-right text-sm font-bold text-green-700 bg-white"
-                                            />
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" size="sm" className="h-7 text-xs px-2 min-w-[70px] bg-white text-green-700">
+                                                        Pilih ({activeSelesaiIds.length}) <ChevronDown className="w-3 h-3 ml-1" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
+                                                    {todayOrders.map(o => (
+                                                        <DropdownMenuCheckboxItem
+                                                            key={o.orderId}
+                                                            checked={activeSelesaiIds.includes(o.orderId)}
+                                                            onCheckedChange={() => toggleSelesai(o.orderId)}
+                                                        >
+                                                            {o.customerName || 'Pelanggan'} ({getQty(o)} pcs)
+                                                        </DropdownMenuCheckboxItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         ) : (
                                             <span className="font-bold text-green-700">{displaySelesai}</span>
                                         )}
@@ -174,12 +207,24 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
                                     <div className="flex justify-between items-center bg-orange-50 px-3 py-2 rounded-md border border-orange-100 min-h-[44px]">
                                         <span className="text-sm text-orange-800 font-medium">Order Belum Selesai (Pending/DP)</span>
                                         {isEditingStats ? (
-                                            <Input
-                                                value={manualBelum}
-                                                onChange={e => setManualBelum(e.target.value)}
-                                                placeholder={uncompletedOrders.length.toString()}
-                                                className="w-16 h-7 text-right text-sm font-bold text-orange-700 bg-white"
-                                            />
+                                            <DropdownMenu>
+                                                <DropdownMenuTrigger asChild>
+                                                    <Button variant="outline" size="sm" className="h-7 text-xs px-2 min-w-[70px] bg-white text-orange-700">
+                                                        Pilih ({activeBelumIds.length}) <ChevronDown className="w-3 h-3 ml-1" />
+                                                    </Button>
+                                                </DropdownMenuTrigger>
+                                                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
+                                                    {todayOrders.map(o => (
+                                                        <DropdownMenuCheckboxItem
+                                                            key={o.orderId}
+                                                            checked={activeBelumIds.includes(o.orderId)}
+                                                            onCheckedChange={() => toggleBelum(o.orderId)}
+                                                        >
+                                                            {o.customerName || 'Pelanggan'} ({getQty(o)} pcs)
+                                                        </DropdownMenuCheckboxItem>
+                                                    ))}
+                                                </DropdownMenuContent>
+                                            </DropdownMenu>
                                         ) : (
                                             <span className="font-bold text-orange-700">{displayBelum}</span>
                                         )}
