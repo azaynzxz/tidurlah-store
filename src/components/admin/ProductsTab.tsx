@@ -30,10 +30,12 @@ const emptyForm = {
   name: '',
   slug: '',
   image: '',
+  additional_images: [] as string[],
   description: '',
   price: 0,
   discount_price: null as number | null,
   category: 'ID Card & Lanyard',
+  price_thresholds: [] as { minQuantity: number; price: number }[],
   time: '',
   rating: 5,
   bestseller: false,
@@ -84,6 +86,35 @@ export function ProductsTab() {
     }
   }
 
+  async function handleAdditionalImageUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+      const filePath = `products/${fileName}`;
+
+      const uploadedPath = await uploadFile('products', filePath, file);
+      if (!uploadedPath) {
+        throw new Error('Upload failed');
+      }
+
+      const publicUrl = getPublicUrl('products', uploadedPath);
+      if (!publicUrl) {
+        throw new Error('Failed to get public URL');
+      }
+
+      setForm(f => ({ ...f, additional_images: [...f.additional_images, publicUrl] }));
+      toast.success('Gambar tambahan berhasil diunggah');
+    } catch (err: unknown) {
+      toast.error('Gagal mengunggah gambar tambahan: ' + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      setUploadingImage(false);
+    }
+  }
+
   function openCreate() {
     setEditingProduct(null);
     setForm({ ...emptyForm, sort_order: products.length + 1 });
@@ -96,10 +127,12 @@ export function ProductsTab() {
       name: product.name,
       slug: product.slug,
       image: product.image,
+      additional_images: product.additional_images || [],
       description: product.description || '',
       price: product.price,
       discount_price: product.discount_price,
       category: product.category,
+      price_thresholds: (product.price_thresholds as { minQuantity: number; price: number }[]) || [],
       time: product.time || '',
       rating: product.rating,
       bestseller: product.bestseller,
@@ -123,10 +156,12 @@ export function ProductsTab() {
           name: form.name,
           slug: form.slug,
           image: form.image,
+          additional_images: form.additional_images,
           description: form.description,
           price: form.price,
           discount_price: form.discount_price,
           category: form.category,
+          price_thresholds: form.price_thresholds,
           time: form.time,
           rating: form.rating,
           bestseller: form.bestseller,
@@ -142,10 +177,12 @@ export function ProductsTab() {
           name: form.name,
           slug: form.slug,
           image: form.image,
+          additional_images: form.additional_images,
           description: form.description,
           price: form.price,
           discount_price: form.discount_price,
           category: form.category,
+          price_thresholds: form.price_thresholds,
           time: form.time,
           rating: form.rating,
           bestseller: form.bestseller,
@@ -271,13 +308,13 @@ export function ProductsTab() {
                       <Package className="w-8 h-8" />
                     </div>
                   )}
-                  
+
                   {/* Badge Overlay */}
                   <div className="absolute top-1 left-1 flex flex-col gap-1 z-10">
                     {product.bestseller && <Badge variant="secondary" className="text-[9px] px-1 py-0 h-4 bg-yellow-400 text-yellow-900 border-none font-bold">Best</Badge>}
                     {!product.is_active && <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-red-50 text-red-500 border-red-200">Nonaktif</Badge>}
                   </div>
-                  
+
                   <div className="absolute bottom-1 right-1 z-10">
                     <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-white/80 backdrop-blur-xs text-gray-700">
                       #{product.sort_order}
@@ -381,7 +418,7 @@ export function ProductsTab() {
                 <Input type="number" value={form.discount_price ?? ''} onChange={e => setForm(f => ({ ...f, discount_price: e.target.value ? Number(e.target.value) : null }))} placeholder="Kosongkan jika tidak ada" className="mt-1" />
               </div>
               <div className="col-span-2">
-                <Label className="text-xs">URL Gambar</Label>
+                <Label className="text-xs">URL Gambar Utama</Label>
                 <div className="flex gap-2 mt-1">
                   <Input
                     value={form.image}
@@ -412,6 +449,104 @@ export function ProductsTab() {
                       </Button>
                     </Label>
                   </div>
+                </div>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-xs">Gambar Tambahan</Label>
+                <div className="flex flex-col gap-2 mt-1">
+                  {form.additional_images.map((img, i) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <Input
+                        value={img}
+                        onChange={e => {
+                          const newImgs = [...form.additional_images];
+                          newImgs[i] = e.target.value;
+                          setForm(f => ({ ...f, additional_images: newImgs }));
+                        }}
+                        placeholder="/product-image/... atau https://..."
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="ghost" size="sm" onClick={() => {
+                        const newImgs = form.additional_images.filter((_, idx) => idx !== i);
+                        setForm(f => ({ ...f, additional_images: newImgs }));
+                      }} className="text-red-500 hover:text-red-600 px-2 h-9 w-9">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <div className="relative">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="product-additional-image-upload"
+                      className="hidden"
+                      onChange={handleAdditionalImageUpload}
+                      disabled={uploadingImage}
+                    />
+                    <Label htmlFor="product-additional-image-upload" className="cursor-pointer">
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="h-9 px-3 w-full"
+                        disabled={uploadingImage}
+                        asChild
+                      >
+                        <span>
+                          {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin mr-2 inline" /> : <Plus className="w-4 h-4 mr-2 inline" />}
+                          Tambah Gambar Tambahan
+                        </span>
+                      </Button>
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              <div className="col-span-2">
+                <Label className="text-xs">Harga Grosir / Threshold</Label>
+                <div className="flex flex-col gap-2 mt-1">
+                  {form.price_thresholds.map((threshold, i) => (
+                    <div key={i} className="flex gap-2 items-center text-sm">
+                      <Input
+                        type="number"
+                        placeholder="Min Qty"
+                        value={threshold.minQuantity || ''}
+                        onChange={e => {
+                          const newT = [...form.price_thresholds];
+                          newT[i] = { ...newT[i], minQuantity: Number(e.target.value) };
+                          setForm(f => ({ ...f, price_thresholds: newT }));
+                        }}
+                        className="w-24"
+                      />
+                      <span className="text-gray-500 text-xs">pcs</span>
+                      <Input
+                        type="number"
+                        placeholder="Harga Satuan"
+                        value={threshold.price || ''}
+                        onChange={e => {
+                          const newT = [...form.price_thresholds];
+                          newT[i] = { ...newT[i], price: Number(e.target.value) };
+                          setForm(f => ({ ...f, price_thresholds: newT }));
+                        }}
+                        className="flex-1"
+                      />
+                      <Button type="button" variant="ghost" size="sm" onClick={() => {
+                        const newT = form.price_thresholds.filter((_, idx) => idx !== i);
+                        setForm(f => ({ ...f, price_thresholds: newT }));
+                      }} className="text-red-500 hover:text-red-600 px-2 h-9 w-9">
+                        <Trash2 className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  ))}
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="h-9 px-3 w-full"
+                    onClick={() => {
+                      setForm(f => ({ ...f, price_thresholds: [...f.price_thresholds, { minQuantity: 0, price: 0 }] }));
+                    }}
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Tambah Threshold Harga
+                  </Button>
                 </div>
               </div>
               <div className="col-span-2">

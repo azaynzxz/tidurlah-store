@@ -878,6 +878,48 @@ create policy "Staff can read application files"
       where id = auth.uid() and role in ('admin', 'cashier')
     )
   );
+
+-- ============================================================
+-- Products Storage Bucket
+-- ============================================================
+
+insert into storage.buckets (id, name, public)
+values ('products', 'products', true)
+on conflict do nothing;
+
+create policy "Public can read product images"
+  on storage.objects for select
+  using (bucket_id = 'products');
+
+create policy "Staff can upload product images"
+  on storage.objects for insert
+  with check (
+    bucket_id = 'products'
+    and exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('admin', 'cashier')
+    )
+  );
+
+create policy "Staff can update product images"
+  on storage.objects for update
+  using (
+    bucket_id = 'products'
+    and exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('admin', 'cashier')
+    )
+  );
+
+create policy "Staff can delete product images"
+  on storage.objects for delete
+  using (
+    bucket_id = 'products'
+    and exists (
+      select 1 from public.profiles
+      where id = auth.uid() and role in ('admin', 'cashier')
+    )
+  );
 -- ============================================================
 -- Seed Data: Products + Promo Codes
 -- Auto-generated from products.json and constants/index.ts
