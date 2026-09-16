@@ -299,7 +299,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     }
 
     // Validate required options for each item
-    const idCardWithCaseIds = [1, 2, 6, 7, 8];
+    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
     const stikerWithLaminationIds = [15];
 
     for (const item of items) {
@@ -376,7 +376,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     }
 
     // Validate required options for each item (same as process order)
-    const idCardWithCaseIds = [1, 2, 6, 7, 8];
+    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
     const stikerWithLaminationIds = [15];
 
     for (const item of items) {
@@ -445,7 +445,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     }
 
     // Validate required options for each item
-    const idCardWithCaseIds = [1, 2, 6, 7, 8];
+    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
     const stikerWithLaminationIds = [15];
 
     for (const item of items) {

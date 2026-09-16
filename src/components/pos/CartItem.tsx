@@ -88,7 +88,7 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
   ];
 
   // IDs that require specific options
-  const idCardWithCaseIds = [1, 2, 6, 7, 8];
+  const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
   const stikerWithLaminationIds = [15];
 
   // Check if product needs options

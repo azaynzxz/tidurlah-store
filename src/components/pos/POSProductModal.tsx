@@ -57,7 +57,7 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
   ];
 
   // IDs that require case selection
-  const idCardWithCaseIds = [1, 2, 6, 7, 8];
+  const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
   const stikerWithLaminationIds = [15];
 
   useEffect(() => {

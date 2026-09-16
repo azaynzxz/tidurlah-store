@@ -24,6 +24,7 @@ import Katalog from "./pages/Katalog";
 import Admin from "./pages/Admin";
 import Login from "./pages/Login";
 import About from "./pages/About";
+import StorefrontBeta from "./pages/StorefrontBeta";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
@@ -62,6 +63,8 @@ const App = () => (
                 <Routes>
                   <Route path="/" element={<Index />} />
                   <Route path="/product/:slug" element={<Index />} />
+                  <Route path="/beta" element={<StorefrontBeta />} />
+                  <Route path="/beta/product/:slug" element={<StorefrontBeta />} />
                   <Route path="/survey" element={<Survey />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:title" element={<BlogPost />} />

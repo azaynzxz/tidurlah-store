@@ -60,7 +60,7 @@ export const caseVariants: CaseVariant[] = [
 ];
 
 // IDs that require case selection
-export const idCardWithCaseIds = [1, 2, 6, 7, 8];
+export const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
 export const stikerWithLaminationIds = [15]; // Cutting Stiker Kontur
 
 // Jasa Desain Price

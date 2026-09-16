@@ -481,7 +481,7 @@ export function POSDashboard() {
     }
 
     // Set default case for products that need casing
-    const idCardWithCaseIds = [1, 2, 6, 7, 8];
+    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
     if (idCardWithCaseIds.includes(product.id)) {
       options.caseVariant = ""; // Will require selection
     }
