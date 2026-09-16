@@ -49,15 +49,15 @@ export const ModelSelector: React.FC<ModelSelectorProps> = ({
             {/* Image Thumbnails (Optional) */}
             {showImages && (
                 <div className="mt-2">
-                    <div className="grid grid-cols-8 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                    <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1.5 px-1">
                         {models.map((model, index) => (
                             <div
                                 key={`${model.code}-${index}`}
                                 className={cn(
-                                    "relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all border",
+                                    "relative flex-shrink-0 w-9 h-9 rounded-lg overflow-hidden cursor-pointer transition-all",
                                     model.code === selectedModel
-                                        ? "ring-2 ring-[#FF5E01] scale-105 border-[#FF5E01]"
-                                        : "hover:scale-105 border-transparent"
+                                        ? "ring-2 ring-[#FF5E01] ring-offset-2 ring-offset-white shadow-sm"
+                                        : "border border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100"
                                 )}
                                 onClick={() => onSelect(model.code)}
                                 title={model.code}

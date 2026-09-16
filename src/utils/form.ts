@@ -65,12 +65,9 @@ export const openProductDetails = (
     setSelectedModel("");
   }
 
-  if ((window as any).idCardWithCaseIds?.includes(product.id)) {
-    setSelectedCase("");
-  }
-  if ((window as any).stikerWithLaminationIds?.includes(product.id)) {
-    setSelectedLamination("");
-  }
+  // Always reset case and lamination selections for fresh modal view
+  setSelectedCase("");
+  setSelectedLamination("");
 
   // Set default dimensions for dimensional products
   if (product.pricingMethod === "dimensional") {

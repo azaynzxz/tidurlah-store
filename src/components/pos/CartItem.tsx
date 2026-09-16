@@ -200,15 +200,9 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
         handleOptionUpdate('overridePrice', newPrice);
       }
       setIsEditingPrice(false);
-      toast.success('Harga custom berhasil diterapkan', {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.success('Harga custom berhasil diterapkan');
     } else {
-      toast.error('Harga harus lebih dari 0', {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.error('Harga harus lebih dari 0');
     }
   };
 
@@ -224,10 +218,7 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
     onUpdateOptionsById(item.cartItemId, updatedOptions);
     setIsEditingPrice(false);
     setCustomPriceInput('');
-    toast.success('Harga dikembalikan ke default', {
-      position: 'top-center',
-      duration: 2000,
-    });
+    toast.success('Harga dikembalikan ke default');
   };
 
   return (

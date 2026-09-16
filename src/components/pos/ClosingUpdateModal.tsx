@@ -3,9 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Copy, Check, Loader2, RefreshCw, Edit2, X, ChevronDown } from "lucide-react";
+import { Copy, Check, Loader2, RefreshCw, X, Search, ChevronDown } from "lucide-react";
 import { fetchOrderHistory, type OrderHistoryItem } from "@/utils/api";
-import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { toast } from "sonner";
 
 const formatCurrency = (n: number) => `Rp ${(n || 0).toLocaleString('id-ID')}`;
@@ -19,6 +19,59 @@ const isToday = (dateString: string | undefined) => {
         date.getFullYear() === today.getFullYear();
 };
 
+const getQty = (o: OrderHistoryItem) => {
+    return o.items?.reduce((sum, item) => sum + item.quantity, 0) || o.itemCount || 0;
+};
+
+// Component for searchable multi-select
+function OrderPicker({ title, selectedCount, orders, selectedIds, onToggle, className, textClassName }: any) {
+    const [q, setQ] = useState("");
+    const filtered = orders.filter((o: OrderHistoryItem) =>
+        o.customerName?.toLowerCase().includes(q.toLowerCase()) ||
+        o.orderId.toLowerCase().includes(q.toLowerCase())
+    );
+
+    return (
+        <Popover>
+            <PopoverTrigger asChild>
+                <div className={`flex justify-between items-center px-3 py-2 rounded-md border min-h-[44px] cursor-pointer hover:opacity-80 transition-opacity ${className}`}>
+                    <span className={`text-sm font-medium ${textClassName}`}>{title}</span>
+                    <span className={`font-bold flex items-center gap-1 ${textClassName}`}>
+                        {selectedCount} <ChevronDown className="w-3 h-3 opacity-60" />
+                    </span>
+                </div>
+            </PopoverTrigger>
+            <PopoverContent align="end" className="w-[300px] p-2 bg-white z-[70] shadow-xl">
+                <div className="relative mb-2">
+                    <Search className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400" />
+                    <Input
+                        value={q}
+                        onChange={e => setQ(e.target.value)}
+                        placeholder="Cari pelanggan atau invoice..."
+                        className="h-8 pl-8 text-xs bg-gray-50 border-gray-200"
+                    />
+                </div>
+                <div className="max-h-[250px] overflow-y-auto space-y-1 p-1">
+                    {filtered.length === 0 && <p className="text-center text-xs text-gray-500 py-6">Tidak ada pesanan.</p>}
+                    {filtered.map((o: OrderHistoryItem) => (
+                        <div
+                            key={o.orderId}
+                            onClick={() => onToggle(o.orderId)}
+                            className="flex items-center gap-2 p-2 hover:bg-gray-100 cursor-pointer rounded-md text-sm border border-transparent hover:border-gray-200 transition-colors"
+                        >
+                            <Check className={`w-4 h-4 shrink-0 transition-opacity ${selectedIds.includes(o.orderId) ? "text-[#FF5E01] opacity-100" : "opacity-0"}`} />
+                            <div className="flex-1 min-w-0">
+                                <p className="truncate font-medium">{o.customerName || 'Pelanggan'}</p>
+                            </div>
+                            <span className="text-xs font-semibold text-gray-500 shrink-0 bg-gray-100 px-1.5 py-0.5 rounded">{getQty(o)} pcs</span>
+                        </div>
+                    ))}
+                </div>
+            </PopoverContent>
+        </Popover>
+    );
+}
+
 interface ClosingUpdateModalProps {
     onClose: () => void;
 }
@@ -29,14 +82,12 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
     const [kendala, setKendala] = useState("");
     const [cashSistem, setCashSistem] = useState("");
     const [isCopied, setIsCopied] = useState(false);
-    const [isEditingStats, setIsEditingStats] = useState(false);
     const [manualSelesaiIds, setManualSelesaiIds] = useState<string[] | null>(null);
     const [manualBelumIds, setManualBelumIds] = useState<string[] | null>(null);
 
     const loadOrders = async () => {
         setIsLoading(true);
         try {
-            // Fetch the latest 200 orders to ensure we get all of today's orders
             const result = await fetchOrderHistory({ limit: 200 });
             if (result.success && result.orders) {
                 setOrders(result.orders);
@@ -75,7 +126,6 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
         }, 0);
     }, [todayOrders]);
 
-    // Use estimated cash as placeholder or pre-fill if cashSistem is empty, but let's just use it dynamically when generating
     const displayCash = cashSistem || formatCurrency(estimatedCash);
 
     const activeSelesaiIds = manualSelesaiIds ?? completedOrders.map(o => o.orderId);
@@ -83,22 +133,30 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
 
     const toggleSelesai = (id: string) => {
         const current = manualSelesaiIds || completedOrders.map(o => o.orderId);
-        if (current.includes(id)) setManualSelesaiIds(current.filter(i => i !== id));
-        else setManualSelesaiIds([...current, id]);
+        if (current.includes(id)) {
+            setManualSelesaiIds(current.filter(i => i !== id));
+        } else {
+            setManualSelesaiIds([...current, id]);
+            // Auto uncheck from belom if moving to selesai
+            const alt = manualBelumIds || uncompletedOrders.map(o => o.orderId);
+            if (alt.includes(id)) setManualBelumIds(alt.filter(i => i !== id));
+        }
     };
 
     const toggleBelum = (id: string) => {
         const current = manualBelumIds || uncompletedOrders.map(o => o.orderId);
-        if (current.includes(id)) setManualBelumIds(current.filter(i => i !== id));
-        else setManualBelumIds([...current, id]);
+        if (current.includes(id)) {
+            setManualBelumIds(current.filter(i => i !== id));
+        } else {
+            setManualBelumIds([...current, id]);
+            // Auto uncheck from selesai if moving to belom
+            const alt = manualSelesaiIds || completedOrders.map(o => o.orderId);
+            if (alt.includes(id)) setManualSelesaiIds(alt.filter(i => i !== id));
+        }
     };
 
     const displaySelesai = activeSelesaiIds.length.toString();
     const displayBelum = activeBelumIds.length.toString();
-
-    const getQty = (o: OrderHistoryItem) => {
-        return o.items?.reduce((sum, item) => sum + item.quantity, 0) || o.itemCount || 0;
-    };
 
     const generatedText = useMemo(() => {
         const now = new Date();
@@ -164,102 +222,64 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
                 <div className="p-4 overflow-y-auto space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Form Input Section */}
-                        <div className="space-y-4">
-                            <Card>
+                        <div className="space-y-4 flex flex-col h-full max-h-[80vh]">
+                            <Card className="shrink-0">
                                 <CardHeader className="pb-3 border-b flex flex-row items-center justify-between space-y-0">
-                                    <CardTitle className="text-sm font-semibold">Tinjauan Data Hari Ini</CardTitle>
-                                    <Button
-                                        variant="ghost"
-                                        size="sm"
-                                        onClick={() => setIsEditingStats(!isEditingStats)}
-                                        className={`h-7 px-2 text-xs ${isEditingStats ? 'bg-gray-100 text-gray-800' : 'text-blue-600 hover:text-blue-700 hover:bg-blue-50'}`}
-                                    >
-                                        {isEditingStats ? <Check className="w-3.5 h-3.5 mr-1" /> : <Edit2 className="w-3.5 h-3.5 mr-1" />}
-                                        {isEditingStats ? 'Selesai Edit' : 'Edit'}
-                                    </Button>
+                                    <div>
+                                        <CardTitle className="text-sm font-semibold">Data Hari Ini</CardTitle>
+                                        <p className="text-xs text-gray-500 mt-1">Klik kotak untuk mengganti seleksi order secara manual.</p>
+                                    </div>
                                 </CardHeader>
                                 <CardContent className="pt-4 space-y-3">
-                                    <div className="flex justify-between items-center bg-green-50 px-3 py-2 rounded-md border border-green-100 min-h-[44px]">
-                                        <span className="text-sm text-green-800 font-medium">Order Selesai</span>
-                                        {isEditingStats ? (
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="outline" size="sm" className="h-7 text-xs px-2 min-w-[70px] bg-white text-green-700">
-                                                        Pilih ({activeSelesaiIds.length}) <ChevronDown className="w-3 h-3 ml-1" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
-                                                    {todayOrders.map(o => (
-                                                        <DropdownMenuCheckboxItem
-                                                            key={o.orderId}
-                                                            checked={activeSelesaiIds.includes(o.orderId)}
-                                                            onCheckedChange={() => toggleSelesai(o.orderId)}
-                                                        >
-                                                            {o.customerName || 'Pelanggan'} ({getQty(o)} pcs)
-                                                        </DropdownMenuCheckboxItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        ) : (
-                                            <span className="font-bold text-green-700">{displaySelesai}</span>
-                                        )}
-                                    </div>
-                                    <div className="flex justify-between items-center bg-orange-50 px-3 py-2 rounded-md border border-orange-100 min-h-[44px]">
-                                        <span className="text-sm text-orange-800 font-medium">Order Belum Selesai (Pending/DP)</span>
-                                        {isEditingStats ? (
-                                            <DropdownMenu>
-                                                <DropdownMenuTrigger asChild>
-                                                    <Button variant="outline" size="sm" className="h-7 text-xs px-2 min-w-[70px] bg-white text-orange-700">
-                                                        Pilih ({activeBelumIds.length}) <ChevronDown className="w-3 h-3 ml-1" />
-                                                    </Button>
-                                                </DropdownMenuTrigger>
-                                                <DropdownMenuContent align="end" className="w-[300px] max-h-[300px] overflow-y-auto">
-                                                    {todayOrders.map(o => (
-                                                        <DropdownMenuCheckboxItem
-                                                            key={o.orderId}
-                                                            checked={activeBelumIds.includes(o.orderId)}
-                                                            onCheckedChange={() => toggleBelum(o.orderId)}
-                                                        >
-                                                            {o.customerName || 'Pelanggan'} ({getQty(o)} pcs)
-                                                        </DropdownMenuCheckboxItem>
-                                                    ))}
-                                                </DropdownMenuContent>
-                                            </DropdownMenu>
-                                        ) : (
-                                            <span className="font-bold text-orange-700">{displayBelum}</span>
-                                        )}
-                                    </div>
-                                    <div className="flex justify-between items-center bg-blue-50 px-3 py-2 rounded-md border border-blue-100 min-h-[44px]">
-                                        <span className="text-sm text-blue-800 font-medium">Estimasi Cash Masuk</span>
-                                        <span className="font-bold text-blue-700">{displayCash}</span>
+                                    <OrderPicker
+                                        title="Order Selesai"
+                                        selectedCount={displaySelesai}
+                                        orders={todayOrders}
+                                        selectedIds={activeSelesaiIds}
+                                        onToggle={toggleSelesai}
+                                        className="bg-green-50 border-green-100"
+                                        textClassName="text-green-800"
+                                    />
+                                    <OrderPicker
+                                        title="Order Belum Selesai (Pending/DP)"
+                                        selectedCount={displayBelum}
+                                        orders={todayOrders}
+                                        selectedIds={activeBelumIds}
+                                        onToggle={toggleBelum}
+                                        className="bg-orange-50 border-orange-100"
+                                        textClassName="text-orange-800"
+                                    />
+                                    <div className="flex justify-between items-center bg-blue-50 px-4 py-2.5 rounded-md border border-blue-100 min-h-[44px]">
+                                        <span className="text-sm font-medium text-blue-800">Estimasi Cash Masuk</span>
+                                        <span className="font-bold text-blue-800 text-sm">{displayCash}</span>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card>
+                            <Card className="shrink-0">
                                 <CardHeader className="pb-3 border-b">
                                     <CardTitle className="text-sm font-semibold">Input Tambahan</CardTitle>
                                 </CardHeader>
                                 <CardContent className="pt-4 space-y-4">
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700">3. Kendala (Opsional)</label>
+                                        <label className="text-sm font-medium text-gray-700">Kendala (Opsional)</label>
                                         <Textarea
                                             placeholder="Tulis kendala hari ini (jika ada)..."
                                             value={kendala}
                                             onChange={(e) => setKendala(e.target.value)}
-                                            className="min-h-[80px] text-sm resize-y"
+                                            className="min-h-[60px] text-sm resize-y"
                                         />
                                     </div>
                                     <div className="space-y-1.5">
-                                        <label className="text-sm font-medium text-gray-700">4. Cash Masuk di Store</label>
+                                        <label className="text-sm font-medium text-gray-700">Cash Masuk di Store</label>
                                         <Input
                                             placeholder={`Contoh: ${formatCurrency(estimatedCash)}`}
                                             value={cashSistem}
                                             onChange={(e) => setCashSistem(e.target.value)}
-                                            className="text-sm"
+                                            className="text-sm h-9"
                                         />
-                                        <p className="text-xs text-gray-500">
-                                            Biarkan kosong untuk menggunakan nominal estimasi dari sistem.
+                                        <p className="text-[11px] text-gray-500 leading-tight">
+                                            Biarkan kosong jika sistem sudah benar. Nominal ini akan menggantikan "Estimasi Cash Masuk" pada laporan.
                                         </p>
                                     </div>
                                 </CardContent>
@@ -284,7 +304,7 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
                             </CardHeader>
                             <CardContent className="flex-1 p-0 relative">
                                 {isLoading ? (
-                                    <div className="absolute inset-0 bg-white/50 flex flex-col items-center justify-center z-10 backdrop-blur-[1px]">
+                                    <div className="absolute inset-0 bg-white/60 flex flex-col items-center justify-center z-10 backdrop-blur-[1px]">
                                         <Loader2 className="w-6 h-6 animate-spin text-[#FF5E01] mb-2" />
                                         <span className="text-xs text-gray-600 font-medium">Memuat pesanan...</span>
                                     </div>
@@ -292,7 +312,7 @@ export function ClosingUpdateModal({ onClose }: ClosingUpdateModalProps) {
                                 <textarea
                                     readOnly
                                     value={generatedText}
-                                    className="w-full h-full min-h-[350px] p-4 text-sm font-mono bg-transparent outline-none resize-none text-gray-700"
+                                    className="w-full h-full min-h-[350px] p-5 text-sm font-mono bg-transparent outline-none resize-none text-gray-700"
                                 />
                             </CardContent>
                         </Card>

@@ -23,7 +23,7 @@ import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
 import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
-import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble } from "@/utils/cart";
+import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble, triggerFlyingAnimation } from "@/utils/cart";
 import { ModelSelector } from "@/components/product/ModelSelector";
 import { submitWebsiteOrder, handleWhatsAppRedirect } from "@/utils/api";
 import { handleNameChange, handlePhoneChange, openProductDetails, nextImage, prevImage, generateInvoiceNumber, handleSearch } from "@/utils/form";
@@ -156,7 +156,7 @@ const Index = () => {
         }, 150);
       } catch (error) {
         console.error("Failed to fetch products:", error);
-        toast.error("Gagal memuat produk. Silakan coba lagi nanti.", { position: 'top-center', style: { marginTop: '60px' } });
+        toast.error("Gagal memuat produk. Silakan coba lagi nanti.");
         setIsProductsLoading(false);
       }
     };
@@ -190,7 +190,7 @@ const Index = () => {
       } else {
         // If product not found, redirect to home and show error
         navigate('/');
-        toast.error("Produk tidak ditemukan", { position: 'top-center', style: { marginTop: '60px' } });
+        toast.error("Produk tidak ditemukan");
       }
     }
   }, [slug, navigate, products]);
@@ -294,9 +294,25 @@ const Index = () => {
     );
   };
 
+  // Add banner to cart function using extracted logic
+  const addBannerToCartCallback = (product: any, width: number, height: number): boolean => {
+    const success = addBannerToCart(
+      product,
+      width,
+      height,
+      cartItems,
+      setCartItems
+    );
+    if (success) {
+      setSelectedProduct(null);
+      triggerFlyingAnimation(undefined, setFlyingBubbles);
+    }
+    return success;
+  };
+
   // Add to cart function using extracted logic
-  const addToCartCallback = (product: any, sourceElement?: HTMLElement, quantity: number = 1) => {
-    addToCart(
+  const addToCartCallback = (product: any, sourceElement?: HTMLElement, quantity: number = 1): boolean => {
+    const success = addToCart(
       product,
       cartItems,
       setCartItems,
@@ -309,6 +325,11 @@ const Index = () => {
       sourceElement,
       quantity
     );
+    if (success) {
+      setSelectedProduct(null);
+      triggerFlyingAnimation(sourceElement, setFlyingBubbles);
+    }
+    return success;
   };
 
   // Remove from cart function using extracted logic
@@ -410,39 +431,9 @@ const Index = () => {
       return result;
     } catch (error) {
       setIsSubmitting(false);
-      toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.", { position: 'top-center', style: { marginTop: '60px' } });
+      toast.error("Gagal menyimpan data pesanan. Silakan coba lagi.");
       console.error(error);
     }
-  };
-
-  const addBannerToCartCallback = (product: any, width: number, height: number) => {
-    const calculatedPrice = calculateBannerPrice(product, width, height, 1);
-    const newItem = {
-      ...product,
-      width,
-      height,
-      appliedPrice: calculatedPrice,
-      quantity: 1,
-      savings: product.price - calculatedPrice > 0 ? product.price - calculatedPrice : 0,
-      isDimensionalProduct: true,
-      dimensionText: `${width}m × ${height}m`,
-      area: (width * height).toFixed(2) + ' m²'
-    };
-
-    setCartItems([...cartItems, newItem]);
-    setSelectedProduct(null);
-
-    toast.success(`${product.name} ditambahkan ke keranjang`, {
-      position: 'top-center',
-      duration: 2000,
-      style: {
-        marginTop: '60px',
-        fontSize: '12px',
-        padding: '6px 10px',
-        minHeight: '36px',
-        maxWidth: '260px'
-      }
-    });
   };
 
   const calculateTotalDiscountCallback = () => {
@@ -603,7 +594,7 @@ const Index = () => {
                                     });
                                   } else {
                                     navigator.clipboard.writeText(shareUrl);
-                                    toast.success("Link produk disalin!", { position: 'top-center', style: { marginTop: '60px' }, duration: 2000 });
+                                    toast.success("Link produk disalin!");
                                   }
                                 }}
                                 className="absolute top-2 right-2 bg-background bg-opacity-80 hover:bg-background p-1.5 rounded-full transition-colors z-[5]"
@@ -1091,9 +1082,9 @@ const Index = () => {
                 {cartItems.length === 0 ? (
                   <p className="text-center text-gray-500">Keranjang masih kosong</p>
                 ) : (
-                  <div className="space-y-4">
-                    {cartItems.map((item) => (
-                      <div key={item.id} className="flex items-center gap-3">
+                  <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                    {cartItems.map((item, index) => (
+                      <div key={`${item.id}-${index}-${item.caseVariant || ''}-${item.laminationVariant || ''}-${item.modelCode || ''}`} className="flex gap-4 border-b pb-4">
                         <img
                           src={item.image}
                           alt={item.name}
@@ -1211,6 +1202,15 @@ const Index = () => {
         <Dialog open={!!selectedProduct} onOpenChange={() => {
           setSelectedProduct(null);
           setSelectedModel(""); // Reset model selection
+          setSelectedCase("");
+          setSelectedLamination("");
+          toast.dismiss('case-validation-toast');
+          toast.dismiss('lamination-validation-toast');
+          toast.dismiss('model-validation-toast');
+          toast.dismiss('quantity-validation-toast');
+          setShowAngryCase(false);
+          setShowAngryLamination(false);
+          setShowAngryQuantity(false);
           // Clear URL slug when modal is closed without affecting tab state
           if (slug) {
             // Use window.history to avoid triggering route effects
@@ -1241,7 +1241,7 @@ const Index = () => {
                         });
                       } else {
                         navigator.clipboard.writeText(shareUrl);
-                        toast.success("Link produk disalin ke clipboard!", { position: 'top-center', style: { marginTop: '60px' } });
+                        toast.success("Link produk disalin ke clipboard!");
                       }
                     }}
                     className="absolute right-14 top-2 p-2 hover:bg-gray-100 rounded-full transition-colors z-[5]"
@@ -1319,7 +1319,7 @@ const Index = () => {
                     </div>
 
                     {/* Model Selector for Plakat */}
-                    {selectedProduct.models && (
+                    {(selectedProduct.models && selectedProduct.models.length > 0) && (
                       <ModelSelector
                         models={selectedProduct.models}
                         selectedModel={selectedModel}
@@ -1341,14 +1341,19 @@ const Index = () => {
 
                         return (
                           <>
-                            <div className="grid grid-cols-8 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                            <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1.5 px-1">
                               {showModelGallery ? (
                                 selectedProduct.models.slice(0, 8).map((model: any, index: number) => (
                                   <div
                                     key={`${model.code}-${index}`}
-                                    className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                                    className={`relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg overflow-hidden cursor-pointer transition-all ${model.code === selectedModel
+                                      ? 'ring-2 ring-[#FF5E01] ring-offset-2 ring-offset-white shadow-sm'
+                                      : 'border border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100'
                                       }`}
-                                    onClick={() => setSelectedModel(model.code)}
+                                    onClick={() => {
+                                      setSelectedModel(model.code);
+                                      toast.dismiss('model-validation-toast');
+                                    }}
                                   >
                                     <img
                                       src={model.image}
@@ -1361,7 +1366,9 @@ const Index = () => {
                                 [selectedProduct.image, ...selectedProduct.additionalImages].map((image, index) => (
                                   <div
                                     key={`img-${index}`}
-                                    className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                                    className={`relative flex-shrink-0 w-9 h-9 sm:w-10 sm:h-10 rounded-lg overflow-hidden cursor-pointer transition-all ${index === currentImageIndex
+                                      ? 'ring-2 ring-[#FF5E01] ring-offset-2 ring-offset-white shadow-sm'
+                                      : 'border border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100'
                                       }`}
                                     onClick={() => setCurrentImageIndex(index)}
                                   >
@@ -1402,20 +1409,8 @@ const Index = () => {
                               key={variant.code}
                               onClick={() => {
                                 setSelectedCase(variant.code);
-                                if (showAngryCase) {
-                                  setShowAngryCase(false); // Reset angry state when user selects
-                                  toast.success(`Casing dipilih!`, {
-                                    position: 'top-center',
-                                    style: {
-                                      marginTop: '60px',
-                                      fontSize: '12px',
-                                      padding: '6px 10px',
-                                      minHeight: '36px',
-                                      maxWidth: '260px'
-                                    },
-                                    duration: 2000
-                                  });
-                                }
+                                toast.dismiss('case-validation-toast');
+                                setShowAngryCase(false);
                               }}
                               className={`px-3 py-1.5 rounded-full text-xs transition-all duration-300 ${selectedCase === variant.code
                                 ? "bg-[#FF5E01] text-white"
@@ -1448,20 +1443,8 @@ const Index = () => {
                               key={lamination.type}
                               onClick={() => {
                                 setSelectedLamination(lamination.type);
-                                if (showAngryLamination) {
-                                  setShowAngryLamination(false); // Reset angry state when user selects
-                                  toast.success(`Laminasi dipilih!`, {
-                                    position: 'top-center',
-                                    style: {
-                                      marginTop: '60px',
-                                      fontSize: '12px',
-                                      padding: '6px 10px',
-                                      minHeight: '36px',
-                                      maxWidth: '260px'
-                                    },
-                                    duration: 2000
-                                  });
-                                }
+                                toast.dismiss('lamination-validation-toast');
+                                setShowAngryLamination(false);
                               }}
                               className={`px-3 py-1.5 rounded-full text-xs transition-all duration-300 ${selectedLamination === lamination.type
                                 ? "bg-[#FF5E01] text-white"
@@ -1723,14 +1706,6 @@ const Index = () => {
                               if (showAngryQuantity) {
                                 setShowAngryQuantity(false);
                                 toast.success(`Jumlah dipilih!`, {
-                                  position: 'top-center',
-                                  style: {
-                                    marginTop: '60px',
-                                    fontSize: '12px',
-                                    padding: '6px 10px',
-                                    minHeight: '36px',
-                                    maxWidth: '260px'
-                                  },
                                   duration: 2000
                                 });
                               }
@@ -1771,19 +1746,26 @@ const Index = () => {
                   <div className="px-4 pb-4">
                     {selectedProduct.pricingMethod === "dimensional" ? (
                       <button
-                        onClick={() => addBannerToCartCallback(selectedProduct, bannerWidth, bannerHeight)}
+                        onClick={() => {
+                          const success = addBannerToCartCallback(selectedProduct, bannerWidth, bannerHeight);
+                          if (success) {
+                            setSelectedProduct(null);
+                          }
+                        }}
                         className="w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md"
                       >
                         Tambahkan ke Keranjang
                       </button>
-                    ) : selectedProduct.models ? (
+                    ) : (selectedProduct.models && selectedProduct.models.length > 0) ? (
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
                           // Check if model is selected and quantity is valid
                           if (selectedModel && modalQuantity > 0) {
-                            addToCartCallback(selectedProduct, undefined, modalQuantity);
+                            const success = addToCartCallback(selectedProduct, e.currentTarget, modalQuantity);
                             // Close modal after successful add for model products
-                            setSelectedProduct(null);
+                            if (success) {
+                              setSelectedProduct(null);
+                            }
                           }
                         }}
                         className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md ${!selectedModel || modalQuantity <= 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
@@ -1793,11 +1775,13 @@ const Index = () => {
                       </button>
                     ) : (
                       <button
-                        onClick={() => {
+                        onClick={(e) => {
                           // addToCart function will validate case/lamination and show angry animations
-                          addToCartCallback(selectedProduct, undefined, modalQuantity);
-                          // Don't close modal if validation failed (validation is in addToCart)
-                          // We'll handle closing in useEffect watching the modal state
+                          const success = addToCartCallback(selectedProduct, e.currentTarget, modalQuantity);
+                          // Close modal only if validation passed
+                          if (success) {
+                            setSelectedProduct(null);
+                          }
                         }}
                         className={`w-full bg-[#FF5E01] text-white rounded-lg py-3 font-medium shadow-md transition-opacity`}
                       >

@@ -213,10 +213,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     setIsDesignServiceSelected(checked);
     if (checked) {
       onAddDesignService();
-      toast.success("Jasa Desain ditambahkan ke keranjang", {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.success("Jasa Desain ditambahkan ke keranjang");
     }
   };
 
@@ -240,19 +237,13 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     setIsExpressSelected(checked);
     if (checked) {
       onAddExpressService();
-      toast.success("Jasa Express ditambahkan ke keranjang", {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.success("Jasa Express ditambahkan ke keranjang");
     } else {
       // Remove express service from cart when unchecked
       const expressServiceItem = items.find(item => item.product.id === 2001);
       if (expressServiceItem) {
         onRemoveItemById(expressServiceItem.cartItemId);
-        toast.success("Jasa Express dihapus dari keranjang", {
-          position: 'top-center',
-          duration: 2000,
-        });
+        toast.success("Jasa Express dihapus dari keranjang");
       }
     }
   };
@@ -268,10 +259,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       onAddOngkir(ongkirPrice);
     }
 
-    toast.success("Informasi pengiriman berhasil disimpan", {
-      position: 'top-center',
-      duration: 2000,
-    });
+    toast.success("Informasi pengiriman berhasil disimpan");
   };
 
   // Smart fill function to copy delivery info to customer details
@@ -283,48 +271,30 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
         phone: customerDetails.delivery.recipientPhone
       }));
 
-      toast.success("Informasi pelanggan diisi otomatis dari data pengiriman", {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.success("Informasi pelanggan diisi otomatis dari data pengiriman");
     } else {
-      toast.error("Belum ada informasi pengiriman. Isi terlebih dahulu.", {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.error("Belum ada informasi pengiriman. Isi terlebih dahulu.");
     }
   };
 
   const handleProcessOrder = async () => {
     if (items.length === 0) {
-      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
       return;
     }
 
     if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
-      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.");
       return;
     }
 
     if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon pilih cabang.");
       return;
     }
 
     if (!customerDetails.deadline) {
-      toast.error("Mohon tentukan deadline pesanan.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon tentukan deadline pesanan.");
       return;
     }
 
@@ -337,18 +307,12 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
 
       if (needsCase && !item.options?.caseVariant) {
-        toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis casing untuk ${item.product.name}`);
         return;
       }
 
       if (needsLamination && !item.options?.laminationVariant) {
-        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`);
         return;
       }
     }
@@ -381,10 +345,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
     } catch (error) {
       console.error('Error processing order:', error);
-      toast.error('Terjadi kesalahan saat memproses pesanan.', {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error('Terjadi kesalahan saat memproses pesanan.');
     } finally {
       setIsProcessing(false);
     }
@@ -395,34 +356,22 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
   // Do NOT delete this function. The UI button is hidden but functionality is preserved.
   const handlePrintReceipt = async () => {
     if (!onPrintOrder) {
-      toast.error("Fungsi cetak tidak tersedia", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Fungsi cetak tidak tersedia");
       return;
     }
 
     if (items.length === 0) {
-      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
       return;
     }
 
     if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
-      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.");
       return;
     }
 
     if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon pilih cabang.");
       return;
     }
 
@@ -435,18 +384,12 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
 
       if (needsCase && !item.options?.caseVariant) {
-        toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis casing untuk ${item.product.name}`);
         return;
       }
 
       if (needsLamination && !item.options?.laminationVariant) {
-        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`);
         return;
       }
     }
@@ -471,10 +414,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
     } catch (error) {
       console.error('Error printing receipt:', error);
-      toast.error('Terjadi kesalahan saat mencetak struk.', {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error('Terjadi kesalahan saat mencetak struk.');
     } finally {
       setIsPrinting(false);
     }
@@ -485,34 +425,22 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
   // Do NOT delete this function. The UI button is hidden but functionality is preserved.
   const handleExportPDF = async () => {
     if (!onExportPDF) {
-      toast.error("Fungsi export PDF tidak tersedia", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Fungsi export PDF tidak tersedia");
       return;
     }
 
     if (items.length === 0) {
-      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
       return;
     }
 
     if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
-      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.");
       return;
     }
 
     if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Mohon pilih cabang.");
       return;
     }
 
@@ -525,18 +453,12 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       const needsLamination = stikerWithLaminationIds.includes(item.product.id);
 
       if (needsCase && !item.options?.caseVariant) {
-        toast.error(`Pilih jenis casing untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis casing untuk ${item.product.name}`);
         return;
       }
 
       if (needsLamination && !item.options?.laminationVariant) {
-        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`);
         return;
       }
     }
@@ -561,10 +483,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
     } catch (error) {
       console.error('Error exporting PDF:', error);
-      toast.error('Terjadi kesalahan saat membuat PDF.', {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error('Terjadi kesalahan saat membuat PDF.');
     } finally {
       setIsExportingPDF(false);
     }
@@ -881,10 +800,7 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                             // Format the display value to show decimal if needed
                             const displayValue = (finalTotal / 1000).toFixed(1).replace(/\.?0+$/, '');
                             setDpDisplayValue(displayValue);
-                            toast.warning('DP tidak boleh melebihi total', {
-                              position: 'top-center',
-                              duration: 2000,
-                            });
+                            toast.warning('DP tidak boleh melebihi total');
                           }
                         }}
                         className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"

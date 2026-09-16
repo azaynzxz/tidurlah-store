@@ -171,10 +171,7 @@ const Loker = () => {
       });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.success("Link lowongan kerja disalin!");
     }
   };
 
@@ -469,10 +466,7 @@ const JobDetailPage = ({ job }: { job: Job }) => {
       });
     } else {
       navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.success("Link lowongan kerja disalin!");
     }
   };
 

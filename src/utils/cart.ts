@@ -48,15 +48,9 @@ export const triggerFlyingAnimation = (
     return;
   }
 
-  // Get source position (product location)
-  let startX = window.innerWidth / 2; // Default to center
+  // Always start from center for consistency across devices
+  let startX = window.innerWidth / 2;
   let startY = window.innerHeight / 2;
-
-  if (sourceElement) {
-    const rect = sourceElement.getBoundingClientRect();
-    startX = rect.left + rect.width / 2;
-    startY = rect.top + rect.height / 2;
-  }
 
   // Get cart icon position
   const cartIcon = document.querySelector('[data-cart-icon]') || document.querySelector('.relative button');
@@ -104,20 +98,11 @@ export const addToCart = (
   setShowAngryQuantity: React.Dispatch<React.SetStateAction<boolean>>,
   sourceElement?: HTMLElement,
   quantity: number = 1
-) => {
+): boolean => {
   // Validate quantity first
   if (quantity <= 0) {
     setShowAngryQuantity(true);
     toast.error("Jumlah produk harus lebih dari 0!", {
-      position: 'top-center',
-      style: {
-        marginTop: '60px',
-        backgroundColor: '#ff4500',
-        color: 'white',
-        fontWeight: 'bold',
-        border: '2px solid #ff6b35',
-        boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-      },
       duration: 3000
     });
 
@@ -125,102 +110,77 @@ export const addToCart = (
     setTimeout(() => {
       setShowAngryQuantity(false);
     }, 3000);
-    return;
+    return false;
   }
 
-  // Check if this product already exists in cart with a case variant
-  const existingCartItem = cartItems.find(item =>
-    item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel) &&
-    (!idCardWithCaseIds.includes(product.id) || item.caseVariant) &&
-    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant)
-  );
+  // Extract effective options (supports incrementing quantity on existing CartItems)
+  const effectiveModel = (product as CartItem).modelCode || selectedModel;
+  const effectiveCase = (product as CartItem).caseVariant || selectedCase;
+  const effectiveLamination = (product as CartItem).laminationVariant || selectedLamination;
 
-  // Skip validation if we're adding to an existing cart item that already has required selections
-  const skipValidation = existingCartItem && (
-    (idCardWithCaseIds.includes(product.id) && existingCartItem.caseVariant) ||
-    (stikerWithLaminationIds.includes(product.id) && existingCartItem.laminationVariant) ||
-    (!idCardWithCaseIds.includes(product.id) && !stikerWithLaminationIds.includes(product.id))
-  );
+  if (product.models && product.models.length > 0 && !effectiveModel) {
+    toast.error("Silakan pilih model/varian plakat terlebih dahulu.", {
+      id: 'model-validation-toast',
+      duration: 4000
+    });
+    return false;
+  }
+  if (idCardWithCaseIds.includes(product.id) && !effectiveCase) {
+    setShowAngryCase(true);
+    toast.error("Mohon pilih jenis casing terlebih dahulu!", {
+      id: 'case-validation-toast',
+      duration: 4000
+    });
 
-  if (!skipValidation) {
-    if (product.models && !selectedModel) {
-      toast.error("Silakan pilih model/varian plakat terlebih dahulu.", { position: 'top-center', style: { marginTop: '60px' } });
-      return;
-    }
-    if (idCardWithCaseIds.includes(product.id) && !selectedCase) {
-      setShowAngryCase(true);
-      toast.error("Mohon pilih jenis casing terlebih dahulu!", {
-        position: 'top-center',
-        style: {
-          marginTop: '60px',
-          backgroundColor: '#ff4500',
-          color: 'white',
-          fontWeight: 'bold',
-          border: '2px solid #ff6b35',
-          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-        },
-        duration: 4000
-      });
+    // Scroll to case selection area to draw attention
+    setTimeout(() => {
+      const caseContainer = document.getElementById('case-selection-container');
+      if (caseContainer) {
+        caseContainer.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
 
-      // Scroll to case selection area to draw attention
-      setTimeout(() => {
-        const caseContainer = document.getElementById('case-selection-container');
-        if (caseContainer) {
-          caseContainer.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      }, 100);
+    // Reset angry animation after 3 seconds
+    setTimeout(() => {
+      setShowAngryCase(false);
+    }, 3000);
 
-      // Reset angry animation after 3 seconds
-      setTimeout(() => {
-        setShowAngryCase(false);
-      }, 3000);
+    return false;
+  }
+  if (stikerWithLaminationIds.includes(product.id) && !effectiveLamination) {
+    setShowAngryLamination(true);
+    toast.error("Mohon pilih jenis laminasi terlebih dahulu!", {
+      id: 'lamination-validation-toast',
+      duration: 4000
+    });
 
-      return;
-    }
-    if (stikerWithLaminationIds.includes(product.id) && !selectedLamination) {
-      setShowAngryLamination(true);
-      toast.error("Mohon pilih jenis laminasi terlebih dahulu!", {
-        position: 'top-center',
-        style: {
-          marginTop: '60px',
-          backgroundColor: '#ff4500',
-          color: 'white',
-          fontWeight: 'bold',
-          border: '2px solid #ff6b35',
-          boxShadow: '0 0 20px rgba(255, 69, 0, 0.5)'
-        },
-        duration: 4000
-      });
+    // Scroll to lamination selection area to draw attention
+    setTimeout(() => {
+      const laminationContainer = document.getElementById('lamination-selection-container');
+      if (laminationContainer) {
+        laminationContainer.scrollIntoView({
+          behavior: 'smooth',
+          block: 'center'
+        });
+      }
+    }, 100);
 
-      // Scroll to lamination selection area to draw attention
-      setTimeout(() => {
-        const laminationContainer = document.getElementById('lamination-selection-container');
-        if (laminationContainer) {
-          laminationContainer.scrollIntoView({
-            behavior: 'smooth',
-            block: 'center'
-          });
-        }
-      }, 100);
+    // Reset angry animation after 3 seconds
+    setTimeout(() => {
+      setShowAngryLamination(false);
+    }, 3000);
 
-      // Reset angry animation after 3 seconds
-      setTimeout(() => {
-        setShowAngryLamination(false);
-      }, 3000);
-
-      return;
-    }
+    return false;
   }
 
   const existingItem = cartItems.find(item =>
     item.id === product.id &&
-    (!product.models || item.modelCode === selectedModel) &&
-    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
-    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
+    (!(product.models && product.models.length > 0) || item.modelCode === effectiveModel) &&
+    (!idCardWithCaseIds.includes(product.id) || item.caseVariant === effectiveCase) &&
+    (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === effectiveLamination)
   );
 
   if (existingItem) {
@@ -230,9 +190,9 @@ export const addToCart = (
     setCartItems(
       cartItems.map(item =>
         item.id === product.id &&
-          (!product.models || item.modelCode === selectedModel) &&
-          (!idCardWithCaseIds.includes(product.id) || item.caseVariant === selectedCase) &&
-          (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === selectedLamination)
+          (!(product.models && product.models.length > 0) || item.modelCode === effectiveModel) &&
+          (!idCardWithCaseIds.includes(product.id) || item.caseVariant === effectiveCase) &&
+          (!stikerWithLaminationIds.includes(product.id) || item.laminationVariant === effectiveLamination)
           ? {
             ...item,
             quantity: newQuantity,
@@ -242,17 +202,12 @@ export const addToCart = (
           : item
       )
     );
-    toast.success(`${product.name} ditambahkan +${quantity} (Total: ${newQuantity}×)`, {
-      position: 'top-center',
-      duration: 2000,
-      style: {
-        marginTop: '60px',
-        fontSize: '12px',
-        padding: '6px 10px',
-        minHeight: '36px',
-        maxWidth: '260px'
-      }
-    });
+    setTimeout(() => {
+      toast.success('Berhasil ditambahkan!', {
+        description: `${product.name} (+${quantity} total ${newQuantity}×)`,
+        duration: 3000
+      });
+    }, 1200);
 
     // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
     // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
@@ -260,28 +215,25 @@ export const addToCart = (
     const newItem: CartItem = {
       ...product,
       quantity: quantity,
-      appliedPrice: getApplicablePrice(product, quantity, selectedModel),
-      savings: calculateSavings(product, quantity, selectedModel),
-      modelCode: product.models ? selectedModel : undefined,
-      caseVariant: idCardWithCaseIds.includes(product.id) ? selectedCase : undefined,
-      laminationVariant: stikerWithLaminationIds.includes(product.id) ? selectedLamination : undefined
+      appliedPrice: getApplicablePrice(product, quantity, effectiveModel),
+      savings: calculateSavings(product, quantity, effectiveModel),
+      modelCode: (product.models && product.models.length > 0) ? effectiveModel : undefined,
+      caseVariant: idCardWithCaseIds.includes(product.id) ? effectiveCase : undefined,
+      laminationVariant: stikerWithLaminationIds.includes(product.id) ? effectiveLamination : undefined
     };
     setCartItems([...cartItems, newItem]);
-    toast.success(`${product.name} ditambahkan ${quantity}× ke keranjang`, {
-      position: 'top-center',
-      duration: 2000,
-      style: {
-        marginTop: '60px',
-        fontSize: '12px',
-        padding: '6px 10px',
-        minHeight: '36px',
-        maxWidth: '260px'
-      }
-    });
+    setTimeout(() => {
+      toast.success('Berhasil ditambahkan!', {
+        description: `${product.name} (${quantity}×)`,
+        duration: 3000
+      });
+    }, 1200);
 
     // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
     // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
   }
+  
+  return true;
 };
 
 // Add banner to cart function
@@ -291,7 +243,7 @@ export const addBannerToCart = (
   height: number,
   cartItems: CartItem[],
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>
-) => {
+): boolean => {
   const calculatedPrice = calculateBannerPrice(product, width, height);
   const newItem: CartItem = {
     ...product,
@@ -307,21 +259,18 @@ export const addBannerToCart = (
 
   setCartItems([...cartItems, newItem]);
 
-  // Show success notification for banner with dimensions
-  toast.success(`${product.name} ditambahkan ke keranjang`, {
-    position: 'top-center',
-    duration: 2000,
-    style: {
-      marginTop: '60px',
-      fontSize: '12px',
-      padding: '6px 10px',
-      minHeight: '36px',
-      maxWidth: '260px'
-    }
-  });
+  // Show success notification after bubble animation
+  setTimeout(() => {
+    toast.success('Berhasil ditambahkan!', {
+      description: `${product.name} (${width}m × ${height}m)`,
+      duration: 3000
+    });
+  }, 1200);
 
   // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
   // Animation cannot be triggered here as addBannerToCart doesn't have access to setFlyingBubbles
+  
+  return true;
 };
 
 // Remove from cart function
@@ -352,13 +301,13 @@ export const removeFromCart = (
     );
 
     // Show notification for decreasing quantity
-    toast.info(`Jumlah ${existingItem.name} dikurangi (${newQuantity}×)`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+    toast.info(`Jumlah ${existingItem.name} dikurangi (${newQuantity}×)`);
   } else {
     setCartItems(cartItems.filter(item => item.id !== id));
 
     // Show notification for removing product
     if (existingItem) {
-      toast.info(`${existingItem.name} dihapus dari keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+      toast.info(`${existingItem.name} dihapus dari keranjang`);
     }
   }
 };
@@ -375,7 +324,7 @@ export const deleteFromCart = (
 
   // Show notification for deleting product
   if (itemToDelete) {
-    toast.info(`${itemToDelete.name} dihapus dari keranjang`, { position: 'top-center', duration: 2000, style: { marginTop: '60px' } });
+    toast.info(`${itemToDelete.name} dihapus dari keranjang`);
   }
 };
 
@@ -603,16 +552,10 @@ export const handlePromoCodeChange = async (
       // Custom success messages for specific promos
       if (code === "HUT3TH") {
         // HUT3TH uses override prices, not percentage discount
-        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!");
       } else {
         // Standard percentage discount promos
-        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`, {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.success(`Promo code ${code} applied! ${promo.discount}% discount`);
       }
     } else {
       // Promo doesn't apply to any items in cart

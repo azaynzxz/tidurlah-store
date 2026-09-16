@@ -89,18 +89,12 @@ export const exportReceiptToPDF = async (receiptData: any, logoBase64?: string, 
     const fileName = `receipt-${receiptData.receiptId || 'unknown'}.pdf`;
     pdf.save(fileName);
 
-    toast.success('Receipt PDF berhasil diunduh!', {
-      position: 'top-center',
-      duration: 3000,
-    });
+    toast.success('Receipt PDF berhasil diunduh!');
 
     return true;
   } catch (error) {
     console.error('Error generating PDF:', error);
-    toast.error('Gagal membuat PDF. Silakan coba lagi.', {
-      position: 'top-center',
-      duration: 3000,
-    });
+    toast.error('Gagal membuat PDF. Silakan coba lagi.');
     return false;
   }
 };

@@ -45,7 +45,7 @@ export default function Admin() {
                         <div className="mb-6">
                             <div className="w-48 h-48 mx-auto rounded-2xl overflow-hidden flex items-center justify-center" style={{ backgroundColor: '#fff6e5' }}>
                                 <img
-                                    src="/product-image/404_result.webp"
+                                    src="/product-image/403-Error.png"
                                     alt="Akses Ditolak"
                                     className="w-40 h-40 object-contain"
                                 />
@@ -55,7 +55,7 @@ export default function Admin() {
                         <h1 className="text-2xl font-bold text-gray-900 mb-2">
                             Akses Ditolak
                         </h1>
-                        <p className="text-gray-600 mb-8 leading-relaxed">
+                        <p className="text-gray-600 mb-6 leading-relaxed">
                             Maaf, Anda tidak memiliki hak akses administrator untuk membuka halaman ini.
                         </p>
 

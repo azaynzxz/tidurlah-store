@@ -97,11 +97,7 @@ export const generateReceiptDuringProcessing = async (
       link.href = imgData;
       link.click();
 
-      toast.success("Nota berhasil diunduh! Silakan lanjut ke WhatsApp.", {
-        position: 'top-center',
-        style: { marginTop: '60px' },
-        duration: 3000
-      });
+      toast.success("Nota berhasil diunduh! Silakan lanjut ke WhatsApp.");
 
       // Close receipt modal and show success dialog
       setTimeout(() => {
@@ -112,10 +108,7 @@ export const generateReceiptDuringProcessing = async (
 
     } catch (error) {
       console.error('Error generating receipt:', error);
-      toast.error("Gagal membuat nota, tapi pesanan tetap berhasil.", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Gagal membuat nota, tapi pesanan tetap berhasil.");
 
       // Close receipt modal and show success dialog even on error
       setTimeout(() => {

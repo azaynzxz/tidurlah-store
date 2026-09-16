@@ -195,13 +195,7 @@ export function POSDashboard() {
               <p>💪 Bagaimana kondisi kesehatan dan stress level kamu?</p>
               <p>📝 Apa rencana kamu hari ini?</p>
             </div>
-          </div>,
-          {
-            id: notifId,
-            position: 'top-center',
-            duration: 15000,
-            style: { marginTop: '60px', minWidth: '350px' }
-          }
+          </div>
         );
         playSound('/audio/Bubble.mp3');
         setNotificationsShown(prev => new Set(prev).add(notifKey));
@@ -229,13 +223,7 @@ export function POSDashboard() {
               <p>☕ Ambil istirahat sejenak</p>
               <p>🌸 Jaga kesehatan dan energimu</p>
             </div>
-          </div>,
-          {
-            id: notifId,
-            position: 'top-center',
-            duration: 15000,
-            style: { marginTop: '60px', minWidth: '350px' }
-          }
+          </div>
         );
         playSound('/audio/bell-church.mp3');
         setNotificationsShown(prev => new Set(prev).add(notifKey));
@@ -262,13 +250,7 @@ export function POSDashboard() {
               <p>🔍 Pastikan semua tercatat dengan baik</p>
               <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan! 💪</p>
             </div>
-          </div>,
-          {
-            id: notifId,
-            position: 'top-center',
-            duration: 12000,
-            style: { marginTop: '60px', minWidth: '350px' }
-          }
+          </div>
         );
         playSound('/audio/Bubble 2.mp3');
         setNotificationsShown(prev => new Set(prev).add(notifKey));
@@ -298,13 +280,7 @@ export function POSDashboard() {
               <p>🌟 Selamat beristirahat!</p>
               <p>👋 Sampai jumpa besok!</p>
             </div>
-          </div>,
-          {
-            id: notifId,
-            position: 'top-center',
-            duration: 15000,
-            style: { marginTop: '60px', minWidth: '350px' }
-          }
+          </div>
         );
         playSound('/audio/Tidurlah Grafika.mp3');
         setNotificationsShown(prev => new Set(prev).add(notifKey));
@@ -346,10 +322,7 @@ export function POSDashboard() {
         setFilteredProducts(allProducts);
       } catch (error) {
         console.error('Error loading products:', error);
-        toast.error("Gagal memuat produk. Silakan coba lagi nanti.", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Gagal memuat produk. Silakan coba lagi nanti.");
       } finally {
         setLoading(false);
       }
@@ -457,10 +430,7 @@ export function POSDashboard() {
       };
       setCartItems(prev => [...prev, newItem]);
       setSelectedProducts(prev => new Set([...prev, product.id]));
-      toast.success(`${product.name} ditambahkan sebagai item baru`, {
-        position: 'top-center',
-        duration: 2000,
-      });
+      toast.success(`${product.name} ditambahkan sebagai item baru`);
       return;
     }
 
@@ -489,10 +459,7 @@ export function POSDashboard() {
     setCartItems(prev => [...prev, newItem]);
     setSelectedProducts(prev => new Set([...prev, product.id]));
 
-    toast.success(`${product.name} ditambahkan ke keranjang`, {
-      position: 'top-center',
-      duration: 2000,
-    });
+    toast.success(`${product.name} ditambahkan ke keranjang`);
   };
 
   // Get default options for a product
@@ -567,18 +534,7 @@ export function POSDashboard() {
     });
 
     // Show toast notification
-    toast.success(`${product.name} ditambahkan ke keranjang`, {
-      position: 'top-center',
-      duration: 2000,
-      style: {
-        backgroundColor: cabang === 'Cabang Unila' ? '#464E2E' : '#FF5E01',
-        color: 'white',
-        fontSize: '12px',
-        padding: '6px 10px',
-        minHeight: '36px',
-        maxWidth: '260px'
-      }
-    });
+    toast.success(`${product.name} ditambahkan ke keranjang`);
 
     // Add visual feedback
     setSelectedProducts(prev => new Set([...prev, product.id]));
@@ -844,10 +800,7 @@ export function POSDashboard() {
   // Connect to Bluetooth thermal printer
   const connectBluetoothPrinter = async () => {
     if (!isBluetoothSupported()) {
-      toast.error("Browser Anda tidak mendukung Bluetooth", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Browser Anda tidak mendukung Bluetooth");
       return false;
     }
 
@@ -874,19 +827,13 @@ export function POSDashboard() {
         setBluetoothDevice(device);
         setIsBluetoothConnected(true);
 
-        toast.success(`Terhubung ke printer: ${device.name}`, {
-          position: 'top-center',
-          duration: 3000
-        });
+        toast.success(`Terhubung ke printer: ${device.name}`);
 
         return true;
       }
     } catch (error) {
       console.error('Bluetooth connection error:', error);
-      toast.error("Gagal terhubung ke printer Bluetooth", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Gagal terhubung ke printer Bluetooth");
       return false;
     }
     return false;
@@ -942,24 +889,12 @@ export function POSDashboard() {
       // You'll need to implement the actual printer communication based on your printer's specifications
       // Common protocols: ESC/POS, CPCL, ZPL, etc.
 
-      toast.success("Gambar berhasil dikirim ke printer Bluetooth!", {
-        position: 'top-center',
-        duration: 3000,
-        style: {
-          backgroundColor: '#10B981',
-          color: 'white',
-          fontSize: '14px',
-          padding: '12px 16px'
-        }
-      });
+      toast.success("Gambar berhasil dikirim ke printer Bluetooth!");
 
       return true;
     } catch (error) {
       console.error('Error sending to Bluetooth printer:', error);
-      toast.error("Gagal mengirim ke printer Bluetooth", {
-        position: 'top-center',
-        style: { marginTop: '60px' }
-      });
+      toast.error("Gagal mengirim ke printer Bluetooth");
       return false;
     }
   };
@@ -1181,19 +1116,7 @@ export function POSDashboard() {
         setTimeout(async () => {
           try {
             await generateReceiptJPG(receiptData);
-            toast.success("Pesanan berhasil diproses! Struk telah diunduh", {
-              position: 'top-center',
-              duration: 3000,
-              style: {
-                backgroundColor: '#10B981',
-                color: 'white',
-                fontSize: '14px',
-                padding: '12px 16px',
-                minHeight: '48px',
-                maxWidth: '320px',
-                lineHeight: '1.4'
-              }
-            });
+            toast.success("Pesanan berhasil diproses! Struk telah diunduh");
 
             // Clear cart and close modal
             setCartItems([]);
@@ -1208,16 +1131,7 @@ export function POSDashboard() {
       } else {
         // Print mode: just generate receipt data, don't auto-download
         setTimeout(() => {
-          toast.success("Data struk siap untuk dicetak", {
-            position: 'top-center',
-            duration: 2000,
-            style: {
-              backgroundColor: '#10B981',
-              color: 'white',
-              fontSize: '12px',
-              padding: '8px 12px'
-            }
-          });
+          toast.success("Data struk siap untuk dicetak");
         }, 100);
       }
 
@@ -1226,11 +1140,7 @@ export function POSDashboard() {
         console.error('Background Google Sheets submission failed:', error);
         // Show a subtle notification but don't block the user
         setTimeout(() => {
-          toast.warning("Pesanan tersimpan lokal, namun gagal sinkronisasi ke server", {
-            position: 'top-center',
-            duration: 2000,
-            style: { fontSize: '12px', marginTop: '60px' }
-          });
+          toast.warning("Pesanan tersimpan lokal, namun gagal sinkronisasi ke server");
         }, 2000);
       });
     } catch (error) {
@@ -1256,10 +1166,7 @@ export function POSDashboard() {
         // Generate JPG receipt after successful Bluetooth print
         try {
           await generateReceiptJPG();
-          toast.success("Pesanan berhasil dicetak! Struk JPG telah diunduh", {
-            position: 'top-center',
-            duration: 3000,
-          });
+          toast.success("Pesanan berhasil dicetak! Struk JPG telah diunduh");
         } catch (error) {
           console.error('Error generating JPG after print:', error);
           // Don't fail the entire operation if JPG generation fails

@@ -159,25 +159,13 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
       onClose();
     } else {
       if (needsCase && !hasCase) {
-        toast.error("Pilih jenis casing terlebih dahulu", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Pilih jenis casing terlebih dahulu", { id: 'case-validation-toast' });
       } else if (needsLamination && !hasLamination) {
-        toast.error("Pilih jenis laminasi terlebih dahulu", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Pilih jenis laminasi terlebih dahulu", { id: 'lamination-validation-toast' });
       } else if (needsModel && !hasModel) {
-        toast.error("Pilih model terlebih dahulu", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Pilih model terlebih dahulu", { id: 'model-validation-toast' });
       } else if (quantity <= 0) {
-        toast.error("Jumlah harus lebih dari 0", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Jumlah harus lebih dari 0", { id: 'quantity-validation-toast' });
       }
     }
   };
@@ -269,12 +257,14 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
 
                 {/* Image Thumbnails */}
                 <div className="mt-2">
-                  <div className="grid grid-cols-6 gap-1.5 overflow-x-auto scrollbar-hide pb-2">
+                  <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide py-1.5 px-1">
                     {product.models ? (
                       product.models.slice(0, 6).map((model, index) => (
                         <div
                           key={index}
-                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${model.code === selectedModel ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                          className={`relative flex-shrink-0 w-9 h-9 rounded-lg overflow-hidden cursor-pointer transition-all ${model.code === selectedModel
+                            ? 'ring-2 ring-[#FF5E01] ring-offset-2 ring-offset-white shadow-sm'
+                            : 'border border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100'
                             }`}
                           onClick={() => setSelectedModel(model.code)}
                         >
@@ -289,7 +279,9 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                       [product.image, ...product.additionalImages].map((image, index) => (
                         <div
                           key={index}
-                          className={`relative flex-shrink-0 w-8 h-8 rounded-md overflow-hidden cursor-pointer transition-all ${index === currentImageIndex ? 'ring-2 ring-[#FF5E01] scale-105' : 'hover:scale-105'
+                          className={`relative flex-shrink-0 w-9 h-9 rounded-lg overflow-hidden cursor-pointer transition-all ${index === currentImageIndex
+                            ? 'ring-2 ring-[#FF5E01] ring-offset-2 ring-offset-white shadow-sm'
+                            : 'border border-gray-200 hover:border-gray-400 opacity-80 hover:opacity-100'
                             }`}
                           onClick={() => setCurrentImageIndex(index)}
                         >
@@ -318,7 +310,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                     {caseVariants.map((variant) => (
                       <button
                         key={variant.code}
-                        onClick={() => setSelectedCase(variant.code)}
+                        onClick={() => {
+                          setSelectedCase(variant.code);
+                          toast.dismiss('case-validation-toast');
+                        }}
                         className={`px-3 py-2 rounded-lg text-xs transition-colors ${selectedCase === variant.code
                             ? "bg-[#FF5E01] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"
@@ -339,7 +334,10 @@ export function POSProductModal({ product, isOpen, onClose, onAddToCart }: POSPr
                     {product.laminationOptions.map((lamination) => (
                       <button
                         key={lamination.type}
-                        onClick={() => setSelectedLamination(lamination.type)}
+                        onClick={() => {
+                          setSelectedLamination(lamination.type);
+                          toast.dismiss('lamination-validation-toast');
+                        }}
                         className={`px-3 py-2 rounded-lg text-xs transition-colors ${selectedLamination === lamination.type
                             ? "bg-[#FF5E01] text-white"
                             : "bg-gray-100 text-gray-700 hover:bg-gray-200"

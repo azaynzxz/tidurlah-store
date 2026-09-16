@@ -36,7 +36,7 @@ const TwibbonMaker = () => {
       setOverlayImage(overlay);
     };
     overlay.onerror = () => {
-      toast.error("Gagal memuat overlay Twibbon", { position: 'top-center', style: { marginTop: '60px' } });
+      toast.error("Gagal memuat overlay Twibbon");
     };
     overlay.src = "/twibbon/Twibbon.png";
   }, []);
@@ -88,7 +88,7 @@ const TwibbonMaker = () => {
     if (!file) return;
 
     if (!file.type.startsWith("image/")) {
-      toast.error("File harus berupa gambar", { position: 'top-center', style: { marginTop: '60px' } });
+      toast.error("File harus berupa gambar");
       return;
     }
 
@@ -104,10 +104,10 @@ const TwibbonMaker = () => {
         setScale(constrainedScale);
         // Reset position to center
         setImagePosition({ x: 0, y: 0 });
-        toast.success("Foto berhasil diunggah", { position: 'top-center', style: { marginTop: '60px' } });
+        toast.success("Foto berhasil diunggah");
       };
       img.onerror = () => {
-        toast.error("Gagal memuat gambar", { position: 'top-center', style: { marginTop: '60px' } });
+        toast.error("Gagal memuat gambar");
       };
       img.src = event.target?.result as string;
     };
@@ -314,7 +314,7 @@ const TwibbonMaker = () => {
   const handleReset = () => {
     setImagePosition({ x: 0, y: 0 });
     setScale(1.0);
-    toast.success("Posisi dan zoom direset", { position: 'top-center', style: { marginTop: '60px' } });
+    toast.success("Posisi dan zoom direset");
   };
 
   // Zoom controls
@@ -331,7 +331,7 @@ const TwibbonMaker = () => {
   // Download final image
   const handleDownload = async () => {
     if (!uploadedImage || !overlayImage) {
-      toast.error("Silakan unggah foto terlebih dahulu", { position: 'top-center', style: { marginTop: '60px' } });
+      toast.error("Silakan unggah foto terlebih dahulu");
       return;
     }
 
@@ -383,11 +383,11 @@ const TwibbonMaker = () => {
         document.body.removeChild(link);
         URL.revokeObjectURL(url);
 
-        toast.success("Gambar berhasil diunduh", { position: 'top-center', style: { marginTop: '60px' } });
+        toast.success("Gambar berhasil diunduh");
       }, "image/png");
     } catch (error) {
       console.error("Download error:", error);
-      toast.error("Gagal mengunduh gambar", { position: 'top-center', style: { marginTop: '60px' } });
+      toast.error("Gagal mengunduh gambar");
     } finally {
       setIsLoading(false);
     }

@@ -35,10 +35,7 @@ const Katalog = () => {
         setIsLoading(false);
       } catch (error) {
         console.error("Failed to fetch katalog images:", error);
-        toast.error("Gagal memuat katalog. Silakan coba lagi nanti.", {
-          position: 'top-center',
-          style: { marginTop: '60px' }
-        });
+        toast.error("Gagal memuat katalog. Silakan coba lagi nanti.");
         setIsLoading(false);
       }
     };
@@ -119,11 +116,7 @@ const Katalog = () => {
       // Fallback: copy to clipboard
       navigator.clipboard.writeText(shareUrl);
       setLinkCopied(true);
-      toast.success("Link berhasil disalin!", {
-        position: 'top-center',
-        style: { marginTop: '60px' },
-        duration: 2000
-      });
+      toast.success("Link berhasil disalin!");
       setTimeout(() => setLinkCopied(false), 2000);
     }
   };

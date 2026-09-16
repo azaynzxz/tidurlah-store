@@ -2139,3 +2139,30 @@ body.loaded {
     --tw-shadow: var(--tw-shadow-blur) var(--tw-shadow-y) var(--tw-shadow-x) var(--tw-shadow-color) !important;
   }
 }
+
+/* ==========================================================================
+   Sonner Toast Global Animation & Stacking Styles
+   ========================================================================== */
+[data-sonner-toaster] {
+  z-index: 999999 !important;
+}
+
+[data-sonner-toast] {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1), height 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s ease !important;
+  will-change: transform, opacity;
+}
+
+[data-sonner-toast][data-mounted="true"] {
+  opacity: 1;
+}
+
+[data-sonner-toast][data-removed="true"] {
+  opacity: 0 !important;
+  transform: translateY(-16px) scale(0.96) !important;
+  transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.18s ease-out !important;
+  pointer-events: none !important;
+}
+
+[data-sonner-toast] [data-close-button] {
+  transition: all 0.15s ease;
+}

@@ -35,12 +35,7 @@ const ApplyButton = ({ posisi, isAvailable, onShare }: ApplyButtonProps) => {
         <div className="space-y-1">
           <p className="font-semibold">Lowongan tidak tersedia</p>
           <p className="text-sm">Lowongan kerja <strong>{posisi}</strong> tidak tersedia.</p>
-        </div>,
-        {
-          position: 'top-center',
-          duration: 5000,
-          style: { marginTop: '60px', minWidth: '350px' }
-        }
+        </div>
       );
       return;
     }
@@ -119,12 +114,7 @@ ${name}`;
                   style={{ width: `${progress}%` }}
                 />
               </div>
-            </div>,
-            {
-              position: 'top-center',
-              duration: Infinity,
-              style: { marginTop: '60px', minWidth: '350px' }
-            }
+            </div>
           );
         } else {
           toast.loading(
@@ -139,13 +129,7 @@ ${name}`;
                   style={{ width: `${progress}%` }}
                 />
               </div>
-            </div>,
-            {
-              id: progressToastId,
-              position: 'top-center',
-              duration: Infinity,
-              style: { marginTop: '60px', minWidth: '350px' }
-            }
+            </div>
           );
         }
       });
@@ -178,12 +162,7 @@ ${name}`;
           <p className="font-semibold">Lamaran berhasil dikirim!</p>
           <p className="text-sm">Terima kasih telah melamar posisi <strong>{posisi}</strong>.</p>
           <p className="text-xs text-gray-600 mt-2">File telah tersimpan ke sistem. Membuka email client...</p>
-        </div>,
-        {
-          position: 'top-center',
-          duration: 5000,
-          style: { marginTop: '60px', minWidth: '350px' }
-        }
+        </div>
       );
 
       // Auto-open email client after a short delay
@@ -202,12 +181,7 @@ ${name}`;
         <div className="space-y-1">
           <p className="font-semibold">Gagal mengirim lamaran</p>
           <p className="text-sm">{error.message || 'Terjadi kesalahan. Silakan coba lagi.'}</p>
-        </div>,
-        {
-          position: 'top-center',
-          duration: 5000,
-          style: { marginTop: '60px', minWidth: '350px' }
-        }
+        </div>
       );
     }
   };
