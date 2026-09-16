@@ -6,6 +6,7 @@ import type { CartItem, OrderData } from "@/types/product";
 import { caseVariants } from "@/constants";
 import { calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange } from "@/utils/cart";
 import { submitWebsiteOrder } from "@/utils/api";
+import { saveLocalUser, getLocalUser, addLocalOrder } from "@/utils/localOrders";
 
 interface BetaCartDrawerProps {
   isOpen: boolean;
@@ -13,6 +14,7 @@ interface BetaCartDrawerProps {
   cartItems: CartItem[];
   setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>;
   products: any;
+  onOrderSuccess?: () => void;
 }
 
 export const BetaCartDrawer: React.FC<BetaCartDrawerProps> = ({
@@ -21,11 +23,21 @@ export const BetaCartDrawer: React.FC<BetaCartDrawerProps> = ({
   cartItems,
   setCartItems,
   products,
+  onOrderSuccess,
 }) => {
-  // Lock body scroll while drawer is open
+  // Lock body scroll while drawer is open & prefill local user info
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = "hidden";
+      const savedUser = getLocalUser();
+      if (savedUser) {
+        setCustomerName((prev) => prev || savedUser.name || "");
+        setPhoneNumber((prev) => prev || savedUser.phone || "");
+        setInstansi((prev) => prev || (savedUser.instansi && savedUser.instansi !== "-" ? savedUser.instansi : ""));
+        if (savedUser.address) {
+          setAddress((prev) => prev || savedUser.address || "");
+        }
+      }
     } else {
       document.body.style.overflow = "";
     }
@@ -149,10 +161,46 @@ ${productList}
 Total Pembayaran: Rp ${total.toLocaleString("id-ID")}`;
 
       const whatsappUrl = `https://wa.me/6285172157808?text=${encodeURIComponent(message)}`;
+
+      // 1. Auto-register / update local user profile
+      saveLocalUser({
+        name: customerName.trim(),
+        phone: phoneNumber.trim(),
+        instansi: instansi.trim() || "-",
+        address: isShipping ? address.trim() : "",
+      });
+
+      // 2. Save order locally for "Pesanan Saya" (Instant Proof)
+      addLocalOrder({
+        invoiceNumber: orderData.invoiceNumber,
+        customerName: customerName.trim(),
+        phoneNumber: phoneNumber.trim(),
+        instansi: instansi.trim() || "-",
+        address: isShipping ? address.trim() : "Ambil di toko",
+        isShipping,
+        designNote,
+        promoCode,
+        promoDiscount,
+        total,
+        subtotal: total + totalDiscount,
+        cartItems: [...cartItems],
+        timestamp: new Date().toISOString(),
+        status: 'unpaid',
+        whatsappUrl,
+      });
+
+      // 3. Open WhatsApp in background/tab
       window.open(whatsappUrl, "_blank");
-      toast.success("Pesanan berhasil diproses, menghubungkan ke WhatsApp...");
+      toast.success("Pesanan berhasil dibuat! Bukti tersimpan di Pesanan Saya.");
       setCartItems([]);
       onClose();
+
+      // 4. Automatically reveal "Pesanan Saya" drawer for instant confirmation
+      if (onOrderSuccess) {
+        setTimeout(() => {
+          onOrderSuccess();
+        }, 300);
+      }
     } catch (err: any) {
       console.error(err);
       toast.error(err.message || "Gagal memproses pesanan.");

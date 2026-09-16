@@ -1,5 +1,5 @@
 import React, { useRef, useEffect } from "react";
-import { Search, ShoppingCart, X } from "lucide-react";
+import { Search, ShoppingCart, X, Package } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,6 +11,8 @@ interface BetaHeaderProps {
   onSearchChange: (value: string) => void;
   cartCount: number;
   onOpenCart: () => void;
+  ordersCount?: number;
+  onOpenOrders?: () => void;
 }
 
 export const BetaHeader: React.FC<BetaHeaderProps> = ({
@@ -21,6 +23,8 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
   onSearchChange,
   cartCount,
   onOpenCart,
+  ordersCount = 0,
+  onOpenOrders,
 }) => {
   const navigate = useNavigate();
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -105,6 +109,22 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
 
           {/* Actions */}
           <div className="flex items-center gap-2">
+            {/* Pesanan Saya */}
+            <button
+              onClick={onOpenOrders}
+              className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-[#E7E5E4] text-[#18181B] hover:bg-[#F4F4F5] hover:border-[#D4D4D8] active:scale-[0.98] transition-all text-xs sm:text-sm font-medium"
+              aria-label="Lihat Pesanan Saya"
+            >
+              <Package className="w-4 h-4 text-[#71717A]" />
+              <span className="hidden sm:inline">Pesanan Saya</span>
+              {ordersCount > 0 && (
+                <span className="inline-flex items-center justify-center min-w-[18px] h-4.5 px-1.5 text-[10px] font-semibold bg-amber-500 text-white rounded-full font-mono">
+                  {ordersCount}
+                </span>
+              )}
+            </button>
+
+            {/* Keranjang */}
             <button
               onClick={onOpenCart}
               className="relative flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#18181B] text-white hover:bg-[#27272A] active:scale-[0.98] transition-all text-sm font-medium"

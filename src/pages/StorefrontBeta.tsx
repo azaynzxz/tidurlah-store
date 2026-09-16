@@ -7,9 +7,11 @@ import { BetaHeader } from "@/components/beta/BetaHeader";
 import { BetaProductCard } from "@/components/beta/BetaProductCard";
 import { BetaProductModal } from "@/components/beta/BetaProductModal";
 import { BetaCartDrawer } from "@/components/beta/BetaCartDrawer";
+import { BetaOrdersDrawer } from "@/components/beta/BetaOrdersDrawer";
 import type { Product, CartItem } from "@/types/product";
 import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug } from "@/utils/product";
+import { getLocalOrders } from "@/utils/localOrders";
 
 export const StorefrontBeta: React.FC = () => {
   const { slug } = useParams();
@@ -31,6 +33,14 @@ export const StorefrontBeta: React.FC = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isOrdersOpen, setIsOrdersOpen] = useState<boolean>(false);
+  const [ordersCount, setOrdersCount] = useState<number>(() => {
+    try {
+      return getLocalOrders().length;
+    } catch {
+      return 0;
+    }
+  });
 
   // Sync cart items with localStorage
   useEffect(() => {
@@ -150,6 +160,11 @@ export const StorefrontBeta: React.FC = () => {
         onSearchChange={setSearchTerm}
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
         onOpenCart={() => setIsCartOpen(true)}
+        ordersCount={ordersCount}
+        onOpenOrders={() => {
+          setOrdersCount(getLocalOrders().length);
+          setIsOrdersOpen(true);
+        }}
       />
 
       {/* Main Content */}
@@ -311,6 +326,22 @@ export const StorefrontBeta: React.FC = () => {
         cartItems={cartItems}
         setCartItems={setCartItems}
         products={productsData}
+        onOrderSuccess={() => {
+          setOrdersCount(getLocalOrders().length);
+          setIsOrdersOpen(true);
+        }}
+      />
+
+      {/* Pesanan Saya (Local Order History) Drawer */}
+      <BetaOrdersDrawer
+        isOpen={isOrdersOpen}
+        onClose={() => {
+          setIsOrdersOpen(false);
+          setOrdersCount(getLocalOrders().length);
+        }}
+        onOpenShop={() => {
+          window.scrollTo({ top: 350, behavior: 'smooth' });
+        }}
       />
     </div>
   );
