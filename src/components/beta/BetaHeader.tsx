@@ -42,7 +42,7 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAFAF9]/90 backdrop-blur-md border-b border-[#E7E5E4]">
+    <header className="sticky top-0 z-40 bg-[#FAFAF9] sm:bg-[#FAFAF9]/90 sm:backdrop-blur-md border-b border-[#E7E5E4]">
       {/* Top Banner Notice */}
       <div className="bg-[#18181B] text-[#FAFAF9] text-xs py-1.5 px-4 text-center font-medium tracking-tight">
         <span>Tampilan Beta idcardlampung.com — Pengalaman belanja modern, cepat, dan presisi. </span>
@@ -112,7 +112,7 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
             {/* Pesanan Saya */}
             <button
               onClick={onOpenOrders}
-              className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-[#E7E5E4] text-[#18181B] hover:bg-[#F4F4F5] hover:border-[#D4D4D8] active:scale-[0.98] transition-all text-xs sm:text-sm font-medium"
+              className="relative flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white border border-[#E7E5E4] text-[#18181B] hover:bg-[#F4F4F5] hover:border-[#D4D4D8] active:scale-[0.98] transition-all text-xs sm:text-sm font-medium touch-manipulation select-none"
               aria-label="Lihat Pesanan Saya"
             >
               <Package className="w-4 h-4 text-[#71717A]" />
@@ -127,7 +127,7 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
             {/* Keranjang */}
             <button
               onClick={onOpenCart}
-              className="relative flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#18181B] text-white hover:bg-[#27272A] active:scale-[0.98] transition-all text-sm font-medium"
+              className="relative flex items-center gap-2 px-3.5 py-2 rounded-lg bg-[#18181B] text-white hover:bg-[#27272A] active:scale-[0.98] transition-all text-sm font-medium touch-manipulation select-none"
               aria-label="Lihat Keranjang"
             >
               <ShoppingCart className="w-4 h-4" />

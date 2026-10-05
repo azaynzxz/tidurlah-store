@@ -164,14 +164,14 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
     <AnimatePresence>
       {isOpen && activeProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto pointer-events-auto">
-          {/* Backdrop */}
+          {/* Backdrop (clean solid translucent dimming without blur to prevent mobile GPU glitching) */}
           <motion.div
             key="modal-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
+            className="fixed inset-0 bg-black/60"
             onClick={handleModalClose}
           />
 

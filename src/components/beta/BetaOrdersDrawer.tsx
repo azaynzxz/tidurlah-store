@@ -33,14 +33,7 @@ export const BetaOrdersDrawer: React.FC<BetaOrdersDrawerProps> = ({
       if (storedOrders.length > 0) {
         setExpandedOrders({ [storedOrders[0].invoiceNumber]: true });
       }
-
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "";
     }
-    return () => {
-      document.body.style.overflow = "";
-    };
   }, [isOpen]);
 
   const handleCopyInvoice = (invoice: string) => {
@@ -63,26 +56,27 @@ export const BetaOrdersDrawer: React.FC<BetaOrdersDrawerProps> = ({
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop */}
+          {/* Backdrop (solid translucent dimming, strictly no backdrop-blur to prevent mobile GPU glitching) */}
           <motion.div
             key="orders-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.22, ease: "easeOut" }}
-            className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-xs z-50"
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="fixed inset-0 bg-black/60 z-50"
             onClick={onClose}
           />
 
           {/* Slide-over panel */}
-          <div className="fixed inset-y-0 right-0 z-50 max-w-full flex pl-0 sm:pl-10 pointer-events-none">
+          <div className="fixed inset-0 z-50 pointer-events-none flex justify-end">
             <motion.div
               key="orders-panel"
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
-              className="w-screen max-w-lg bg-[#FAFAF9] border-l border-[#E7E5E4] shadow-2xl flex flex-col pointer-events-auto"
+              className="w-full max-w-lg h-full bg-[#FAFAF9] border-l border-[#E7E5E4] shadow-2xl flex flex-col pointer-events-auto"
+              style={{ willChange: "transform" }}
             >
               {/* Header */}
               <div className="px-5 py-4 bg-white border-b border-[#E7E5E4] flex items-center justify-between">

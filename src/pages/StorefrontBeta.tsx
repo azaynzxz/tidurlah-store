@@ -43,6 +43,19 @@ export const StorefrontBeta: React.FC = () => {
     }
   });
 
+  // Centralized body scroll lock prevents conflicting cleanups and mobile layout jitter
+  useEffect(() => {
+    const isAnyOverlayOpen = isCartOpen || isOrdersOpen || isModalOpen;
+    if (isAnyOverlayOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isCartOpen, isOrdersOpen, isModalOpen]);
+
   // Sync cart items with localStorage
   useEffect(() => {
     try {
@@ -122,14 +135,39 @@ export const StorefrontBeta: React.FC = () => {
     return list;
   }, [activeCategory, allProducts, productsData, searchTerm]);
 
+  // Mutually exclusive drawer handlers prevent concurrent drawer overlap & mobile glitching
+  const handleOpenCart = useCallback(() => {
+    setIsOrdersOpen(false);
+    setIsModalOpen(false);
+    setIsCartOpen(true);
+  }, []);
+
+  const handleCloseCart = useCallback(() => {
+    setIsCartOpen(false);
+  }, []);
+
+  const handleOpenOrders = useCallback(() => {
+    setIsCartOpen(false);
+    setIsModalOpen(false);
+    setOrdersCount(getLocalOrders().length);
+    setIsOrdersOpen(true);
+  }, []);
+
+  const handleCloseOrders = useCallback(() => {
+    setIsOrdersOpen(false);
+    setOrdersCount(getLocalOrders().length);
+  }, []);
+
   // Open modal for a product (stabilized reference for React.memo)
   const handleSelectProduct = useCallback((product: Product) => {
+    setIsCartOpen(false);
+    setIsOrdersOpen(false);
     setSelectedProduct(product);
     setIsModalOpen(true);
   }, []);
 
   // Close modal with graceful exit animation
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     if (slug) {
       navigate("/beta", { replace: true });
@@ -137,7 +175,7 @@ export const StorefrontBeta: React.FC = () => {
     setTimeout(() => {
       setSelectedProduct(null);
     }, 220);
-  };
+  }, [slug, navigate]);
 
   // Handle banner clicks (smoothly scroll to catalog and apply relevant category/search filters)
   const handleBannerClick = useCallback((banner: BannerSlide) => {
@@ -178,12 +216,9 @@ export const StorefrontBeta: React.FC = () => {
         searchTerm={searchTerm}
         onSearchChange={setSearchTerm}
         cartCount={cartItems.reduce((sum, item) => sum + item.quantity, 0)}
-        onOpenCart={() => setIsCartOpen(true)}
+        onOpenCart={handleOpenCart}
         ordersCount={ordersCount}
-        onOpenOrders={() => {
-          setOrdersCount(getLocalOrders().length);
-          setIsOrdersOpen(true);
-        }}
+        onOpenOrders={handleOpenOrders}
       />
 
       {/* Main Content */}
@@ -405,11 +440,12 @@ export const StorefrontBeta: React.FC = () => {
       {/* Cart & Direct Checkout Drawer */}
       <BetaCartDrawer
         isOpen={isCartOpen}
-        onClose={() => setIsCartOpen(false)}
+        onClose={handleCloseCart}
         cartItems={cartItems}
         setCartItems={setCartItems}
         products={productsData}
         onOrderSuccess={() => {
+          setIsCartOpen(false);
           setOrdersCount(getLocalOrders().length);
           setIsOrdersOpen(true);
         }}
@@ -418,11 +454,9 @@ export const StorefrontBeta: React.FC = () => {
       {/* Pesanan Saya (Local Order History) Drawer */}
       <BetaOrdersDrawer
         isOpen={isOrdersOpen}
-        onClose={() => {
-          setIsOrdersOpen(false);
-          setOrdersCount(getLocalOrders().length);
-        }}
+        onClose={handleCloseOrders}
         onOpenShop={() => {
+          handleCloseOrders();
           window.scrollTo({ top: 350, behavior: 'smooth' });
         }}
       />
