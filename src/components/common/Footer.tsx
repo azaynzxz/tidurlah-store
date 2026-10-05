@@ -128,8 +128,8 @@ const Footer = () => {
                       <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
                     </svg>
                   </div>
-                  <a href="mailto:cs@tidurlah.com" className="text-gray-300 hover:text-[#FF5E01] transition-colors">
-                    cs@tidurlah.com
+                  <a href="mailto:cs@idcardlampung.com" className="text-gray-300 hover:text-[#FF5E01] transition-colors">
+                    cs@idcardlampung.com
                   </a>
                 </div>
 
@@ -162,14 +162,22 @@ const Footer = () => {
               <h4 className="text-lg font-bold text-white mb-4">Lokasi Cabang</h4>
 
               {/* Location Header */}
-              <div className="mb-3">
-                <div className="bg-[#FF5E01] text-white px-3 py-2 rounded-lg text-sm font-medium text-center">
+              <div className="mb-3 flex items-center justify-between">
+                <span className="bg-[#FF5E01] text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
                   Cabang Belwis, Jatiagung
-                </div>
+                </span>
+                <a
+                  href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs text-gray-300 hover:text-[#FF5E01] transition-colors underline"
+                >
+                  Buka Maps ↗
+                </a>
               </div>
 
               <div className="relative">
-                <div className="w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                <div className="w-full h-56 bg-gray-200 rounded-lg overflow-hidden border border-gray-700">
                   <iframe
                     key={selectedLocation}
                     src={mapUrls[selectedLocation]}
@@ -179,9 +187,13 @@ const Footer = () => {
                     allowFullScreen
                     loading="lazy"
                     referrerPolicy="no-referrer-when-downgrade"
+                    title="Peta Lokasi Tidurlah Grafika Belwis"
                     className="w-full h-full"
                   ></iframe>
                 </div>
+                <p className="text-xs text-gray-400 mt-2 leading-relaxed">
+                  Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Lampung Selatan 35365
+                </p>
               </div>
             </div>
           </div>

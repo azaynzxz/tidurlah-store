@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from "react";
+import { createPortal } from "react-dom";
 import { X, Minus, Plus, Clock, Check, AlertCircle } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -159,7 +160,7 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
     }
   };
 
-  return (
+  const modalContent = (
     <AnimatePresence>
       {isOpen && activeProduct && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 overflow-y-auto pointer-events-auto">
@@ -170,19 +171,17 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.18, ease: "easeOut" }}
-            style={{ willChange: "opacity" }}
-            className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 bg-black/60 backdrop-blur-xs"
             onClick={handleModalClose}
           />
 
           {/* Modal Card */}
           <motion.div
             key="modal-card"
-            initial={{ opacity: 0, transform: "scale(0.95) translateY(12px)" }}
-            animate={{ opacity: 1, transform: "scale(1) translateY(0px)" }}
-            exit={{ opacity: 0, transform: "scale(0.96) translateY(8px)" }}
-            transition={{ duration: 0.2, ease: [0.23, 1, 0.32, 1] }}
-            style={{ willChange: "transform, opacity" }}
+            initial={{ opacity: 0, scale: 0.96, y: 8 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.96, y: 8 }}
+            transition={{ duration: 0.18, ease: [0.23, 1, 0.32, 1] }}
             className="relative w-full max-w-2xl bg-white border border-[#E7E5E4] rounded-2xl shadow-2xl overflow-hidden z-10 my-auto pointer-events-auto"
             onClick={(e) => e.stopPropagation()}
           >
@@ -502,4 +501,6 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined" ? createPortal(modalContent, document.body) : null;
 };

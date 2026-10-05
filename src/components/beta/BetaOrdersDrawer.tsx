@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, MessageCircle, Copy, Check, Package, Clock, MapPin, Building, ChevronDown, ChevronUp, ShoppingBag, AlertCircle } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -58,7 +59,7 @@ export const BetaOrdersDrawer: React.FC<BetaOrdersDrawerProps> = ({
     }));
   };
 
-  return (
+  const drawerContent = (
     <AnimatePresence>
       {isOpen && (
         <>
@@ -68,21 +69,19 @@ export const BetaOrdersDrawer: React.FC<BetaOrdersDrawerProps> = ({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-            style={{ willChange: "opacity" }}
-            className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-sm z-50"
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-xs z-50"
             onClick={onClose}
           />
 
           {/* Slide-over panel */}
-          <div className="fixed inset-y-0 right-0 z-50 max-w-full flex pl-6 sm:pl-10 pointer-events-none">
+          <div className="fixed inset-y-0 right-0 z-50 max-w-full flex pl-0 sm:pl-10 pointer-events-none">
             <motion.div
               key="orders-panel"
-              initial={{ transform: "translateX(100%)" }}
-              animate={{ transform: "translateX(0%)" }}
-              exit={{ transform: "translateX(100%)" }}
-              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              style={{ willChange: "transform" }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
               className="w-screen max-w-lg bg-[#FAFAF9] border-l border-[#E7E5E4] shadow-2xl flex flex-col pointer-events-auto"
             >
               {/* Header */}
@@ -373,4 +372,6 @@ export const BetaOrdersDrawer: React.FC<BetaOrdersDrawerProps> = ({
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined" ? createPortal(drawerContent, document.body) : null;
 };

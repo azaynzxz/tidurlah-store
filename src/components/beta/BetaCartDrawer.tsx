@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import { X, Trash2, Minus, Plus, ArrowRight, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { motion, AnimatePresence } from "framer-motion";
@@ -148,7 +149,7 @@ export const BetaCartDrawer: React.FC<BetaCartDrawerProps> = ({
         })
         .join("\n");
 
-      const message = `Halo Tidurlah Store, saya ingin konfirmasi pesanan:
+      const message = `Halo idcardlampung.com, saya ingin konfirmasi pesanan:
 No. Invoice: ${orderData.invoiceNumber}
 Nama: ${customerName}
 WhatsApp: ${phoneNumber}
@@ -209,31 +210,29 @@ Total Pembayaran: Rp ${total.toLocaleString("id-ID")}`;
     }
   };
 
-  return (
+  const drawerContent = (
     <AnimatePresence>
       {isOpen && (
         <>
-          {/* Backdrop - dims and blurs concurrently with the drawer from t=0 */}
+          {/* Backdrop */}
           <motion.div
             key="cart-backdrop"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-            style={{ willChange: "opacity" }}
-            className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-sm z-50"
+            transition={{ duration: 0.22, ease: "easeOut" }}
+            className="fixed inset-0 bg-[#18181B]/40 backdrop-blur-xs z-50"
             onClick={onClose}
           />
 
-          {/* Slide-over panel - slides concurrently from t=0 */}
-          <div className="fixed inset-y-0 right-0 z-50 max-w-full flex pl-10 pointer-events-none">
+          {/* Slide-over panel */}
+          <div className="fixed inset-y-0 right-0 z-50 max-w-full flex pl-0 sm:pl-10 pointer-events-none">
             <motion.div
               key="cart-panel"
-              initial={{ transform: "translateX(100%)" }}
-              animate={{ transform: "translateX(0%)" }}
-              exit={{ transform: "translateX(100%)" }}
-              transition={{ duration: 0.28, ease: [0.32, 0.72, 0, 1] }}
-              style={{ willChange: "transform" }}
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ duration: 0.25, ease: [0.32, 0.72, 0, 1] }}
               className="w-screen max-w-md bg-white border-l border-[#E7E5E4] shadow-2xl flex flex-col pointer-events-auto"
             >
               {/* Header */}
@@ -524,4 +523,6 @@ Total Pembayaran: Rp ${total.toLocaleString("id-ID")}`;
       )}
     </AnimatePresence>
   );
+
+  return typeof document !== "undefined" ? createPortal(drawerContent, document.body) : null;
 };

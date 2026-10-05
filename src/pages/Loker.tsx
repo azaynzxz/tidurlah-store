@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import SEO from "@/components/common/SEO";
-import { Briefcase, MapPin, Clock, GraduationCap, CheckCircle, XCircle, Share2, ArrowRight } from "lucide-react";
+import { Briefcase, MapPin, Clock, GraduationCap, CheckCircle, XCircle, Share2, ArrowRight, Mail, ExternalLink } from "lucide-react";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import ApplyButton from "@/components/ApplyButton";
@@ -420,6 +420,65 @@ const Loker = () => {
             </div>
           )}
 
+          {/* Lokasi Workshop & Kantor Produksi */}
+          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-5 space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF5E01]/10 text-[#FF5E01] rounded-full text-xs font-semibold">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>Studio & Workshop Produksi</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
+                  Lokasi Kantor & Workshop
+                </h3>
+                <p className="text-sm text-gray-600 leading-relaxed">
+                  Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365.
+                </p>
+
+                <div className="space-y-2.5 text-xs sm:text-sm text-gray-600 pt-2 border-t border-gray-100">
+                  <div className="flex items-center gap-2.5">
+                    <Clock className="w-4 h-4 text-[#FF5E01] shrink-0" />
+                    <span>Senin – Sabtu: 08.00 – 17.30 WIB</span>
+                  </div>
+                  <div className="flex items-center gap-2.5">
+                    <Mail className="w-4 h-4 text-[#FF5E01] shrink-0" />
+                    <a href="mailto:hrd@idcardlampung.com" className="hover:text-[#FF5E01] transition-colors">
+                      hrd@idcardlampung.com
+                    </a>
+                  </div>
+                </div>
+
+                <div className="pt-2">
+                  <a
+                    href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white hover:bg-[#FF5E01] text-xs sm:text-sm font-medium transition-colors"
+                  >
+                    <span>Petunjuk Arah Google Maps</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                </div>
+              </div>
+
+              <div className="lg:col-span-7">
+                <div className="relative w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-inner">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Peta Lokasi Studio Tidurlah Grafika Belwis Lampung"
+                    className="w-full h-full"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+
           {/* Call to Action */}
           <div className="bg-gradient-to-r from-[#FF5E01] to-[#e54d00] rounded-2xl p-8 text-center text-white">
             <h2 className="text-3xl font-bold mb-4">Tertarik Bergabung dengan Kami?</h2>
@@ -428,7 +487,7 @@ const Loker = () => {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
-                href="mailto:hrd@tidurlah.com"
+                href="mailto:hrd@idcardlampung.com"
                 className="bg-background text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
               >
                 Kirim Email

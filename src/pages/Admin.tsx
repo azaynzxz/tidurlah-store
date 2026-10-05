@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, FileText, Package, Tag, LogOut, ArrowLeft, AlertTriangle } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, FileText, Package, Tag, LogOut, ArrowLeft, AlertTriangle } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
+import { CustomersTab } from "@/components/admin/CustomersTab";
 import { ReportsTab } from "@/components/admin/ReportsTab";
 import { ProductsTab } from "@/components/admin/ProductsTab";
 import { PromosTab } from "@/components/admin/PromosTab";
@@ -14,6 +15,7 @@ import { useOrderNotifications } from "@/hooks/useOrderNotifications";
 const TABS = [
     { id: 'dashboard', label: 'Dashboard', icon: LayoutDashboard },
     { id: 'orders', label: 'Pesanan', icon: ShoppingCart },
+    { id: 'customers', label: 'Pelanggan', icon: Users },
     { id: 'products', label: 'Produk', icon: Package },
     { id: 'promos', label: 'Promo', icon: Tag },
     { id: 'reports', label: 'Laporan', icon: FileText },
@@ -98,7 +100,7 @@ export default function Admin() {
 
             {/* Tab Navigation */}
             <div className="bg-white border-b shadow-sm sticky top-0 z-30">
-                <div className="max-w-4xl mx-auto px-4 flex items-center justify-between gap-4 pt-2">
+                <div className="max-w-[1400px] mx-auto px-4 sm:px-6 flex items-center justify-between gap-4 pt-2">
                     <div className="flex gap-1 overflow-x-auto flex-nowrap no-scrollbar pb-1 select-none flex-1 -mb-px">
                         {TABS.map(tab => (
                             <button
@@ -128,9 +130,10 @@ export default function Admin() {
             </div>
 
             {/* Content */}
-            <div className="max-w-4xl mx-auto p-4">
+            <div className="max-w-[1400px] mx-auto p-4 sm:p-6">
                 {activeTab === 'dashboard' && <DashboardTab />}
                 {activeTab === 'orders' && <OrderHistory />}
+                {activeTab === 'customers' && <CustomersTab />}
                 {activeTab === 'products' && <ProductsTab />}
                 {activeTab === 'promos' && <PromosTab />}
                 {activeTab === 'reports' && <ReportsTab />}

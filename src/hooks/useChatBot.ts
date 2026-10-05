@@ -411,8 +411,8 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
         // Special case for "chat with admin" - show WhatsApp button with collected info
         if (keyword === "chat with admin") {
           const message = userInstansi && userInstansi.toLowerCase() !== 'tidak ada' && userInstansi.trim() !== ''
-            ? `Halo Mincard, saya ${userName} dari ${userInstansi} ingin bertanya terkait produk tidurlah.com`
-            : `Halo Mincard, saya ${userName} ingin bertanya terkait produk tidurlah.com`;
+            ? `Halo Mincard, saya ${userName} dari ${userInstansi} ingin bertanya terkait produk idcardlampung.com`
+            : `Halo Mincard, saya ${userName} ingin bertanya terkait produk idcardlampung.com`;
           
           setMessages([
             ...messagesWithoutTyping,

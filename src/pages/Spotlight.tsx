@@ -3,6 +3,7 @@ import Header from "@/components/common/Header";
 import SEO from "@/components/common/SEO";
 import { AnimatedElement } from "@/components/animations/AnimatedElement";
 import { Button } from "@/components/ui/button";
+import Footer from "@/components/common/Footer";
 import ChatBot from "@/components/ChatBot";
 
 interface Card {
@@ -199,13 +200,87 @@ const Spotlight = () => {
           </main>
         </AnimatedElement>
 
-        {/* Footer */}
-        <AnimatedElement direction="up" delay={600} duration={300}>
-          <footer className="text-center mt-16 text-muted-foreground text-sm">
-            <p>© 2025 Tidurlah Store. Hak Cipta Dilindungi.</p>
-          </footer>
+        {/* Interactive Google Maps & Studio Location */}
+        <AnimatedElement direction="up" delay={500} duration={300}>
+          <section className="container max-w-4xl mx-auto mt-8 mb-12">
+            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-md">
+              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
+                <div>
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF5E01]/10 text-[#FF5E01] text-xs font-semibold mb-2">
+                    <MapPin className="w-3.5 h-3.5" />
+                    <span>Studio & Workshop Fisik</span>
+                  </div>
+                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
+                    Tidurlah Grafika — Cabang Belwis
+                  </h2>
+                  <p className="text-xs md:text-sm text-gray-600 mt-1">
+                    Kunjungi workshop kami untuk konsultasi langsung, cek sample bahan, atau pengambilan pesanan.
+                  </p>
+                </div>
+                <Button
+                  onClick={() => window.open("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA", "_blank")}
+                  className="bg-[#FF5E01] hover:bg-[#e54d00] text-white shadow-sm shrink-0"
+                >
+                  <MapPin className="mr-2 h-4 w-4" />
+                  Buka di Google Maps
+                </Button>
+              </div>
+
+              {/* Map Embed and Details Grid */}
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+                <div className="lg:col-span-7 h-64 md:h-72 rounded-xl overflow-hidden border border-gray-200 shadow-inner bg-gray-100">
+                  <iframe
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
+                    width="100%"
+                    height="100%"
+                    style={{ border: 0 }}
+                    allowFullScreen
+                    loading="lazy"
+                    referrerPolicy="no-referrer-when-downgrade"
+                    title="Peta Lokasi Studio Tidurlah Grafika Belwis Lampung"
+                    className="w-full h-full"
+                  />
+                </div>
+
+                <div className="lg:col-span-5 space-y-4 text-sm text-gray-700">
+                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span className="font-semibold text-gray-900 block text-xs uppercase tracking-wider text-[#FF5E01]">
+                      Alamat Lengkap
+                    </span>
+                    <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
+                      Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
+                    </p>
+                  </div>
+
+                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
+                    <span className="font-semibold text-gray-900 block text-xs uppercase tracking-wider text-[#FF5E01]">
+                      Jam Buka & Layanan
+                    </span>
+                    <p className="text-xs md:text-sm text-gray-700">
+                      <strong>Senin – Sabtu:</strong> 08.00 – 17.30 WIB<br />
+                      <span className="text-xs text-gray-500">(Order, konsultasi desain, & pengambilan pesanan)</span>
+                    </p>
+                  </div>
+
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      onClick={() => window.open("https://wa.me/6285172157808", "_blank")}
+                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 text-xs"
+                    >
+                      <MessageCircle className="mr-1.5 h-3.5 w-3.5 text-green-600" />
+                      Chat WhatsApp
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
         </AnimatedElement>
       </div>
+
+      {/* Footer */}
+      <Footer />
 
       {/* Chat Bot */}
       <ChatBot />

@@ -11,6 +11,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  scrollbar-gutter: stable;
+}
+
 /* Prevent flash of unstyled content */
 body {
   opacity: 0;

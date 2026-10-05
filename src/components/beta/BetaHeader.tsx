@@ -42,10 +42,10 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
   }, []);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#FAFAF9]/90 backdrop-blur-md border-b border-[#E7E5E4] transition-all">
+    <header className="sticky top-0 z-40 bg-[#FAFAF9]/90 backdrop-blur-md border-b border-[#E7E5E4]">
       {/* Top Banner Notice */}
       <div className="bg-[#18181B] text-[#FAFAF9] text-xs py-1.5 px-4 text-center font-medium tracking-tight">
-        <span>Tampilan Beta Toko Tidurlah — Pengalaman belanja modern, cepat, dan presisi. </span>
+        <span>Tampilan Beta idcardlampung.com — Pengalaman belanja modern, cepat, dan presisi. </span>
         <button
           onClick={() => navigate("/")}
           className="underline ml-2 hover:text-[#E8590C] transition-colors"
@@ -65,12 +65,12 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
             >
               <img
                 src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
-                alt="Tidurlah Store"
+                alt="idcardlampung.com"
                 className="w-9 h-9 object-contain"
               />
               <div className="hidden sm:block leading-none">
                 <span className="font-semibold text-base text-[#18181B] tracking-tight block">
-                  Tidurlah Store
+                  idcardlampung.com
                 </span>
                 <span className="text-[11px] text-[#71717A] tracking-wider uppercase">
                   Percetakan & Merchandise

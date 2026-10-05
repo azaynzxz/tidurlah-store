@@ -82,12 +82,12 @@ export const ChatMessage = ({ message, onSuggestionClick, index = 0 }: ChatMessa
         let whatsappMessage = "";
         if (message.collectedName) {
           if (message.collectedInstansi && message.collectedInstansi.toLowerCase() !== 'tidak ada' && message.collectedInstansi.trim() !== '') {
-            whatsappMessage = `Halo Mincard, saya ${message.collectedName} dari ${message.collectedInstansi} ingin bertanya terkait produk tidurlah.com`;
+            whatsappMessage = `Halo Mincard, saya ${message.collectedName} dari ${message.collectedInstansi} ingin bertanya terkait produk idcardlampung.com`;
           } else {
-            whatsappMessage = `Halo Mincard, saya ${message.collectedName} ingin bertanya terkait produk tidurlah.com`;
+            whatsappMessage = `Halo Mincard, saya ${message.collectedName} ingin bertanya terkait produk idcardlampung.com`;
           }
         } else {
-          whatsappMessage = "Halo Mincard, saya ingin bertanya terkait produk tidurlah.com";
+          whatsappMessage = "Halo Mincard, saya ingin bertanya terkait produk idcardlampung.com";
         }
         
         return (

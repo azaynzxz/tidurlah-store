@@ -13,7 +13,7 @@ const SEO = ({
     title,
     description,
     keywords,
-    image = 'https://tidurlah.com/product-image/web-preview.jpg',
+    image = 'https://idcardlampung.com/product-image/web-preview.jpg',
     url = window.location.href,
     type = 'website'
 }: SEOProps) => {
