@@ -189,7 +189,7 @@ const Index = () => {
         );
       } else {
         // If product not found, redirect to home and show error
-        navigate('/');
+        navigate(window.location.pathname.startsWith('/classic') ? '/classic' : '/');
         toast.error("Produk tidak ditemukan");
       }
     }
@@ -454,6 +454,17 @@ const Index = () => {
         keywords="id card lampung, lanyard custom, cetak id card bandar lampung, lanyard bisa dicuci, cetak id card terdekat, plakat, merchandise lampung"
         image={selectedProduct?.image}
       />
+      {/* Notice for Classic Storefront */}
+      <div className="bg-[#18181B] text-[#FAFAF9] text-xs py-2 px-4 text-center font-medium tracking-tight">
+        <span>Anda sedang melihat Versi Klasik idcardlampung.com. </span>
+        <button
+          onClick={() => navigate("/")}
+          className="underline ml-2 text-[#FF5E01] hover:text-[#e54d00] transition-colors font-semibold"
+        >
+          Buka Tampilan Baru
+        </button>
+      </div>
+
       {/* Header - Full Width */}
       <Header
         cartItemsCount={cartItems.reduce((total, item) => total + item.quantity, 0)}
@@ -1214,7 +1225,8 @@ const Index = () => {
           // Clear URL slug when modal is closed without affecting tab state
           if (slug) {
             // Use window.history to avoid triggering route effects
-            window.history.replaceState({}, '', '/');
+            const basePath = window.location.pathname.startsWith('/classic') ? '/classic' : '/';
+            window.history.replaceState({}, '', basePath);
           }
         }}>
           <DialogContent className="sm:max-w-md max-w-[calc(100%-1rem)] w-[calc(100%-1rem)] sm:w-auto mx-auto rounded-lg overflow-hidden max-h-[90vh] p-0 [&>button]:bg-[#FF5E01] [&>button]:text-white [&>button]:rounded-full [&>button]:opacity-100 [&>button]:hover:bg-[#e54d00] [&>button]:transition-colors">

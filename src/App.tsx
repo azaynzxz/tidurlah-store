@@ -61,10 +61,18 @@ const App = () => (
                 {/* Promo Banner - Shows on all pages */}
                 <PromoBanner />
                 <Routes>
-                  <Route path="/" element={<Index />} />
-                  <Route path="/product/:slug" element={<Index />} />
+                  {/* Main Storefront (idcardlampung.com) */}
+                  <Route path="/" element={<StorefrontBeta />} />
+                  <Route path="/product/:slug" element={<StorefrontBeta />} />
+
+                  {/* Beta routes alias */}
                   <Route path="/beta" element={<StorefrontBeta />} />
                   <Route path="/beta/product/:slug" element={<StorefrontBeta />} />
+
+                  {/* Classic storefront (Preserved codebase) */}
+                  <Route path="/classic" element={<Index />} />
+                  <Route path="/classic/product/:slug" element={<Index />} />
+                  <Route path="/old" element={<Index />} />
                   <Route path="/survey" element={<Survey />} />
                   <Route path="/blog" element={<Blog />} />
                   <Route path="/blog/:title" element={<BlogPost />} />

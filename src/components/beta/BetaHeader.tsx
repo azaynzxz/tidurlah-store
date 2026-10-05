@@ -43,24 +43,13 @@ export const BetaHeader: React.FC<BetaHeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-[#FAFAF9] sm:bg-[#FAFAF9]/90 sm:backdrop-blur-md border-b border-[#E7E5E4]">
-      {/* Top Banner Notice */}
-      <div className="bg-[#18181B] text-[#FAFAF9] text-xs py-1.5 px-4 text-center font-medium tracking-tight">
-        <span>Tampilan Beta idcardlampung.com — Pengalaman belanja modern, cepat, dan presisi. </span>
-        <button
-          onClick={() => navigate("/")}
-          className="underline ml-2 hover:text-[#E8590C] transition-colors"
-        >
-          Kembali ke Tampilan Utama
-        </button>
-      </div>
-
       {/* Main Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16 gap-4">
           {/* Logo & Brand */}
           <div className="flex items-center gap-3">
             <button
-              onClick={() => navigate("/beta")}
+              onClick={() => navigate("/")}
               className="flex items-center gap-2.5 text-left group"
             >
               <img

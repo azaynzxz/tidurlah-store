@@ -11,7 +11,7 @@ import { BetaOrdersDrawer } from "@/components/beta/BetaOrdersDrawer";
 import { BetaBannerCarousel, BannerSlide } from "@/components/beta/BetaBannerCarousel";
 import type { Product, CartItem } from "@/types/product";
 import { fetchProductsFromSupabase } from "@/services/products";
-import { findProductBySlug } from "@/utils/product";
+import { findProductBySlug, generateProductSlug } from "@/utils/product";
 import { getLocalOrders } from "@/utils/localOrders";
 
 export const StorefrontBeta: React.FC = () => {
@@ -164,13 +164,19 @@ export const StorefrontBeta: React.FC = () => {
     setIsOrdersOpen(false);
     setSelectedProduct(product);
     setIsModalOpen(true);
-  }, []);
+    const productSlug = generateProductSlug(product.name);
+    if (productSlug) {
+      const isBeta = window.location.pathname.startsWith("/beta");
+      navigate(isBeta ? `/beta/product/${productSlug}` : `/product/${productSlug}`, { replace: true });
+    }
+  }, [navigate]);
 
   // Close modal with graceful exit animation
   const handleCloseModal = useCallback(() => {
     setIsModalOpen(false);
     if (slug) {
-      navigate("/beta", { replace: true });
+      const isBeta = window.location.pathname.startsWith("/beta");
+      navigate(isBeta ? "/beta" : "/", { replace: true });
     }
     setTimeout(() => {
       setSelectedProduct(null);
@@ -202,7 +208,7 @@ export const StorefrontBeta: React.FC = () => {
       <SEO
         title="idcardlampung.com — Percetakan & Merchandise Cepat & Presisi"
         description="Pusat cetak ID Card, tali lanyard, media promosi, dan merchandise di Bandar Lampung. Pesan online cepat via WhatsApp tanpa minimal order di idcardlampung.com."
-        url="https://idcardlampung.com/beta"
+        url={slug ? `https://idcardlampung.com/product/${slug}` : "https://idcardlampung.com/"}
       />
 
       {/* Header */}
@@ -420,6 +426,8 @@ export const StorefrontBeta: React.FC = () => {
           <div className="border-t border-[#E7E5E4] mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#71717A]">
             <p>© {new Date().getFullYear()} idcardlampung.com • Seluruh hak cipta dilindungi.</p>
             <div className="flex items-center gap-4">
+              <a href="/classic" className="hover:text-[#18181B] transition-colors">Versi Klasik</a>
+              <span>•</span>
               <a href="/loker" className="hover:text-[#18181B] transition-colors">Lowongan Kerja</a>
               <span>•</span>
               <a href="/hello" className="hover:text-[#18181B] transition-colors">Kontak</a>

@@ -87,7 +87,8 @@ export const openProductDetails = (
   if (!slug) {
     const productSlug = (window as any).generateProductSlug?.(product.name);
     if (productSlug) {
-      navigate(`/product/${productSlug}`, { replace: true });
+      const isClassic = typeof window !== 'undefined' && window.location.pathname.startsWith('/classic');
+      navigate(isClassic ? `/classic/product/${productSlug}` : `/product/${productSlug}`, { replace: true });
     }
   }
 };
