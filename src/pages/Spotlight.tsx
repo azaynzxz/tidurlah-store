@@ -1,289 +1,429 @@
-import { MapPin, Store, Instagram, Facebook, MessageCircle, ExternalLink, Clock } from "lucide-react";
-import Header from "@/components/common/Header";
+import React, { useState } from "react";
+import {
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  ExternalLink,
+  Copy,
+  Check,
+  ArrowLeft,
+  Send,
+  MessageSquare,
+  Navigation,
+  HelpCircle,
+} from "lucide-react";
+import { BetaHeader } from "@/components/beta/BetaHeader";
+import { BetaFooter } from "@/components/beta/BetaFooter";
 import SEO from "@/components/common/SEO";
-import { AnimatedElement } from "@/components/animations/AnimatedElement";
+import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+  CardContent,
+} from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import Footer from "@/components/common/Footer";
-import ChatBot from "@/components/ChatBot";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 
-interface Card {
-  id: string;
-  title: string;
-  description: string;
-  icon: typeof MapPin;
-  gradient: string;
-  link: string;
-}
-
-const cards: Card[] = [
-  {
-    id: "whatsapp",
-    title: "WhatsApp",
-    description: "Chat dengan kami sekarang",
-    icon: MessageCircle,
-    gradient: "bg-gradient-to-br from-green-500 via-green-600 to-emerald-600",
-    link: "https://wa.me/6285172157808"
-  },
-  {
-    id: "store",
-    title: "Toko Online",
-    description: "Order online sat set bayar via WA",
-    icon: Store,
-    gradient: "bg-gradient-to-br from-orange-500 via-red-500 to-orange-600",
-    link: "/"
-  },
-  {
-    id: "instagram",
-    title: "Instagram",
-    description: "Ikuti kami @tidurlah_grafika",
-    icon: Instagram,
-    gradient: "bg-gradient-to-br from-pink-500 via-purple-500 to-pink-600",
-    link: "https://instagram.com/tidurlah_grafika"
-  },
-  {
-    id: "facebook",
-    title: "Facebook",
-    description: "Sukai halaman kami",
-    icon: Facebook,
-    gradient: "bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800",
-    link: "https://www.facebook.com/idcardlampung"
-  },
-  {
-    id: "visit-stores",
-    title: "Lokasi Toko",
-    description: "Kunjungi toko fisik kami",
-    icon: MapPin,
-    gradient: "bg-gradient-to-br from-blue-500 via-purple-500 to-blue-600",
-    link: "multiple"
-  },
-  {
-    id: "open-hours",
-    title: "Jam Operasional",
-    description: "Waktu buka toko kami",
-    icon: Clock,
-    gradient: "bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500",
-    link: "multiple"
-  }
+const INQUIRY_CATEGORIES = [
+  "Konsultasi Cetak ID Card & Lanyard",
+  "Konfirmasi Pengambilan di Toko (Pickup)",
+  "Permintaan Penawaran / SPK Resmi",
+  "Tanya Status Desain & Produksi",
+  "Pertanyaan Umum Lainnya",
 ];
 
-const Spotlight = () => {
-  const handleCardClick = (card: Card) => {
-    if (card.link === "multiple") {
-      return;
-    } else if (card.link === "/") {
-      window.location.href = "/";
-    } else {
-      window.open(card.link, '_blank');
+export const Spotlight: React.FC = () => {
+  const [name, setName] = useState("");
+  const [phone, setPhone] = useState("");
+  const [category, setCategory] = useState(INQUIRY_CATEGORIES[0]);
+  const [message, setMessage] = useState("");
+  const [isCopied, setIsCopied] = useState(false);
+
+  const addressText =
+    "Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365";
+
+  const handleCopyAddress = async () => {
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(addressText);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = addressText;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+      setIsCopied(true);
+      setTimeout(() => setIsCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy address", err);
     }
   };
 
-  const handleStoreLocationClick = (url: string) => {
-    window.open(url, '_blank');
+  const handleSubmitForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!name.trim()) return;
+
+    const formattedMessage = [
+      "Halo Admin ID Card Lampung, saya ingin berkonsultasi:",
+      `Nama: ${name.trim()}`,
+      phone.trim() ? `WhatsApp / Kontak: ${phone.trim()}` : "",
+      `Keperluan: ${category}`,
+      message.trim() ? `\nPesan / Catatan:\n${message.trim()}` : "",
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const waUrl = `https://wa.me/6285172157808?text=${encodeURIComponent(formattedMessage)}`;
+    window.open(waUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="min-h-screen bg-white overflow-hidden relative selection:bg-black/20 page-transition">
+    <div className="min-h-screen bg-background text-foreground font-sans flex flex-col selection:bg-primary/20 selection:text-primary">
       <SEO
-        title="Hubungi Kami"
-        description="Hubungi Tidurlah Grafika untuk konsultasi produk, pemesanan, dan informasi lebih lanjut. Kami siap melayani kebutuhan cetak Anda."
-        keywords="kontak tidurlah grafika, alamat tidurlah grafika, whatsapp tidurlah grafika, lokasi percetakan lampung"
+        title="Hubungi Kami & Layanan Pelanggan - ID Card Lampung"
+        description="ID Card Terdekat Premium Lampung - Kirim pesan langsung ke tim customer service kami atau kunjungi workshop fisik di Way Hui, Lampung Selatan."
+        keywords="kontak id card lampung, whatsapp id card lampung, alamat percetakan lampung, pickup id card lampung"
       />
-      {/* Universal Header */}
-      <Header
-        cartItemsCount={0}
-        onCartClick={() => window.location.href = '/'}
-        onSearch={() => { }}
-        showSearch={false}
-      />
+
+      {/* Header */}
+      <BetaHeader showSearchBar={false} />
 
       {/* Main Content */}
-      <div className="flex-1 p-2">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex flex-col gap-8 sm:gap-10">
+        {/* Navigation & Page Intro */}
+        <div className="flex flex-col gap-2.5">
+          <div>
+            <Button
+              variant="ghost"
+              size="sm"
+              asChild
+              className="text-muted-foreground hover:text-foreground -ml-2 mb-1"
+            >
+              <a href="/">
+                <ArrowLeft className="mr-1.5 size-4" />
+                Kembali ke Katalog
+              </a>
+            </Button>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="px-2.5 py-0.5 text-xs font-medium">
+              Bantuan & Layanan
+            </Badge>
+            <Badge variant="secondary" className="px-2.5 py-0.5 text-xs font-medium">
+              ID Card Lampung
+            </Badge>
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+            Hubungi Customer Service
+          </h1>
+          <p className="text-muted-foreground text-xs sm:text-sm max-w-2xl leading-relaxed">
+            Punya pertanyaan mengenai spesifikasi produk, kebutuhan tender, atau konfirmasi
+            pengambilan pesanan? Isi form di bawah untuk langsung terhubung dengan admin kami.
+          </p>
+        </div>
 
-        {/* Header */}
-        <AnimatedElement direction="up" delay={200} duration={300}>
-          <header className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-6 tracking-tight">
-              Hubungi Kami
-            </h1>
-
-            {/* Brand Pills */}
-            <div className="flex flex-wrap justify-center gap-2 max-w-xl mx-auto">
-              {["ID Card Lampung", "Papan ID Craft", "Tidurlah Grafika"].map((brand) => (
-                <div
-                  key={brand}
-                  className="px-4 py-1.5 bg-black/5 backdrop-blur-sm rounded-full text-xs font-medium text-gray-800 border border-gray-200"
-                >
-                  {brand}
+        {/* 2-Column: Interactive Form (Left 7 cols) & Quick Actions (Right 5 cols) */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start">
+          {/* Left Column: Interactive Contact Form */}
+          <div className="lg:col-span-7">
+            <Card className="border-border shadow-xs">
+              <CardHeader className="pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base sm:text-lg flex items-center gap-2">
+                    <MessageSquare className="size-4 text-primary" />
+                    Kirim Pesan Cepat
+                  </CardTitle>
+                  <span className="text-[11px] text-muted-foreground">Respons Langsung via WA</span>
                 </div>
-              ))}
-            </div>
-          </header>
-        </AnimatedElement>
+                <CardDescription className="text-xs">
+                  Pesan Anda akan otomatis diformat dan diteruskan ke WhatsApp resmi kami.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form onSubmit={handleSubmitForm} className="flex flex-col gap-4">
+                  {/* Nama */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="contact-name" className="text-xs font-medium">
+                      Nama Lengkap / Instansi <span className="text-destructive">*</span>
+                    </Label>
+                    <Input
+                      id="contact-name"
+                      required
+                      placeholder="Contoh: Budi Santoso (Universitas Lampung)"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="text-xs sm:text-sm h-9"
+                    />
+                  </div>
 
-        {/* Card List */}
-        <AnimatedElement direction="up" delay={400} duration={300}>
-          <main className="container max-w-4xl mx-auto">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {cards.map((card, index) => {
-                const Icon = card.icon;
+                  {/* WhatsApp */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="contact-phone" className="text-xs font-medium">
+                      Nomor WhatsApp Anda
+                    </Label>
+                    <Input
+                      id="contact-phone"
+                      type="tel"
+                      placeholder="Contoh: 08123456789"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      className="text-xs sm:text-sm h-9"
+                    />
+                  </div>
 
-                return (
-                  <div
-                    key={card.id}
-                    className={`
-                      ${card.gradient} 
-                      rounded-2xl p-4 
-                      text-white 
-                      hover:scale-105 
-                      transition-transform duration-300 
-                      cursor-pointer
-                      shadow-lg hover:shadow-xl
-                      ${card.id === "store" ? "card-shine" : ""}
-                    `}
-                    onClick={() => handleCardClick(card)}
-                  >
-                    <div className="flex items-center justify-between mb-3 relative z-10">
-                      <div className="bg-white/20 backdrop-blur-md rounded-xl p-2.5">
-                        <Icon className="w-5 h-5" />
-                      </div>
-                      {card.id !== "visit-stores" && card.id !== "open-hours" && (
-                        <ExternalLink className="w-4 h-4 opacity-80" />
-                      )}
-                    </div>
-
-                    <h3 className="text-lg font-bold mb-1 relative z-10">{card.title}</h3>
-                    <p className="text-white/90 text-sm mb-3 relative z-10">{card.description}</p>
-
-                    {card.id === "visit-stores" && (
-                      <div className="space-y-2 mt-4 relative z-10">
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleStoreLocationClick("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA");
-                          }}
-                          className="w-full bg-white/20 hover:bg-white/30 text-white border border-white/30 backdrop-blur-sm"
+                  {/* Kategori Keperluan */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label className="text-xs font-medium">Kategori Keperluan</Label>
+                    <div className="flex flex-wrap gap-1.5 pt-0.5">
+                      {INQUIRY_CATEGORIES.map((cat) => (
+                        <button
+                          key={cat}
+                          type="button"
+                          onClick={() => setCategory(cat)}
+                          className={`text-[11px] sm:text-xs px-2.5 py-1.5 rounded-lg border transition-all text-left ${
+                            category === cat
+                              ? "bg-foreground text-background border-foreground font-medium shadow-2xs"
+                              : "bg-background text-muted-foreground border-border hover:border-foreground/30 hover:text-foreground"
+                          }`}
                         >
-                          <MapPin className="mr-2 h-4 w-4" />
-                          Cabang Belwis
-                        </Button>
-                      </div>
-                    )}
-
-                    {card.id === "open-hours" && (
-                      <div className="space-y-3 mt-4 relative z-10">
-
-                        <div className="bg-white/20 backdrop-blur-sm rounded-lg p-3 border border-white/30">
-                          <div className="flex items-start gap-2 mb-1">
-                            <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-                            <div className="flex-1">
-                              <h4 className="font-semibold text-sm mb-1">Cabang Belwis</h4>
-                              <p className="text-white/90 text-xs leading-relaxed">
-                                08.00 - 17.30
-                                <br />
-                                (Order dan Pengambilan)
-                              </p>
-                              <p className="text-white/80 text-xs mt-1">
-                                Senin - Sabtu
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    )}
+                          {cat}
+                        </button>
+                      ))}
+                    </div>
                   </div>
-                );
-              })}
-            </div>
-          </main>
-        </AnimatedElement>
 
-        {/* Interactive Google Maps & Studio Location */}
-        <AnimatedElement direction="up" delay={500} duration={300}>
-          <section className="container max-w-4xl mx-auto mt-8 mb-12">
-            <div className="bg-white rounded-2xl p-6 md:p-8 border border-gray-200 shadow-md">
-              <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-100">
-                <div>
-                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FF5E01]/10 text-[#FF5E01] text-xs font-semibold mb-2">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>Studio & Workshop Fisik</span>
+                  {/* Pesan */}
+                  <div className="flex flex-col gap-1.5">
+                    <Label htmlFor="contact-message" className="text-xs font-medium">
+                      Pesan atau Detail Pertanyaan
+                    </Label>
+                    <Textarea
+                      id="contact-message"
+                      rows={3}
+                      placeholder="Tuliskan jumlah pcs, ukuran, atau pertanyaan yang ingin Anda konsultasikan..."
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
+                      className="text-xs sm:text-sm resize-none"
+                    />
                   </div>
-                  <h2 className="text-xl md:text-2xl font-bold text-gray-900">
-                    Tidurlah Grafika — Cabang Belwis
-                  </h2>
-                  <p className="text-xs md:text-sm text-gray-600 mt-1">
-                    Kunjungi workshop kami untuk konsultasi langsung, cek sample bahan, atau pengambilan pesanan.
-                  </p>
+
+                  {/* Submit Button */}
+                  <Button
+                    type="submit"
+                    className="w-full bg-[#25D366] hover:bg-[#20BD5A] text-white font-medium text-xs sm:text-sm h-10 mt-1 gap-2 shadow-xs"
+                  >
+                    <Send className="size-4" />
+                    Hubungi Admin via WhatsApp
+                  </Button>
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Right Column: Direct Quick Action Cards */}
+          <div className="lg:col-span-5 flex flex-col gap-4">
+            {/* Direct WhatsApp Card */}
+            <Card className="border-border shadow-2xs">
+              <CardContent className="p-4 sm:p-5 flex flex-col gap-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="size-8 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center">
+                      <Phone className="size-4" />
+                    </div>
+                    <div>
+                      <span className="text-xs font-semibold block text-foreground">
+                        WhatsApp Customer Service
+                      </span>
+                      <span className="text-[11px] font-mono text-muted-foreground">
+                        +62 851-7215-7808
+                      </span>
+                    </div>
+                  </div>
+                  <Badge variant="outline" className="text-emerald-700 bg-emerald-50 border-emerald-200 text-[10px]">
+                    Online
+                  </Badge>
                 </div>
                 <Button
-                  onClick={() => window.open("https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA", "_blank")}
-                  className="bg-[#FF5E01] hover:bg-[#e54d00] text-white shadow-sm shrink-0"
+                  variant="outline"
+                  size="sm"
+                  asChild
+                  className="w-full text-xs h-8 hover:bg-[#25D366] hover:text-white hover:border-[#25D366] transition-colors"
                 >
-                  <MapPin className="mr-2 h-4 w-4" />
-                  Buka di Google Maps
+                  <a
+                    href="https://wa.me/6285172157808?text=Halo%20Admin%20ID%20Card%20Lampung%2C%20saya%20ingin%20konsultasi%20pemesanan."
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Chat WhatsApp Langsung
+                    <ExternalLink className="ml-1.5 size-3" />
+                  </a>
                 </Button>
-              </div>
+              </CardContent>
+            </Card>
 
-              {/* Map Embed and Details Grid */}
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-                <div className="lg:col-span-7 h-64 md:h-72 rounded-xl overflow-hidden border border-gray-200 shadow-inner bg-gray-100">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Peta Lokasi Studio Tidurlah Grafika Belwis Lampung"
-                    className="w-full h-full"
-                  />
+            {/* Store Pickup & Directions Card */}
+            <Card className="border-border shadow-2xs">
+              <CardContent className="p-4 sm:p-5 flex flex-col gap-3">
+                <div className="flex items-start gap-2.5">
+                  <div className="size-8 rounded-lg bg-orange-50 text-[#E8590C] flex items-center justify-center shrink-0 mt-0.5">
+                    <MapPin className="size-4" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="text-xs font-semibold text-foreground">
+                      Workshop & Pengambilan di Toko
+                    </span>
+                    <p className="text-[11px] text-muted-foreground leading-relaxed">
+                      {addressText}
+                    </p>
+                  </div>
                 </div>
 
-                <div className="lg:col-span-5 space-y-4 text-sm text-gray-700">
-                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
-                    <span className="font-semibold text-gray-900 block text-xs uppercase tracking-wider text-[#FF5E01]">
-                      Alamat Lengkap
-                    </span>
-                    <p className="text-xs md:text-sm text-gray-700 leading-relaxed">
-                      Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
-                    </p>
-                  </div>
-
-                  <div className="p-4 bg-gray-50 rounded-xl border border-gray-100 space-y-2">
-                    <span className="font-semibold text-gray-900 block text-xs uppercase tracking-wider text-[#FF5E01]">
-                      Jam Buka & Layanan
-                    </span>
-                    <p className="text-xs md:text-sm text-gray-700">
-                      <strong>Senin – Sabtu:</strong> 08.00 – 17.30 WIB<br />
-                      <span className="text-xs text-gray-500">(Order, konsultasi desain, & pengambilan pesanan)</span>
-                    </p>
-                  </div>
-
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      onClick={() => window.open("https://wa.me/6285172157808", "_blank")}
-                      className="w-full border-gray-300 text-gray-700 hover:bg-gray-100 text-xs"
+                <div className="grid grid-cols-2 gap-2 pt-1">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    asChild
+                    className="text-xs h-8 text-foreground gap-1.5"
+                  >
+                    <a
+                      href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
+                      target="_blank"
+                      rel="noopener noreferrer"
                     >
-                      <MessageCircle className="mr-1.5 h-3.5 w-3.5 text-green-600" />
-                      Chat WhatsApp
-                    </Button>
+                      <Navigation className="size-3" />
+                      Petunjuk Arah
+                      <ExternalLink className="size-2.5" />
+                    </a>
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleCopyAddress}
+                    className="text-xs h-8 border border-border gap-1.5"
+                  >
+                    {isCopied ? (
+                      <>
+                        <Check className="size-3 text-emerald-600" />
+                        <span>Tersalin</span>
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="size-3" />
+                        <span>Salin Alamat</span>
+                      </>
+                    )}
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Jam Operasional & Email */}
+            <Card className="border-border shadow-2xs bg-muted/30">
+              <CardContent className="p-4 sm:p-5 flex flex-col gap-3 text-xs">
+                <div className="flex items-start gap-2.5">
+                  <Clock className="size-4 text-muted-foreground shrink-0 mt-0.5" />
+                  <div>
+                    <span className="font-semibold block text-foreground">Jam Kerja Workshop</span>
+                    <span className="text-muted-foreground block text-[11px] mt-0.5">
+                      Senin – Sabtu: 08.00 – 17.30 WIB
+                    </span>
+                    <span className="text-muted-foreground block text-[11px]">
+                      Minggu: Tutup (Order web tetap diterima)
+                    </span>
                   </div>
                 </div>
-              </div>
-            </div>
-          </section>
-        </AnimatedElement>
-      </div>
 
-      {/* Footer */}
-      <Footer />
+                <div className="border-t border-border/60 pt-2.5 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <Mail className="size-3.5 text-muted-foreground" />
+                    <span className="text-[11px] text-muted-foreground">cs@idcardlampung.com</span>
+                  </div>
+                  <a
+                    href="mailto:cs@idcardlampung.com"
+                    className="text-[11px] text-primary hover:underline inline-flex items-center gap-0.5"
+                  >
+                    Kirim Email
+                    <ExternalLink className="size-2.5" />
+                  </a>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
-      {/* Chat Bot */}
-      <ChatBot />
+        {/* Section: Pertanyaan Umum (Mobile-Friendly Compact FAQ) */}
+        <div className="pt-2 border-t border-border flex flex-col gap-3">
+          <div className="flex items-center gap-2">
+            <HelpCircle className="size-4 text-muted-foreground" />
+            <h2 className="text-base sm:text-lg font-bold tracking-tight text-foreground">
+              Pertanyaan yang Sering Diajukan
+            </h2>
+          </div>
+
+          <Accordion type="single" collapsible className="w-full flex flex-col gap-2">
+            <AccordionItem value="faq-1" className="border rounded-xl px-4 py-0 bg-card shadow-2xs">
+              <AccordionTrigger className="text-left text-xs sm:text-sm font-medium py-3 hover:no-underline gap-3 [&>svg]:size-4">
+                Apakah bisa pesan ID Card atau lanyard satuan tanpa minimum order?
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pt-0 pb-3">
+                Bisa. Kami melayani pemesanan mulai dari 1 pcs tanpa minimum order, hingga pesanan
+                skala ribuan pcs untuk instansi dan event dengan harga grosir bertingkat.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="faq-2" className="border rounded-xl px-4 py-0 bg-card shadow-2xs">
+              <AccordionTrigger className="text-left text-xs sm:text-sm font-medium py-3 hover:no-underline gap-3 [&>svg]:size-4">
+                Bagaimana cara mengambil pesanan langsung di toko (pickup)?
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pt-0 pb-3">
+                Saat status pesanan siap diinformasikan oleh CS, Anda bisa datang langsung ke
+                workshop kami di Way Hui pada jam operasional (Senin – Sabtu, 08.00 – 17.30 WIB)
+                dengan menunjukkan nomor invoice pesanan.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="faq-3" className="border rounded-xl px-4 py-0 bg-card shadow-2xs">
+              <AccordionTrigger className="text-left text-xs sm:text-sm font-medium py-3 hover:no-underline gap-3 [&>svg]:size-4">
+                Bagaimana jika saya belum memiliki file desain siap cetak?
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pt-0 pb-3">
+                Tim desainer kami siap membantu menata layout file cetak Anda. Cukup kirimkan logo,
+                data teks, atau referensi warna melalui WhatsApp.
+              </AccordionContent>
+            </AccordionItem>
+
+            <AccordionItem value="faq-4" className="border rounded-xl px-4 py-0 bg-card shadow-2xs">
+              <AccordionTrigger className="text-left text-xs sm:text-sm font-medium py-3 hover:no-underline gap-3 [&>svg]:size-4">
+                Apakah melayani pengiriman ke luar kota Bandar Lampung?
+              </AccordionTrigger>
+              <AccordionContent className="text-xs text-muted-foreground leading-relaxed pt-0 pb-3">
+                Ya, kami mengirim ke seluruh daerah di Lampung serta seluruh Indonesia melalui
+                ekspedisi kargo (JNE, J&T, SiCepat, Indah Kargo) atau kurir instan lokal.
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+        </div>
+      </main>
+
+      {/* Clean Minimal Footer (Zero Duplicate Contacts & Maps on /hello) */}
+      <BetaFooter variant="minimal" />
+
+      {/* Floating WhatsApp FAB */}
+      <WhatsAppFloatingButton />
     </div>
   );
 };

@@ -17,9 +17,9 @@ const SEO = ({
     url = window.location.href,
     type = 'website'
 }: SEOProps) => {
-    const siteTitle = 'Tidurlah Grafika';
-    const fullTitle = title ? `${title} | ${siteTitle}` : 'Cetak ID Card & Lanyard Lampung - Tidurlah Grafika';
-    const defaultDescription = 'Spesialis ID Card, Lanyard, dan Merchandise Custom di Lampung. Cetak cepat, hasil berkualitas, harga terjangkau.';
+    const siteTitle = 'ID Card Lampung';
+    const fullTitle = title ? (title.includes(siteTitle) ? title : `${title} - ${siteTitle}`) : 'ID Card Terdekat Premium Lampung - ID Card Lampung';
+    const defaultDescription = 'ID Card Terdekat Premium Lampung - Spesialis cetak ID Card, Lanyard, dan Merchandise Custom di Bandar Lampung.';
 
     return (
         <Helmet>

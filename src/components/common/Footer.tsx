@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
 import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 
@@ -10,7 +11,7 @@ const Footer = () => {
 
   // Map URLs for different locations
   const mapUrls = {
-    belwis: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
+    belwis: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248.27629567866182!2d105.31613618779917!3d-5.35258469048837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e0!3m2!1sen!2sid!4v1791358860628!5m2!1sen!2sid"
   };
 
   // Navigation helper with scroll to top - optimized for mobile
@@ -49,8 +50,8 @@ const Footer = () => {
 
             {/* Brand Section */}
             <div className="lg:col-span-1">
-              <h3 className="text-2xl font-bold text-white mb-2">TIDURLAH GRAFIKA</h3>
-              <p className="text-[#FF5E01] text-sm mb-4">"Cetak apa aja, Tidurlah Grafika!"</p>
+              <h3 className="text-2xl font-bold text-white mb-2">ID CARD LAMPUNG</h3>
+              <p className="text-[#FF5E01] text-sm mb-4">"Cetak apa aja, ID Card Lampung!"</p>
               <div className="w-full h-px bg-gray-400 mb-4"></div>
               <p className="text-gray-300 text-sm mb-6 leading-relaxed">
                 Spesialis ID Card Lanyard Lampung dan Merchandise Custom. Kami menyediakan berbagai produk cetak berkualitas tinggi untuk kebutuhan bisnis dan personal Anda.
@@ -170,9 +171,10 @@ const Footer = () => {
                   href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-gray-300 hover:text-[#FF5E01] transition-colors underline"
+                  className="text-xs text-gray-300 hover:text-[#FF5E01] transition-colors underline inline-flex items-center gap-1"
                 >
-                  Buka Maps ↗
+                  <span>Buka Maps</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
                 </a>
               </div>
 
@@ -186,8 +188,8 @@ const Footer = () => {
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Peta Lokasi Tidurlah Grafika Belwis"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Peta Lokasi ID Card Lampung Belwis"
                     className="w-full h-full"
                   ></iframe>
                 </div>
@@ -205,7 +207,7 @@ const Footer = () => {
         <div className="max-w-7xl mx-auto px-4 md:px-6 lg:px-8">
           <div className="flex justify-center items-center">
             <p className="text-white text-sm">
-              © 2022-{new Date().getFullYear()} TIDURLAH GRAFIKA. All rights reserved.
+              © 2022-{new Date().getFullYear()} ID CARD LAMPUNG. All rights reserved.
             </p>
           </div>
         </div>

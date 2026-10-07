@@ -4,11 +4,13 @@ import { Clock, Percent, ShieldCheck, Search, MapPin, Phone, Mail, ExternalLink,
 import { motion } from "framer-motion";
 import SEO from "@/components/common/SEO";
 import { BetaHeader } from "@/components/beta/BetaHeader";
+import { BetaFooter } from "@/components/beta/BetaFooter";
 import { BetaProductCard } from "@/components/beta/BetaProductCard";
 import { BetaProductModal } from "@/components/beta/BetaProductModal";
 import { BetaCartDrawer } from "@/components/beta/BetaCartDrawer";
 import { BetaOrdersDrawer } from "@/components/beta/BetaOrdersDrawer";
 import { BetaBannerCarousel, BannerSlide } from "@/components/beta/BetaBannerCarousel";
+import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
 import type { Product, CartItem } from "@/types/product";
 import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductSlug } from "@/utils/product";
@@ -206,8 +208,8 @@ export const StorefrontBeta: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFAF9] text-[#18181B] font-sans flex flex-col selection:bg-[#E8590C]/20 selection:text-[#E8590C]">
       <SEO
-        title="idcardlampung.com — Percetakan & Merchandise Cepat & Presisi"
-        description="Pusat cetak ID Card, tali lanyard, media promosi, dan merchandise di Bandar Lampung. Pesan online cepat via WhatsApp tanpa minimal order di idcardlampung.com."
+        title="ID Card Terdekat Premium Lampung"
+        description="ID Card Terdekat Premium Lampung - Pusat cetak resmi ID Card berkualitas tinggi, tali lanyard custom presisi, plakat akrilik, dan merchandise event di Bandar Lampung."
         url={slug ? `https://idcardlampung.com/product/${slug}` : "https://idcardlampung.com/"}
       />
 
@@ -330,111 +332,11 @@ export const StorefrontBeta: React.FC = () => {
         </div>
       </main>
 
-      {/* Clean Storefront Footer with Google Maps & Contacts */}
-      <footer className="border-t border-[#E7E5E4] bg-white mt-16 text-[#52525B]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-10">
-            {/* Column 1: Brand info (4 cols) */}
-            <div className="lg:col-span-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <img
-                  src="/product-image/Logo Tidurlah Grafika 1x1 outlined.png"
-                  alt="idcardlampung.com"
-                  className="w-8 h-8 object-contain"
-                />
-                <div>
-                  <span className="font-bold text-base text-[#18181B] block">idcardlampung.com</span>
-                  <span className="text-xs text-[#71717A]">Percetakan & Merchandise Lampung</span>
-                </div>
-              </div>
-              <p className="text-xs sm:text-sm leading-relaxed text-[#71717A]">
-                Pusat cetak resmi ID Card, tali lanyard custom presisi, plakat akrilik, dan aneka merchandise event di Bandar Lampung. Melayani pesanan satuan hingga ribuan pcs tanpa minimum order.
-              </p>
-            </div>
+      {/* Clean Reusable Storefront Footer */}
+      <BetaFooter />
 
-            {/* Column 2: Kontak & Jam Buka (3 cols) */}
-            <div className="lg:col-span-3 space-y-3">
-              <h3 className="font-semibold text-sm text-[#18181B] tracking-tight">Kontak & Layanan</h3>
-              <ul className="space-y-2.5 text-xs">
-                <li className="flex items-start gap-2.5">
-                  <Phone className="w-4 h-4 text-[#E8590C] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-medium text-[#18181B] block">WhatsApp CS</span>
-                    <a href="https://wa.me/6285172157808" target="_blank" rel="noopener noreferrer" className="hover:text-[#E8590C] transition-colors">
-                      +62 851-7215-7808
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Mail className="w-4 h-4 text-[#E8590C] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-medium text-[#18181B] block">Email</span>
-                    <a href="mailto:cs@idcardlampung.com" className="hover:text-[#E8590C] transition-colors">
-                      cs@idcardlampung.com
-                    </a>
-                  </div>
-                </li>
-                <li className="flex items-start gap-2.5">
-                  <Clock className="w-4 h-4 text-[#E8590C] shrink-0 mt-0.5" />
-                  <div>
-                    <span className="font-medium text-[#18181B] block">Jam Operasional</span>
-                    <span>Senin – Sabtu: 08.00 – 17.30 WIB</span>
-                  </div>
-                </li>
-              </ul>
-            </div>
-
-            {/* Column 3: Google Maps Embed (5 cols) */}
-            <div className="lg:col-span-5 space-y-2.5">
-              <div className="flex items-center justify-between">
-                <h3 className="font-semibold text-sm text-[#18181B] tracking-tight flex items-center gap-1.5">
-                  <MapPin className="w-4 h-4 text-[#E8590C]" />
-                  <span>Lokasi Studio & Workshop</span>
-                </h3>
-                <a
-                  href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-medium text-[#E8590C] hover:underline inline-flex items-center gap-1"
-                >
-                  <span>Buka Maps ↗</span>
-                </a>
-              </div>
-
-              {/* Google Maps Embed Frame */}
-              <div className="relative w-full h-44 sm:h-48 rounded-xl overflow-hidden border border-[#E7E5E4] bg-[#F5F5F4] shadow-xs">
-                <iframe
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
-                  width="100%"
-                  height="100%"
-                  style={{ border: 0 }}
-                  allowFullScreen
-                  loading="lazy"
-                  referrerPolicy="no-referrer-when-downgrade"
-                  title="Peta Lokasi Studio Tidurlah Grafika Belwis Lampung"
-                  className="w-full h-full"
-                />
-              </div>
-
-              <p className="text-[11px] sm:text-xs text-[#71717A] leading-relaxed">
-                Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Lampung Selatan 35365
-              </p>
-            </div>
-          </div>
-
-          {/* Bottom Copyright */}
-          <div className="border-t border-[#E7E5E4] mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#71717A]">
-            <p>© {new Date().getFullYear()} idcardlampung.com • Seluruh hak cipta dilindungi.</p>
-            <div className="flex items-center gap-4">
-              <a href="/classic" className="hover:text-[#18181B] transition-colors">Versi Klasik</a>
-              <span>•</span>
-              <a href="/loker" className="hover:text-[#18181B] transition-colors">Lowongan Kerja</a>
-              <span>•</span>
-              <a href="/hello" className="hover:text-[#18181B] transition-colors">Kontak</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Always-on-Top WhatsApp Button */}
+      <WhatsAppFloatingButton />
 
       {/* Product Options Modal */}
       <BetaProductModal

@@ -464,14 +464,14 @@ const Loker = () => {
               <div className="lg:col-span-7">
                 <div className="relative w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-inner">
                   <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d358.8368063702099!2d105.3159073944683!3d-5.352631091802125!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40c384e8ee58ef%3A0xa4e876abbc74d8a5!2sTidurlah%20Grafika!5e1!3m2!1sen!2sid!4v1762012258485!5m2!1sen!2sid"
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248.27629567866182!2d105.31613618779917!3d-5.35258469048837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e0!3m2!1sen!2sid!4v1791358860628!5m2!1sen!2sid"
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}
                     allowFullScreen
                     loading="lazy"
-                    referrerPolicy="no-referrer-when-downgrade"
-                    title="Peta Lokasi Studio Tidurlah Grafika Belwis Lampung"
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    title="Peta Lokasi Percetakan ID Card Lampung Belwis"
                     className="w-full h-full"
                   />
                 </div>
