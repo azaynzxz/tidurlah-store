@@ -30,6 +30,7 @@ import { ProtectedRoute } from "@/components/common/ProtectedRoute";
 import { ErrorBoundary } from "@/components/common/ErrorBoundary";
 
 import { HelmetProvider } from 'react-helmet-async';
+import { AnalyticsTracker } from "@/components/common/AnalyticsTracker";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +59,8 @@ const App = () => (
               <Sonner />
               <HalloweenDecorations />
               <BrowserRouter>
+                {/* Global Analytics & SPA virtual pageview tracker */}
+                <AnalyticsTracker />
                 {/* Promo Banner - Shows on all pages */}
                 <PromoBanner />
                 <Routes>

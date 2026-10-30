@@ -3,6 +3,7 @@ import { JASA_DESAIN_PRICE, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHAT
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { createOrder, fetchOrders, editOrder } from '@/services/orders';
 import { submitApplicationToSupabase } from '@/services/applications';
+import { getTrafficSource, trackPurchase } from '@/utils/tracking';
 
 // POS Order Data interface
 export interface POSOrderData {
@@ -200,10 +201,13 @@ export const handleWhatsAppRedirect = async (
     const designNoteMessage = designNote ? `\nNote/Link Desain: ${designNote}` : '';
     const deadlineMessage = orderData.deadline ? `\nDeadline: ${orderData.deadline}` : '';
 
+    const trafficSource = getTrafficSource();
+
     const message = `Informasi Order:
 Nama: ${customerName}
 Instansi/Alias: ${instansi || '-'}
 Telp: ${phoneNumber}${promoMessage}${designNoteMessage}${deadlineMessage}
+Sumber: ${trafficSource.rawText}
 ${isShipping ? `Alamat: ${address}` : 'Ambil di tempat: Ya (tidak perlu dikirim)'}
 
 Detail Order:
@@ -212,6 +216,9 @@ ${productList}${jasaDesainMessage}${expressPrintMessage}
 Total: Rp ${(calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}${savingsMessage}`;
 
     const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
+
+    // Fire standard GA4 purchase and checkout_wa conversion events
+    trackPurchase(fullOrderData, trafficSource.rawText);
 
     // Store the WhatsApp URL in state and show success dialog
     setWhatsAppUrl(whatsappUrl);

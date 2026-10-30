@@ -8,6 +8,7 @@ import { caseVariants } from "@/constants";
 import { calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange } from "@/utils/cart";
 import { submitWebsiteOrder } from "@/utils/api";
 import { saveLocalUser, getLocalUser, addLocalOrder } from "@/utils/localOrders";
+import { getTrafficSource, trackPurchase } from "@/utils/tracking";
 
 interface BetaCartDrawerProps {
   isOpen: boolean;
@@ -143,11 +144,14 @@ export const BetaCartDrawer: React.FC<BetaCartDrawerProps> = ({
         })
         .join("\n");
 
+      const trafficSource = getTrafficSource();
+
       const message = `Halo idcardlampung.com, saya ingin konfirmasi pesanan:
 No. Invoice: ${orderData.invoiceNumber}
 Nama: ${customerName}
 WhatsApp: ${phoneNumber}
 Instansi/Brand: ${instansi || "-"}
+Sumber: ${trafficSource.rawText}
 Metode: ${isShipping ? `Kirim ke alamat: ${address}` : "Ambil langsung di toko"}
 ${designNote ? `Catatan Desain: ${designNote}\n` : ""}${promoCode ? `Kode Promo: ${promoCode} (Hemat Rp ${promoDiscount.toLocaleString("id-ID")})\n` : ""}
 Detail Pesanan:
@@ -156,6 +160,9 @@ ${productList}
 Total Pembayaran: Rp ${total.toLocaleString("id-ID")}`;
 
       const whatsappUrl = `https://wa.me/6285172157808?text=${encodeURIComponent(message)}`;
+
+      // 0. Fire standard GA4 purchase and checkout_wa conversion events
+      trackPurchase(orderData, trafficSource.rawText);
 
       // 1. Auto-register / update local user profile
       saveLocalUser({

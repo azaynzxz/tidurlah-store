@@ -7,6 +7,7 @@ import type { Product, CartItem } from "@/types/product";
 import { caseVariants, idCardWithCaseIds, stikerWithLaminationIds } from "@/constants";
 import { getApplicablePrice, calculateSavings, calculateBannerPrice } from "@/utils/product";
 import { addToCart, addBannerToCart } from "@/utils/cart";
+import { trackAddToCart } from "@/utils/tracking";
 
 interface BetaProductModalProps {
   product: Product | null;
@@ -136,6 +137,11 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
     if (isDimensional) {
       const success = addBannerToCart(activeProduct, bannerWidth, bannerHeight, cartItems, setCartItems);
       if (success) {
+        trackAddToCart({
+          product: activeProduct,
+          quantity: 1,
+          unitPrice,
+        });
         handleModalClose();
       }
       return;
@@ -156,6 +162,14 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
     );
 
     if (success) {
+      trackAddToCart({
+        product: activeProduct,
+        quantity,
+        unitPrice,
+        modelCode: selectedModel,
+        caseVariant: selectedCase,
+        laminationVariant: selectedLamination,
+      });
       handleModalClose();
     }
   };

@@ -15,6 +15,7 @@ import type { Product, CartItem } from "@/types/product";
 import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductSlug } from "@/utils/product";
 import { getLocalOrders } from "@/utils/localOrders";
+import { trackSelectItem, trackViewItem } from "@/utils/tracking";
 
 export const StorefrontBeta: React.FC = () => {
   const { slug } = useParams();
@@ -108,6 +109,7 @@ export const StorefrontBeta: React.FC = () => {
       if (found) {
         setSelectedProduct(found);
         setIsModalOpen(true);
+        trackViewItem(found);
       }
     }
   }, [slug, productsData]);
@@ -166,6 +168,8 @@ export const StorefrontBeta: React.FC = () => {
     setIsOrdersOpen(false);
     setSelectedProduct(product);
     setIsModalOpen(true);
+    trackSelectItem(product);
+    trackViewItem(product);
     const productSlug = generateProductSlug(product.name);
     if (productSlug) {
       const isBeta = window.location.pathname.startsWith("/beta");
