@@ -16,6 +16,85 @@ export type Json =
 export interface Database {
   public: {
     Tables: {
+      employees: {
+        Row: {
+          id: string;
+          name: string;
+          role: string;
+          base_salary: number;
+          payment_method: string;
+          is_active: boolean;
+          notes: string | null;
+          created_at: string;
+          updated_at: string;
+        };
+        Insert: {
+          id?: string;
+          name: string;
+          role?: string;
+          base_salary?: number;
+          payment_method?: string;
+          is_active?: boolean;
+          notes?: string | null;
+          created_at?: string;
+          updated_at?: string;
+        };
+        Update: {
+          id?: string;
+          name?: string;
+          role?: string;
+          base_salary?: number;
+          payment_method?: string;
+          is_active?: boolean;
+          notes?: string | null;
+          updated_at?: string;
+        };
+        Relationships: [];
+      };
+      expenses: {
+        Row: {
+          id: string;
+          title: string;
+          category: string;
+          amount: number;
+          date: string;
+          payment_method: string;
+          platform: string;
+          notes: string | null;
+          created_by: string | null;
+          created_at: string;
+          updated_at: string;
+          deleted_at: string | null;
+        };
+        Insert: {
+          id?: string;
+          title: string;
+          category: string;
+          amount: number;
+          date?: string;
+          payment_method?: string;
+          platform?: string;
+          notes?: string | null;
+          created_by?: string | null;
+          created_at?: string;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Update: {
+          id?: string;
+          title?: string;
+          category?: string;
+          amount?: number;
+          date?: string;
+          payment_method?: string;
+          platform?: string;
+          notes?: string | null;
+          created_by?: string | null;
+          updated_at?: string;
+          deleted_at?: string | null;
+        };
+        Relationships: [];
+      };
       profiles: {
         Row: {
           id: string;

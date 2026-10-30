@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, Users, FileText, Package, Tag, LogOut, ArrowLeft, AlertTriangle } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, FileText, Package, Tag, LogOut, ArrowLeft, AlertTriangle, Receipt } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { CustomersTab } from "@/components/admin/CustomersTab";
 import { ReportsTab } from "@/components/admin/ReportsTab";
+import { ExpensesTab } from "@/components/admin/ExpensesTab";
 import { ProductsTab } from "@/components/admin/ProductsTab";
 import { PromosTab } from "@/components/admin/PromosTab";
 import { POSHeader } from "@/components/pos/POSHeader";
@@ -19,6 +20,7 @@ const TABS = [
     { id: 'products', label: 'Produk', icon: Package },
     { id: 'promos', label: 'Promo', icon: Tag },
     { id: 'reports', label: 'Laporan', icon: FileText },
+    { id: 'expenses', label: 'Pengeluaran', icon: Receipt },
 ] as const;
 
 type TabId = typeof TABS[number]['id'];
@@ -137,6 +139,7 @@ export default function Admin() {
                 {activeTab === 'products' && <ProductsTab />}
                 {activeTab === 'promos' && <PromosTab />}
                 {activeTab === 'reports' && <ReportsTab />}
+                {activeTab === 'expenses' && <ExpensesTab />}
             </div>
         </div>
     );
