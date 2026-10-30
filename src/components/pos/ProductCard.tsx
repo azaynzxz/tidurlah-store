@@ -1,6 +1,5 @@
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Plus, Ruler, Package, Layers } from "lucide-react";
+import { Plus, Package, Layers } from "lucide-react";
 
 interface Product {
   id: number;
@@ -50,127 +49,134 @@ export function ProductCard({ product, onAddToCart, isSelected = false }: Produc
 
   return (
     <div
-      className={`relative bg-white rounded-lg border transition-all duration-200 cursor-pointer overflow-hidden flex flex-col h-full group ${!product.is_available
-        ? 'opacity-60 cursor-not-allowed grayscale-[0.5]'
-        : isSelected
-          ? 'border-[#FF5E01] shadow-md ring-1 ring-[#FF5E01] bg-[#fffaf5]'
-          : 'border-gray-200 hover:border-[#FF5E01] hover:shadow-lg hover:-translate-y-0.5'
-        }`}
+      className={`relative bg-card rounded-xl border transition-all duration-200 cursor-pointer overflow-hidden flex flex-col h-full group select-none shadow-2xs ${
+        !product.is_available
+          ? 'opacity-60 cursor-not-allowed grayscale-[0.6]'
+          : isSelected
+            ? 'border-primary ring-2 ring-primary/20 bg-primary/[0.03]'
+            : 'border-border hover:border-primary/60 hover:shadow-sm hover:-translate-y-0.5'
+      }`}
       onClick={handleClick}
     >
       {!product.is_available && (
-        <div className="absolute top-2 left-0 right-0 mx-auto w-max px-2 py-0.5 bg-red-500 text-white text-[10px] rounded-full font-bold z-20 shadow-sm uppercase tracking-wide">
-          Habis
+        <div className="absolute top-2 left-2 z-20">
+          <Badge variant="destructive" className="text-[10px] uppercase font-bold tracking-wider py-0 px-1.5 shadow-xs">
+            Habis
+          </Badge>
         </div>
       )}
 
-      {/* Mobile: Perfect Vertical Layout from Original */}
+      {/* Mobile Vertical Tile */}
       <div className="md:hidden flex flex-col h-full">
-        <div className="relative w-full aspect-square">
+        <div className="relative w-full aspect-square bg-muted/30 overflow-hidden">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover rounded-t-lg transition-transform duration-500 group-hover:scale-105"
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
           />
+          {product.pricingMethod === "dimensional" && (
+            <div className="absolute bottom-1.5 left-1.5">
+              <Badge variant="secondary" className="text-[9px] py-0 px-1 font-semibold backdrop-blur-md bg-background/80">
+                m²
+              </Badge>
+            </div>
+          )}
         </div>
 
-        <div className="p-1.5 space-y-0.5 flex flex-col flex-1">
-          <h3 className="font-semibold text-gray-800 text-xs leading-snug line-clamp-2 min-h-[1.75rem]">
+        <div className="p-2.5 flex flex-col flex-1 gap-1">
+          <h3 className="font-bold text-foreground text-xs leading-snug line-clamp-2 min-h-[2rem]">
             {product.name}
           </h3>
 
-          <div className="flex items-baseline gap-1 flex-wrap mt-auto">
-            {product.discountPrice ? (
-              <>
-                <span className="text-sm font-bold text-[#FF5E01] break-all">
-                  {formatCurrency(product.discountPrice)}
-                </span>
-                <span className="text-[10px] text-gray-400 line-through break-all">
+          <div className="flex items-baseline justify-between gap-1 mt-auto pt-1">
+            <div className="flex flex-col">
+              {product.discountPrice ? (
+                <>
+                  <span className="text-[10px] text-muted-foreground line-through leading-none">
+                    {formatCurrency(product.price)}
+                  </span>
+                  <span className="text-sm font-black text-primary leading-tight">
+                    {formatCurrency(product.discountPrice)}
+                  </span>
+                </>
+              ) : (
+                <span className="text-sm font-black text-primary leading-tight">
                   {formatCurrency(product.price)}
                 </span>
-              </>
-            ) : (
-              <span className="text-sm font-bold text-[#FF5E01] break-all">
-                {formatCurrency(product.price)}
-              </span>
-            )}
-          </div>
+              )}
+              <span className="text-[9px] text-muted-foreground">/{product.unit}</span>
+            </div>
 
-          <div className="flex items-center gap-0.5 flex-wrap mt-0.5">
-            {product.pricingMethod === "dimensional" && (
-              <div className="w-4 h-4 rounded-full bg-orange-100 flex items-center justify-center shadow-sm" title="Dimensional">
-                <Ruler className="w-2.5 h-2.5 text-[#FF5E01]" />
-              </div>
-            )}
-            {product.models && product.models.length > 0 && (
-              <div className="w-4 h-4 rounded-full bg-blue-100 flex items-center justify-center shadow-sm" title="Model Tersedia">
-                <Package className="w-2.5 h-2.5 text-blue-600" />
-              </div>
-            )}
-            {[1, 2, 6, 7, 8].includes(product.id) && (
-              <div className="w-4 h-4 rounded-full bg-green-100 flex items-center justify-center shadow-sm" title="Pilihan Casing">
-                <Layers className="w-2.5 h-2.5 text-green-600" />
-              </div>
-            )}
+            <div className="size-6 rounded-lg bg-primary/10 text-primary flex items-center justify-center shrink-0 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+              <Plus className="size-3.5" />
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Desktop: Enhanced Side-by-side Layout */}
-      <div className="hidden md:flex p-2.5 gap-3 h-full items-stretch relative">
-        {/* Left Column: Bigger Image */}
-        <div className="w-[84px] lg:w-[96px] shrink-0 relative rounded-lg overflow-hidden border border-gray-100 bg-white shadow-sm flex items-center justify-center">
+      {/* Desktop Horizontal Workstation Tile */}
+      <div className="hidden md:flex p-2.5 gap-3 h-full items-stretch">
+        <div className="size-20 lg:size-24 shrink-0 relative rounded-lg overflow-hidden border border-border/80 bg-muted/20 flex items-center justify-center">
           <img
             src={product.image}
             alt={product.name}
-            className="w-full h-full object-cover transition-transform duration-500 hover:scale-110"
+            loading="lazy"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-108"
           />
+          {product.pricingMethod === "dimensional" && (
+            <div className="absolute bottom-1 left-1">
+              <Badge variant="secondary" className="text-[8px] py-0 px-1 font-semibold backdrop-blur-md bg-background/80">
+                m²
+              </Badge>
+            </div>
+          )}
         </div>
 
-        {/* Right Column: Product Info */}
         <div className="flex flex-col flex-1 min-w-0 justify-between py-0.5">
-          <div className="relative relative w-full pr-5">
-            <h3 className="font-bold text-gray-800 text-xs leading-snug line-clamp-3">
+          <div>
+            <h3 className="font-bold text-foreground text-xs leading-snug line-clamp-2 group-hover:text-primary transition-colors">
               {product.name}
             </h3>
 
-            {/* Desktop Floating Indicators absolutely positioned locally to top right */}
-            <div className="absolute top-0 -right-1 flex flex-col gap-1 z-10">
-              {product.pricingMethod === "dimensional" && (
-                <div className="w-4 h-4 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Dimensional">
-                  <Ruler className="w-2.5 h-2.5 text-[#FF5E01]" />
-                </div>
-              )}
+            {/* Feature Indicators */}
+            <div className="flex items-center gap-1 mt-1 flex-wrap">
               {product.models && product.models.length > 0 && (
-                <div className="w-4 h-4 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Model Tersedia">
-                  <Package className="w-2.5 h-2.5 text-blue-600" />
-                </div>
+                <span className="inline-flex items-center gap-0.5 text-[10px] text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded font-medium">
+                  <Package className="size-2.5" />
+                  <span>Model</span>
+                </span>
               )}
               {[1, 2, 6, 7, 8].includes(product.id) && (
-                <div className="w-4 h-4 rounded-full bg-green-50 border border-green-100 flex items-center justify-center shadow-sm backdrop-blur-sm" title="Pilihan Casing">
-                  <Layers className="w-2.5 h-2.5 text-green-600" />
-                </div>
+                <span className="inline-flex items-center gap-0.5 text-[10px] text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded font-medium">
+                  <Layers className="size-2.5" />
+                  <span>Case</span>
+                </span>
               )}
             </div>
           </div>
 
-          <div className="mt-auto pt-2">
+          <div className="mt-auto pt-2 flex items-end justify-between">
             <div className="flex flex-col">
               {product.discountPrice ? (
                 <>
-                  <div className="text-[10px] text-gray-400 line-through leading-none mb-0.5">
+                  <span className="text-[10px] text-muted-foreground line-through leading-none mb-0.5">
                     {formatCurrency(product.price)}
-                  </div>
-                  <div className="text-[15px] font-black text-[#FF5E01] leading-none mb-0.5">
+                  </span>
+                  <span className="text-sm lg:text-base font-black text-primary leading-none">
                     {formatCurrency(product.discountPrice)}
-                  </div>
+                  </span>
                 </>
               ) : (
-                <div className="text-[15px] font-black text-[#FF5E01] leading-none mb-0.5">
+                <span className="text-sm lg:text-base font-black text-primary leading-none">
                   {formatCurrency(product.price)}
-                </div>
+                </span>
               )}
-              <div className="text-[9px] text-gray-500 font-medium">per {product.unit}</div>
+              <span className="text-[10px] text-muted-foreground font-medium mt-0.5">per {product.unit}</span>
+            </div>
+
+            <div className="size-7 rounded-lg bg-muted text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground flex items-center justify-center transition-all shadow-2xs">
+              <Plus className="size-4" />
             </div>
           </div>
         </div>

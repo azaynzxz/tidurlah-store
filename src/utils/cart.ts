@@ -49,8 +49,8 @@ export const triggerFlyingAnimation = (
   }
 
   // Always start from center for consistency across devices
-  let startX = window.innerWidth / 2;
-  let startY = window.innerHeight / 2;
+  const startX = window.innerWidth / 2;
+  const startY = window.innerHeight / 2;
 
   // Get cart icon position
   const cartIcon = document.querySelector('[data-cart-icon]') || document.querySelector('.relative button');

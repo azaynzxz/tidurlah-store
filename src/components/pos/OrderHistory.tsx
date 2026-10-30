@@ -1,7 +1,45 @@
 import { useState, useEffect, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowLeft, Download, MessageCircle, RefreshCw, Loader2, ChevronDown, ChevronUp, Search, Trash2, LayoutGrid, List, Pencil, Copy, Check, Plus, X, QrCode, ClipboardList, ClipboardCheck } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Separator } from "@/components/ui/separator";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  ArrowLeft,
+  Download,
+  MessageCircle,
+  RefreshCw,
+  Loader2,
+  Search,
+  Trash2,
+  LayoutGrid,
+  List,
+  Pencil,
+  Copy,
+  Check,
+  X,
+  QrCode,
+  ClipboardList,
+  ClipboardCheck,
+  Table as TableIcon,
+  SlidersHorizontal,
+  UserCheck,
+  Calendar,
+  Clock,
+  RotateCcw,
+  MoreVertical,
+  ChevronDown,
+  ChevronUp,
+  Package
+} from "lucide-react";
 import { toast } from "sonner";
 import { convertImageToBase64 } from "@/utils/product";
 import { generateReceiptHTML, type ReceiptData } from "@/utils/receiptTemplate";
@@ -19,15 +57,15 @@ interface OrderHistoryProps {
 }
 
 const STATUS_OPTIONS = [
-  { value: 'pending', label: 'Pending', className: 'bg-orange-100 text-orange-700' },
-  { value: 'partial', label: 'DP', className: 'bg-yellow-100 text-yellow-700' },
-  { value: 'done', label: 'Selesai', className: 'bg-green-100 text-green-700' },
+  { value: 'pending', label: 'Pending', className: 'bg-orange-50 text-orange-700 border-orange-200' },
+  { value: 'partial', label: 'DP', className: 'bg-amber-50 text-amber-700 border-amber-200' },
+  { value: 'done', label: 'Selesai', className: 'bg-emerald-50 text-emerald-700 border-emerald-200' },
 ];
 
 const STATUS_PRIORITY: Record<string, number> = { pending: 0, partial: 1, done: 2 };
 
 const CHANNEL_OPTIONS = [
-  { value: 'all', label: 'Semua' },
+  { value: 'all', label: 'Semua Channel' },
   { value: 'pos', label: 'POS' },
   { value: 'website', label: 'Web' },
   { value: 'migrated', label: 'Old' },
@@ -73,11 +111,39 @@ function apiOrderToReceiptData(order: OrderHistoryItem): ReceiptData {
 const formatCurrency = (n: number) => `Rp ${(n || 0).toLocaleString('id-ID')}`;
 
 const formatPhoneForWA = (phone: string | number): string => {
-  let cleaned = String(phone).replace(/\D/g, '');
+  const cleaned = String(phone).replace(/\D/g, '');
   if (cleaned.startsWith('08')) return '62' + cleaned.substring(1);
   if (cleaned.startsWith('62')) return cleaned;
   if (cleaned.startsWith('8')) return '62' + cleaned;
   return '62' + cleaned;
+};
+
+// Clean 2-line date styling helper
+interface ParsedDateDisplay {
+  datePart: string;
+  timePart: string | null;
+}
+
+const parseDeadline = (deadlineVal?: string | null): ParsedDateDisplay => {
+  if (!deadlineVal) return { datePart: 'Belum diatur', timePart: null };
+  try {
+    const dl = String(deadlineVal).trim();
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const d = new Date(dl);
+    if (!isNaN(d.getTime())) {
+      const day = d.getDate();
+      const month = months[d.getMonth()];
+      const year = d.getFullYear();
+      const hours = d.getHours();
+      const mins = d.getMinutes();
+      const datePart = `${day} ${month} ${year}`;
+      const timePart = (hours !== 0 || mins !== 0) ? `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}` : null;
+      return { datePart, timePart };
+    }
+    return { datePart: dl, timePart: null };
+  } catch {
+    return { datePart: String(deadlineVal), timePart: null };
+  }
 };
 
 export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps) {
@@ -97,7 +163,24 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
   const [updatingId, setUpdatingId] = useState<string | null>(null);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
-  const [viewMode, setViewMode] = useState<'list' | 'grid'>('grid');
+
+  // Month date range filter (default: current month e.g. "2026-10")
+  const getCurrentMonthStr = () => {
+    const now = new Date();
+    const y = now.getFullYear();
+    const m = String(now.getMonth() + 1).padStart(2, '0');
+    return `${y}-${m}`;
+  };
+  const [monthFilter, setMonthFilter] = useState<string>(getCurrentMonthStr);
+
+  // Set default view: Table for desktop (window.innerWidth >= 1024), else List for mobile
+  const [viewMode, setViewMode] = useState<'table' | 'list' | 'grid'>(() => {
+    if (typeof window !== 'undefined' && window.innerWidth >= 1024) {
+      return 'table';
+    }
+    return 'list';
+  });
+
   const [statusFilter, setStatusFilter] = useState<string>('partial');
   const [channelFilter, setChannelFilter] = useState<string>('all');
   const [cabangFilter, setCabangFilter] = useState<string>('all');
@@ -110,16 +193,15 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
   const DEFAULT_DESIGNERS = ["Fitri", "Windy", "Stevan"];
   const [customDesigners, setCustomDesigners] = useState<string[]>([]);
   const [assigningId, setAssigningId] = useState<string | null>(null);
-  const [selectedDesignerForOrder, setSelectedDesignerForOrder] = useState<Record<string, string>>({});
+  const [designerPopoverOpen, setDesignerPopoverOpen] = useState<string | null>(null);
   const [isAddingNewDesigner, setIsAddingNewDesigner] = useState<string | null>(null);
   const [newDesignerName, setNewDesignerName] = useState("");
 
   useEffect(() => {
-    // Cache-first: load from localStorage cache immediately (unless trash is selected)
     if (channelFilter !== 'trash') {
       const cached = localStorage.getItem('orderHistory_cache');
       if (cached) {
-        try { setOrders(JSON.parse(cached)); } catch { }
+        try { setOrders(JSON.parse(cached)); } catch { /* ignore */ }
       }
     }
     loadImages();
@@ -127,8 +209,8 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     try {
       const savedDesigners = localStorage.getItem('customDesigners');
       if (savedDesigners) setCustomDesigners(JSON.parse(savedDesigners));
-    } catch { }
-  }, []);
+    } catch { /* ignore */ }
+  }, [channelFilter]);
 
   const loadImages = async () => {
     try {
@@ -155,7 +237,6 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     }
   };
 
-  // Only fetch from API when user clicks refresh or changes to trash tab
   const PAGE_SIZE = 50;
 
   const refreshFromAPI = async (forceChannel?: string, forceSearch?: string) => {
@@ -178,16 +259,17 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
           localStorage.setItem('orderHistory_cache', JSON.stringify(result.orders));
         }
       } else if (result.error) {
-        setLoadError("Gagal memuat: " + result.error);
+        setLoadError(result.error);
       }
-    } catch {
-      setLoadError("Gagal memuat dari server");
+    } catch (err: unknown) {
+      setLoadError(err instanceof Error ? err.message : "Gagal memuat data dari server");
     } finally {
       setIsLoading(false);
     }
   };
 
   const loadMoreOrders = async () => {
+    if (isLoadingMore || orders.length >= totalOrders) return;
     setIsLoadingMore(true);
     try {
       const chParam = channelFilter === 'trash' ? 'trash' : undefined;
@@ -208,7 +290,6 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
             localStorage.setItem('orderHistory_cache', JSON.stringify(merged));
           }
         } else {
-          // No new orders found — we've reached the end
           setTotalOrders(orders.length);
         }
       }
@@ -219,22 +300,20 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     }
   };
 
-  // Debounced search trigger
   useEffect(() => {
     const handler = setTimeout(() => {
       refreshFromAPI(channelFilter, search);
     }, 350);
     return () => clearTimeout(handler);
-  }, [search]);
+  }, [search, channelFilter]);
 
   useEffect(() => {
     if (channelFilter === 'trash') {
       refreshFromAPI('trash');
     } else {
-      // when switching back from trash, load cache fast, then refresh
       const cached = localStorage.getItem('orderHistory_cache');
       if (cached) {
-        try { setOrders(JSON.parse(cached)); } catch { }
+        try { setOrders(JSON.parse(cached)); } catch { /* ignore */ }
       }
       refreshFromAPI(channelFilter);
     }
@@ -242,38 +321,48 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
 
   // Compute status counts for filter badges
   const statusCounts = useMemo(() => {
-    // Filter orders by active branch first so the count badges align with the branch selection
-    const branchFiltered = cabangFilter === 'all'
-      ? orders
-      : orders.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
+    let base = orders;
+    if (cabangFilter !== 'all') {
+      base = base.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
+    }
+    if (monthFilter !== 'all') {
+      base = base.filter(o => {
+        const target = o.timestamp || o.deadline || '';
+        return target.startsWith(monthFilter);
+      });
+    }
 
-    const counts: Record<string, number> = { all: branchFiltered.length, pending: 0, partial: 0, done: 0 };
-    branchFiltered.forEach(o => {
+    const counts: Record<string, number> = { all: base.length, pending: 0, partial: 0, done: 0 };
+    base.forEach(o => {
       const s = (o.orderStatus || '').toLowerCase();
       if (counts[s] !== undefined) counts[s]++;
     });
     return counts;
-  }, [orders, cabangFilter]);
+  }, [orders, cabangFilter, monthFilter]);
 
   const filteredOrders = useMemo(() => {
     let result = orders;
 
-    // Status filter
+    // Date Range (Month) Filter
+    if (monthFilter !== 'all') {
+      result = result.filter(o => {
+        const target = o.timestamp || o.deadline || '';
+        return target.startsWith(monthFilter);
+      });
+    }
+
     if (statusFilter !== 'all') {
       result = result.filter(o => (o.orderStatus || '').toLowerCase() === statusFilter);
     }
 
-    // Channel filter
     if (channelFilter !== 'all' && channelFilter !== 'trash') {
       result = result.filter(o => (o.channel || '') === channelFilter);
     }
 
-    // Cabang filter
     if (cabangFilter !== 'all') {
       result = result.filter(o => (o.cabang || 'Cabang Belwis') === cabangFilter);
     }
 
-    // Search filter
     if (search.trim()) {
       const q = search.toLowerCase();
       result = result.filter(o =>
@@ -283,7 +372,6 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
       );
     }
 
-    // Sort
     if (sortMode === 'deadline_asc') {
       result = [...result].sort((a, b) => {
         const da = a.deadline ? new Date(a.deadline).getTime() : Infinity;
@@ -307,7 +395,6 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
         return na.localeCompare(nb);
       });
     } else {
-      // Priority sort: pending → partial → done
       result = [...result].sort((a, b) => {
         const pa = STATUS_PRIORITY[(a.orderStatus || '').toLowerCase()] ?? 99;
         const pb = STATUS_PRIORITY[(b.orderStatus || '').toLowerCase()] ?? 99;
@@ -316,7 +403,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     }
 
     return result;
-  }, [orders, search, statusFilter, channelFilter, cabangFilter, sortMode]);
+  }, [orders, search, statusFilter, channelFilter, cabangFilter, sortMode, monthFilter]);
 
   const handleDownloadReceipt = async (order: OrderHistoryItem, showQRIS: boolean = false) => {
     setDownloadingId(order.orderId);
@@ -362,18 +449,14 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     if (!order.customerPhone) return;
     const phone = formatPhoneForWA(order.customerPhone);
     const name = order.customerName || 'Pelanggan';
-
-    // Check for shipping address (from order.address or nested order.delivery.address)
     const shippingAddr = order.delivery?.address || order.address;
     const hasShipping = !!shippingAddr;
-
     const isPaid = (order.remainingBalance !== undefined ? order.remainingBalance : (order.total - (order.downPayment || 0))) <= 0;
 
     let msg = `*PESANAN SELESAI*\n\n`;
     msg += `Halo Kak *${name}*,\n`;
     msg += `Pesanan dengan nomor invoice *${order.orderId}* sudah selesai diproses.\n\n`;
 
-    // Add items list
     if (order.items && order.items.length > 0) {
       msg += `*Detail Pesanan:*\n`;
       order.items.forEach(item => {
@@ -411,7 +494,6 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     }
 
     msg += `\n\nTerima kasih atas kepercayaannya!\n*ID Card Lampung by Tidurlah Grafika*`;
-
     window.open(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`, '_blank');
   };
 
@@ -422,14 +504,11 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
 
   const handleStatusChange = async (orderId: string, newStatus: string) => {
     setUpdatingId(orderId);
-    // Optimistic update
     setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, orderStatus: newStatus } : o));
 
     const result = await updateOrderStatus(orderId, newStatus);
     if (result.success) {
-      // Clear all caches and refresh from API to get fresh data
       clearAdminCache();
-      // Small delay to let the sheet update, then refresh
       setTimeout(() => refreshFromAPI(), 1500);
     }
     setUpdatingId(null);
@@ -444,7 +523,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
       clearAdminCache();
       setTimeout(() => refreshFromAPI(), 1500);
     } else {
-      alert("Gagal menghapus pesanan");
+      toast.error("Gagal menghapus pesanan");
     }
     setDeletingId(null);
   };
@@ -453,58 +532,71 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     setUpdatingId(orderId);
     const result = await restoreOrder(orderId);
     if (result.success) {
-      setOrders(prev => prev.filter(o => o.orderId !== orderId)); // Remove from trash view
+      setOrders(prev => prev.filter(o => o.orderId !== orderId));
       clearAdminCache();
     } else {
-      alert("Gagal mengembalikan pesanan");
+      toast.error("Gagal mengembalikan pesanan");
     }
     setUpdatingId(null);
   };
 
   const handleSaveEdit = async (updatedOrderData: any) => {
     clearAdminCache();
-    // submitPOSOrder will send 'isEdit: true' since we appended it inside EditOrderModal
-    await submitPOSOrder(updatedOrderData as any);
+    await submitPOSOrder(updatedOrderData);
     refreshFromAPI();
   };
 
   const getStatusBadge = (status: string) => {
-    if ((status || '').toLowerCase() === 'deleted') {
-      return <span className="px-2 py-0.5 text-xs rounded-full bg-red-100 text-red-700 font-medium">Terhapus</span>;
+    const s = (status || '').toLowerCase();
+    if (s === 'deleted') {
+      return (
+        <Badge variant="outline" className="bg-destructive/10 text-destructive border-destructive/20 text-[10px] font-semibold py-0.5 px-2">
+          Terhapus
+        </Badge>
+      );
     }
-    const opt = STATUS_OPTIONS.find(s => s.value === (status || '').toLowerCase());
-    if (opt) return <span className={`px-2 py-0.5 text-xs rounded-full font-medium ${opt.className}`}>{opt.label}</span>;
-    return <span className="px-2 py-0.5 text-xs rounded-full bg-gray-100 text-gray-600">{status}</span>;
+    const opt = STATUS_OPTIONS.find(item => item.value === s);
+    if (opt) {
+      return (
+        <Badge variant="outline" className={`text-[10px] font-semibold py-0.5 px-2 ${opt.className}`}>
+          {opt.label}
+        </Badge>
+      );
+    }
+    return (
+      <Badge variant="secondary" className="text-[10px] py-0.5 px-2">
+        {status}
+      </Badge>
+    );
   };
 
   const getChannelBadge = (ch: string) => {
-    if (ch === 'website') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-blue-100 text-blue-700 font-medium">Web</span>;
-    if (ch === 'pos') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-purple-100 text-purple-700 font-medium">POS</span>;
-    if (ch === 'migrated') return <span className="px-1.5 py-0.5 text-[10px] rounded bg-gray-100 text-gray-500 font-medium">Old</span>;
+    if (ch === 'website') return <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200 text-[10px] py-0 px-1.5 font-medium">Web</Badge>;
+    if (ch === 'pos') return <Badge variant="outline" className="bg-purple-50 text-purple-700 border-purple-200 text-[10px] py-0 px-1.5 font-medium">POS</Badge>;
+    if (ch === 'migrated') return <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px] py-0 px-1.5 font-medium">Old</Badge>;
     return null;
   };
 
-  const getCabangBadge = (cabang?: string | null) => {
-    const branchName = cabang || 'Cabang Belwis';
-    const isUnila = branchName.toLowerCase().includes('unila');
+  const getCabangBadge = (cabangName?: string | null) => {
+    const branch = cabangName || 'Cabang Belwis';
+    const isUnila = branch.toLowerCase().includes('unila');
     return (
-      <span className={`px-1.5 py-0.5 text-[10px] rounded font-medium border ${isUnila ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-sky-50 text-sky-700 border-sky-200'
-        }`}>
-        {branchName}
-      </span>
+      <Badge variant="outline" className={`text-[10px] py-0 px-1.5 font-medium ${isUnila ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-sky-50 text-sky-700 border-sky-200'}`}>
+        {isUnila ? 'Unila' : 'Belwis'}
+      </Badge>
     );
   };
 
   const handleAssignDesigner = async (orderId: string, designerName: string) => {
     if (!designerName) return;
     setAssigningId(orderId);
-
     setOrders(prev => prev.map(o => o.orderId === orderId ? { ...o, designer: designerName } : o));
 
     const result = await assignDesigner(orderId, designerName);
     if (result.success) {
       toast.success(`Desainer ditetapkan ke ${designerName}`);
       clearAdminCache();
+      setDesignerPopoverOpen(null);
     } else {
       toast.error("Gagal menetapkan desainer");
     }
@@ -520,7 +612,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
         setCustomDesigners(added);
         localStorage.setItem('customDesigners', JSON.stringify(added));
       }
-      setSelectedDesignerForOrder(prev => ({ ...prev, [orderId]: name }));
+      handleAssignDesigner(orderId, name);
       setIsAddingNewDesigner(null);
       setNewDesignerName("");
     }
@@ -536,490 +628,1018 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     }
   };
 
-  const renderDesignerAssignment = (order: OrderHistoryItem) => {
+  // Compact Designer Picker Popover
+  const renderDesignerPopover = (order: OrderHistoryItem) => {
     const hasJasaDesain = order.items?.some(i => i.name.toLowerCase().includes("jasa desain"));
     if (!hasJasaDesain || order.orderStatus === 'deleted') return null;
 
-    const currentAssigned = selectedDesignerForOrder[order.orderId] ?? order.designer ?? "";
+    const currentDesigner = order.designer;
+    const allDesigners = Array.from(new Set([...DEFAULT_DESIGNERS, ...customDesigners]));
 
     return (
-      <div className="flex items-center gap-1" onClick={e => e.stopPropagation()}>
-        {isAddingNewDesigner === order.orderId ? (
-          <form onSubmit={(e) => handleAddNewDesigner(order.orderId, e)} className="flex items-center gap-1">
-            <Input autoFocus size={1} className="h-6 w-24 text-[10px] px-1" placeholder="Nama..." value={newDesignerName} onChange={e => setNewDesignerName(e.target.value)} />
-            <button type="submit" className="text-green-600 bg-green-50 p-1 rounded hover:bg-green-100"><Check className="w-3 h-3" /></button>
-            <button type="button" onClick={() => setIsAddingNewDesigner(null)} className="text-red-500 bg-red-50 p-1 rounded hover:bg-red-100"><X className="w-3 h-3" /></button>
-          </form>
-        ) : (
-          <div className="flex items-center gap-1 bg-amber-50 rounded pl-1 pr-0.5 border border-amber-200 h-6">
-            <select
-              className="bg-transparent text-[10px] font-medium text-amber-800 outline-none cursor-pointer border-r border-amber-200 pr-1 max-w-[80px]"
-              value={currentAssigned}
-              onChange={(e) => {
-                if (e.target.value === "ADD_NEW") {
-                  setIsAddingNewDesigner(order.orderId);
-                  setNewDesignerName("");
-                } else {
-                  setSelectedDesignerForOrder(prev => ({ ...prev, [order.orderId]: e.target.value }));
-                }
-              }}
+      <div onClick={e => e.stopPropagation()}>
+        <Popover
+          open={designerPopoverOpen === order.orderId}
+          onOpenChange={(open) => setDesignerPopoverOpen(open ? order.orderId : null)}
+        >
+          <PopoverTrigger asChild>
+            <Button
+              variant="outline"
+              size="sm"
+              className={`h-6 px-2 text-[10px] font-semibold gap-1 border rounded-full transition-all ${
+                currentDesigner
+                  ? 'bg-amber-50 text-amber-800 border-amber-300 hover:bg-amber-100'
+                  : 'bg-muted/70 text-muted-foreground border-dashed border-border hover:border-amber-400 hover:text-amber-700'
+              }`}
+              title="Atur Desainer"
             >
-              <option value="" disabled>Pilih Desainer</option>
-              {DEFAULT_DESIGNERS.map(d => <option key={d} value={d}>{d}</option>)}
-              {customDesigners.length > 0 && <optgroup label="Tersimpan">
-                {customDesigners.map(d => <option key={d} value={d}>{d}</option>)}
-              </optgroup>}
-              <option value="ADD_NEW">+ Tambah Baru...</option>
-            </select>
+              <UserCheck className="size-3 text-amber-600" />
+              <span className="truncate max-w-[80px]">
+                {currentDesigner ? currentDesigner : "Pilih Desain"}
+              </span>
+            </Button>
+          </PopoverTrigger>
+          <PopoverContent className="w-56 p-2" align="end">
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between pb-1 border-b">
+                <span className="text-xs font-semibold text-foreground">Pilih Desainer</span>
+                {assigningId === order.orderId && <Loader2 className="size-3 animate-spin text-primary" />}
+              </div>
 
-            <button
-              className="p-1 rounded text-amber-700 hover:bg-amber-200 disabled:opacity-50 transition-colors ml-0.5"
-              onClick={() => handleAssignDesigner(order.orderId, currentAssigned)}
-              disabled={assigningId === order.orderId || !currentAssigned || currentAssigned === order.designer}
-              title="Simpan Pilihan"
-            >
-              {assigningId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : <Check className="w-3 h-3" />}
-            </button>
+              <div className="flex flex-col gap-1 max-h-48 overflow-y-auto pt-1">
+                {allDesigners.map(d => (
+                  <div
+                    key={d}
+                    className={`flex items-center justify-between px-2 py-1.5 rounded-md text-xs cursor-pointer transition-colors ${
+                      currentDesigner === d ? 'bg-amber-100/70 text-amber-900 font-bold' : 'hover:bg-muted text-foreground'
+                    }`}
+                    onClick={() => handleAssignDesigner(order.orderId, d)}
+                  >
+                    <span>{d}</span>
+                    <div className="flex items-center gap-1">
+                      {currentDesigner === d && <Check className="size-3 text-amber-700" />}
+                      {customDesigners.includes(d) && (
+                        <button
+                          type="button"
+                          onClick={(e) => handleDeleteDesigner(d, e)}
+                          className="p-0.5 text-muted-foreground hover:text-destructive rounded"
+                          title="Hapus desainer"
+                        >
+                          <Trash2 className="size-3" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-            {customDesigners.includes(currentAssigned) && (
-              <button type="button" onClick={(e) => handleDeleteDesigner(currentAssigned, e)} className="p-0.5 ml-0.5 text-red-500 hover:bg-red-100 rounded" title="Hapus dari daftar">
-                <Trash2 className="w-2.5 h-2.5" />
-              </button>
-            )}
-          </div>
-        )}
+              <Separator />
+
+              {isAddingNewDesigner === order.orderId ? (
+                <form onSubmit={(e) => handleAddNewDesigner(order.orderId, e)} className="flex items-center gap-1 mt-1">
+                  <Input
+                    autoFocus
+                    className="h-7 text-xs px-2"
+                    placeholder="Nama baru..."
+                    value={newDesignerName}
+                    onChange={e => setNewDesignerName(e.target.value)}
+                  />
+                  <Button type="submit" size="sm" className="h-7 px-2 text-xs">Simpan</Button>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 px-1.5"
+                    onClick={() => setIsAddingNewDesigner(null)}
+                  >
+                    <X className="size-3" />
+                  </Button>
+                </form>
+              ) : (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 text-xs text-muted-foreground hover:text-foreground justify-start px-2 font-normal"
+                  onClick={() => {
+                    setIsAddingNewDesigner(order.orderId);
+                    setNewDesignerName("");
+                  }}
+                >
+                  + Tambah Desainer Baru
+                </Button>
+              )}
+            </div>
+          </PopoverContent>
+        </Popover>
       </div>
     );
   };
 
+  const activeFiltersCount = (cabangFilter !== 'all' ? 1 : 0) + (channelFilter !== 'all' ? 1 : 0) + (sortMode !== 'priority' ? 1 : 0) + (monthFilter !== 'all' ? 1 : 0);
+
   return (
-    <div className="h-full overflow-y-auto p-4">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-3">
+    <div className="h-full overflow-y-auto p-3 sm:p-5 bg-background text-foreground">
+      <div className="max-w-7xl mx-auto flex flex-col gap-4">
+        {/* Top Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div className="flex items-center gap-3">
             {onBack && (
-              <Button variant="ghost" size="sm" onClick={onBack}>
-                <ArrowLeft className="w-4 h-4" />
+              <Button variant="ghost" size="icon" className="size-8" onClick={onBack} title="Kembali">
+                <ArrowLeft className="size-4" />
               </Button>
             )}
-            <h2 className="text-lg font-semibold">Riwayat Pesanan</h2>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-lg sm:text-xl font-bold tracking-tight">Riwayat Pesanan</h2>
+                <Badge variant="secondary" className="font-mono text-xs font-semibold">
+                  {totalOrders}
+                </Badge>
+              </div>
+              <p className="text-xs text-muted-foreground hidden sm:block">Kelola status, struk, dan penugasan desainer</p>
+            </div>
           </div>
-          <div className="flex items-center gap-2">
+
+          <div className="flex items-center gap-2 self-end sm:self-auto">
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowClosingModal(true)}
+              className="gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50/60 border-blue-200 hover:bg-blue-100/60 h-8"
               title="Laporan Closing"
-              className="gap-1.5 text-xs font-semibold text-blue-600 hover:text-blue-700 bg-blue-50 border-blue-200 hover:bg-blue-100"
             >
-              <ClipboardCheck className="w-4 h-4" />
-              <span className="hidden sm:inline">Laporan Closing</span>
+              <ClipboardCheck className="size-3.5" />
+              <span className="hidden md:inline">Laporan Closing</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => setShowScheduleModal(true)}
+              className="gap-1.5 text-xs font-semibold h-8"
               title="Jadwal Produksi"
-              className="gap-1.5 text-xs font-semibold"
             >
-              <ClipboardList className="w-4 h-4" />
-              <span className="hidden sm:inline">Jadwal Produksi</span>
+              <ClipboardList className="size-3.5" />
+              <span className="hidden md:inline">Jadwal Produksi</span>
             </Button>
-            <Button variant="outline" size="sm" onClick={() => { refreshFromAPI(); }} disabled={isLoading} title="Refresh dari server">
-              <RefreshCw className={`w-4 h-4 ${isLoading ? 'animate-spin' : ''}`} />
+            <Button
+              variant="outline"
+              size="icon"
+              className="size-8"
+              onClick={() => refreshFromAPI()}
+              disabled={isLoading}
+              title="Refresh dari server"
+            >
+              <RefreshCw className={`size-3.5 ${isLoading ? 'animate-spin' : ''}`} />
             </Button>
           </div>
         </div>
 
-        {/* Search */}
-        <div className="relative mb-3">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+        {/* Search Bar */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground" />
           <Input
-            placeholder="Cari nama, ID, atau telepon..."
+            placeholder="Cari nama pelanggan, invoice ID, atau nomor WhatsApp..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="pl-9 h-9 text-sm"
+            className="pl-9 pr-9 h-10 text-sm bg-card border-border"
           />
+          {search && (
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute right-1 top-1/2 -translate-y-1/2 size-7 text-muted-foreground hover:text-foreground"
+              onClick={() => setSearch("")}
+            >
+              <X className="size-3.5" />
+            </Button>
+          )}
         </div>
 
-        {/* Filters Row: status + channel + view toggle — single row on desktop, wraps on mobile */}
-        <div className="flex flex-wrap items-center gap-2 mb-3">
-          {/* Status Filter Tabs */}
-          <div className="flex gap-1 overflow-x-auto">
+        {/* Filter Controls Row */}
+        <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-2.5">
+          {/* Status Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 md:pb-0 scrollbar-none">
             {[
-              { value: 'all', label: 'Semua', inactiveBg: 'bg-gray-200 text-gray-700 border-gray-300', activeColor: 'bg-gray-800 text-white border-gray-800' },
-              { value: 'pending', label: 'Pending', inactiveBg: 'bg-orange-100 text-orange-800 border-orange-300', activeColor: 'bg-orange-500 text-white border-orange-500' },
-              { value: 'partial', label: 'DP', inactiveBg: 'bg-yellow-100 text-yellow-800 border-yellow-300', activeColor: 'bg-yellow-500 text-white border-yellow-500' },
-              { value: 'done', label: 'Selesai', inactiveBg: 'bg-green-100 text-green-800 border-green-300', activeColor: 'bg-green-600 text-white border-green-600' },
-            ].map(tab => (
-              <button
-                key={tab.value}
-                onClick={() => setStatusFilter(tab.value)}
-                className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold whitespace-nowrap border transition-all ${statusFilter === tab.value
-                  ? `${tab.activeColor} shadow-sm`
-                  : `${tab.inactiveBg} hover:brightness-95`
+              { value: 'all', label: 'Semua', count: statusCounts.all || 0 },
+              { value: 'pending', label: 'Pending', count: statusCounts.pending || 0 },
+              { value: 'partial', label: 'DP', count: statusCounts.partial || 0 },
+              { value: 'done', label: 'Selesai', count: statusCounts.done || 0 },
+            ].map(tab => {
+              const isActive = statusFilter === tab.value;
+              return (
+                <button
+                  key={tab.value}
+                  onClick={() => setStatusFilter(tab.value)}
+                  className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border ${
+                    isActive
+                      ? 'bg-foreground text-background border-foreground shadow-sm'
+                      : 'bg-card text-muted-foreground border-border hover:bg-muted hover:text-foreground'
                   }`}
-              >
-                {tab.label}
-                <span className={`min-w-[18px] h-[18px] flex items-center justify-center rounded-full text-[10px] font-bold ${statusFilter === tab.value ? 'bg-white/30 text-white' : 'bg-black/10'
-                  }`}>
-                  {statusCounts[tab.value] || 0}
-                </span>
-              </button>
-            ))}
+                >
+                  <span>{tab.label}</span>
+                  <span
+                    className={`min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full text-[10px] font-bold ${
+                      isActive ? 'bg-background/20 text-background' : 'bg-muted text-muted-foreground'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                </button>
+              );
+            })}
           </div>
 
-          {/* Separator */}
-          <div className="hidden sm:block w-px h-5 bg-gray-300" />
+          {/* Secondary Controls: Desktop Inline / Mobile Popover */}
+          <div className="flex items-center justify-between md:justify-end gap-2">
+            {/* Desktop Filters */}
+            <div className="hidden lg:flex items-center gap-2">
+              {/* Month Date Range Picker */}
+              <div className="flex items-center gap-1 bg-card border border-border rounded-lg px-2 py-1 text-xs">
+                <Calendar className="size-3.5 text-muted-foreground" />
+                <input
+                  type="month"
+                  value={monthFilter === 'all' ? '' : monthFilter}
+                  onChange={(e) => setMonthFilter(e.target.value || 'all')}
+                  className="bg-transparent text-xs font-medium text-foreground cursor-pointer outline-none"
+                  title="Filter Bulan"
+                />
+                {monthFilter !== 'all' && (
+                  <button
+                    onClick={() => setMonthFilter('all')}
+                    className="p-0.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                    title="Tampilkan Semua Bulan"
+                  >
+                    <X className="size-3" />
+                  </button>
+                )}
+              </div>
 
-          {/* Channel Filter Dropdown */}
-          <select
-            value={channelFilter}
-            onChange={e => setChannelFilter(e.target.value)}
-            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01]"
-          >
-            {CHANNEL_OPTIONS.map(ch => (
-              <option key={ch.value} value={ch.value}>{ch.label}</option>
-            ))}
-          </select>
+              <select
+                value={cabangFilter}
+                onChange={e => setCabangFilter(e.target.value)}
+                className="text-xs font-medium border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                <option value="all">Semua Cabang</option>
+                <option value="Cabang Belwis">Cabang Belwis</option>
+                <option value="Cabang Unila">Cabang Unila</option>
+              </select>
 
-          {/* Cabang Filter Dropdown */}
-          <select
-            value={cabangFilter}
-            onChange={e => setCabangFilter(e.target.value)}
-            className="text-xs font-semibold border border-gray-300 rounded-lg px-2 py-1 bg-white text-gray-700 cursor-pointer focus:outline-none focus:ring-1 focus:ring-[#FF5E01] focus:border-[#FF5E01] ml-1"
-          >
-            <option value="all">Semua Cabang</option>
-            <option value="Cabang Belwis">Cabang Belwis</option>
-            <option value="Cabang Unila">Cabang Unila</option>
-          </select>
+              <select
+                value={channelFilter}
+                onChange={e => setChannelFilter(e.target.value)}
+                className="text-xs font-medium border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring"
+              >
+                {CHANNEL_OPTIONS.map(ch => (
+                  <option key={ch.value} value={ch.value}>{ch.label}</option>
+                ))}
+              </select>
 
-          {/* Sort Dropdown */}
-          <select
-            value={sortMode}
-            onChange={e => setSortMode(e.target.value)}
-            className={`text-xs font-semibold border rounded-lg px-2 py-1 bg-white cursor-pointer focus:outline-none focus:ring-1 ml-1 ${channelFilter === 'trash' ? 'border-gray-200 text-gray-400 opacity-50' : 'border-gray-300 text-gray-700 focus:ring-[#FF5E01] focus:border-[#FF5E01]'
+              <select
+                value={sortMode}
+                onChange={e => setSortMode(e.target.value)}
+                disabled={channelFilter === 'trash'}
+                className="text-xs font-medium border border-border rounded-lg px-2.5 py-1.5 bg-card text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring disabled:opacity-50"
+              >
+                <option value="priority">Urut: Status</option>
+                <option value="deadline_asc">Urut: Deadline</option>
+                <option value="name_asc">Urut: Nama (A-Z)</option>
+              </select>
+            </div>
+
+            {/* Mobile Filter Popover Trigger */}
+            <div className="flex lg:hidden items-center gap-2">
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button variant="outline" size="sm" className="h-8 gap-1.5 text-xs">
+                    <SlidersHorizontal className="size-3.5" />
+                    <span>Filter</span>
+                    {activeFiltersCount > 0 && (
+                      <span className="size-2 rounded-full bg-primary" />
+                    )}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-68 p-3 flex flex-col gap-3" align="start">
+                  <div className="text-xs font-bold text-foreground">Filter & Urutan</div>
+                  <div className="flex flex-col gap-2">
+                    <label className="text-[11px] font-semibold text-muted-foreground">Periode Bulan</label>
+                    <div className="flex items-center gap-1.5 border rounded-md px-2 py-1 bg-background">
+                      <input
+                        type="month"
+                        value={monthFilter === 'all' ? '' : monthFilter}
+                        onChange={(e) => setMonthFilter(e.target.value || 'all')}
+                        className="bg-transparent text-xs w-full outline-none"
+                      />
+                      {monthFilter !== 'all' && (
+                        <button onClick={() => setMonthFilter('all')} className="text-muted-foreground hover:text-foreground text-[10px]">
+                          Semua
+                        </button>
+                      )}
+                    </div>
+
+                    <label className="text-[11px] font-semibold text-muted-foreground">Cabang</label>
+                    <select
+                      value={cabangFilter}
+                      onChange={e => setCabangFilter(e.target.value)}
+                      className="text-xs border rounded-md px-2 py-1.5 bg-background text-foreground"
+                    >
+                      <option value="all">Semua Cabang</option>
+                      <option value="Cabang Belwis">Cabang Belwis</option>
+                      <option value="Cabang Unila">Cabang Unila</option>
+                    </select>
+
+                    <label className="text-[11px] font-semibold text-muted-foreground">Channel</label>
+                    <select
+                      value={channelFilter}
+                      onChange={e => setChannelFilter(e.target.value)}
+                      className="text-xs border rounded-md px-2 py-1.5 bg-background text-foreground"
+                    >
+                      {CHANNEL_OPTIONS.map(ch => (
+                        <option key={ch.value} value={ch.value}>{ch.label}</option>
+                      ))}
+                    </select>
+
+                    <label className="text-[11px] font-semibold text-muted-foreground">Urutkan</label>
+                    <select
+                      value={sortMode}
+                      onChange={e => setSortMode(e.target.value)}
+                      disabled={channelFilter === 'trash'}
+                      className="text-xs border rounded-md px-2 py-1.5 bg-background text-foreground"
+                    >
+                      <option value="priority">Status Prioritas</option>
+                      <option value="deadline_asc">Deadline Terdekat</option>
+                      <option value="name_asc">Nama (A-Z)</option>
+                    </select>
+                  </div>
+                </PopoverContent>
+              </Popover>
+            </div>
+
+            {/* Trash Button */}
+            <Button
+              variant={channelFilter === 'trash' ? 'destructive' : 'outline'}
+              size="sm"
+              onClick={() => {
+                setChannelFilter(channelFilter === 'trash' ? 'all' : 'trash');
+                if (channelFilter !== 'trash') setStatusFilter('all');
+              }}
+              className={`h-8 gap-1.5 text-xs font-semibold ${
+                channelFilter !== 'trash' ? 'text-destructive border-destructive/20 hover:bg-destructive/10' : ''
               }`}
-            disabled={channelFilter === 'trash'}
-          >
-            <option value="priority">Status</option>
-            <option value="deadline_asc">Deadline Terdekat</option>
-            <option value="name_asc">Nama (A-Z)</option>
-          </select>
+              title="Lihat Pesanan Terhapus"
+            >
+              <Trash2 className="size-3.5" />
+              <span className="hidden sm:inline">Sampah</span>
+            </Button>
 
-          {/* Tong Sampah Button */}
-          <button
-            onClick={() => {
-              setChannelFilter(channelFilter === 'trash' ? 'all' : 'trash');
-              // Auto reset status filter when entering trash view
-              if (channelFilter !== 'trash') setStatusFilter('all');
-            }}
-            title="Lihat Pesanan Terhapus"
-            className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-xs font-bold transition-all ml-1 border ${channelFilter === 'trash'
-              ? 'bg-red-500 text-white border-red-500 shadow-sm'
-              : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100 hover:border-red-300'
-              }`}
-          >
-            <Trash2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">Sampah</span>
-          </button>
-
-          {/* Results count + view toggle */}
-          <div className="flex flex-1 sm:flex-none items-center justify-between sm:justify-end gap-3 ml-auto">
-            <p className="text-xs text-gray-500 font-medium">{filteredOrders.length} pesanan</p>
-            <div className="flex bg-gray-200 p-0.5 rounded-lg">
+            {/* View Mode Switcher */}
+            <div className="flex items-center bg-muted p-0.5 rounded-lg border border-border">
+              <button
+                onClick={() => setViewMode('table')}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'table' ? 'bg-background shadow-xs text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
+                title="Tampilan Tabel"
+              >
+                <TableIcon className="size-3.5" />
+              </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-1.5 rounded-md transition-shadow ${viewMode === 'list' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-1.5 rounded-md transition-all ${viewMode === 'list' ? 'bg-background shadow-xs text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
                 title="Tampilan List"
               >
-                <List className="w-4 h-4" />
+                <List className="size-3.5" />
               </button>
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-1.5 rounded-md transition-shadow ${viewMode === 'grid' ? 'bg-white shadow-sm text-[#FF5E01]' : 'text-gray-500 hover:text-gray-700'}`}
+                className={`p-1.5 rounded-md transition-all hidden sm:block ${viewMode === 'grid' ? 'bg-background shadow-xs text-foreground font-semibold' : 'text-muted-foreground hover:text-foreground'}`}
                 title="Tampilan Grid"
               >
-                <LayoutGrid className="w-4 h-4" />
+                <LayoutGrid className="size-3.5" />
               </button>
             </div>
           </div>
         </div>
 
-        {/* Error / Loading */}
+        {/* Results summary bar */}
+        <div className="flex items-center justify-between text-xs text-muted-foreground px-1">
+          <span>Menampilkan <strong className="text-foreground">{filteredOrders.length}</strong> dari {totalOrders} pesanan</span>
+          {channelFilter === 'trash' && (
+            <Badge variant="destructive" className="text-[10px]">Mode Kotak Sampah</Badge>
+          )}
+        </div>
+
+        {/* Error / Loading alerts */}
         {loadError && (
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-xs px-3 py-2 rounded-lg mb-3">
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs px-3 py-2 rounded-lg">
             {loadError}
           </div>
         )}
 
         {isLoading && (
-          <div className="text-center py-4">
-            <Loader2 className="w-5 h-5 animate-spin mx-auto text-[#FF5E01]" />
-            <p className="text-xs text-gray-500 mt-1">Memperbarui data...</p>
+          <div className="flex items-center justify-center gap-2 py-6 text-muted-foreground text-xs">
+            <Loader2 className="size-4 animate-spin text-primary" />
+            <span>Memperbarui data pesanan...</span>
           </div>
         )}
 
+        {/* Empty State */}
         {orders.length === 0 && !isLoading ? (
-          <div className="text-center text-gray-500 py-12">
-            <p className="text-base mb-2">Belum ada riwayat pesanan</p>
-            <p className="text-xs mb-4">Klik tombol refresh untuk memuat data dari server</p>
-            <Button variant="outline" onClick={() => { refreshFromAPI(); }}>
-              <RefreshCw className="w-4 h-4 mr-2" /> Muat Data
+          <div className="text-center py-16 border rounded-xl bg-card">
+            <p className="text-base font-semibold text-foreground mb-1">Belum ada riwayat pesanan</p>
+            <p className="text-xs text-muted-foreground mb-4">Klik tombol refresh untuk memuat data dari server</p>
+            <Button variant="outline" size="sm" onClick={() => refreshFromAPI()}>
+              <RefreshCw className="size-4 mr-2" /> Muat Data
             </Button>
           </div>
         ) : (
           <>
-            <div className={viewMode === 'list' ? "space-y-1.5" : "grid grid-cols-1 sm:grid-cols-2 gap-3 items-start"}>
-              {filteredOrders.map(order => {
-                const isExpanded = expandedOrder === order.orderId;
-                return (
-                  <div key={order.orderId} className="bg-white border rounded-lg shadow-sm overflow-hidden">
-                    {/* Row / Card Header */}
-                    <div
-                      className={`px-3 py-2.5 cursor-pointer hover:bg-gray-50 transition-colors ${viewMode === 'list' ? 'flex items-center justify-between' : 'space-y-2'}`}
-                      onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
-                    >
-                      {viewMode === 'list' ? (
+            {/* TABLE VIEW (Desktop Optimized with Full Comprehensive Headers) */}
+            {viewMode === 'table' ? (
+              <div className="rounded-xl border border-border bg-card overflow-hidden shadow-xs">
+                <Table>
+                  <TableHeader>
+                    <TableRow className="bg-muted/50 hover:bg-muted/50">
+                      <TableHead className="w-[190px] min-w-[180px] font-semibold text-xs whitespace-nowrap">Invoice & Kasir</TableHead>
+                      <TableHead className="font-semibold text-xs min-w-[160px]">Pelanggan & Instansi</TableHead>
+                      <TableHead className="w-[140px] min-w-[130px] font-semibold text-xs whitespace-nowrap">Deadline</TableHead>
+                      <TableHead className="w-[180px] min-w-[170px] font-semibold text-xs">Rincian Item</TableHead>
+                      <TableHead className="w-[110px] min-w-[100px] font-semibold text-xs">Status</TableHead>
+                      <TableHead className="w-[120px] min-w-[110px] font-semibold text-xs">Desainer</TableHead>
+                      <TableHead className="w-[140px] min-w-[130px] font-semibold text-xs text-right whitespace-nowrap">Total & Sisa</TableHead>
+                      <TableHead className="w-[130px] min-w-[120px] font-semibold text-xs text-right whitespace-nowrap">Aksi</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredOrders.map(order => {
+                      const isPaid = (order.remainingBalance !== undefined ? order.remainingBalance : (order.total - (order.downPayment || 0))) <= 0;
+                      const dl = parseDeadline(order.deadline);
+                      const isExpanded = expandedOrder === order.orderId;
+
+                      return (
                         <>
-                          <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono text-[10px] text-gray-500 truncate">{order.orderId}</span>
-                              {getChannelBadge(order.channel)}
-                              {getCabangBadge(order.cabang)}
-                              {getStatusBadge(order.orderStatus)}
-                            </div>
-                            <div className="flex items-center gap-2 mt-0.5 flex-wrap">
-                              <span className="text-sm font-medium truncate flex items-center gap-1.5">
-                                {order.customerName || '-'}
-                                {order.orderStatus !== 'deleted' && (
-                                  <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
-                                    <Pencil className="w-3 h-3" />
-                                  </button>
-                                )}
-                              </span>
-                              {renderDesignerAssignment(order)}
-                              <span className="text-xs text-gray-400 hidden sm:inline">•</span>
-                              <span className="text-xs text-gray-500 hidden sm:inline">{order.itemCount || order.items?.length || 0} item</span>
-                            </div>
-                          </div>
-                          <div className="flex items-center gap-2 ml-2">
-                            <span className="text-sm font-bold text-green-600 whitespace-nowrap">{formatCurrency(order.total)}</span>
-                            <button
-                              className="p-1 rounded hover:bg-gray-100 text-gray-400 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
-                              title="Download Struk"
-                              onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
-                              disabled={downloadingId === order.orderId}
-                            >
-                              {downloadingId === order.orderId
-                                ? <Loader2 className="w-4 h-4 animate-spin" />
-                                : <Download className="w-4 h-4" />
-                              }
-                            </button>
-                            {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
-                          </div>
-                        </>
-                      ) : (
-                        <>
-                          <div className="flex items-center justify-between">
-                            <span className="font-mono text-[10px] text-gray-400 truncate max-w-[120px]">{order.orderId}</span>
-                            <div className="flex gap-1">
-                              {getChannelBadge(order.channel)}
-                              {getCabangBadge(order.cabang)}
-                              {getStatusBadge(order.orderStatus)}
-                            </div>
-                          </div>
-                          <div className="flex flex-col">
-                            <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                              <span className="text-base font-bold text-gray-800 truncate flex items-center gap-1.5">
-                                {order.customerName || '-'}
-                                {order.orderStatus !== 'deleted' && (
-                                  <button onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }} className="text-gray-400 hover:text-blue-600 transition-colors" title="Edit Pesanan">
-                                    <Pencil className="w-3.5 h-3.5" />
-                                  </button>
-                                )}
-                              </span>
-                              {renderDesignerAssignment(order)}
-                            </div>
-                            <span className="text-[10px] text-gray-400">{order.timestamp}</span>
-                          </div>
-                          <div className="flex items-center justify-between pt-1 border-t border-gray-50">
-                            <span className="text-sm font-extrabold text-green-600">{formatCurrency(order.total)}</span>
-                            <div className="flex items-center gap-1.5 text-gray-400 text-[10px]">
-                              <button
-                                className="p-1 rounded hover:bg-gray-200 hover:text-[#FF5E01] transition-colors disabled:opacity-50"
-                                title="Download Struk"
-                                onClick={e => { e.stopPropagation(); handleDownloadReceipt(order); }}
-                                disabled={downloadingId === order.orderId}
-                              >
-                                {downloadingId === order.orderId
-                                  ? <Loader2 className="w-4 h-4 animate-spin" />
-                                  : <Download className="w-4 h-4" />
-                                }
-                              </button>
-                              {isExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                            </div>
-                          </div>
-                        </>
-                      )}
-                    </div>
-
-                    {/* Expanded */}
-                    {isExpanded && (
-                      <div className="border-t px-3 py-2.5 bg-gray-50 space-y-2">
-                        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
-                          <div className="text-gray-500 font-semibold">Deadline</div>
-                          <div className={`font-bold ${order.deadline ? 'text-orange-600' : 'text-gray-400 italic'}`}>
-                            {order.deadline ? (() => {
-                              try {
-                                const dl = String(order.deadline).trim();
-                                const months = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-                                // Try parsing as Date (handles ISO strings like "2026-03-02T17:00:00.000Z")
-                                const d = new Date(dl);
-                                if (!isNaN(d.getTime())) {
-                                  // Use local methods to match user-entered time exactly
-                                  const day = d.getDate();
-                                  const month = months[d.getMonth()];
-                                  const year = d.getFullYear();
-                                  const hours = d.getHours();
-                                  const mins = d.getMinutes();
-                                  const dateStr = `${day} ${month} ${year}`;
-                                  // Only show time if it's not midnight (00:00)
-                                  return (hours !== 0 || mins !== 0) ? `${dateStr}, ${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}` : dateStr;
-                                }
-                                return dl;
-                              } catch { return String(order.deadline); }
-                            })() : 'Belum ditentukan'}
-                          </div>
-                          <div className="text-gray-500">Kasir</div>
-                          <div>{order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}</div>
-                          {order.cabang && <><div className="text-gray-500 font-semibold">Cabang</div><div className="font-medium text-gray-800">{order.cabang}</div></>}
-                          {order.customerPhone && <><div className="text-gray-500">Telepon</div><div>{order.customerPhone}</div></>}
-                          {order.institution && <><div className="text-gray-500">Instansi</div><div>{order.institution}</div></>}
-                          {order.paymentMethod && <><div className="text-gray-500">Pembayaran</div><div>{order.paymentMethod}</div></>}
-                          {order.downPayment > 0 && <>
-                            <div className="text-gray-500">DP</div><div>{formatCurrency(order.downPayment)}</div>
-                            <div className="text-gray-500">Sisa</div><div className="font-medium text-red-600">{formatCurrency(order.remainingBalance)}</div>
-                          </>}
-                          {(order.delivery?.address || order.address) && (
-                            <>
-                              <div className="text-gray-500">Alamat</div>
-                              <div className="flex items-center gap-1.5 group">
-                                <span className="truncate max-w-[150px] inline-block" title={order.delivery?.address || order.address}>
-                                  {order.delivery?.address || order.address}
+                          <TableRow
+                            key={order.orderId}
+                            className="hover:bg-muted/20 transition-colors cursor-pointer"
+                            onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
+                          >
+                            {/* Invoice, Channel, Branch & Cashier */}
+                            <TableCell className="py-3">
+                              <div className="flex flex-col gap-1">
+                                <span className="font-mono text-xs font-semibold text-foreground whitespace-nowrap" title={order.orderId}>
+                                  {order.orderId}
                                 </span>
-                                <button
-                                  onClick={(e) => { e.stopPropagation(); copyToClipboard(order.delivery?.address || order.address || ''); }}
-                                  className="p-0.5 hover:bg-gray-200 rounded text-gray-400 hover:text-blue-600 transition-colors"
-                                >
-                                  <Copy className="w-3 h-3" />
-                                </button>
-                              </div>
-                            </>
-                          )}
-                        </div>
-
-                        {order.items && order.items.length > 0 && (
-                          <div className="pt-2 border-t border-gray-200">
-                            <p className="text-xs font-medium text-gray-500 mb-1">Items:</p>
-                            {order.items.map((item, idx) => (
-                              <div key={idx} className="flex justify-between text-xs py-0.5">
-                                <span className="text-gray-700 truncate mr-2">
-                                  {item.name} {item.modelCode ? `[${item.modelCode}]` : ''} ×{item.quantity}
+                                <div className="flex items-center gap-1 flex-wrap">
+                                  {getChannelBadge(order.channel)}
+                                  {getCabangBadge(order.cabang)}
+                                </div>
+                                <span className="text-[10px] text-muted-foreground">
+                                  Kasir: {order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}
                                 </span>
-                                <span className="text-gray-600 whitespace-nowrap">{formatCurrency(item.subtotal || item.price * item.quantity)}</span>
                               </div>
-                            ))}
-                          </div>
-                        )}
+                            </TableCell>
 
-                        {/* Actions */}
-                        <div className="flex items-center gap-1.5 pt-2 border-t border-gray-200 justify-between">
-                          {order.orderStatus === 'deleted' ? (
-                            <div className="flex gap-2 w-full">
-                              <Button size="sm" variant="outline" className="h-7 text-xs flex-1 text-blue-600" onClick={() => handleRestore(order.orderId)} disabled={updatingId === order.orderId}>
-                                {updatingId === order.orderId ? <Loader2 className="w-3.5 h-3.5 animate-spin mr-1" /> : <RefreshCw className="w-3.5 h-3.5 mr-1" />} Restore
-                              </Button>
-                            </div>
-                          ) : (
-                            <>
-                              {/* Status dropdown */}
-                              <select
-                                value={(order.orderStatus || '').toLowerCase()}
-                                onChange={e => handleStatusChange(order.orderId, e.target.value)}
-                                disabled={updatingId === order.orderId}
-                                className="text-xs border rounded px-1.5 py-1 bg-white h-7 max-w-[85px] truncate cursor-pointer font-medium"
-                              >
-                                {STATUS_OPTIONS.map(s => (
-                                  <option key={s.value} value={s.value}>{s.label}</option>
-                                ))}
-                              </select>
-
-                              <div className="flex items-center gap-1.5">
-                                {/* Auto-download receipt */}
-                                <Button
-                                  size="sm" variant="outline" className="h-7 w-7 p-0"
-                                  onClick={() => handleDownloadReceipt(order)}
-                                  disabled={downloadingId === order.orderId}
-                                  title="Download Struk"
-                                >
-                                  {downloadingId === order.orderId
-                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    : <Download className="w-3.5 h-3.5" />
-                                  }
-                                </Button>
-
+                            {/* Pelanggan, Telepon & Instansi */}
+                            <TableCell className="py-3">
+                              <div className="flex flex-col">
+                                <div className="flex items-center gap-1.5 font-semibold text-sm text-foreground">
+                                  <span className="truncate max-w-[150px]" title={order.customerName || '-'}>
+                                    {order.customerName || '-'}
+                                  </span>
+                                  {order.orderStatus !== 'deleted' && (
+                                    <button
+                                      onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }}
+                                      className="text-muted-foreground hover:text-primary transition-colors p-0.5 shrink-0"
+                                      title="Edit Pesanan"
+                                    >
+                                      <Pencil className="size-3" />
+                                    </button>
+                                  )}
+                                </div>
+                                <span className="text-[11px] text-foreground/80 font-medium truncate max-w-[150px]">
+                                  {order.institution || 'Umum'}
+                                </span>
                                 {order.customerPhone && (
-                                  <Button size="sm" variant="outline" className="h-7 w-7 p-0 text-green-600 border-green-200 hover:bg-green-50" onClick={() => handleChatCustomer(order)} title="Chat WA">
-                                    <MessageCircle className="w-3.5 h-3.5" />
-                                  </Button>
+                                  <span className="text-[10px] text-muted-foreground font-mono">
+                                    {order.customerPhone}
+                                  </span>
                                 )}
-
-                                <Button
-                                  size="sm" variant="outline" className="h-7 w-7 p-0 text-orange-600 border-orange-200 hover:bg-orange-50"
-                                  onClick={() => handleDownloadReceipt(order, true)}
-                                  disabled={downloadingId === order.orderId}
-                                  title="Struk QRIS"
-                                >
-                                  {downloadingId === order.orderId
-                                    ? <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                                    : <QrCode className="w-3.5 h-3.5" />
-                                  }
-                                </Button>
                               </div>
+                            </TableCell>
 
-                              {/* Delete */}
-                              {confirmDeleteId === order.orderId ? (
-                                <div className="flex gap-1 ml-auto">
-                                  <Button size="sm" variant="destructive" className="h-7 px-2 text-xs" onClick={() => handleDelete(order.orderId)} disabled={deletingId === order.orderId}>
-                                    {deletingId === order.orderId ? <Loader2 className="w-3 h-3 animate-spin" /> : 'Ya'}
-                                  </Button>
-                                  <Button size="sm" variant="outline" className="h-7 px-2 text-xs" onClick={() => setConfirmDeleteId(null)}>Batal</Button>
+                            {/* Deadline: 2-line format */}
+                            <TableCell className="py-3">
+                              {order.deadline ? (
+                                <div className="flex flex-col gap-0.5">
+                                  <div className="flex items-center gap-1 text-xs font-medium text-foreground whitespace-nowrap">
+                                    <Calendar className="size-3 text-muted-foreground shrink-0" />
+                                    <span>{dl.datePart}</span>
+                                  </div>
+                                  {dl.timePart && (
+                                    <div className="flex items-center gap-1 text-[11px] font-semibold text-amber-700 whitespace-nowrap pl-4">
+                                      <Clock className="size-2.5 shrink-0" />
+                                      <span>{dl.timePart} WIB</span>
+                                    </div>
+                                  )}
                                 </div>
                               ) : (
-                                <Button size="sm" variant="ghost" className="h-7 w-7 p-0 text-red-500 ml-auto hover:bg-red-50 hover:text-red-600" onClick={() => setConfirmDeleteId(order.orderId)} title="Hapus">
-                                  <Trash2 className="w-3.5 h-3.5" />
-                                </Button>
+                                <span className="text-xs text-muted-foreground italic">Belum diatur</span>
                               )}
-                            </>
+                            </TableCell>
+
+                            {/* Rincian Item: Compact Item List Preview */}
+                            <TableCell className="py-3">
+                              <div className="flex flex-col gap-0.5 max-w-[180px]">
+                                {order.items && order.items.length > 0 ? (
+                                  order.items.slice(0, 2).map((item, idx) => (
+                                    <div key={idx} className="text-[11px] text-foreground truncate" title={`${item.name} (${item.quantity}x)`}>
+                                      • {item.name} <span className="text-muted-foreground font-mono">×{item.quantity}</span>
+                                    </div>
+                                  ))
+                                ) : (
+                                  <span className="text-xs text-muted-foreground italic">-</span>
+                                )}
+                                {order.items && order.items.length > 2 && (
+                                  <span className="text-[10px] text-muted-foreground font-medium">
+                                    +{order.items.length - 2} item lainnya...
+                                  </span>
+                                )}
+                              </div>
+                            </TableCell>
+
+                            {/* Status Dropdown/Badge */}
+                            <TableCell className="py-3" onClick={e => e.stopPropagation()}>
+                              {order.orderStatus === 'deleted' ? (
+                                getStatusBadge(order.orderStatus)
+                              ) : (
+                                <select
+                                  value={(order.orderStatus || '').toLowerCase()}
+                                  onChange={e => handleStatusChange(order.orderId, e.target.value)}
+                                  disabled={updatingId === order.orderId}
+                                  className="text-xs font-semibold border rounded-md px-2 py-1 bg-background text-foreground cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring"
+                                >
+                                  {STATUS_OPTIONS.map(s => (
+                                    <option key={s.value} value={s.value}>{s.label}</option>
+                                  ))}
+                                </select>
+                              )}
+                            </TableCell>
+
+                            {/* Desainer */}
+                            <TableCell className="py-3">
+                              {renderDesignerPopover(order)}
+                            </TableCell>
+
+                            {/* Total & DP / Sisa */}
+                            <TableCell className="py-3 text-right">
+                              <div className="flex flex-col items-end whitespace-nowrap">
+                                <span className="font-bold text-sm text-emerald-600">{formatCurrency(order.total)}</span>
+                                {order.downPayment > 0 && (
+                                  <span className="text-[10px] text-muted-foreground">DP: {formatCurrency(order.downPayment)}</span>
+                                )}
+                                {order.downPayment > 0 && !isPaid && (
+                                  <span className="text-[10px] text-destructive font-semibold">Sisa: {formatCurrency(order.remainingBalance)}</span>
+                                )}
+                              </div>
+                            </TableCell>
+
+                            {/* Aksi */}
+                            <TableCell className="py-3 text-right" onClick={e => e.stopPropagation()}>
+                              <div className="flex items-center justify-end gap-1">
+                                {order.orderStatus === 'deleted' ? (
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-7 text-xs text-blue-600 gap-1"
+                                    onClick={() => handleRestore(order.orderId)}
+                                    disabled={updatingId === order.orderId}
+                                  >
+                                    {updatingId === order.orderId ? <Loader2 className="size-3 animate-spin" /> : <RotateCcw className="size-3" />}
+                                    <span>Restore</span>
+                                  </Button>
+                                ) : (
+                                  <>
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="size-7 text-muted-foreground hover:text-foreground"
+                                      onClick={() => handleDownloadReceipt(order)}
+                                      disabled={downloadingId === order.orderId}
+                                      title="Unduh Struk"
+                                    >
+                                      {downloadingId === order.orderId ? <Loader2 className="size-3.5 animate-spin" /> : <Download className="size-3.5" />}
+                                    </Button>
+
+                                    {order.customerPhone && (
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="size-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                                        onClick={() => handleChatCustomer(order)}
+                                        title="Kirim Pesan WhatsApp"
+                                      >
+                                        <MessageCircle className="size-3.5" />
+                                      </Button>
+                                    )}
+
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="size-7 text-amber-600 hover:text-amber-700 hover:bg-amber-50"
+                                      onClick={() => handleDownloadReceipt(order, true)}
+                                      disabled={downloadingId === order.orderId}
+                                      title="Struk QRIS"
+                                    >
+                                      <QrCode className="size-3.5" />
+                                    </Button>
+
+                                    {confirmDeleteId === order.orderId ? (
+                                      <div className="flex items-center gap-1">
+                                        <Button
+                                          size="sm"
+                                          variant="destructive"
+                                          className="h-7 px-2 text-xs"
+                                          onClick={() => handleDelete(order.orderId)}
+                                          disabled={deletingId === order.orderId}
+                                        >
+                                          Ya
+                                        </Button>
+                                        <Button
+                                          size="sm"
+                                          variant="outline"
+                                          className="h-7 px-2 text-xs"
+                                          onClick={() => setConfirmDeleteId(null)}
+                                        >
+                                          Batal
+                                        </Button>
+                                      </div>
+                                    ) : (
+                                      <Button
+                                        size="icon"
+                                        variant="ghost"
+                                        className="size-7 text-muted-foreground hover:text-destructive"
+                                        onClick={() => setConfirmDeleteId(order.orderId)}
+                                        title="Hapus Pesanan"
+                                      >
+                                        <Trash2 className="size-3.5" />
+                                      </Button>
+                                    )}
+                                  </>
+                                )}
+                              </div>
+                            </TableCell>
+                          </TableRow>
+
+                          {/* Detail Subrow when clicked */}
+                          {isExpanded && (
+                            <TableRow className="bg-muted/30 hover:bg-muted/30">
+                              <TableCell colSpan={8} className="p-4">
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+                                  {/* Detail Informasi */}
+                                  <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-background border border-border">
+                                    <span className="font-semibold text-foreground flex items-center gap-1">
+                                      <Package className="size-3.5 text-primary" />
+                                      Informasi Pesanan
+                                    </span>
+                                    <div className="flex justify-between py-0.5 border-b border-border/40">
+                                      <span className="text-muted-foreground">Kasir:</span>
+                                      <span className="font-medium text-foreground">{order.cashier || 'Kasir'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-0.5 border-b border-border/40">
+                                      <span className="text-muted-foreground">Cabang:</span>
+                                      <span className="font-medium text-foreground">{order.cabang || 'Cabang Belwis'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-0.5 border-b border-border/40">
+                                      <span className="text-muted-foreground">Telepon:</span>
+                                      <span className="font-mono text-foreground">{order.customerPhone || '-'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-0.5">
+                                      <span className="text-muted-foreground">Instansi:</span>
+                                      <span className="font-medium text-foreground">{order.institution || 'Umum'}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Pembayaran */}
+                                  <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-background border border-border">
+                                    <span className="font-semibold text-foreground">Rincian Pembayaran</span>
+                                    <div className="flex justify-between py-0.5 border-b border-border/40">
+                                      <span className="text-muted-foreground">Subtotal:</span>
+                                      <span className="font-medium text-foreground">{formatCurrency(order.subtotal || order.total)}</span>
+                                    </div>
+                                    <div className="flex justify-between py-0.5 border-b border-border/40">
+                                      <span className="text-muted-foreground">Uang Muka (DP):</span>
+                                      <span className="font-medium text-foreground">{formatCurrency(order.downPayment || 0)}</span>
+                                    </div>
+                                    <div className="flex justify-between py-0.5">
+                                      <span className="text-muted-foreground">Sisa Pembayaran:</span>
+                                      <span className={`font-bold ${isPaid ? 'text-emerald-600' : 'text-destructive'}`}>
+                                        {isPaid ? 'Lunas' : formatCurrency(order.remainingBalance || 0)}
+                                      </span>
+                                    </div>
+                                    {(order.delivery?.address || order.address) && (
+                                      <div className="mt-1 pt-1 border-t border-border/40 flex items-start gap-1 text-muted-foreground">
+                                        <span className="shrink-0 font-medium">Alamat:</span>
+                                        <span className="truncate" title={order.delivery?.address || order.address}>{order.delivery?.address || order.address}</span>
+                                      </div>
+                                    )}
+                                  </div>
+
+                                  {/* Rincian Lengkap Produk */}
+                                  <div className="flex flex-col gap-1.5 p-3 rounded-lg bg-background border border-border max-h-40 overflow-y-auto">
+                                    <span className="font-semibold text-foreground">Semua Item ({order.items?.length || 0})</span>
+                                    {order.items?.map((item, idx) => (
+                                      <div key={idx} className="flex justify-between py-0.5 border-b border-border/30 last:border-0">
+                                        <span className="truncate pr-2">{item.name} ×{item.quantity}</span>
+                                        <span className="font-mono text-muted-foreground shrink-0">{formatCurrency(item.subtotal || item.price * item.quantity)}</span>
+                                      </div>
+                                    ))}
+                                  </div>
+                                </div>
+                              </TableCell>
+                            </TableRow>
                           )}
+                        </>
+                      );
+                    })}
+                  </TableBody>
+                </Table>
+              </div>
+            ) : (
+              /* CARD / LIST VIEW (Mobile Optimized) */
+              <div className={viewMode === 'list' ? "flex flex-col gap-2" : "grid grid-cols-1 sm:grid-cols-2 gap-3"}>
+                {filteredOrders.map(order => {
+                  const isExpanded = expandedOrder === order.orderId;
+                  const isPaid = (order.remainingBalance !== undefined ? order.remainingBalance : (order.total - (order.downPayment || 0))) <= 0;
+                  const dl = parseDeadline(order.deadline);
+
+                  return (
+                    <div
+                      key={order.orderId}
+                      className="rounded-xl border border-border bg-card shadow-2xs hover:border-border/80 transition-all overflow-hidden"
+                    >
+                      {/* Clean 2-Row Collapsed Card Header */}
+                      <div
+                        className="p-3.5 cursor-pointer flex flex-col gap-2 hover:bg-muted/20 transition-colors"
+                        onClick={() => setExpandedOrder(isExpanded ? null : order.orderId)}
+                      >
+                        {/* Row 1: Customer Name + Price + Shadcn More Menu Button */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            <span className="font-bold text-sm sm:text-base text-foreground truncate">
+                              {order.customerName || '-'}
+                            </span>
+                            {order.orderStatus !== 'deleted' && (
+                              <button
+                                onClick={(e) => { e.stopPropagation(); setEditingOrder(order); }}
+                                className="text-muted-foreground hover:text-primary transition-colors p-0.5 shrink-0"
+                                title="Edit Pesanan"
+                              >
+                                <Pencil className="size-3" />
+                              </button>
+                            )}
+                          </div>
+
+                          <div className="flex items-center gap-1 shrink-0">
+                            <span className="font-extrabold text-sm sm:text-base text-emerald-600">
+                              {formatCurrency(order.total)}
+                            </span>
+
+                            {/* Shadcn More Actions Menu in card header */}
+                            <div onClick={e => e.stopPropagation()}>
+                              <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                  <Button variant="ghost" size="icon" className="size-7 text-muted-foreground hover:text-foreground">
+                                    <MoreVertical className="size-3.5" />
+                                  </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-44">
+                                  <DropdownMenuItem onClick={() => handleDownloadReceipt(order)} className="gap-2 text-xs">
+                                    <Download className="size-3.5" />
+                                    <span>Unduh Struk</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem onClick={() => handleDownloadReceipt(order, true)} className="gap-2 text-xs">
+                                    <QrCode className="size-3.5 text-amber-600" />
+                                    <span>Struk QRIS</span>
+                                  </DropdownMenuItem>
+                                  {order.customerPhone && (
+                                    <DropdownMenuItem onClick={() => handleChatCustomer(order)} className="gap-2 text-xs">
+                                      <MessageCircle className="size-3.5 text-emerald-600" />
+                                      <span>Chat WhatsApp</span>
+                                    </DropdownMenuItem>
+                                  )}
+                                  <DropdownMenuItem onClick={() => setEditingOrder(order)} className="gap-2 text-xs">
+                                    <Pencil className="size-3.5 text-blue-600" />
+                                    <span>Edit Pesanan</span>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuSeparator />
+                                  {order.orderStatus === 'deleted' ? (
+                                    <DropdownMenuItem onClick={() => handleRestore(order.orderId)} className="gap-2 text-xs text-blue-600">
+                                      <RotateCcw className="size-3.5" />
+                                      <span>Kembalikan</span>
+                                    </DropdownMenuItem>
+                                  ) : (
+                                    <DropdownMenuItem onClick={() => setConfirmDeleteId(order.orderId)} className="gap-2 text-xs text-destructive">
+                                      <Trash2 className="size-3.5" />
+                                      <span>Hapus Pesanan</span>
+                                    </DropdownMenuItem>
+                                  )}
+                                </DropdownMenuContent>
+                              </DropdownMenu>
+                            </div>
+                          </div>
                         </div>
 
+                        {/* Row 2: Invoice ID, Channel/Branch Badge (Desktop/Tablet), Status */}
+                        <div className="flex items-center justify-between gap-2 text-xs pt-0.5">
+                          <div className="flex items-center gap-1.5 flex-nowrap min-w-0">
+                            <span className="font-mono text-[11px] text-muted-foreground whitespace-nowrap">
+                              {order.orderId}
+                            </span>
+                            <span className="hidden sm:inline-flex">{getChannelBadge(order.channel)}</span>
+                            <span className="hidden sm:inline-flex">{getCabangBadge(order.cabang)}</span>
+                            {getStatusBadge(order.orderStatus)}
+                          </div>
+
+                          <div className="flex items-center gap-1.5 shrink-0">
+                            {renderDesignerPopover(order)}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
-                );
-              })}
 
-              {filteredOrders.length === 0 && search && (
-                <div className="text-center py-8 text-gray-400 text-sm">
-                  Tidak ditemukan "{search}"
-                </div>
-              )}
-            </div>
+                      {/* Expanded Details Panel */}
+                      {isExpanded && (
+                        <div className="border-t border-border px-3.5 py-3 bg-muted/30 flex flex-col gap-3 text-xs">
+                          {/* Metadata Grid */}
+                          <div className="grid grid-cols-2 gap-x-4 gap-y-1.5">
+                            <div className="text-muted-foreground font-medium">Deadline</div>
+                            <div className={`font-semibold ${order.deadline ? 'text-amber-700' : 'text-muted-foreground'}`}>
+                              {dl.datePart} {dl.timePart ? `(${dl.timePart} WIB)` : ''}
+                            </div>
 
-            {/* Load More */}
+                            <div className="text-muted-foreground font-medium">Kasir</div>
+                            <div className="text-foreground">{order.cashier ? (order.cashier.includes('@') ? order.cashier.split('@')[0] : order.cashier) : 'Kasir'}</div>
+
+                            {order.cabang && (
+                              <>
+                                <div className="text-muted-foreground font-medium">Cabang</div>
+                                <div className="text-foreground font-medium">{order.cabang}</div>
+                              </>
+                            )}
+
+                            {order.customerPhone && (
+                              <>
+                                <div className="text-muted-foreground font-medium">Telepon</div>
+                                <div className="text-foreground">{order.customerPhone}</div>
+                              </>
+                            )}
+
+                            {order.institution && (
+                              <>
+                                <div className="text-muted-foreground font-medium">Instansi</div>
+                                <div className="text-foreground">{order.institution}</div>
+                              </>
+                            )}
+
+                            {order.downPayment > 0 && (
+                              <>
+                                <div className="text-muted-foreground font-medium">Uang Muka (DP)</div>
+                                <div className="text-foreground">{formatCurrency(order.downPayment)}</div>
+                                <div className="text-muted-foreground font-medium">Sisa Pembayaran</div>
+                                <div className="font-bold text-destructive">{isPaid ? 'Lunas' : formatCurrency(order.remainingBalance)}</div>
+                              </>
+                            )}
+
+                            {(order.delivery?.address || order.address) && (
+                              <>
+                                <div className="text-muted-foreground font-medium">Alamat</div>
+                                <div className="flex items-center gap-1 text-foreground">
+                                  <span className="truncate max-w-[150px]" title={order.delivery?.address || order.address}>
+                                    {order.delivery?.address || order.address}
+                                  </span>
+                                  <button
+                                    onClick={(e) => { e.stopPropagation(); copyToClipboard(order.delivery?.address || order.address || ''); }}
+                                    className="p-0.5 hover:bg-muted rounded text-muted-foreground hover:text-foreground"
+                                  >
+                                    <Copy className="size-3" />
+                                  </button>
+                                </div>
+                              </>
+                            )}
+                          </div>
+
+                          {/* Items Breakdown */}
+                          {order.items && order.items.length > 0 && (
+                            <div className="pt-2 border-t border-border/60 flex flex-col gap-1">
+                              <span className="text-[11px] font-semibold text-muted-foreground">Rincian Item:</span>
+                              {order.items.map((item, idx) => (
+                                <div key={idx} className="flex justify-between text-xs py-0.5">
+                                  <span className="text-foreground truncate mr-2">
+                                    {item.name} {item.modelCode ? `[${item.modelCode}]` : ''} ×{item.quantity}
+                                  </span>
+                                  <span className="text-muted-foreground font-medium shrink-0">
+                                    {formatCurrency(item.subtotal || item.price * item.quantity)}
+                                  </span>
+                                </div>
+                              ))}
+                            </div>
+                          )}
+
+                          {/* Action Toolbar */}
+                          <div className="pt-2 border-t border-border/60 flex items-center justify-between gap-2">
+                            {order.orderStatus === 'deleted' ? (
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                className="w-full text-xs text-blue-600 gap-1.5 h-8"
+                                onClick={() => handleRestore(order.orderId)}
+                                disabled={updatingId === order.orderId}
+                              >
+                                {updatingId === order.orderId ? <Loader2 className="size-3.5 animate-spin" /> : <RotateCcw className="size-3.5" />}
+                                <span>Kembalikan Pesanan</span>
+                              </Button>
+                            ) : (
+                              <>
+                                <select
+                                  value={(order.orderStatus || '').toLowerCase()}
+                                  onChange={e => handleStatusChange(order.orderId, e.target.value)}
+                                  disabled={updatingId === order.orderId}
+                                  className="text-xs font-semibold border rounded-md px-2 py-1 bg-background text-foreground h-8 cursor-pointer focus:outline-none focus:ring-1 focus:ring-ring"
+                                >
+                                  {STATUS_OPTIONS.map(s => (
+                                    <option key={s.value} value={s.value}>{s.label}</option>
+                                  ))}
+                                </select>
+
+                                <div className="flex items-center gap-1.5 ml-auto">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    className="h-8 text-xs gap-1"
+                                    onClick={() => handleDownloadReceipt(order)}
+                                    disabled={downloadingId === order.orderId}
+                                  >
+                                    {downloadingId === order.orderId ? <Loader2 className="size-3 animate-spin" /> : <Download className="size-3.5" />}
+                                    <span>Struk</span>
+                                  </Button>
+
+                                  {order.customerPhone && (
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      className="h-8 text-xs gap-1 text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                                      onClick={() => handleChatCustomer(order)}
+                                    >
+                                      <MessageCircle className="size-3.5" />
+                                      <span>WA</span>
+                                    </Button>
+                                  )}
+
+                                  {confirmDeleteId === order.orderId ? (
+                                    <div className="flex items-center gap-1">
+                                      <Button
+                                        size="sm"
+                                        variant="destructive"
+                                        className="h-8 px-2 text-xs"
+                                        onClick={() => handleDelete(order.orderId)}
+                                        disabled={deletingId === order.orderId}
+                                      >
+                                        Hapus
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        className="h-8 px-2 text-xs"
+                                        onClick={() => setConfirmDeleteId(null)}
+                                      >
+                                        Batal
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <Button
+                                      size="icon"
+                                      variant="ghost"
+                                      className="size-8 text-destructive hover:bg-destructive/10"
+                                      onClick={() => setConfirmDeleteId(order.orderId)}
+                                      title="Hapus"
+                                    >
+                                      <Trash2 className="size-3.5" />
+                                    </Button>
+                                  )}
+                                </div>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {filteredOrders.length === 0 && search && (
+              <div className="text-center py-10 text-muted-foreground text-sm border rounded-xl bg-card">
+                Tidak ditemukan pesanan dengan kata kunci "{search}"
+              </div>
+            )}
+
+            {/* Load More Pagination */}
             {orders.length < totalOrders && !isLoading && (
               <div className="text-center mt-4 mb-2">
                 <Button
@@ -1027,10 +1647,10 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
                   size="sm"
                   onClick={loadMoreOrders}
                   disabled={isLoadingMore}
-                  className="text-xs"
+                  className="text-xs font-semibold"
                 >
                   {isLoadingMore ? (
-                    <><Loader2 className="w-3 h-3 animate-spin mr-1.5" /> Memuat...</>
+                    <><Loader2 className="size-3.5 animate-spin mr-1.5" /> Memuat...</>
                   ) : (
                     <>Muat Lebih Banyak ({orders.length}/{totalOrders})</>
                   )}

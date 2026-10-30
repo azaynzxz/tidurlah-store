@@ -127,18 +127,18 @@ export function POSDashboard() {
 
   // Inspiring quotes in Indonesian
   const morningQuotes = [
-    "Setiap pagi adalah awal yang baru. Semangat bekerja! 💪",
-    "Senyum adalah awal dari kesuksesan. Mulai hari dengan senyuman! 😊",
-    "Hari ini penuh dengan peluang baru. Manfaatkan dengan baik! ✨",
-    "Kebahagiaan dimulai dari diri sendiri. Tetap semangat! 🌟",
-    "Kerja keras hari ini adalah investasi masa depan! 🚀"
+    "Setiap pagi adalah awal yang baru. Semangat bekerja! ",
+    "Senyum adalah awal dari kesuksesan. Mulai hari dengan senyuman! ",
+    "Hari ini penuh dengan peluang baru. Manfaatkan dengan baik! ",
+    "Kebahagiaan dimulai dari diri sendiri. Tetap semangat! ",
+    "Kerja keras hari ini adalah investasi masa depan! "
   ];
 
   const lunchQuotes = [
-    "Jaga kesehatan dengan makan teratur. Selamat makan siang! 🍽️",
-    "Istirahat sejenak untuk mengisi energi kembali. Bon Appétit! 🥗",
-    "Tubuh yang sehat adalah awal dari produktivitas. Nikmati istirahatmu! ☕",
-    "Waktu istirahat adalah hak kamu. Gunakan dengan baik! 🌸"
+    "Jaga kesehatan dengan makan teratur. Selamat makan siang! ️",
+    "Istirahat sejenak untuk mengisi energi kembali. Bon Appétit! ",
+    "Tubuh yang sehat adalah awal dari produktivitas. Nikmati istirahatmu! ",
+    "Waktu istirahat adalah hak kamu. Gunakan dengan baik! "
   ];
 
   // Play sound helper
@@ -188,12 +188,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">☀️ Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
+            <p className="font-bold text-base">️ Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
-              <p>✨ Sudah senyum hari ini?</p>
-              <p>💪 Bagaimana kondisi kesehatan dan stress level kamu?</p>
-              <p>📝 Apa rencana kamu hari ini?</p>
+              <p> Sudah senyum hari ini?</p>
+              <p> Bagaimana kondisi kesehatan dan stress level kamu?</p>
+              <p> Apa rencana kamu hari ini?</p>
             </div>
           </div>
         );
@@ -216,12 +216,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">🍽️ Waktu Istirahat Makan Siang!</p>
+            <p className="font-bold text-base">️ Waktu Istirahat Makan Siang!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
-              <p>🥗 Siapkan makan siangmu</p>
-              <p>☕ Ambil istirahat sejenak</p>
-              <p>🌸 Jaga kesehatan dan energimu</p>
+              <p> Siapkan makan siangmu</p>
+              <p> Ambil istirahat sejenak</p>
+              <p> Jaga kesehatan dan energimu</p>
             </div>
           </div>
         );
@@ -243,12 +243,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">📦 Cek Pesanan Sore Hari</p>
+            <p className="font-bold text-base"> Cek Pesanan Sore Hari</p>
             <div className="text-sm space-y-1 mt-2">
-              <p>✅ Periksa pesanan yang masuk hari ini</p>
-              <p>📋 Siapkan untuk penutupan</p>
-              <p>🔍 Pastikan semua tercatat dengan baik</p>
-              <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan! 💪</p>
+              <p> Periksa pesanan yang masuk hari ini</p>
+              <p> Siapkan untuk penutupan</p>
+              <p> Pastikan semua tercatat dengan baik</p>
+              <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan! </p>
             </div>
           </div>
         );
@@ -270,15 +270,15 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">🏠 Waktu Penutupan Toko!</p>
+            <p className="font-bold text-base"> Waktu Penutupan Toko!</p>
             <div className="text-sm space-y-1 mt-2">
-              <p>📦 Siapkan barang-barang kamu</p>
-              <p>🔒 Pastikan semua sudah tersimpan dengan aman</p>
-              <p>✨ Bersiaplah untuk pulang</p>
+              <p> Siapkan barang-barang kamu</p>
+              <p> Pastikan semua sudah tersimpan dengan aman</p>
+              <p> Bersiaplah untuk pulang</p>
             </div>
             <div className="text-sm font-semibold mt-3 pt-2 border-t text-center">
-              <p>🌟 Selamat beristirahat!</p>
-              <p>👋 Sampai jumpa besok!</p>
+              <p> Selamat beristirahat!</p>
+              <p> Sampai jumpa besok!</p>
             </div>
           </div>
         );

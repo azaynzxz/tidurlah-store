@@ -27,6 +27,7 @@ export default function Admin() {
     const [activeTab, setActiveTab] = useState<TabId>('dashboard');
     const navigate = useNavigate();
     const { profile, signOut } = useAuth();
+    useOrderNotifications();
 
     // The user explicitly requested to restrict this to "Zayn and Stevan"
     if (profile && !["Zayn", "Stevan", "Super Admin"].includes(profile.full_name)) {
@@ -91,7 +92,6 @@ export default function Admin() {
         await signOut();
         navigate('/login');
     };
-    useOrderNotifications();
 
     return (
         <div className="min-h-screen bg-gray-50">

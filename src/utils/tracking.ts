@@ -58,7 +58,7 @@ export const initTrafficSourceCapture = (): void => {
     if (utmSource || !existing) {
       let sourceName = utmSource || '';
       let mediumName = utmMedium || '';
-      let campaignName = utmCampaign || '';
+      const campaignName = utmCampaign || '';
 
       if (!sourceName && document.referrer) {
         try {

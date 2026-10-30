@@ -1,15 +1,21 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import * as CheckboxPrimitive from "@radix-ui/react-checkbox";
-import { Check, ChevronDown, ChevronUp, Star, FileText, Calendar, Clock } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Check, ChevronDown, ChevronUp, FileText, Calendar, Clock, Trash2, ShoppingCart, Truck, Palette, Zap, Search, User, Building2, Phone, Loader2 } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
-import { exportReceiptToPDF } from "@/utils/receiptPDF";
 import { TimePicker } from "@/components/ui/TimePicker";
 import newOrderSound from "@/components/new-order.mp3";
+import { fetchCustomersData, normalizeIndonesianPhone, formatPhoneNumber, type CustomerSummary } from "@/services/customers";
+
+// Cache customer database in-memory to prevent redundant queries during POS session
+let posCustomerCache: CustomerSummary[] | null = null;
+let posCustomerCacheTimestamp = 0;
+const CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes cache
 
 interface Product {
   id: number;
@@ -90,7 +96,23 @@ interface CustomerDetails {
   cabang: string;
 }
 
-export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll, onProcessOrder, onUpdateOptionsById, onPrintOrder, onExportPDF, onAddDesignService, onAddExpressService, onAddOngkir, isBluetoothSupported, isMobile, onClose, defaultCabang }: CartProps) {
+export function Cart({
+  items,
+  onUpdateQuantityById,
+  onRemoveItemById,
+  onClearAll,
+  onProcessOrder,
+  onUpdateOptionsById,
+  onPrintOrder,
+  onExportPDF,
+  onAddDesignService,
+  onAddExpressService,
+  onAddOngkir,
+  isBluetoothSupported,
+  isMobile,
+  onClose,
+  defaultCabang
+}: CartProps) {
   const [customerDetails, setCustomerDetails] = useState<CustomerDetails>({
     name: '',
     phone: '',
@@ -111,19 +133,151 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
   const [downPayment, setDownPayment] = useState<number>(0);
   const [dpDisplayValue, setDpDisplayValue] = useState<string>('');
 
-  // Sync express service checkbox with cart items
+  // Customer database auto-suggest state
+  const [customersList, setCustomersList] = useState<CustomerSummary[]>(() => {
+    if (posCustomerCache) return posCustomerCache;
+    try {
+      const stored = localStorage.getItem('cached_pos_customers');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {
+      // ignore JSON parse error
+    }
+    return [];
+  });
+  const [isLoadingCustomers, setIsLoadingCustomers] = useState(false);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+  const suggestionsRef = useRef<HTMLDivElement>(null);
+  const customerNameInputRef = useRef<HTMLInputElement>(null);
+
+  // Fetch customers from database on mount or if cache is stale
+  useEffect(() => {
+    const loadCustomers = async () => {
+      const now = Date.now();
+      if (posCustomerCache && now - posCustomerCacheTimestamp < CACHE_TTL_MS) {
+        setCustomersList(posCustomerCache);
+        return;
+      }
+
+      setIsLoadingCustomers(true);
+      try {
+        const result = await fetchCustomersData();
+        if (result.success && result.customers) {
+          posCustomerCache = result.customers;
+          posCustomerCacheTimestamp = Date.now();
+          setCustomersList(result.customers);
+          try {
+            localStorage.setItem('cached_pos_customers', JSON.stringify(result.customers));
+          } catch {
+            // ignore localStorage quota error
+          }
+        }
+      } catch (err) {
+        console.error('Failed to load customers in POS:', err);
+      } finally {
+        setIsLoadingCustomers(false);
+      }
+    };
+
+    loadCustomers();
+  }, []);
+
+  // Click outside to dismiss suggestions dropdown
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (
+        suggestionsRef.current &&
+        !suggestionsRef.current.contains(e.target as Node) &&
+        customerNameInputRef.current &&
+        !customerNameInputRef.current.contains(e.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('touchstart', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('touchstart', handleClickOutside);
+    };
+  }, []);
+
+  // Filtered customer suggestions based on typed query
+  const filteredCustomers = useMemo(() => {
+    const query = customerDetails.name.trim().toLowerCase();
+    if (!query || !showSuggestions) return [];
+
+    const cleanDigits = query.replace(/\D/g, '');
+
+    return customersList
+      .filter(cust => {
+        const nameMatch = cust.name.toLowerCase().includes(query);
+        const instMatch = cust.institution && cust.institution.toLowerCase().includes(query);
+        const phoneMatch = cleanDigits.length >= 3 && cust.cleanPhone.includes(cleanDigits);
+        return nameMatch || instMatch || phoneMatch;
+      })
+      .sort((a, b) => {
+        // Exact name prefix match first
+        const aStarts = a.name.toLowerCase().startsWith(query);
+        const bStarts = b.name.toLowerCase().startsWith(query);
+        if (aStarts && !bStarts) return -1;
+        if (!aStarts && bStarts) return 1;
+        // Prioritize repeat customers
+        return (b.orderCount || 1) - (a.orderCount || 1);
+      })
+      .slice(0, 6);
+  }, [customerDetails.name, customersList, showSuggestions]);
+
+  // Handle customer selection from dropdown
+  const handleSelectCustomer = (cust: CustomerSummary) => {
+    setCustomerDetails(prev => ({
+      ...prev,
+      name: cust.name,
+      phone: cust.phone || cust.cleanPhone || prev.phone,
+      instansi: cust.institution && cust.institution !== '-' && cust.institution.toLowerCase() !== 'umum'
+        ? cust.institution
+        : (cust.institution || prev.instansi),
+    }));
+    setShowSuggestions(false);
+    setSelectedSuggestionIndex(-1);
+    toast.success(`Data pelanggan ${cust.name} berhasil diterapkan`, { duration: 1500 });
+  };
+
+  // Keyboard navigation for dropdown
+  const handleCustomerKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (!showSuggestions || filteredCustomers.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev => (prev + 1) % filteredCustomers.length);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      setSelectedSuggestionIndex(prev => (prev - 1 + filteredCustomers.length) % filteredCustomers.length);
+    } else if (e.key === 'Enter') {
+      if (selectedSuggestionIndex >= 0 && selectedSuggestionIndex < filteredCustomers.length) {
+        e.preventDefault();
+        handleSelectCustomer(filteredCustomers[selectedSuggestionIndex]);
+      }
+    } else if (e.key === 'Escape') {
+      setShowSuggestions(false);
+      setSelectedSuggestionIndex(-1);
+    }
+  };
+
   useEffect(() => {
     const expressServiceInCart = items.some(item => item.product.id === 2001);
     setIsExpressSelected(expressServiceInCart);
   }, [items]);
 
-  // Sync defaultCabang with customer details
   useEffect(() => {
     if (defaultCabang) {
       setCustomerDetails(prev => ({ ...prev, cabang: defaultCabang }));
     }
   }, [defaultCabang]);
-
 
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
@@ -133,19 +287,11 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     }).format(amount).replace('IDR', 'Rp');
   };
 
-  // Format number with thousand separators
-  const formatNumber = (num: number) => {
-    return new Intl.NumberFormat('id-ID').format(num);
-  };
-
-  // Calculate totals with price thresholds or dimensional pricing
   const getApplicablePrice = (product: Product, quantity: number, options?: any) => {
-    // Handle ongkir with dynamic price from options
     if (product.id === 2002 && options?.customPrice) {
       return options.customPrice;
     }
 
-    // Check if this is a dimensional product with width/height options
     if (product.pricingMethod === "dimensional" && options?.width && options?.height) {
       const customPerSqm = (options.customPricePerSqm ?? options.overridePrice) as number | undefined;
       const basePerSqm = (customPerSqm && customPerSqm > 0)
@@ -155,14 +301,12 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return basePerSqm * area;
     }
 
-    // For non-dimensional products, allow manual override price
     if (options?.overridePrice && options.overridePrice > 0) {
       return options.overridePrice;
     }
 
     let basePrice = product.discountPrice || product.price;
 
-    // Apply model price if a model with a price is selected
     if (options?.modelCode && product.models) {
       const selectedModel = product.models.find(m => m.code === options.modelCode);
       if (selectedModel && selectedModel.price !== undefined) {
@@ -170,114 +314,101 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       }
     }
 
-    // Handle regular price thresholds
     if (product.priceThresholds && product.priceThresholds.length > 0) {
-      // Find the appropriate price threshold
       const applicableThreshold = product.priceThresholds
         .slice()
         .reverse()
         .find(threshold => quantity >= threshold.minQuantity);
 
       if (applicableThreshold) {
-        return applicableThreshold.price;
+        basePrice = applicableThreshold.price;
       }
     }
 
     return basePrice;
   };
 
-  const subtotal = items.reduce((total, item) => {
-    const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
-    return total + (applicablePrice * item.quantity);
-  }, 0);
+  const calculateSubtotal = () => {
+    return items.reduce((total, item) => {
+      const unitPrice = getApplicablePrice(item.product, item.quantity, item.options);
+      return total + (unitPrice * item.quantity);
+    }, 0);
+  };
 
-  const totalDiscounts = items.reduce((total, item) => {
-    // Skip discount calculation for ongkir (custom price product)
-    if (item.product.id === 2002) {
-      return total;
-    }
+  const calculateTotalDiscounts = () => {
+    return items.reduce((total, item) => {
+      const basePrice = item.product.price;
+      const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
+      const discountPerItem = Math.max(0, basePrice - applicablePrice);
+      return total + (discountPerItem * item.quantity);
+    }, 0);
+  };
 
-    const originalPrice = item.product.price;
-    const applicablePrice = getApplicablePrice(item.product, item.quantity, item.options);
-    if (applicablePrice < originalPrice) {
-      const discount = (originalPrice - applicablePrice) * item.quantity;
-      return total + discount;
-    }
-    return total;
-  }, 0);
-
+  const subtotal = calculateSubtotal();
+  const totalDiscounts = calculateTotalDiscounts();
   const finalTotal = subtotal;
 
-  // Handle design service checkbox
   const handleDesignServiceChange = (checked: boolean) => {
     setIsDesignServiceSelected(checked);
     if (checked) {
       onAddDesignService();
-      toast.success("Jasa Desain ditambahkan ke keranjang");
-    }
-  };
-
-  // Handle delivery checkbox
-  const handleDeliveryChange = (checked: boolean) => {
-    setIsDeliverySelected(checked);
-    if (checked) {
-      setShowDeliveryDialog(true);
     } else {
-      // Remove delivery info and ongkir if unchecked
-      setCustomerDetails(prev => ({ ...prev, delivery: undefined }));
-      const ongkirItem = items.find(item => item.product.id === 2002);
-      if (ongkirItem) {
-        onRemoveItemById(ongkirItem.cartItemId);
+      const designServiceItem = items.find(item => item.product.id === 2000);
+      if (designServiceItem) {
+        onRemoveItemById(designServiceItem.cartItemId);
       }
     }
   };
 
-  // Handle express service checkbox
-  const handleExpressChange = (checked: boolean) => {
+  const handleExpressServiceChange = (checked: boolean) => {
     setIsExpressSelected(checked);
     if (checked) {
       onAddExpressService();
-      toast.success("Jasa Express ditambahkan ke keranjang");
     } else {
-      // Remove express service from cart when unchecked
-      const expressServiceItem = items.find(item => item.product.id === 2001);
-      if (expressServiceItem) {
-        onRemoveItemById(expressServiceItem.cartItemId);
-        toast.success("Jasa Express dihapus dari keranjang");
+      const expressItem = items.find(item => item.product.id === 2001);
+      if (expressItem) {
+        onRemoveItemById(expressItem.cartItemId);
       }
     }
   };
 
-
-  // Handle delivery info submission
-  const handleDeliveryInfoSubmit = (deliveryInfo: DeliveryInfo, ongkirPrice: number) => {
-    setCustomerDetails(prev => ({ ...prev, delivery: deliveryInfo }));
-    setShowDeliveryDialog(false);
-
-    // Add ongkir to cart if price > 0
-    if (ongkirPrice > 0) {
-      onAddOngkir(ongkirPrice);
-    }
-
-    toast.success("Informasi pengiriman berhasil disimpan");
-  };
-
-  // Smart fill function to copy delivery info to customer details
-  const handleSmartFill = () => {
-    if (customerDetails.delivery) {
+  const handleDeliveryChange = (checked: boolean) => {
+    if (checked) {
+      setShowDeliveryDialog(true);
+    } else {
+      setIsDeliverySelected(false);
       setCustomerDetails(prev => ({
         ...prev,
-        name: customerDetails.delivery.recipientName,
-        phone: customerDetails.delivery.recipientPhone
+        delivery: undefined
       }));
-
-      toast.success("Informasi pelanggan diisi otomatis dari data pengiriman");
-    } else {
-      toast.error("Belum ada informasi pengiriman. Isi terlebih dahulu.");
+      const deliveryItem = items.find(item => item.product.id === 2002);
+      if (deliveryItem) {
+        onRemoveItemById(deliveryItem.cartItemId);
+      }
     }
   };
 
-  const handleProcessOrder = async () => {
+  const handleDeliveryInfoSubmit = (deliveryInfo: DeliveryInfo, shippingCost: number) => {
+    setCustomerDetails(prev => ({
+      ...prev,
+      delivery: deliveryInfo
+    }));
+    setIsDeliverySelected(true);
+    setShowDeliveryDialog(false);
+    onAddOngkir(shippingCost);
+  };
+
+  const playNotificationSound = () => {
+    try {
+      const audio = new Audio(newOrderSound);
+      audio.volume = 0.5;
+      audio.play().catch(err => console.log('Audio play failed:', err));
+    } catch (error) {
+      console.log('Error playing sound:', error);
+    }
+  };
+
+  const handleProcessOrder = () => {
     if (items.length === 0) {
       toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
       return;
@@ -288,17 +419,16 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
       return;
     }
 
-    if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.");
-      return;
-    }
-
     if (!customerDetails.deadline) {
-      toast.error("Mohon tentukan deadline pesanan.");
+      toast.error("Mohon tentukan tanggal deadline pesanan.");
       return;
     }
 
-    // Validate required options for each item
+    if (!customerDetails.cabang) {
+      toast.error("Mohon pilih cabang transaksi.");
+      return;
+    }
+
     const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
     const stikerWithLaminationIds = [15];
 
@@ -320,26 +450,80 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     setIsProcessing(true);
 
     try {
-      // Call the parent's onProcessOrder with customer details including DP
-      await onProcessOrder({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
+      playNotificationSound();
+      const deadlineValue = customerDetails.deadlineTime
+        ? `${customerDetails.deadline} ${customerDetails.deadlineTime}`
+        : customerDetails.deadline;
 
-      // Play new order sound on successful order
-      try {
-        const audio = new Audio(newOrderSound);
-        audio.play().catch(err => {
-          console.log('Could not play sound:', err);
-        });
-      } catch (err) {
-        console.log('Error playing sound:', err);
+      onProcessOrder({
+        ...customerDetails,
+        downPayment,
+        deadline: deadlineValue
+      });
+
+      // Immediately register customer into local cache and state so repeat orders don't need retyping
+      if (customerDetails.name.trim()) {
+        const normPhone = normalizeIndonesianPhone(customerDetails.phone);
+        const key = normPhone || customerDetails.name.trim().toLowerCase();
+        const existingIdx = (posCustomerCache || []).findIndex(c => c.id === key);
+
+        const updatedCustomer: CustomerSummary = {
+          id: key,
+          name: customerDetails.name.trim(),
+          phone: customerDetails.phone.trim(),
+          cleanPhone: normPhone,
+          formattedPhone: formatPhoneNumber(customerDetails.phone, 'formatted'),
+          institution: customerDetails.instansi.trim(),
+          address: customerDetails.delivery?.address || '',
+          totalSpent: 0,
+          orderCount: existingIdx >= 0 ? ((posCustomerCache?.[existingIdx]?.orderCount || 1) + 1) : 1,
+          firstOrderDate: new Date().toISOString(),
+          lastOrderDate: new Date().toISOString(),
+          lastOrderStatus: 'Pending',
+          lastInvoiceId: '',
+          lastOrderItems: '',
+          lastOrderTotal: 0,
+          orderIds: [],
+          channels: ['pos'],
+          cabangs: [customerDetails.cabang || ''],
+        };
+
+        const nextList = [...(posCustomerCache || customersList)];
+        if (existingIdx >= 0) {
+          nextList[existingIdx] = {
+            ...nextList[existingIdx],
+            ...updatedCustomer,
+            orderCount: (nextList[existingIdx].orderCount || 1) + 1,
+            lastOrderDate: new Date().toISOString(),
+          };
+        } else {
+          nextList.unshift(updatedCustomer);
+        }
+
+        posCustomerCache = nextList;
+        posCustomerCacheTimestamp = Date.now();
+        setCustomersList(nextList);
+        try {
+          localStorage.setItem('cached_pos_customers', JSON.stringify(nextList));
+        } catch {
+          // ignore localStorage error
+        }
       }
 
-      // Reset customer details and DP after successful order
-      setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
+      setCustomerDetails({
+        name: '',
+        phone: '',
+        instansi: '',
+        deadline: '',
+        deadlineTime: '',
+        cabang: defaultCabang || ''
+      });
       setDownPayment(0);
       setDpDisplayValue('');
       setIsExpressSelected(false);
+      setIsDesignServiceSelected(false);
+      setIsDeliverySelected(false);
 
-      // Close mobile modal if in mobile mode
       if (isMobile && onClose) {
         setTimeout(() => onClose(), 500);
       }
@@ -351,170 +535,41 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
     }
   };
 
-  // TEMPORARILY DISABLED BUT KEPT FOR FUTURE USE: Bluetooth Print Handler
-  // This function may be beneficial in the future for printing receipts via Bluetooth printers.
-  // Do NOT delete this function. The UI button is hidden but functionality is preserved.
-  const handlePrintReceipt = async () => {
-    if (!onPrintOrder) {
-      toast.error("Fungsi cetak tidak tersedia");
-      return;
-    }
-
-    if (items.length === 0) {
-      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
-      return;
-    }
-
-    if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
-      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.");
-      return;
-    }
-
-    if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.");
-      return;
-    }
-
-    // Validate required options for each item (same as process order)
-    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
-    const stikerWithLaminationIds = [15];
-
-    for (const item of items) {
-      const needsCase = idCardWithCaseIds.includes(item.product.id);
-      const needsLamination = stikerWithLaminationIds.includes(item.product.id);
-
-      if (needsCase && !item.options?.caseVariant) {
-        toast.error(`Pilih jenis casing untuk ${item.product.name}`);
-        return;
-      }
-
-      if (needsLamination && !item.options?.laminationVariant) {
-        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`);
-        return;
-      }
-    }
-
-    setIsPrinting(true);
-
-    try {
-      // Call the print order handler which handles everything
-      const printSuccess = await onPrintOrder({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
-
-      if (printSuccess) {
-        // Reset customer details and DP after successful print
-        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
-        setDownPayment(0);
-        setDpDisplayValue('');
-        setIsExpressSelected(false);
-
-        // Close mobile modal if in mobile mode
-        if (isMobile && onClose) {
-          setTimeout(() => onClose(), 500);
-        }
-      }
-    } catch (error) {
-      console.error('Error printing receipt:', error);
-      toast.error('Terjadi kesalahan saat mencetak struk.');
-    } finally {
-      setIsPrinting(false);
-    }
-  };
-
-  // TEMPORARILY DISABLED BUT KEPT FOR FUTURE USE: PDF Export Handler
-  // This function may be beneficial in the future for exporting receipts as PDF files.
-  // Do NOT delete this function. The UI button is hidden but functionality is preserved.
-  const handleExportPDF = async () => {
-    if (!onExportPDF) {
-      toast.error("Fungsi export PDF tidak tersedia");
-      return;
-    }
-
-    if (items.length === 0) {
-      toast.error("Keranjang kosong. Tambahkan produk terlebih dahulu.");
-      return;
-    }
-
-    if (!customerDetails.name.trim() || !customerDetails.phone.trim()) {
-      toast.error("Mohon lengkapi nama dan nomor telepon pelanggan.");
-      return;
-    }
-
-    if (!customerDetails.cabang) {
-      toast.error("Mohon pilih cabang.");
-      return;
-    }
-
-    // Validate required options for each item
-    const idCardWithCaseIds = [1, 2, 6, 7, 8, 24];
-    const stikerWithLaminationIds = [15];
-
-    for (const item of items) {
-      const needsCase = idCardWithCaseIds.includes(item.product.id);
-      const needsLamination = stikerWithLaminationIds.includes(item.product.id);
-
-      if (needsCase && !item.options?.caseVariant) {
-        toast.error(`Pilih jenis casing untuk ${item.product.name}`);
-        return;
-      }
-
-      if (needsLamination && !item.options?.laminationVariant) {
-        toast.error(`Pilih jenis laminasi untuk ${item.product.name}`);
-        return;
-      }
-    }
-
-    setIsExportingPDF(true);
-
-    try {
-      // Call the PDF export handler which handles everything
-      const exportSuccess = await onExportPDF({ ...customerDetails, downPayment, deadline: customerDetails.deadlineTime ? `${customerDetails.deadline} ${customerDetails.deadlineTime}` : customerDetails.deadline });
-
-      if (exportSuccess) {
-        // Reset customer details and DP after successful export
-        setCustomerDetails({ name: '', phone: '', instansi: '', deadline: '', deadlineTime: '', cabang: defaultCabang || '' });
-        setDownPayment(0);
-        setDpDisplayValue('');
-        setIsExpressSelected(false);
-
-        // Close mobile modal if in mobile mode
-        if (isMobile && onClose) {
-          setTimeout(() => onClose(), 500);
-        }
-      }
-    } catch (error) {
-      console.error('Error exporting PDF:', error);
-      toast.error('Terjadi kesalahan saat membuat PDF.');
-    } finally {
-      setIsExportingPDF(false);
-    }
-  };
-
-
+  const totalItemCount = items.reduce((acc, curr) => acc + curr.quantity, 0);
 
   return (
     <>
-      <div className={isMobile ? "flex flex-col" : "flex flex-col h-full"}>
-        {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b bg-gray-50 shrink-0">
-          <h2 className="text-xl font-bold text-gray-800">Keranjang Belanja</h2>
+      <div className={isMobile ? "flex flex-col h-full bg-background" : "flex flex-col h-full bg-card"}>
+        {/* Cart Header */}
+        <div className="flex items-center justify-between p-3.5 border-b border-border bg-card shrink-0">
+          <div className="flex items-center gap-2">
+            <ShoppingCart className="size-4 text-primary" />
+            <h2 className="text-sm font-bold text-foreground">Keranjang Kasir</h2>
+            <Badge variant="secondary" className="font-mono text-xs px-1.5 py-0">
+              {totalItemCount}
+            </Badge>
+          </div>
           <Button
             variant="ghost"
             size="sm"
             onClick={onClearAll}
             disabled={items.length === 0}
-            className="text-red-500 hover:text-red-700 hover:bg-red-50"
+            className="text-xs text-destructive hover:bg-destructive/10 h-7 px-2 font-medium"
           >
+            <Trash2 className="size-3 mr-1" />
             Hapus Semua
           </Button>
         </div>
 
-        {/* Desktop: Side-by-side (items left, info right) | Mobile: Stacked */}
-        <div className={isMobile ? "flex flex-col" : "flex-1 flex overflow-hidden"}>
-          {/* LEFT: Cart Items - Scrollable */}
-          <div className={isMobile ? "p-3 space-y-3 bg-gray-50" : "w-1/2 overflow-y-auto p-3 space-y-3 bg-gray-50 border-r"}>
+        {/* Workspace Body */}
+        <div className={isMobile ? "flex flex-col flex-1 overflow-y-auto" : "flex-1 flex overflow-hidden"}>
+          {/* Items Section */}
+          <div className={isMobile ? "p-3 flex flex-col gap-2.5 bg-muted/20" : "w-1/2 overflow-y-auto p-3 flex flex-col gap-2.5 bg-muted/20 border-r border-border"}>
             {items.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <p>Belum ada produk dalam keranjang</p>
+              <div className="text-center text-muted-foreground py-16 flex flex-col items-center justify-center gap-2">
+                <ShoppingCart className="size-8 opacity-40" />
+                <p className="text-xs font-semibold">Keranjang masih kosong</p>
+                <p className="text-[11px]">Pilih produk dari katalog untuk memulai pesanan</p>
               </div>
             ) : (
               items.map((item) => (
@@ -529,155 +584,202 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
             )}
           </div>
 
-          {/* RIGHT: Checkout Info - Scrollable */}
-          <div className={isMobile ? "" : "w-1/2 overflow-y-auto"}>
+          {/* Form & Financial Summary */}
+          <div className={isMobile ? "p-3 flex flex-col gap-3" : "w-1/2 overflow-y-auto p-3.5 flex flex-col gap-3 bg-card"}>
             {items.length > 0 && (
-              <div className="bg-background">
-                {/* Service Options Section */}
-                <div className="border-b bg-gray-50">
-                  {/* Header with Collapse Button */}
+              <>
+                {/* Additional Services Bar */}
+                <div className="rounded-xl border border-border bg-muted/30 p-2.5 flex flex-col gap-2">
                   <div
-                    className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between cursor-pointer"
                     onClick={() => setIsLayananExpanded(!isLayananExpanded)}
                   >
-                    <h3 className="text-xs font-semibold text-gray-700">
+                    <span className="text-xs font-bold text-foreground flex items-center gap-1.5">
+                      <Zap className="size-3.5 text-primary" />
                       Layanan Tambahan
-                    </h3>
-                    <div className="flex items-center">
-                      {isLayananExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      )}
-                    </div>
+                    </span>
+                    {isLayananExpanded ? <ChevronUp className="size-3.5 text-muted-foreground" /> : <ChevronDown className="size-3.5 text-muted-foreground" />}
                   </div>
 
-                  {/* Collapsible Content */}
                   {isLayananExpanded && (
-                    <div className="px-2 pb-2 transition-all duration-300 ease-in-out">
-                      <div className="grid grid-cols-3 gap-2">
-                        {/* Jasa Desain */}
-                        <button
-                          onClick={() => handleDesignServiceChange(!isDesignServiceSelected)}
-                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isDesignServiceSelected
-                            ? 'bg-[#FF5E01] text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        >
-                          Jasa Desain
-                          <br />
-                          <span className="text-xs opacity-80">+Rp 25.000</span>
-                        </button>
+                    <div className="grid grid-cols-3 gap-1.5 pt-1">
+                      {/* Jasa Desain */}
+                      <button
+                        type="button"
+                        onClick={() => handleDesignServiceChange(!isDesignServiceSelected)}
+                        className={`p-2 rounded-lg text-xs font-semibold flex flex-col items-center justify-center text-center transition-all border ${
+                          isDesignServiceSelected
+                            ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                            : 'bg-card text-foreground border-border hover:bg-muted'
+                        }`}
+                      >
+                        <Palette className="size-3.5 mb-0.5" />
+                        <span>Desain</span>
+                        <span className="text-[10px] opacity-80 font-normal">+25k</span>
+                      </button>
 
-                        {/* Pengiriman */}
-                        <button
-                          onClick={() => handleDeliveryChange(!isDeliverySelected)}
-                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isDeliverySelected
-                            ? 'bg-[#FF5E01] text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        >
-                          Pengiriman
-                          <br />
-                          <span className="text-xs opacity-80">+ Ongkir</span>
-                        </button>
+                      {/* Pengiriman */}
+                      <button
+                        type="button"
+                        onClick={() => handleDeliveryChange(!isDeliverySelected)}
+                        className={`p-2 rounded-lg text-xs font-semibold flex flex-col items-center justify-center text-center transition-all border ${
+                          isDeliverySelected
+                            ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                            : 'bg-card text-foreground border-border hover:bg-muted'
+                        }`}
+                      >
+                        <Truck className="size-3.5 mb-0.5" />
+                        <span>Kirim</span>
+                        <span className="text-[10px] opacity-80 font-normal">Kurir</span>
+                      </button>
 
-                        {/* Jasa Express */}
-                        <button
-                          onClick={() => handleExpressChange(!isExpressSelected)}
-                          className={`px-3 py-2 rounded-full text-xs font-medium transition-all duration-200 ${isExpressSelected
-                            ? 'bg-[#FF5E01] text-white shadow-md'
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        >
-                          Jasa Express
-                          <br />
-                          <span className="text-xs opacity-80">+Rp 25.000</span>
-                        </button>
-                      </div>
+                      {/* Kilat / Express */}
+                      <button
+                        type="button"
+                        onClick={() => handleExpressServiceChange(!isExpressSelected)}
+                        className={`p-2 rounded-lg text-xs font-semibold flex flex-col items-center justify-center text-center transition-all border ${
+                          isExpressSelected
+                            ? 'bg-primary text-primary-foreground border-primary shadow-xs'
+                            : 'bg-card text-foreground border-border hover:bg-muted'
+                        }`}
+                      >
+                        <Zap className="size-3.5 mb-0.5" />
+                        <span>Kilat</span>
+                        <span className="text-[10px] opacity-80 font-normal">Prioritas</span>
+                      </button>
                     </div>
                   )}
                 </div>
 
-                {/* Customer Details Section */}
-                <div className="border-b bg-gray-50">
-                  {/* Header with Collapse Button */}
+                {/* Customer Details Form */}
+                <div className="rounded-xl border border-border bg-card p-3 flex flex-col gap-2.5">
                   <div
-                    className="p-2 flex items-center justify-between cursor-pointer hover:bg-gray-100 transition-colors"
+                    className="flex items-center justify-between cursor-pointer"
                     onClick={() => setIsPelangganExpanded(!isPelangganExpanded)}
                   >
-                    <h3 className="text-xs font-semibold text-gray-700">
-                      Informasi Pelanggan
-                    </h3>
-                    <div className="flex items-center">
-                      {isPelangganExpanded ? (
-                        <ChevronUp className="h-4 w-4 text-gray-500" />
-                      ) : (
-                        <ChevronDown className="h-4 w-4 text-gray-500" />
-                      )}
-                    </div>
+                    <span className="text-xs font-bold text-foreground">Data Pemesan</span>
+                    {isPelangganExpanded ? <ChevronUp className="size-3.5 text-muted-foreground" /> : <ChevronDown className="size-3.5 text-muted-foreground" />}
                   </div>
 
-                  {/* Collapsible Content */}
                   {isPelangganExpanded && (
-                    <div className="px-2 pb-2 space-y-2 transition-all duration-300 ease-in-out">
-
+                    <div className="flex flex-col gap-2 pt-1">
                       <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <div className="flex items-center gap-2 mb-1">
-                            <button
-                              onClick={handleSmartFill}
-                              className="p-1 rounded-full hover:bg-yellow-100 transition-colors group"
-                              title="Isi otomatis dari data pengiriman"
-                            >
-                              <Star
-                                className={`h-4 w-4 transition-colors ${customerDetails.delivery
-                                  ? 'text-yellow-500 group-hover:text-yellow-600'
-                                  : 'text-gray-400 group-hover:text-gray-500'
-                                  }`}
-                              />
-                            </button>
-                            <Label htmlFor="customer-name" className="text-xs font-medium text-gray-600">
-                              Nama Lengkap *
+                        <div className="flex flex-col gap-1 relative">
+                          <div className="flex items-center justify-between">
+                            <Label htmlFor="customer-name" className="text-[11px] font-semibold text-muted-foreground flex items-center gap-1">
+                              <User className="size-3 text-primary" />
+                              <span>Nama Pelanggan *</span>
                             </Label>
+                            {isLoadingCustomers && (
+                              <span className="flex items-center gap-1 text-[10px] text-muted-foreground">
+                                <Loader2 className="size-2.5 animate-spin text-primary" />
+                                <span>Sinkron...</span>
+                              </span>
+                            )}
                           </div>
-                          <Input
-                            id="customer-name"
-                            type="text"
-                            placeholder="Nama lengkap"
-                            value={customerDetails.name}
-                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, name: e.target.value }))}
-                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
-                            required
-                          />
+                          <div className="relative">
+                            <Input
+                              ref={customerNameInputRef}
+                              id="customer-name"
+                              placeholder="Ketik nama atau no. telepon..."
+                              value={customerDetails.name}
+                              onChange={(e) => {
+                                setCustomerDetails(prev => ({ ...prev, name: e.target.value }));
+                                setShowSuggestions(true);
+                                setSelectedSuggestionIndex(-1);
+                              }}
+                              onFocus={() => {
+                                if (customerDetails.name.trim().length >= 1) {
+                                  setShowSuggestions(true);
+                                }
+                              }}
+                              onKeyDown={handleCustomerKeyDown}
+                              className="h-8 text-xs bg-background pr-6"
+                              required
+                              autoComplete="off"
+                            />
+                            <Search className="size-3 absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground/60 pointer-events-none" />
+                          </div>
+
+                          {/* Customer Suggestions Dropdown */}
+                          {showSuggestions && filteredCustomers.length > 0 && (
+                            <div
+                              ref={suggestionsRef}
+                              className="absolute left-0 top-full mt-1.5 w-[280px] sm:w-[320px] max-w-[90vw] z-50 bg-popover text-popover-foreground border border-border rounded-lg shadow-xl overflow-hidden py-1 animate-in fade-in-0 zoom-in-95 duration-150"
+                            >
+                              <div className="px-2.5 py-1 text-[10px] font-semibold text-muted-foreground uppercase tracking-wider border-b border-border/50 flex items-center justify-between bg-muted/30">
+                                <span>Riwayat Pelanggan ({filteredCustomers.length})</span>
+                                <span className="text-[9px] font-normal lowercase">Enter / klik untuk isi</span>
+                              </div>
+                              <div className="max-h-56 overflow-y-auto divide-y divide-border/40">
+                                {filteredCustomers.map((cust, idx) => {
+                                  const isSelected = idx === selectedSuggestionIndex;
+                                  return (
+                                    <button
+                                      key={cust.id}
+                                      type="button"
+                                      onClick={() => handleSelectCustomer(cust)}
+                                      onMouseEnter={() => setSelectedSuggestionIndex(idx)}
+                                      className={`w-full text-left px-2.5 py-2 flex flex-col gap-0.5 transition-colors ${
+                                        isSelected ? 'bg-accent text-accent-foreground' : 'hover:bg-muted/50'
+                                      }`}
+                                    >
+                                      <div className="flex items-center justify-between gap-1">
+                                        <span className="font-semibold text-xs text-foreground truncate">
+                                          {cust.name}
+                                        </span>
+                                        {cust.orderCount > 1 && (
+                                          <Badge variant="outline" className="text-[9px] px-1 py-0 h-4 bg-primary/10 text-primary border-primary/20 shrink-0">
+                                            {cust.orderCount}x order
+                                          </Badge>
+                                        )}
+                                      </div>
+                                      <div className="flex items-center gap-2.5 text-[11px] text-muted-foreground">
+                                        <span className="flex items-center gap-1 shrink-0">
+                                          <Phone className="size-2.5 text-muted-foreground/70" />
+                                          <span>{cust.phone || cust.formattedPhone || '-'}</span>
+                                        </span>
+                                        {cust.institution && cust.institution !== '-' && cust.institution.toLowerCase() !== 'umum' && (
+                                          <span className="flex items-center gap-1 truncate">
+                                            <Building2 className="size-2.5 text-muted-foreground/70 shrink-0" />
+                                            <span className="truncate">{cust.institution}</span>
+                                          </span>
+                                        )}
+                                      </div>
+                                    </button>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          )}
                         </div>
 
-                        <div>
-                          <Label htmlFor="customer-phone" className="text-xs font-medium text-gray-600">
-                            Nomor Telepon *
+                        <div className="flex flex-col gap-1">
+                          <Label htmlFor="customer-phone" className="text-[11px] font-semibold text-muted-foreground">
+                            No. WhatsApp *
                           </Label>
                           <Input
                             id="customer-phone"
                             type="tel"
-                            placeholder="Nomor telepon"
+                            placeholder="08xxxxxxxxxx"
                             value={customerDetails.phone}
                             onChange={(e) => setCustomerDetails(prev => ({ ...prev, phone: e.target.value }))}
-                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                            className="h-8 text-xs bg-background"
                             required
                           />
                         </div>
                       </div>
 
                       <div className="grid grid-cols-2 gap-2">
-                        <div>
-                          <Label htmlFor="customer-cabang" className="text-xs font-semibold text-gray-700">
-                            Cabang *
+                        <div className="flex flex-col gap-1">
+                          <Label htmlFor="customer-cabang" className="text-[11px] font-semibold text-muted-foreground">
+                            Cabang Transaksi *
                           </Label>
                           <select
                             id="customer-cabang"
                             value={customerDetails.cabang}
                             onChange={(e) => setCustomerDetails(prev => ({ ...prev, cabang: e.target.value }))}
-                            className="mt-0.5 w-full h-8 text-xs border border-[#FF5E01] rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer font-medium"
+                            className="h-8 text-xs font-medium border border-border rounded-md bg-background text-foreground px-2"
                             required
                           >
                             <option value="" disabled>Pilih Cabang</option>
@@ -685,198 +787,137 @@ export function Cart({ items, onUpdateQuantityById, onRemoveItemById, onClearAll
                             <option value="Cabang Unila">Cabang Unila</option>
                           </select>
                         </div>
-                        <div>
-                          <Label htmlFor="customer-instansi" className="text-xs font-medium text-gray-600">
+
+                        <div className="flex flex-col gap-1">
+                          <Label htmlFor="customer-instansi" className="text-[11px] font-semibold text-muted-foreground">
                             Instansi (Opsional)
                           </Label>
                           <Input
                             id="customer-instansi"
-                            type="text"
-                            placeholder="Sekolah, kampus, dll"
+                            placeholder="Kampus, kantor, dll"
                             value={customerDetails.instansi}
                             onChange={(e) => setCustomerDetails(prev => ({ ...prev, instansi: e.target.value }))}
-                            className="mt-0.5 h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                            className="h-8 text-xs bg-background"
                           />
                         </div>
                       </div>
 
-                      {/* Deadline Section */}
-                      <div className="pt-2 border-t border-dashed border-gray-200">
-                        <Label className="text-xs font-semibold text-gray-700 mb-1.5 flex items-center gap-1.5">
-                          <Calendar className="w-3.5 h-3.5 text-[#FF5E01]" />
-                          Deadline Pesanan *
+                      {/* Deadline Pickers */}
+                      <div className="flex flex-col gap-1 pt-1.5 border-t border-border">
+                        <Label className="text-[11px] font-semibold text-foreground flex items-center gap-1">
+                          <Calendar className="size-3 text-primary" />
+                          <span>Deadline Pengerjaan *</span>
                         </Label>
                         <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <input
-                              type="date"
-                              value={customerDetails.deadline}
-                              onChange={(e) => setCustomerDetails(prev => ({ ...prev, deadline: e.target.value }))}
-                              min={new Date().toISOString().split('T')[0]}
-                              required
-                              className="w-full h-8 px-2 text-xs border border-[#FF5E01] rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01] cursor-pointer"
-                            />
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-1">
-                              <TimePicker
-                                value={customerDetails.deadlineTime || ''}
-                                onChange={(time) => setCustomerDetails(prev => ({ ...prev, deadlineTime: time }))}
-                                placeholder="Pilih waktu"
-                                className="w-full h-8 px-2 text-xs border border-gray-300 rounded-md bg-white text-gray-800 focus:outline-none focus:ring-2 focus:ring-[#FF5E01]/30 focus:border-[#FF5E01]"
-                              />
-                              <span className="text-[9px] text-gray-400 whitespace-nowrap shrink-0">Opsional</span>
-                            </div>
-                          </div>
+                          <input
+                            type="date"
+                            value={customerDetails.deadline}
+                            onChange={(e) => setCustomerDetails(prev => ({ ...prev, deadline: e.target.value }))}
+                            min={new Date().toISOString().split('T')[0]}
+                            required
+                            className="h-8 px-2 text-xs border border-border rounded-md bg-background text-foreground outline-none cursor-pointer"
+                          />
+                          <TimePicker
+                            value={customerDetails.deadlineTime || ''}
+                            onChange={(time) => setCustomerDetails(prev => ({ ...prev, deadlineTime: time }))}
+                            placeholder="Waktu selesai"
+                            className="h-8 text-xs bg-background border-border"
+                          />
                         </div>
-                        {customerDetails.deadline && (
-                          <p className="text-[10px] text-gray-500 mt-1 flex items-center gap-1">
-                            <Clock className="w-3 h-3" />
-                            Selesai sebelum: {new Date(customerDetails.deadline + (customerDetails.deadlineTime ? 'T' + customerDetails.deadlineTime : '')).toLocaleDateString('id-ID', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })}
-                            {customerDetails.deadlineTime && ` pukul ${customerDetails.deadlineTime}`}
-                          </p>
-                        )}
                       </div>
                     </div>
                   )}
                 </div>
 
-                {/* Price Summary */}
-                <div className="p-2 space-y-2 bg-background">
-                  <h3 className="text-xs font-semibold text-gray-700 mb-1">
-                    Ringkasan Pembayaran
-                  </h3>
+                {/* Financial Summary */}
+                <div className="rounded-xl border border-border bg-card p-3 flex flex-col gap-2">
+                  <span className="text-xs font-bold text-foreground">Ringkasan Pembayaran</span>
 
-                  <div className="space-y-1 text-xs">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Subtotal:</span>
-                      <span className="font-medium">{formatCurrency(subtotal)}</span>
+                  <div className="flex flex-col gap-1.5 text-xs">
+                    <div className="flex justify-between text-muted-foreground">
+                      <span>Subtotal Item</span>
+                      <span className="font-mono font-medium text-foreground">{formatCurrency(subtotal)}</span>
                     </div>
 
                     {totalDiscounts > 0 && (
-                      <div className="flex justify-between text-green-600">
-                        <span>Diskon:</span>
-                        <span className="font-medium">- {formatCurrency(totalDiscounts)}</span>
+                      <div className="flex justify-between text-emerald-600 font-medium">
+                        <span>Potongan Diskon</span>
+                        <span className="font-mono">- {formatCurrency(totalDiscounts)}</span>
                       </div>
                     )}
 
-                    <div className="flex justify-between text-sm font-bold text-[#FF5E01] pt-1 border-t">
-                      <span>TOTAL:</span>
-                      <span>{formatCurrency(finalTotal)}</span>
+                    <div className="flex justify-between text-sm font-black text-foreground pt-1.5 border-t border-border">
+                      <span>Total Tagihan</span>
+                      <span className="font-mono text-primary text-base">{formatCurrency(finalTotal)}</span>
                     </div>
 
-                    {/* Down Payment Input */}
-                    <div className="pt-2 border-t">
-                      <Label htmlFor="downPayment" className="text-xs font-medium text-gray-700 mb-1 block">
-                        DP (Down Payment)
+                    {/* DP Input */}
+                    <div className="pt-2 border-t border-border flex flex-col gap-1">
+                      <Label htmlFor="downPayment" className="text-[11px] font-semibold text-muted-foreground">
+                        Uang Muka / DP (Ketik nominal, misal: 100 = 100.000)
                       </Label>
                       <Input
                         id="downPayment"
                         type="text"
-                        placeholder="5000 = 5.000.000"
+                        placeholder="Masukkan nominal DP..."
                         value={dpDisplayValue}
                         onChange={(e) => {
-                          // Allow digits and one decimal point
                           let inputValue = e.target.value.replace(/[^\d.]/g, '');
-
-                          // Prevent multiple decimal points
                           const parts = inputValue.split('.');
                           if (parts.length > 2) {
                             inputValue = parts[0] + '.' + parts.slice(1).join('');
                           }
-
-                          // Parse the numeric value (supports decimals now)
                           const numericValue = inputValue === '' || inputValue === '.' ? 0 : parseFloat(inputValue);
-
-                          // Auto-multiply by 1000
                           const actualValue = numericValue * 1000;
 
-                          // Prevent DP from exceeding total
                           if (actualValue <= finalTotal) {
                             setDownPayment(actualValue);
                             setDpDisplayValue(inputValue);
                           } else {
                             setDownPayment(finalTotal);
-                            // Format the display value to show decimal if needed
                             const displayValue = (finalTotal / 1000).toFixed(1).replace(/\.?0+$/, '');
                             setDpDisplayValue(displayValue);
                             toast.warning('DP tidak boleh melebihi total');
                           }
                         }}
-                        className="h-8 text-xs border-[#FF5E01] focus:border-[#FF5E01] focus:ring-[#FF5E01]"
+                        className="h-8 text-xs bg-background font-mono"
                       />
                       {dpDisplayValue && (
-                        <p className="text-[10px] text-gray-500 mt-0.5">
-                          = {formatCurrency(downPayment)}
-                        </p>
+                        <span className="text-[10px] text-muted-foreground font-mono">
+                          Tercatat: <strong>{formatCurrency(downPayment)}</strong>
+                        </span>
                       )}
                     </div>
 
-                    {/* Remaining Balance */}
+                    {/* Sisa Tagihan */}
                     {downPayment > 0 && (
-                      <div className="flex justify-between text-sm font-bold text-blue-600 pt-1">
-                        <span>SISA BAYAR:</span>
-                        <span>{formatCurrency(finalTotal - downPayment)}</span>
+                      <div className="flex justify-between text-xs font-bold text-destructive pt-1">
+                        <span>Sisa Pelunasan:</span>
+                        <span className="font-mono">{formatCurrency(finalTotal - downPayment)}</span>
                       </div>
                     )}
                   </div>
 
-                  {/* Action Buttons */}
-                  <div className={`flex flex-col gap-2 mt-2 ${isMobile ? 'pb-4' : ''}`}>
-                    <div className="flex gap-2">
-                      <Button
-                        className="flex-1 h-10 bg-[#FF5E01] hover:bg-[#e54d00] text-white text-sm font-semibold"
-                        onClick={handleProcessOrder}
-                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.deadline || !customerDetails.cabang}
-                      >
-                        {isProcessing ? "Memproses..." : "Proses Pesanan"}
-                      </Button>
-
-                      {/* HIDDEN: Bluetooth Print Feature
-                        DO NOT DELETE - This feature may be used in the future for printing receipts via Bluetooth printers.
-                        To re-enable: Change 'false &&' to the original condition below
-                        All related functions (handlePrintReceipt) are preserved.
-                        
-                        To re-enable button, change line below from:
-                        {false && isBluetoothSupported && onPrintOrder && (
-                        To:
-                        {isBluetoothSupported && onPrintOrder && (
-                    */}
-                      {false && isBluetoothSupported && onPrintOrder && (
-                        <Button
-                          className="flex-1 h-10 bg-[#1e3a8a] hover:bg-[#1e40af] text-white text-sm font-semibold flex items-center justify-center gap-2"
-                          onClick={handlePrintReceipt}
-                          disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.cabang}
-                        >
-                          <span className="material-icons text-lg">bluetooth</span>
-                          {isPrinting ? "Mencetak..." : "Cetak"}
-                        </Button>
-                      )}
-                    </div>
-
-                    {/* HIDDEN: PDF Export Feature
-                      DO NOT DELETE - This feature may be used in the future for exporting receipts as PDF files.
-                      To re-enable: Remove 'false &&' from the line below
-                      All related functions (handleExportPDF) are preserved.
-                      
-                      To re-enable button, change line below from:
-                      {false && onExportPDF && (
-                      To:
-                      {onExportPDF && (
-                  */}
-                    {false && onExportPDF && (
-                      <Button
-                        className="w-full h-10 bg-[#dc2626] hover:bg-[#b91c1c] text-white text-sm font-semibold flex items-center justify-center gap-2"
-                        onClick={handleExportPDF}
-                        disabled={items.length === 0 || isProcessing || isPrinting || isExportingPDF || !customerDetails.name.trim() || !customerDetails.phone.trim() || !customerDetails.cabang}
-                      >
-                        <FileText className="h-4 w-4" />
-                        {isExportingPDF ? "Membuat PDF..." : "PDF"}
-                      </Button>
-                    )}
-                  </div>
+                  {/* Primary CTA Button */}
+                  <Button
+                    className="w-full h-10 mt-1 bg-primary hover:bg-primary/90 text-primary-foreground text-xs font-bold gap-2 shadow-xs cursor-pointer"
+                    onClick={handleProcessOrder}
+                    disabled={
+                      items.length === 0 ||
+                      isProcessing ||
+                      isPrinting ||
+                      isExportingPDF ||
+                      !customerDetails.name.trim() ||
+                      !customerDetails.phone.trim() ||
+                      !customerDetails.deadline ||
+                      !customerDetails.cabang
+                    }
+                  >
+                    <Check className="size-4" />
+                    <span>{isProcessing ? "Memproses Transaksi..." : "Proses Pesanan"}</span>
+                  </Button>
                 </div>
-              </div>
+              </>
             )}
           </div>
         </div>

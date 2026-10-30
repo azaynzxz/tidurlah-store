@@ -245,7 +245,7 @@ export async function fetchCustomersData(): Promise<{
 
     let offset = 0;
     const pageSize = 1000;
-    let hasMore = true;
+    const hasMore = true;
 
     while (hasMore) {
       const { data, error } = await supabase

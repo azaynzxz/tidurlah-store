@@ -32,7 +32,7 @@ const About = () => {
         const res = await fetch(`/products.json?v=${PRODUCT_VERSION}`);
         const data = await res.json();
         
-        let allItems: ProductItem[] = [];
+        const allItems: ProductItem[] = [];
         if (data && typeof data === 'object') {
           Object.keys(data).forEach((cat) => {
             const arr = Array.isArray(data[cat]) ? data[cat] : [];
