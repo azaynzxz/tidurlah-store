@@ -9,6 +9,7 @@ import type { CartItem, OrderData, Product } from '@/types/product';
 declare global {
   interface Window {
     dataLayer?: Array<Record<string, any>>;
+    gtag?: (...args: any[]) => void;
   }
 }
 
@@ -28,6 +29,15 @@ export const pushToDataLayer = (data: Record<string, any>) => {
   if (typeof window === 'undefined') return;
   window.dataLayer = window.dataLayer || [];
   window.dataLayer.push(data);
+};
+
+/**
+ * Dispatch directly to gtag if available for immediate GA4 real-time processing
+ */
+export const sendGtagEvent = (eventName: string, params: Record<string, any> = {}) => {
+  if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
+    window.gtag('event', eventName, params);
+  }
 };
 
 /**
@@ -128,11 +138,17 @@ export const getTrafficSource = (): TrafficSourceInfo => {
 };
 
 /**
- * SPA Virtual Pageview Tracker for GA4 via GTM
+ * SPA Virtual Pageview Tracker for GA4 via GTM & gtag
  */
 export const trackPageView = (pagePath: string, pageTitle?: string): void => {
   pushToDataLayer({
     event: 'page_view',
+    page_path: pagePath,
+    page_title: pageTitle || document.title,
+    page_location: typeof window !== 'undefined' ? window.location.href : '',
+  });
+
+  sendGtagEvent('page_view', {
     page_path: pagePath,
     page_title: pageTitle || document.title,
     page_location: typeof window !== 'undefined' ? window.location.href : '',
@@ -144,21 +160,27 @@ export const trackPageView = (pagePath: string, pageTitle?: string): void => {
  * Fired when a user clicks a product card on the storefront grid.
  */
 export const trackSelectItem = (product: Product, index?: number): void => {
+  const itemPayload = {
+    item_id: String(product.id),
+    item_name: product.name,
+    item_category: product.category,
+    price: product.price,
+    index: typeof index === 'number' ? index + 1 : undefined,
+  };
+
   pushToDataLayer({
     event: 'select_item',
     ecommerce: {
       item_list_id: product.category || 'all_products',
       item_list_name: product.category || 'Semua Produk',
-      items: [
-        {
-          item_id: String(product.id),
-          item_name: product.name,
-          item_category: product.category,
-          price: product.price,
-          index: typeof index === 'number' ? index + 1 : undefined,
-        },
-      ],
+      items: [itemPayload],
     },
+  });
+
+  sendGtagEvent('select_item', {
+    item_list_id: product.category || 'all_products',
+    item_list_name: product.category || 'Semua Produk',
+    items: [itemPayload],
   });
 };
 
@@ -167,20 +189,26 @@ export const trackSelectItem = (product: Product, index?: number): void => {
  * Fired when the product detail modal opens or product page loads.
  */
 export const trackViewItem = (product: Product): void => {
+  const itemPayload = {
+    item_id: String(product.id),
+    item_name: product.name,
+    item_category: product.category,
+    price: product.price,
+  };
+
   pushToDataLayer({
     event: 'view_item',
     ecommerce: {
       currency: 'IDR',
       value: product.price,
-      items: [
-        {
-          item_id: String(product.id),
-          item_name: product.name,
-          item_category: product.category,
-          price: product.price,
-        },
-      ],
+      items: [itemPayload],
     },
+  });
+
+  sendGtagEvent('view_item', {
+    currency: 'IDR',
+    value: product.price,
+    items: [itemPayload],
   });
 };
 
@@ -199,22 +227,28 @@ export const trackAddToCart = (params: {
   const { product, quantity, unitPrice, modelCode, caseVariant, laminationVariant } = params;
   const variant = [modelCode, caseVariant, laminationVariant].filter(Boolean).join(' / ') || undefined;
 
+  const itemPayload = {
+    item_id: String(product.id),
+    item_name: product.name,
+    item_category: product.category,
+    item_variant: variant,
+    price: unitPrice,
+    quantity,
+  };
+
   pushToDataLayer({
     event: 'add_to_cart',
     ecommerce: {
       currency: 'IDR',
       value: unitPrice * quantity,
-      items: [
-        {
-          item_id: String(product.id),
-          item_name: product.name,
-          item_category: product.category,
-          item_variant: variant,
-          price: unitPrice,
-          quantity,
-        },
-      ],
+      items: [itemPayload],
     },
+  });
+
+  sendGtagEvent('add_to_cart', {
+    currency: 'IDR',
+    value: unitPrice * quantity,
+    items: [itemPayload],
   });
 };
 
@@ -252,6 +286,16 @@ export const trackPurchase = (orderData: OrderData, trafficSource?: string): voi
     traffic_source: trafficSource || getTrafficSource().rawText,
   });
 
+  // Direct gtag purchase dispatch for immediate reporting in GA4
+  sendGtagEvent('purchase', {
+    transaction_id: orderData.invoiceNumber,
+    value: orderData.total,
+    currency: 'IDR',
+    coupon: orderData.promoCode || undefined,
+    items,
+    traffic_source: trafficSource || getTrafficSource().rawText,
+  });
+
   // Alias event for easy GTM Custom Event Triggering (e.g. Meta Pixel / TikTok)
   pushToDataLayer({
     event: 'checkout_wa',
@@ -261,5 +305,11 @@ export const trackPurchase = (orderData: OrderData, trafficSource?: string): voi
     coupon: orderData.promoCode || '',
     items_count: orderData.cartItems.reduce((acc, i) => acc + i.quantity, 0),
     traffic_source: trafficSource || getTrafficSource().rawText,
+  });
+
+  sendGtagEvent('checkout_wa', {
+    transaction_id: orderData.invoiceNumber,
+    value: orderData.total,
+    currency: 'IDR',
   });
 };
