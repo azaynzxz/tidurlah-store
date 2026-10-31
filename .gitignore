@@ -34,6 +34,7 @@ archive/
 *.xlsx
 *.exe
 *.tar.gz
+.agents/*.zip
 logo-idcard-lampung.jpg
 logo_nono.jpeg
 src/pages/Untitled-1.txt

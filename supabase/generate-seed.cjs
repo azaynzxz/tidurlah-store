@@ -180,7 +180,7 @@ if (process.argv.includes('--stdout')) {
   process.stdout.write(output);
 } else {
   fs.writeFileSync(outputPath, output, 'utf-8');
-  console.log(`✅ Seed file written to ${outputPath}`);
+  console.log(`[SEED] Seed file written to ${outputPath}`);
   console.log(`   Products: ${sortOrder}`);
   console.log(`   Promo codes: ${promoCodes.length}`);
 }

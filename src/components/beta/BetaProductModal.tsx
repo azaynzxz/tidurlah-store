@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import type { Product, CartItem } from "@/types/product";
 import { caseVariants, idCardWithCaseIds, stikerWithLaminationIds } from "@/constants";
 import { getApplicablePrice, calculateSavings, calculateBannerPrice } from "@/utils/product";
+import { getProductImageAlt, getProductRichDescription } from "@/utils/productSeo";
 import { addToCart, addBannerToCart } from "@/utils/cart";
 import { trackAddToCart } from "@/utils/tracking";
 
@@ -225,7 +226,7 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
               <div className="relative aspect-square rounded-xl overflow-hidden bg-[#F5F5F4] border border-[#E7E5E4]">
                 <img
                   src={activeImage}
-                  alt={activeProduct.name}
+                  alt={getProductImageAlt(activeProduct, selectedModel || undefined)}
                   className="w-full h-full object-cover"
                 />
                 {activeProduct.time && (
@@ -253,7 +254,11 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
                       }`}
                       title={model.code}
                     >
-                      <img src={model.image} alt={model.code} className="w-full h-full object-cover" />
+                      <img
+                        src={model.image}
+                        alt={getProductImageAlt(activeProduct, model.code)}
+                        className="w-full h-full object-cover"
+                      />
                     </button>
                   ))}
                 </div>
@@ -270,7 +275,11 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
                             : "border border-[#E7E5E4] hover:border-[#18181B] opacity-75 hover:opacity-100"
                         }`}
                       >
-                        <img src={img} alt={`Gambar ${idx + 1}`} className="w-full h-full object-cover" />
+                        <img
+                          src={img}
+                          alt={getProductImageAlt(activeProduct, `Tampilan ${idx + 1}`)}
+                          className="w-full h-full object-cover"
+                        />
                       </button>
                     ))}
                   </div>
@@ -281,7 +290,7 @@ export const BetaProductModal: React.FC<BetaProductModalProps> = ({
             {/* Right: Options & Specifications */}
             <div className="space-y-4">
               <p className="text-xs text-[#52525B] leading-relaxed">
-                {activeProduct.description}
+                {getProductRichDescription(activeProduct)}
               </p>
 
               {/* Dimensional Products (Banners) */}

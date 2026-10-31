@@ -43,7 +43,7 @@ export const BetaFooter: React.FC<BetaFooterProps> = ({ variant = "default" }) =
               </div>
             </div>
             <p className="text-xs sm:text-sm leading-relaxed text-[#71717A]">
-              Pusat cetak ID Card Terdekat berkualitas, tali lanyard custom premium, plakat akrilik, dan aneka merchandise event di Bandar Lampung. Melayani pesanan satuan hingga ribuan pcs tanpa minimum order.
+              Pusat cetak ID Card PVC berkualitas setara KTP, tali lanyard custom sublime, nametag, gantungan kunci akrilik, mug custom, dan plakat akrilik di Bandar Lampung, Way Hui, serta pengiriman cepat ke Kota Metro, Natar, Pringsewu, dan sekitarnya. Melayani pesanan satuan hingga ribuan pcs tanpa minimum order.
             </p>
           </div>
 
@@ -129,8 +129,12 @@ export const BetaFooter: React.FC<BetaFooterProps> = ({ variant = "default" }) =
         {/* Bottom Copyright */}
         <div className="border-t border-[#E7E5E4] mt-8 pt-5 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#71717A]">
           <p>© {new Date().getFullYear()} ID Card Lampung • Seluruh hak cipta dilindungi.</p>
-          <div className="flex items-center gap-4">
-            <a href="/classic" className="hover:text-[#18181B] transition-colors">Versi Klasik</a>
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5">
+            <a href="/about" className="hover:text-[#18181B] transition-colors">Tentang Kami</a>
+            <span>•</span>
+            <a href="/katalog" className="hover:text-[#18181B] transition-colors">Portofolio</a>
+            <span>•</span>
+            <a href="/blog" className="hover:text-[#18181B] transition-colors">Artikel & Panduan</a>
             <span>•</span>
             <a href="/loker" className="hover:text-[#18181B] transition-colors">Lowongan Kerja</a>
             <span>•</span>

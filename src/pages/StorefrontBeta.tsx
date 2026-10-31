@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { Clock, Percent, ShieldCheck, Search, MapPin, Phone, Mail, ExternalLink, Instagram } from "lucide-react";
-import { motion } from "framer-motion";
+import { Clock, Percent, ShieldCheck, Search } from "lucide-react";
 import SEO from "@/components/common/SEO";
 import { BetaHeader } from "@/components/beta/BetaHeader";
 import { BetaFooter } from "@/components/beta/BetaFooter";
@@ -10,10 +9,25 @@ import { BetaProductModal } from "@/components/beta/BetaProductModal";
 import { BetaCartDrawer } from "@/components/beta/BetaCartDrawer";
 import { BetaOrdersDrawer } from "@/components/beta/BetaOrdersDrawer";
 import { BetaBannerCarousel, BannerSlide } from "@/components/beta/BetaBannerCarousel";
+import { BetaSeoFaqSection } from "@/components/beta/BetaSeoFaqSection";
 import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
 import type { Product, CartItem } from "@/types/product";
 import { fetchProductsFromSupabase } from "@/services/products";
 import { findProductBySlug, generateProductSlug } from "@/utils/product";
+import {
+  SITE_ORIGIN,
+  getProductCanonicalUrl,
+  getProductMetaDescription,
+  getProductRichDescription,
+  getProductSeoTitle,
+  isProductIndexable,
+} from "@/utils/productSeo";
+import {
+  buildBreadcrumbSchema,
+  buildFaqSchema,
+  buildLocalBusinessSchema,
+  buildProductSchema,
+} from "@/utils/schema";
 import { getLocalOrders } from "@/utils/localOrders";
 import { trackSelectItem, trackViewItem } from "@/utils/tracking";
 
@@ -102,7 +116,7 @@ export const StorefrontBeta: React.FC = () => {
     };
   }, []);
 
-  // Handle URL slug parameter (e.g. /beta/product/:slug)
+  // Handle URL slug parameter (e.g. /product/:slug)
   useEffect(() => {
     if (slug && Object.keys(productsData).length > 0) {
       const found = findProductBySlug(slug, productsData);
@@ -114,6 +128,42 @@ export const StorefrontBeta: React.FC = () => {
     }
   }, [slug, productsData]);
 
+  // Active product for SEO head metadata & JSON-LD
+  const activeSeoProduct = useMemo(() => {
+    if (slug && Object.keys(productsData).length > 0) {
+      return findProductBySlug(slug, productsData) || selectedProduct;
+    }
+    return null;
+  }, [slug, productsData, selectedProduct]);
+
+  const seoConfig = useMemo(() => {
+    if (activeSeoProduct) {
+      return {
+        title: getProductSeoTitle(activeSeoProduct),
+        description: getProductMetaDescription(activeSeoProduct),
+        image: activeSeoProduct.image,
+        url: getProductCanonicalUrl(activeSeoProduct),
+        type: "product",
+        noindex: !isProductIndexable(activeSeoProduct),
+        jsonLd: [
+          buildProductSchema(activeSeoProduct),
+          buildBreadcrumbSchema(activeSeoProduct),
+        ],
+      };
+    }
+
+    return {
+      title: "Cetak ID Card, Lanyard & Merchandise Terdekat di Bandar Lampung & Metro",
+      description:
+        "Pusat cetak ID card PVC tebal setara KTP, tali lanyard custom, nametag karyawan, kartu pelajar, gantungan kunci akrilik, mug custom, dan plakat tanpa minimum order di Bandar Lampung (Tanjung Karang, Kedaton, Rajabasa, Sukarame), Way Hui, hingga Kota Metro.",
+      image: `${SITE_ORIGIN}/product-image/web-preview.jpg`,
+      url: slug ? `${SITE_ORIGIN}/product/${slug}` : `${SITE_ORIGIN}/`,
+      type: "website",
+      noindex: false,
+      jsonLd: [buildLocalBusinessSchema(), buildFaqSchema()],
+    };
+  }, [activeSeoProduct, slug]);
+
   // Categories list
   const categories = useMemo(() => Object.keys(productsData), [productsData]);
 
@@ -122,18 +172,22 @@ export const StorefrontBeta: React.FC = () => {
     return Object.values(productsData).flat();
   }, [productsData]);
 
-  // Filtered products based on category and search
+  // Filtered products based on category and search (also searches rich SEO descriptions)
   const filteredProducts = useMemo(() => {
     let list = activeCategory === "Semua" ? allProducts : productsData[activeCategory] || [];
 
     if (searchTerm.trim()) {
       const q = searchTerm.toLowerCase();
-      list = list.filter(
-        (p) =>
+      list = list.filter((p) => {
+        const richDesc = getProductRichDescription(p).toLowerCase();
+        const seoTitle = getProductSeoTitle(p).toLowerCase();
+        return (
           p.name.toLowerCase().includes(q) ||
-          (p.description && p.description.toLowerCase().includes(q)) ||
+          seoTitle.includes(q) ||
+          richDesc.includes(q) ||
           (p.category && p.category.toLowerCase().includes(q))
-      );
+        );
+      });
     }
 
     return list;
@@ -163,19 +217,24 @@ export const StorefrontBeta: React.FC = () => {
   }, []);
 
   // Open modal for a product (stabilized reference for React.memo)
-  const handleSelectProduct = useCallback((product: Product) => {
-    setIsCartOpen(false);
-    setIsOrdersOpen(false);
-    setSelectedProduct(product);
-    setIsModalOpen(true);
-    trackSelectItem(product);
-    trackViewItem(product);
-    const productSlug = generateProductSlug(product.name);
-    if (productSlug) {
-      const isBeta = window.location.pathname.startsWith("/beta");
-      navigate(isBeta ? `/beta/product/${productSlug}` : `/product/${productSlug}`, { replace: true });
-    }
-  }, [navigate]);
+  const handleSelectProduct = useCallback(
+    (product: Product) => {
+      setIsCartOpen(false);
+      setIsOrdersOpen(false);
+      setSelectedProduct(product);
+      setIsModalOpen(true);
+      trackSelectItem(product);
+      trackViewItem(product);
+      const productSlug = generateProductSlug(product.name);
+      if (productSlug) {
+        const isBeta = window.location.pathname.startsWith("/beta");
+        navigate(isBeta ? `/beta/product/${productSlug}` : `/product/${productSlug}`, {
+          replace: true,
+        });
+      }
+    },
+    [navigate]
+  );
 
   // Close modal with graceful exit animation
   const handleCloseModal = useCallback(() => {
@@ -212,9 +271,13 @@ export const StorefrontBeta: React.FC = () => {
   return (
     <div className="min-h-screen bg-[#FAFAF9] text-[#18181B] font-sans flex flex-col selection:bg-[#E8590C]/20 selection:text-[#E8590C]">
       <SEO
-        title="ID Card Terdekat Premium Lampung"
-        description="ID Card Terdekat Premium Lampung - Pusat cetak resmi ID Card berkualitas tinggi, tali lanyard custom presisi, plakat akrilik, dan merchandise event di Bandar Lampung."
-        url={slug ? `https://idcardlampung.com/product/${slug}` : "https://idcardlampung.com/"}
+        title={seoConfig.title}
+        description={seoConfig.description}
+        image={seoConfig.image}
+        url={seoConfig.url}
+        type={seoConfig.type}
+        noindex={seoConfig.noindex}
+        jsonLd={seoConfig.jsonLd}
       />
 
       {/* Header */}
@@ -235,9 +298,11 @@ export const StorefrontBeta: React.FC = () => {
 
       {/* Main Content */}
       <main className="flex-1 max-w-7xl w-full mx-auto px-3.5 sm:px-6 lg:px-8 pt-3 sm:pt-4 pb-8 sm:pb-12 space-y-5 sm:space-y-8">
-        {/* Hidden Semantic H1 for SEO Integrity */}
+        {/* Semantic H1 dynamically matches Product or Homepage intent */}
         <h1 className="sr-only">
-          Cetak Cepat ID Card, Lanyard & Merchandise Tanpa Minimum Order — idcardlampung.com Bandar Lampung
+          {activeSeoProduct
+            ? `${getProductSeoTitle(activeSeoProduct)} — ID Card Lampung`
+            : "Cetak Cepat ID Card, Tali Lanyard, Nametag & Merchandise Tanpa Minimum Order di Bandar Lampung & Kota Metro — idcardlampung.com"}
         </h1>
 
         {/* Web Banner Carousel & Craft Service Pillars */}
@@ -334,6 +399,9 @@ export const StorefrontBeta: React.FC = () => {
             </div>
           )}
         </div>
+
+        {/* Local SEO Authority, Trusted Clients & Collapsible FAQ */}
+        <BetaSeoFaqSection />
       </main>
 
       {/* Clean Reusable Storefront Footer */}
@@ -371,7 +439,7 @@ export const StorefrontBeta: React.FC = () => {
         onClose={handleCloseOrders}
         onOpenShop={() => {
           handleCloseOrders();
-          window.scrollTo({ top: 350, behavior: 'smooth' });
+          window.scrollTo({ top: 350, behavior: "smooth" });
         }}
       />
     </div>

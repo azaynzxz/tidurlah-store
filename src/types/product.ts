@@ -6,6 +6,8 @@ export interface Product {
   image: string;
   additionalImages: string[];
   description: string;
+  seoTitle?: string;
+  imageAlt?: string;
   price: number;
   discountPrice: number | null;
   category: string;

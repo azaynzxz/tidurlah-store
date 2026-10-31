@@ -1,196 +1,393 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-        xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-  
-  <!-- Homepage -->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://tidurlah.com/</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>weekly</changefreq>
+    <loc>https://idcardlampung.com/</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
-  
-  <!-- Blog Main Page -->
   <url>
-    <loc>https://tidurlah.com/blog</loc>
-    <lastmod>2024-10-26</lastmod>
+    <loc>https://idcardlampung.com/about</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/katalog</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/paket-idc-lyd-2s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/paket-idc-lyd-kulit</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
   </url>
-  
-  <!-- Blog Posts -->
   <url>
-    <loc>https://tidurlah.com/blog/pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung</loc>
-    <lastmod>2024-01-20</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/paket-idc-lyd-premium</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/pt-bisi-international-percayakan-id-card-karyawan</loc>
-    <lastmod>2024-01-18</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/paket-idc-lyd-1s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/pondok-pesantren-natar-makin-hitz-pakai-id-card</loc>
-    <lastmod>2024-01-16</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/idc-tali-case-kulit</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/andalan-karyawan-bumn-id-card-lampung</loc>
-    <lastmod>2024-01-14</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/id-card-2s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/diskon-khusus-mahasiswa-kkn-15-persen</loc>
-    <lastmod>2024-01-12</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/id-card-1s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/rahasia-produksi-super-cepat-aplikasi-custom</loc>
-    <lastmod>2024-01-10</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/lanyard-saja-1s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/cetak-id-card-online-dari-rumah</loc>
-    <lastmod>2024-01-08</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/lanyard-saja-2s</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/tembus-1000-pcs-per-bulan-kampus-lampung</loc>
-    <lastmod>2024-01-06</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/idc-tali-biasa</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/tradisi-mahasiswa-kkn-uin-raden-intan-lampung</loc>
-    <lastmod>2024-01-04</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/idc-lanyard-tali-hitam-polos</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/itera-percayakan-produksi-massal-1000-id-card</loc>
-    <lastmod>2024-01-02</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/idc-b4-lanyard-hitam-polos</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/standar-kualitas-tinggi-fakultas-kedokteran-malahayati</loc>
-    <lastmod>2023-12-30</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/id-card-yoyo-tanpa-stiker</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/lanyard-cepat-kusam-4-cara-mudah-merawatnya</loc>
-    <lastmod>2024-01-25</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/stiker-id-card-yoyo-saja</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/lampung-creative-week-sukses-branding-lanyard-custom</loc>
-    <lastmod>2024-01-23</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/id-card-yoyo-premium-akrilik-tanpa-stiker</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/panduan-memilih-id-card-tepat-kantor-bandar-lampung</loc>
-    <lastmod>2024-01-21</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/id-card-yoyo-premium-semi-transparan-tanpa-stiker</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
   <url>
-    <loc>https://tidurlah.com/blog/5-ide-desain-lanyard-anti-bosan-event-hits-lampung</loc>
-    <lastmod>2024-01-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <loc>https://idcardlampung.com/product/que-card</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
   </url>
-  
-  <!-- Survey Page -->
   <url>
-    <loc>https://tidurlah.com/survey</loc>
-    <lastmod>2024-10-26</lastmod>
+    <loc>https://idcardlampung.com/product/casing-id-card</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/banner-indooroutdoor</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/x-banner-60x160</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/roll-banner</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/poster-a3</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/cutting-stiker-kontur-chromo</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/cutting-stiker-vinyl-a3</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/cut-stiker-vynil-papan-bunga</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/ganci-akrilik</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/ganci-3-cm</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/ganci-5-cm</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/ganci-tali</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/pin-kait-peniti-3-cm</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/pin-kait-peniti-5-cm</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/mug-custom</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/tumbler-custom</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/plakat-akrilik-reg</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/plakat-akrilik-uv</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-kecil-pink-purple-gradient-pkk1</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-kecil-bunga-matahari-mini-pkk3</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-kecil-pink-gold-tropical-pkk5</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-plakat-bunga-anggrek-biru-pkb2</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-plakat-bulat-anggrek-putih-pkb1</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-pink-mawar-love-pkk6</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-hitam-emas-mewah-pkk7</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/papan-bunga-biru-muda-mawar-pkk4</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/jasa-desain</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.95</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/gelang-tiket-kertas</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/gelang-tiket-tissue</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/sablon-kaos-dtf</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/product/baju-pdh</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.9</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
-  
-  <!-- Spotlight Page -->
   <url>
-    <loc>https://tidurlah.com/hello</loc>
-    <lastmod>2024-10-26</lastmod>
+    <loc>https://idcardlampung.com/blog/lanyard-cepat-kusam-4-cara-mudah-merawatnya</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/tutorial-cara-order</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/panduan-desain</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/faq-pertanyaan-umum</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/sponsorship</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/kebijakan-privasi</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/syarat-ketentuan-pengembalian</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/blog/easter-2026</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/loker</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
   </url>
-  
-  <!-- Cashier Page -->
   <url>
-    <loc>https://tidurlah.com/cashier</loc>
-    <lastmod>2024-10-26</lastmod>
+    <loc>https://idcardlampung.com/loker/desainer-grafis</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/loker/reseller</loc>
+    <lastmod>2026-10-31</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://idcardlampung.com/hello</loc>
+    <lastmod>2026-10-31</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.5</priority>
   </url>
-  
-  <!-- Receipt Page -->
-  <url>
-    <loc>https://tidurlah.com/receipt</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <!-- Job Listings Page -->
-  <url>
-    <loc>https://tidurlah.com/loker</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  
-  <!-- Job Detail Pages (Dynamic) -->
-  <url>
-    <loc>https://tidurlah.com/loker/desainer-grafis</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://tidurlah.com/loker/admin-toko</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://tidurlah.com/loker/bagian-produksi</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  
-  <url>
-    <loc>https://tidurlah.com/loker/reseller</loc>
-    <lastmod>2024-10-26</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-</urlset> 
+</urlset>

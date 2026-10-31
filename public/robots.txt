@@ -1,91 +1,107 @@
-# Robots.txt for TIDURLAH STORE
-# https://tidurlah.com
+# Robots.txt for ID Card Lampung (Tidurlah Grafika)
+# https://idcardlampung.com
 
-# Allow all major search engines
+# Major Search Engines
 User-agent: Googlebot
 Allow: /
+Allow: /product/
 Allow: /blog
-Allow: /blog/*
-Allow: /survey
-Allow: /hello
+Allow: /about
+Allow: /katalog
 Allow: /loker
-Allow: /loker/*
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /admin
 Disallow: /cashier
 Disallow: /receipt
+Disallow: /login
+Disallow: /login-blocked
 
 User-agent: Bingbot
 Allow: /
+Allow: /product/
 Allow: /blog
-Allow: /blog/*
-Allow: /survey
-Allow: /hello
+Allow: /about
+Allow: /katalog
 Allow: /loker
-Allow: /loker/*
+Allow: /llms.txt
+Allow: /llms-full.txt
+Disallow: /admin
 Disallow: /cashier
 Disallow: /receipt
+Disallow: /login
+Disallow: /login-blocked
 
-User-agent: Slurp
+# AI Search & Citation Crawlers (ChatGPT, Gemini, Claude, Perplexity, Apple Intelligence)
+User-agent: GPTBot
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /survey
-Allow: /hello
-Allow: /loker
-Allow: /loker/*
+Disallow: /admin
 Disallow: /cashier
 Disallow: /receipt
 
-# AI Crawlers
+User-agent: OAI-SearchBot
+Allow: /
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
+
+User-agent: ChatGPT-User
+Allow: /
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
+
 User-agent: ClaudeBot
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /survey
-Allow: /hello
-Allow: /loker
-Allow: /loker/*
+Disallow: /admin
 Disallow: /cashier
 Disallow: /receipt
 
-# Social media crawlers
-User-agent: Twitterbot
+User-agent: anthropic-ai
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /loker
-Allow: /loker/*
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
 
+User-agent: PerplexityBot
+Allow: /
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
+
+User-agent: Google-Extended
+Allow: /
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
+
+User-agent: Applebot-Extended
+Allow: /
+Disallow: /admin
+Disallow: /cashier
+Disallow: /receipt
+
+# Social & Messaging Preview Bots (WhatsApp, Instagram, Facebook, X, LinkedIn)
 User-agent: facebookexternalhit
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /loker
-Allow: /loker/*
+
+User-agent: Twitterbot
+Allow: /
 
 User-agent: LinkedInBot
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /loker
-Allow: /loker/*
 
-# Default rules for all other bots
+User-agent: WhatsApp
+Allow: /
+
+# Default Rules for All Other Crawlers
 User-agent: *
 Allow: /
-Allow: /blog
-Allow: /blog/*
-Allow: /survey
-Allow: /hello
-Allow: /loker
-Allow: /loker/*
+Disallow: /admin
 Disallow: /cashier
 Disallow: /receipt
+Disallow: /login
+Disallow: /login-blocked
 
-# Sitemap location
-Sitemap: https://tidurlah.com/sitemap.xml
-
-# Crawl delay to prevent server overload
-Crawl-delay: 1
-
-# Host directive (optional but recommended)
-Host: https://tidurlah.com
+# Sitemap & AI Context Discovery
+Sitemap: https://idcardlampung.com/sitemap.xml

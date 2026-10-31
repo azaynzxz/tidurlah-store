@@ -1,5 +1,7 @@
 import React, { memo } from "react";
 import type { Product } from "@/types/product";
+import { generateProductSlug } from "@/utils/product";
+import { getProductImageAlt } from "@/utils/productSeo";
 import { RibbonBadge } from "./RibbonBadge";
 import { ProductShareButton } from "./ProductShareButton";
 
@@ -14,6 +16,9 @@ export const BetaProductCard: React.FC<BetaProductCardProps> = memo(({ product, 
     product.name?.trim().toLowerCase() === "paket idc lyd 2s" ||
     product.id === 8 ||
     Boolean(product.bestseller);
+
+  const productSlug = generateProductSlug(product.name);
+  const productHref = `/product/${productSlug}`;
 
   // Pricing calculations
   const allThresholdPrices = product.priceThresholds && product.priceThresholds.length > 0
@@ -39,8 +44,19 @@ export const BetaProductCard: React.FC<BetaProductCardProps> = memo(({ product, 
     ? "1,4RB+ terjual"
     : `${(((product.id * 73) % 400) + 85)} terjual`;
 
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    // Allow Ctrl+Click, Cmd+Click, Shift+Click, or Middle-click to open in new tab naturally
+    if (e.metaKey || e.ctrlKey || e.shiftKey || e.altKey || e.button !== 0) {
+      e.stopPropagation();
+      return;
+    }
+    e.preventDefault();
+    e.stopPropagation();
+    onSelect(product);
+  };
+
   return (
-    <div 
+    <article
       onClick={() => onSelect(product)}
       className="group bg-white border border-[#E7E5E4] rounded-lg overflow-hidden hover:border-[#D4D4D8] hover:shadow-md hover:-translate-y-0.5 active:scale-[0.99] transition-all duration-200 ease-out cursor-pointer flex flex-col h-full touch-manipulation select-none relative"
     >
@@ -51,7 +67,7 @@ export const BetaProductCard: React.FC<BetaProductCardProps> = memo(({ product, 
       <div className="relative aspect-square bg-[#F5F5F4] overflow-hidden">
         <img
           src={product.image}
-          alt={product.name}
+          alt={getProductImageAlt(product)}
           loading="lazy"
           decoding="async"
           className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300 ease-out"
@@ -73,14 +89,20 @@ export const BetaProductCard: React.FC<BetaProductCardProps> = memo(({ product, 
       {/* Content Area (Shopee Layout: 2-line title, promo tag, price & sold) */}
       <div className="p-2.5 sm:p-3 flex flex-col flex-1 justify-between gap-1.5 bg-white">
         <div>
-          {/* Title with Star+ tag for bestsellers */}
+          {/* Crawlable Semantic Link Title with Star+ tag for bestsellers */}
           <h3 className="text-xs sm:text-[13px] text-[#1E293B] font-normal sm:font-medium leading-snug line-clamp-2 min-h-[2.4rem] group-hover:text-[#EE4D2D] transition-colors">
-            {isTerlaris && (
-              <span className="inline-block bg-[#EE4D2D] text-white text-[9px] font-bold px-1 py-0.5 rounded-xs mr-1 align-baseline leading-none shadow-2xs">
-                Star+
-              </span>
-            )}
-            {product.name}
+            <a
+              href={productHref}
+              onClick={handleLinkClick}
+              className="focus:outline-none"
+            >
+              {isTerlaris && (
+                <span className="inline-block bg-[#EE4D2D] text-white text-[9px] font-bold px-1 py-0.5 rounded-xs mr-1 align-baseline leading-none shadow-2xs">
+                  Star+
+                </span>
+              )}
+              {product.name}
+            </a>
           </h3>
 
           {/* Shopee Promo / Voucher Tags */}
@@ -119,7 +141,7 @@ export const BetaProductCard: React.FC<BetaProductCardProps> = memo(({ product, 
           </span>
         </div>
       </div>
-    </div>
+    </article>
   );
 });
 
