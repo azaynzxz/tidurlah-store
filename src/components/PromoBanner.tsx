@@ -43,8 +43,9 @@ const PromoBanner = () => {
   const now = new Date();
   const isPromoActive = PROMO_BANNER_ENABLED && now >= promoStartDate && now <= promoEndDate;
 
-  // Load products to get product names and prices
+  // Load products to get product names and prices (only when promo is active)
   useEffect(() => {
+    if (!isPromoActive) return;
     const fetchProducts = async () => {
       try {
         const response = await fetch(`/products.json?v=${PRODUCT_VERSION}`);
@@ -55,7 +56,7 @@ const PromoBanner = () => {
       }
     };
     fetchProducts();
-  }, []);
+  }, [isPromoActive]);
 
   // Calculate time remaining until end date
   const calculateTimeRemaining = () => {

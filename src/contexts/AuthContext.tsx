@@ -43,9 +43,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const mountedRef = useRef(true);
   const currentUserRef = useRef<User | null>(null);
   const isSigningInRef = useRef(false);
+  const authEventSeqRef = useRef(0);
 
   useEffect(() => {
-    return () => { mountedRef.current = false; };
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
   }, []);
 
   const safeSetState = useCallback((updater: AuthState | ((prev: AuthState) => AuthState)) => {
@@ -99,61 +103,83 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     let isSubscribed = true;
 
-    // Listen for changes — Supabase client will fire INITIAL_SESSION synchronously on subscription
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
+    // Safety guard so auth loading never hangs forever if initial token refresh stalls
+    const initSafetyTimer = setTimeout(() => {
+      if (isSubscribed) {
+        safeSetState(prev => (prev.isLoading ? { ...prev, isLoading: false } : prev));
+      }
+    }, 8000);
+
+    // IMPORTANT: Keep onAuthStateChange callback SYNCHRONOUS (never `await` Supabase DB queries directly
+    // inside this callback). GoTrueClient awaits `_notifyAllSubscribers` during `TOKEN_REFRESHED` before
+    // `initializePromise` resolves; awaiting `supabase.from(...)` directly inside the callback deadlocks
+    // `supabase.auth.getSession()` -> `await initializePromise` permanently.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (!isSubscribed) return;
+
+      // Skip if manual sign-in is currently processing (signIn handles it)
+      if (event === 'SIGNED_IN' && isSigningInRef.current) {
+        return;
+      }
+
+      // If user is unchanged, only update session details to avoid redundant profile fetches
+      if (session?.user && currentUserRef.current?.id === session.user.id) {
+        clearTimeout(initSafetyTimer);
+        safeSetState(prev => ({ ...prev, session, isLoading: false }));
+        return;
+      }
+
+      const seq = ++authEventSeqRef.current;
+
+      if (!session?.user) {
+        // No session or signed out — clear state immediately and ensure loading is false
+        clearTimeout(initSafetyTimer);
+        safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
+        return;
+      }
+
+      // Defer Supabase DB profile query to the next macrotask so GoTrueClient finishes
+      // `_notifyAllSubscribers` and resolves `initializePromise` cleanly without deadlocking.
+      const activeSession = session;
+      setTimeout(async () => {
         try {
-          if (!isSubscribed) return;
+          const { profile, error: fetchErr } = await fetchProfile(activeSession.user.id);
+          if (!isSubscribed || seq !== authEventSeqRef.current) return;
 
-          // Skip if manual sign-in is currently processing (signIn handles it)
-          if (event === 'SIGNED_IN' && isSigningInRef.current) {
-            return;
-          }
+          clearTimeout(initSafetyTimer);
 
-          // If user is unchanged, only update session details to avoid redundant profile fetches
-          if (session?.user && currentUserRef.current?.id === session.user.id) {
-            safeSetState(prev => ({ ...prev, session }));
-            return;
-          }
+          const errorMsg = fetchErr
+            ? `Gagal memuat profil dari database: ${fetchErr}`
+            : (profile ? null : 'Profil tidak ditemukan di database. Hubungi admin.');
 
-          if (session?.user) {
-            const { profile, error: fetchErr } = await fetchProfile(session.user.id);
-            if (!isSubscribed) return;
+          // Merge with user_metadata in case roles are assigned directly via Supabase Auth Dashboard
+          const mergedProfile = {
+            ...profile,
+            role: activeSession.user.user_metadata?.role || profile?.role || 'cashier',
+            full_name: activeSession.user.user_metadata?.full_name || profile?.full_name || activeSession.user.email,
+            id: activeSession.user.id,
+          } as Profile;
 
-            const errorMsg = fetchErr
-              ? `Gagal memuat profil dari database: ${fetchErr}`
-              : (profile ? null : 'Profil tidak ditemukan di database. Hubungi admin.');
-
-            // Merge with user_metadata in case roles are assigned directly via Supabase Auth Dashboard
-            const mergedProfile = {
-              ...profile,
-              role: session.user.user_metadata?.role || profile?.role || 'cashier',
-              full_name: session.user.user_metadata?.full_name || profile?.full_name || session.user.email,
-              id: session.user.id,
-            } as Profile;
-
-            safeSetState({
-              user: session.user,
-              session,
-              profile: mergedProfile,
-              isLoading: false,
-              authError: errorMsg,
-            });
-          } else {
-            // No session or signed out — clear state and ensure loading is false
-            safeSetState({ user: null, session: null, profile: null, isLoading: false, authError: null });
-          }
+          safeSetState({
+            user: activeSession.user,
+            session: activeSession,
+            profile: mergedProfile,
+            isLoading: false,
+            authError: errorMsg,
+          });
         } catch (err) {
-          console.error('[Auth] Error in onAuthStateChange handler:', err);
-          if (isSubscribed) {
+          console.error('[Auth] Error loading profile after auth state change:', err);
+          if (isSubscribed && seq === authEventSeqRef.current) {
+            clearTimeout(initSafetyTimer);
             safeSetState(prev => ({ ...prev, isLoading: false }));
           }
         }
-      }
-    );
+      }, 0);
+    });
 
     return () => {
       isSubscribed = false;
+      clearTimeout(initSafetyTimer);
       subscription.unsubscribe();
     };
   }, [fetchProfile, safeSetState]);

@@ -10,6 +10,11 @@
 /blog-thumbnail/*
   Cache-Control: public, max-age=86400
 
+# Static fallback product catalog (fast edge cache + SWR)
+/products.json
+  Content-Type: application/json; charset=utf-8
+  Cache-Control: public, max-age=300, stale-while-revalidate=86400
+
 # Machine-readable AI context files
 /llms.txt
   Content-Type: text/plain; charset=utf-8

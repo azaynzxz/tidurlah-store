@@ -845,10 +845,105 @@ function prerenderDistRoutes(productsData) {
   );
 }
 
-function main() {
+function readEnvVars() {
+  const vars = { ...process.env };
+  for (const envFile of [".env.local", ".env"]) {
+    const fullPath = path.join(ROOT_DIR, envFile);
+    if (!fs.existsSync(fullPath)) continue;
+    const lines = fs.readFileSync(fullPath, "utf-8").split(/\r?\n/);
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed || trimmed.startsWith("#")) continue;
+      const eqIdx = trimmed.indexOf("=");
+      if (eqIdx === -1) continue;
+      const key = trimmed.slice(0, eqIdx).trim();
+      const val = trimmed.slice(eqIdx + 1).trim().replace(/^['"]|['"]$/g, "");
+      if (!(key in vars) || !vars[key]) {
+        vars[key] = val;
+      }
+    }
+  }
+  return vars;
+}
+
+function transformSupabaseRow(row, seoMap) {
+  const mapped = seoMap[row.id];
+  const product = {
+    id: row.id,
+    name: row.name,
+    image: row.image,
+    additionalImages: row.additional_images || [],
+    description:
+      mapped && (!row.description || row.description.length < 95)
+        ? mapped.description
+        : row.description,
+    price: row.price,
+    discountPrice: row.discount_price ?? null,
+    category: row.category,
+    priceThresholds: Array.isArray(row.price_thresholds) ? row.price_thresholds : [],
+    time: row.time,
+    rating: row.rating,
+    ...(row.bestseller ? { bestseller: true } : {}),
+    ...(row.pricing_method ? { pricingMethod: row.pricing_method } : {}),
+    ...(row.base_price_per_sqm ? { basePricePerSqm: row.base_price_per_sqm } : {}),
+    ...(row.min_width ? { minWidth: row.min_width } : {}),
+    ...(row.max_width ? { maxWidth: row.max_width } : {}),
+    ...(row.min_height ? { minHeight: row.min_height } : {}),
+    ...(row.max_height ? { maxHeight: row.max_height } : {}),
+    ...(row.lamination_options ? { laminationOptions: row.lamination_options } : {}),
+    ...(row.models ? { models: row.models } : {}),
+    unit: row.unit || "pcs",
+    is_available: row.is_available !== false,
+    ...(row.is_customizable ? { isCustomizable: true } : {}),
+    ...(mapped?.seoTitle ? { seoTitle: mapped.seoTitle } : {}),
+    ...(mapped?.imageAlt ? { imageAlt: mapped.imageAlt } : {}),
+  };
+  return product;
+}
+
+async function tryFetchLiveCatalogFromSupabase(seoMap) {
+  const env = readEnvVars();
+  const sbUrl = env.VITE_SUPABASE_URL;
+  const sbKey = env.VITE_SUPABASE_PUBLISHABLE_KEY;
+  if (!sbUrl || !sbKey || sbUrl.includes("your-project-id")) return null;
+
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), 20000);
+  try {
+    const endpoint = `${sbUrl.replace(/\/+$/, "")}/rest/v1/products?select=*&is_active=eq.true&order=sort_order.asc`;
+    const res = await fetch(endpoint, {
+      headers: {
+        apikey: sbKey,
+        Authorization: `Bearer ${sbKey}`,
+        Accept: "application/json",
+      },
+      signal: controller.signal,
+    });
+    if (!res.ok) return null;
+    const rows = await res.json();
+    if (!Array.isArray(rows) || rows.length === 0) return null;
+
+    const grouped = {};
+    for (const row of rows) {
+      const product = transformSupabaseRow(row, seoMap);
+      if (!grouped[product.category]) grouped[product.category] = [];
+      grouped[product.category].push(product);
+    }
+    console.log(`[SEO] Pulled ${rows.length} live active products from Supabase for build snapshot.`);
+    return grouped;
+  } catch (err) {
+    console.warn("[SEO] Could not pull live Supabase catalog during build, using public/products.json fallback:", err?.message || err);
+    return null;
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+async function main() {
   const seoMap = loadProductSeoMap();
   const productsJsonPath = path.join(PUBLIC_DIR, "products.json");
-  const productsData = JSON.parse(fs.readFileSync(productsJsonPath, "utf-8"));
+  const liveCatalog = await tryFetchLiveCatalogFromSupabase(seoMap);
+  const productsData = liveCatalog || JSON.parse(fs.readFileSync(productsJsonPath, "utf-8"));
 
   if (process.argv.includes("--sync-catalog")) {
     syncCatalogAndMigration(productsData, seoMap);
@@ -880,6 +975,8 @@ function main() {
   console.log("[SEO] Generated public/llms.txt, public/llms-full.txt, and public/sitemap.xml");
 
   if (fs.existsSync(DIST_DIR)) {
+    // Keep dist/products.json synchronized with live Supabase snapshot built at deploy time
+    fs.writeFileSync(path.join(DIST_DIR, "products.json"), JSON.stringify(productsData, null, 2) + "\n", "utf-8");
     fs.writeFileSync(path.join(DIST_DIR, "llms.txt"), llmsTxt, "utf-8");
     fs.writeFileSync(path.join(DIST_DIR, "llms-full.txt"), llmsFullTxt, "utf-8");
     fs.writeFileSync(path.join(DIST_DIR, "sitemap.xml"), sitemapXml, "utf-8");

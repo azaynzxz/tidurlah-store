@@ -11,25 +11,27 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 23000
+          "price": 23000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 17000
+          "price": 17000,
+          "minQuantity": 100
         }
       ],
       "time": "2-3 hari",
       "rating": 4.9,
       "bestseller": true,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Paket ID Card 2 Sisi & Tali Lanyard Custom",
@@ -48,24 +50,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 27000
+          "price": 27000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 26500
+          "price": 26500,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 100
         }
       ],
       "time": "3-4 hari",
       "rating": 5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Paket Cetak ID Card, Case Kulit & Lanyard Custom",
@@ -84,24 +88,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 30000
+          "price": 30000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 26000
+          "price": 26000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 24000
+          "price": 24000,
+          "minQuantity": 100
         }
       ],
       "time": "3-5 hari",
       "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Paket Cetak ID Card 2 Sisi, Case Premium & Lanyard",
@@ -118,24 +124,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 18000
+          "price": 18000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 16000
+          "price": 16000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 14000
+          "price": 14000,
+          "minQuantity": 100
         }
       ],
       "time": "2-3 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Paket ID Card 1 Sisi & Tali Lanyard Murah",
@@ -154,24 +162,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 27000
+          "price": 27000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 26500
+          "price": 26500,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 100
         }
       ],
       "time": "3-5 hari",
       "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak ID Card Holder Case Kulit & Tali Kulit",
@@ -190,24 +200,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 10000
+          "price": 10000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 9000
+          "price": 9000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 8000
+          "price": 8000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 7000
+          "price": 7000,
+          "minQuantity": 100
         }
       ],
       "time": "2-3 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak ID Card PVC 2 Sisi Satuan & Grosir (Setara KTP)",
@@ -226,24 +238,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 9000
+          "price": 9000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 8000
+          "price": 8000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 7000
+          "price": 7000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 6000
+          "price": 6000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak ID Card PVC 1 Sisi Murah Tanpa Minimal Order",
@@ -262,24 +276,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 13000
+          "price": 13000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 12000
+          "price": 12000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 10000
+          "price": 10000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Tali Lanyard Custom 1 Sisi Satuan & Grosir",
@@ -298,24 +314,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 17000
+          "price": 17000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 16000
+          "price": 16000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 13000
+          "price": 13000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Tali Lanyard Custom 2 Sisi Full Color Premium",
@@ -334,24 +352,26 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 13000
+          "price": 13000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 12000
+          "price": 12000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 10000
+          "price": 10000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 8000
+          "price": 8000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Paket Cetak ID Card & Tali Lanyard Polos Ekonomis",
@@ -368,16 +388,18 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 14000
+          "price": 14000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 50,
-          "price": 13000
+          "price": 13000,
+          "minQuantity": 50
         }
       ],
       "time": "1-2 hari",
       "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak ID Card PVC + Tali Lanyard Hitam Polos",
@@ -394,12 +416,14 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 5000
+          "price": 5000,
+          "minQuantity": 1
         }
       ],
       "time": "1-2 hari",
       "rating": 4.5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Nametag Panitia Ukuran B4 & Tali Hitam Polos",
@@ -416,16 +440,18 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 10,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 10
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Jual Yoyo ID Card Putar & Holder Kartu Nama",
@@ -445,12 +471,14 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 10000
+          "price": 10000,
+          "minQuantity": 1
         }
       ],
       "time": "2-3 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Logo Stiker Resin Yoyo ID Card Custom",
@@ -467,16 +495,18 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 10,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 10
         }
       ],
       "time": "2-3 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Yoyo ID Card Premium Casing Akrilik Bening",
@@ -493,16 +523,18 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 10,
-          "price": 23000
+          "price": 23000,
+          "minQuantity": 10
         }
       ],
       "time": "2-3 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Yoyo ID Card Premium Case Semi Transparan",
@@ -519,12 +551,14 @@
       "category": "ID Card & Lanyard",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 1
         }
       ],
       "time": "2-3 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Cue Card / Que Card MC Ukuran A5 Tebal",
@@ -545,6 +579,7 @@
       "priceThresholds": [],
       "time": "Ready stock",
       "rating": 4.8,
+      "laminationOptions": [],
       "models": [
         {
           "code": "Case Reg Merah",
@@ -596,6 +631,23 @@
       "is_available": true,
       "seoTitle": "Jual Casing Holder ID Card (Bening, Warna, Kulit, Akrilik)",
       "imageAlt": "Jual Berbagai Casing Holder ID Card Bening, Kulit, dan Akrilik Ready Stock Lampung"
+    },
+    {
+      "id": 2213,
+      "name": "Nametag Pin & Magnet",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789042331829-3lqec9o.png",
+      "additionalImages": [],
+      "description": "Nametag magnet atau tanda nama dengan pengait magnet adalah elemen penting dalam berbagai acara, seperti tempat kerja berfungsi sebagai alat identifikasi, yang mempermudah orang lain untuk mengenal dan menyapa dengan benar",
+      "price": 30000,
+      "discountPrice": null,
+      "category": "ID Card & Lanyard",
+      "priceThresholds": [],
+      "time": "2-3 hari",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Media Promosi": [
@@ -607,35 +659,38 @@
         "/product-image/Banner 2.webp"
       ],
       "description": "Jasa cetak banner dan spanduk flexi ukuran bebas per meter persegi untuk media promosi toko, backdrop panggung, spanduk kegiatan kampus, dan pengumuman instansi. Warna cerah tahan cuaca panas dan hujan, melayani area Bandar Lampung (Sukarame, Rajabasa, Kedaton, Tanjung Karang), Way Hui, hingga pengiriman ke Kota Metro dan Natar.",
-      "price": 18000,
+      "price": 20000,
       "discountPrice": null,
       "category": "Media Promosi",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 18000
+          "price": 18000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 18000
+          "price": 18000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 17000
+          "price": 17000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 16000
+          "price": 16000,
+          "minQuantity": 100
         }
       ],
       "time": "3-5 hari",
       "rating": 4.8,
+      "bestseller": true,
       "pricingMethod": "dimensional",
       "basePricePerSqm": 18000,
       "minWidth": 0.5,
       "maxWidth": 5,
       "minHeight": 0.5,
       "maxHeight": 10,
+      "laminationOptions": [],
+      "models": [],
       "unit": "m²",
       "is_available": true,
       "seoTitle": "Cetak Banner & Spanduk Custom Outdoor/Indoor per Meter",
@@ -654,24 +709,26 @@
       "category": "Media Promosi",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 90000
+          "price": 90000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 85000
+          "price": 85000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 80000
+          "price": 80000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 75000
+          "price": 75000,
+          "minQuantity": 100
         }
       ],
       "time": "2-3 hari",
       "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak X Banner Custom 60x160 cm Lengkap dengan Tiang Stand",
@@ -690,24 +747,26 @@
       "category": "Media Promosi",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 350000
+          "price": 350000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 170000
+          "price": 170000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 160000
+          "price": 160000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 150000
+          "price": 150000,
+          "minQuantity": 100
         }
       ],
       "time": "3-4 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Roll Up Banner Portable Lengkap Stand Aluminium",
@@ -721,33 +780,68 @@
         "/product-image/Poster 2.webp"
       ],
       "description": "Cetak poster ukuran A3 pada kertas art carton/art paper tebal dengan resolusi tinggi dan warna akurat. Cocok untuk poster edukasi sekolah, promosi menu kafe, dekorasi dinding, serta publikasi event kampus di Bandar Lampung, Rajabasa, Sukarame, dan Way Hui.",
-      "price": 25000,
+      "price": 12000,
       "discountPrice": null,
       "category": "Media Promosi",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 22000
+          "price": 22000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 18000
+          "price": 18000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Poster A3+ Art Paper Berkualitas Tinggi",
       "imageAlt": "Jasa Cetak Poster Ukuran A3 Warna Tajam Satuan dan Grosir di Bandar Lampung"
+    },
+    {
+      "id": 2203,
+      "name": "Poster dan Brosur Leaflet A4",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789024470208-ps52qkf.png",
+      "additionalImages": [
+        "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789454055324-o0nclg4.png",
+        "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789454717167-3gxt9in.png"
+      ],
+      "description": "Leaflet A4 adalah media promosi cetak yang sangat berguna untuk media edukasi, media promosi, dan media penyampaikan informasi penting kepada masyarakat seperti progja KKN. Leaflet biasanya hanya terdiri dari satu lembar kertas berbahan artpaper yang dilipat menjadi dua atau tiga bagian tanpa dijilid",
+      "price": 5000,
+      "discountPrice": 4000,
+      "category": "Media Promosi",
+      "priceThresholds": [
+        {
+          "price": 7000,
+          "minQuantity": 1
+        },
+        {
+          "price": 6000,
+          "minQuantity": 11
+        },
+        {
+          "price": 4000,
+          "minQuantity": 40
+        }
+      ],
+      "time": "2-3 hari",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Merchandise": [
@@ -764,20 +858,20 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 12000
+          "price": 12000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 10000
+          "price": 10000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 8000
+          "price": 8000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
@@ -796,6 +890,7 @@
           "price": 0
         }
       ],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Cutting Stiker Chromo Custom (Kiss Cut / Die Cut)",
@@ -814,12 +909,14 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 22000
+          "price": 22000,
+          "minQuantity": 1
         }
       ],
       "time": "1-2 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "lembar",
       "is_available": true,
       "seoTitle": "Cetak Cutting Stiker Vinyl A3+ Tahan Air (Waterproof)",
@@ -836,24 +933,26 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 15000
+          "price": 15000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 14000
+          "price": 14000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 13000
+          "price": 13000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 12000
+          "price": 12000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Jasa Cutting Stiker Vinyl Papan Bunga Akrilik + Masking",
@@ -873,28 +972,49 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 8000
+          "price": 8000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 7000
+          "price": 7000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 6000
+          "price": 6000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 5000
+          "price": 5000,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Custom Gantungan Kunci (Ganci) Akrilik Terdekat Satuan/Grosir",
       "imageAlt": "Tempat Bikin Custom Gantungan Kunci Akrilik Terdekat di Bandar Lampung dan Metro"
+    },
+    {
+      "id": 2212,
+      "name": "Pin Kait Akrilik",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789040019977-07dy7jb.png",
+      "additionalImages": [
+        "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789108243054-tfat3ou.jpeg"
+      ],
+      "description": "Pin Custom Akrilik Panitia\nKehadirannya menjadi atribut yang dapat memperkuat kebanggaan, percaya diri, serta rasa memiliki dalam berbagai kegiatan internal panitia",
+      "price": 8000,
+      "discountPrice": null,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "2-3 hari",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     },
     {
       "id": 17,
@@ -907,24 +1027,26 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 3000
+          "price": 3000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 2700
+          "price": 2700,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 2500
+          "price": 2500,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 2300
+          "price": 2300,
+          "minQuantity": 100
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Gantungan Kunci (Ganci) Bulat 3 cm Murah",
@@ -941,24 +1063,26 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 5000
+          "price": 5000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 4500
+          "price": 4500,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 4000
+          "price": 4000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 3000
+          "price": 3000,
+          "minQuantity": 100
         }
       ],
       "time": "1 hari",
       "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Gantungan Kunci (Ganci) Bulat 5 cm Custom Cepat",
@@ -978,6 +1102,7 @@
       "priceThresholds": [],
       "time": "1-2 hari",
       "rating": 4.8,
+      "laminationOptions": [],
       "models": [
         {
           "code": "1 Sisi",
@@ -1006,12 +1131,14 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 3000
+          "price": 3000,
+          "minQuantity": 1
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Pin Peniti Custom 3 cm Murah Satuan & Grosir",
@@ -1028,12 +1155,14 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 5000
+          "price": 5000,
+          "minQuantity": 1
         }
       ],
       "time": "1-2 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Pin Peniti Custom 5 cm Souvenir Event & Komunitas",
@@ -1053,24 +1182,26 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 22000
+          "price": 22000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 19000
+          "price": 19000,
+          "minQuantity": 100
         }
       ],
       "time": "3-5 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Mug Custom Keramik Printing Satuan & Harga Grosir",
@@ -1078,36 +1209,38 @@
     },
     {
       "id": 21,
-      "name": "Tumbler Custom",
+      "name": "Tumbler Plastik Custom (Insert Paper)",
       "image": "/product-image/Insert Paper 1.webp",
       "additionalImages": [
         "/product-image/Insert Paper 2.webp",
         "/product-image/Insert Paper 3.webp"
       ],
       "description": "Cetak tumbler botol minum travel custom desain penuh mengelilingi botol, ringan dibawa dan tahan suhu panas maupun dingin. Banyak dipesan untuk seminar kit instansi, hadiah pelanggan, dan souvenir KKN di Bandar Lampung, Sukarame, Rajabasa, serta Lampung Selatan.",
-      "price": 28000,
-      "discountPrice": null,
+      "price": 33000,
+      "discountPrice": 28000,
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 28000
+          "price": 28000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 2,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 2
         },
         {
-          "minQuantity": 25,
-          "price": 23000
+          "price": 23000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 100
         }
       ],
       "time": "3-5 hari",
       "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Tumbler Custom Botol Minum Souvenir Kantor & Event",
@@ -1131,12 +1264,13 @@
       "category": "Merchandise",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 90000
+          "price": 90000,
+          "minQuantity": 1
         }
       ],
       "time": "3-5 hari",
       "rating": 4.9,
+      "laminationOptions": [],
       "models": [
         {
           "code": "PKA004",
@@ -1195,6 +1329,7 @@
       "priceThresholds": [],
       "time": "3-5 hari",
       "rating": 4.9,
+      "laminationOptions": [],
       "models": [
         {
           "code": "3 mm",
@@ -1226,248 +1361,197 @@
       "is_available": true,
       "seoTitle": "Cetak Plakat Akrilik UV Print Tebal 3mm-20mm + Box Bludru",
       "imageAlt": "Plakat Akrilik Cetak UV Flatbed Lengkap Box Bludru Eksklusif Bandar Lampung"
+    },
+    {
+      "id": 2201,
+      "name": "Plakat Kayu Premium Gold",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789025507747-aj4qvgc.jpg",
+      "additionalImages": [],
+      "description": "Plakat kayu premium gold apresiasi pembicara untuk acara resmi. Identitas instansi, logo acara,  serta keterangan nama pembicara ditampilkan secara jelas sehingga plakat terasa lebih personal dan relevan dengan momentum pemberian.  Satu Paket souvenir ini sudah include Plakat kayu dan box",
+      "price": 125000,
+      "discountPrice": 115000,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "3-5",
+      "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2204,
+      "name": "Tumbler Non Led",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789021236181-gf97k6i.png",
+      "additionalImages": [],
+      "description": "TUMBLER STAINLESS NONLED \nBisa custom promosi perusahaan, promosi event, serta untuk pekerja kantoran\nSpesifikasi Tumbler\nBahan : Termos Stainless Steel 500ml\nUkuran : Diameter 6.5cm, Tinggi 22cm\nsudah termasuk cetakan UV full warna dan grafirserta sudah dapat box",
+      "price": 75000,
+      "discountPrice": 69000,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "2-5 hari",
+      "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2215,
+      "name": "Plastik Klip",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1793015461268-jgv4esa.png",
+      "additionalImages": [],
+      "description": "Plastik packing ganci dan pin",
+      "price": 25000,
+      "discountPrice": null,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "Stock Ready",
+      "rating": 4.6,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pak",
+      "is_available": true
+    },
+    {
+      "id": 2216,
+      "name": "Tas Spunbond/Totebag",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1793022866002-5vcyevf.png",
+      "additionalImages": [
+        "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1793022855392-rnzadln.png"
+      ],
+      "description": "Sudah termasuk sablon custom full warna",
+      "price": 11000,
+      "discountPrice": 9000,
+      "category": "Merchandise",
+      "priceThresholds": [],
+      "time": "1-2 hari",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Papan Bunga": [
     {
-      "id": 1001,
-      "name": "Papan Bunga Kecil - Pink Purple Gradient #PKK1",
-      "image": "/product-image/papan-bunga/Kecil - KODE PKK1 - Pink Purple gradient dengan bunga dan kupu-kupu.webp",
+      "id": 2209,
+      "name": "Papan Akrilik Jumbo Biru #PK02",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789029574916-urbrgni.png",
       "additionalImages": [],
-      "description": "Papan bunga akrilik meja ukuran kecil kode #PKK1 bertema gradasi pink-ungu dengan hiasan bunga artificial dan kupu-kupu cantik. Hadiah kekinian awet dipajang untuk ucapan selamat sidang skripsi, wisuda, ulang tahun, dan grand opening toko di Bandar Lampung, Rajabasa, Sukarame, Kedaton, serta Kota Metro.",
-      "price": 65000,
-      "discountPrice": null,
+      "description": "",
+      "price": 120000,
+      "discountPrice": 80000,
       "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 65000
-        },
-        {
-          "minQuantity": 3,
-          "price": 63000
-        },
-        {
-          "minQuantity": 5,
-          "price": 60000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Papan Bunga Akrilik Meja Mini Pink Purple #PKK1",
-      "imageAlt": "Plakat Papan Bunga Akrilik Kecil Pink Purple Gradient Ucapan Wisuda Lampung"
-    },
-    {
-      "id": 1002,
-      "name": "Papan Bunga Kecil - Bunga Matahari Mini #PKK3",
-      "image": "/product-image/papan-bunga/Kecil - KODE PKK3 dengan Bunga matahari mini dan anggrek putih.webp",
-      "additionalImages": [],
-      "description": "Plakat papan bunga akrilik meja kode #PKK3 berhias rangkaian bunga matahari mini dan anggrek putih ceria, custom nama dan foto. Cocok untuk kado wisuda kampus Unila, ITERA, UIN Raden Intan, Malahayati, maupun ucapan selamat pembukaan usaha di Bandar Lampung dan Metro.",
-      "price": 65000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 65000
-        },
-        {
-          "minQuantity": 3,
-          "price": 63000
-        },
-        {
-          "minQuantity": 5,
-          "price": 60000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.9,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Papan Bunga Akrilik Mini Bunga Matahari & Anggrek #PKK3",
-      "imageAlt": "Papan Bunga Akrilik Meja Bunga Matahari Mini dan Anggrek Putih Bandar Lampung"
-    },
-    {
-      "id": 1003,
-      "name": "Papan Bunga Kecil - Pink Gold Tropical #PKK5",
-      "image": "/product-image/papan-bunga/Kecil - KODE PKK5 - Pink gold tropical.webp",
-      "additionalImages": [],
-      "description": "Papan bunga akrilik meja kode #PKK5 bernuansa pink gold tropical elegan dengan teks ucapan custom sesuai pesanan. Pilihan kado estetik pengganti karangan bunga konvensional untuk area Bandar Lampung, Tanjung Karang, Teluk Betung, Natar, dan sekitarnya.",
-      "price": 65000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 65000
-        },
-        {
-          "minQuantity": 3,
-          "price": 63000
-        },
-        {
-          "minQuantity": 5,
-          "price": 60000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Papan Bunga Akrilik Mini Pink Gold Tropical #PKK5",
-      "imageAlt": "Plakat Papan Bunga Akrilik Tema Pink Gold Tropical Kado Sidang dan Grand Opening Lampung"
-    },
-    {
-      "id": 1004,
-      "name": "Papan Bunga - Plakat Bunga Anggrek Biru #PKB2",
-      "image": "/product-image/papan-bunga/KODE PKB2 - Plakat Bunga dengan anggrek biru moonlight.webp",
-      "additionalImages": [],
-      "description": "Plakat papan bunga akrilik eksklusif kode #PKB2 dengan rangkaian anggrek biru moonlight mewah dan dudukan stabil. Sangat cocok untuk hadiah kelulusan, promosi jabatan, peresmian kantor, dan apresiasi relasi bisnis di Bandar Lampung maupun Kota Metro.",
-      "price": 70000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 70000
-        },
-        {
-          "minQuantity": 3,
-          "price": 68000
-        },
-        {
-          "minQuantity": 5,
-          "price": 65000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.9,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Plakat Papan Bunga Akrilik Anggrek Biru Moonlight #PKB2",
-      "imageAlt": "Plakat Bunga Akrilik Custom Hiasan Anggrek Biru Moonlight di Bandar Lampung"
-    },
-    {
-      "id": 1005,
-      "name": "Papan Bunga - Plakat Bulat Anggrek Putih #PKB1",
-      "image": "/product-image/papan-bunga/KODE PKB1 - Plakat Bulat dengan bunga anggrek putih.webp",
-      "additionalImages": [],
-      "description": "Plakat papan bunga akrilik bentuk bulat kode #PKB1 berpadu hiasan anggrek putih bersih yang anggun. Cocok untuk hadiah pernikahan, pertunangan, wisuda, maupun ucapan pembukaan klinik/kafe di Bandar Lampung, Kedaton, Kemiling, dan Pesawaran.",
-      "price": 70000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 70000
-        },
-        {
-          "minQuantity": 3,
-          "price": 68000
-        },
-        {
-          "minQuantity": 5,
-          "price": 65000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.8,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Plakat Papan Bunga Akrilik Bulat Anggrek Putih #PKB1",
-      "imageAlt": "Plakat Akrilik Bulat Rangkaian Bunga Anggrek Putih Ucapan Selamat Lampung"
-    },
-    {
-      "id": 1006,
-      "name": "Papan Bunga - Pink Mawar Love #PKK6",
-      "image": "/product-image/papan-bunga/KODE PKK6 - Pink dengan bunga mawar dan love di tepi.webp",
-      "additionalImages": [],
-      "description": "Plakat papan bunga akrilik kode #PKK6 berwarna pink lembut dengan aksen bunga mawar dan ornamen hati di tepi. Favorit untuk kado sidang kompre, wisuda, ulang tahun, dan anniversary dengan pengerjaan cepat 1-2 hari di Bandar Lampung, Way Hui, dan Kota Metro.",
-      "price": 70000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 70000
-        },
-        {
-          "minQuantity": 3,
-          "price": 68000
-        },
-        {
-          "minQuantity": 5,
-          "price": 65000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.9,
-      "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Plakat Papan Bunga Akrilik Pink Mawar Love #PKK6",
-      "imageAlt": "Papan Bunga Akrilik Custom Mawar Pink Kado Wisuda dan Anniversary Bandar Lampung"
-    },
-    {
-      "id": 1007,
-      "name": "Papan Bunga - Hitam Emas Mewah #PKK7",
-      "image": "/product-image/papan-bunga/KODE PKK7 plakat hitam emas mewah dengan bunga monokromatik.webp",
-      "additionalImages": [],
-      "description": "Plakat papan bunga akrilik kode #PKK7 dengan perpaduan warna hitam dan emas monokromatik yang maskulin serta berkelas. Pilihan tepat untuk ucapan pelantikan pejabat, promosi pimpinan, grand opening bisnis, dan wisuda di Bandar Lampung, Tanjung Karang, serta Pringsewu.",
-      "price": 70000,
-      "discountPrice": null,
-      "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 70000
-        },
-        {
-          "minQuantity": 3,
-          "price": 68000
-        },
-        {
-          "minQuantity": 5,
-          "price": 65000
-        }
-      ],
-      "time": "1-2 hari",
+      "priceThresholds": [],
+      "time": "",
       "rating": 5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Plakat Papan Bunga Akrilik Hitam Emas Mewah #PKK7",
-      "imageAlt": "Plakat Papan Bunga Akrilik Hitam Emas Monokrom Eksklusif di Bandar Lampung"
+      "is_available": true
     },
     {
-      "id": 1008,
-      "name": "Papan Bunga - Biru Muda Mawar #PKK4",
-      "image": "/product-image/papan-bunga/KODE PKK4  - Plakat biru muda dengan bunga mawar di tepi.webp",
+      "id": 2210,
+      "name": "Papan Akrilik Jumbo Hitam Cembung Mirror A1",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789030049293-ifrho2q.png",
       "additionalImages": [],
-      "description": "Plakat papan bunga akrilik kode #PKK4 bernuansa pastel biru muda sejuk dengan dekorasi mawar di sekeliling tepi akrilik. Cocok untuk hadiah sempro, sidang akhir, wisuda sekolah/universitas, dan ucapan selamat di Bandar Lampung, Rajabasa, Sukarame, hingga Natar.",
-      "price": 70000,
-      "discountPrice": null,
+      "description": "Papan Akrlik Cembung Mirror A1 Warna Hitam",
+      "price": 120000,
+      "discountPrice": 80000,
       "category": "Papan Bunga",
-      "priceThresholds": [
-        {
-          "minQuantity": 1,
-          "price": 70000
-        },
-        {
-          "minQuantity": 3,
-          "price": 68000
-        },
-        {
-          "minQuantity": 5,
-          "price": 65000
-        }
-      ],
-      "time": "1-2 hari",
-      "rating": 4.8,
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
-      "is_available": true,
-      "seoTitle": "Plakat Papan Bunga Akrilik Biru Muda Mawar #PKK4",
-      "imageAlt": "Papan Bunga Akrilik Biru Muda Hiasan Mawar Kado Kelulusan Lampung"
+      "is_available": true
+    },
+    {
+      "id": 2211,
+      "name": "Papan Akrilik Jumbo Pink Cembung Mirror A2",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789030369816-eeucret.png",
+      "additionalImages": [],
+      "description": "Papan Akrlik Cembung Mirror A2 Warna Pink",
+      "price": 120000,
+      "discountPrice": 80000,
+      "category": "Papan Bunga",
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2206,
+      "name": "Papan Akrilik Jumbo Biru #PK01",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789028085316-4bq83v9.png",
+      "additionalImages": [],
+      "description": "Papan bunga akrilik Jumbo biru untuk menemani seminarmu",
+      "price": 120000,
+      "discountPrice": 80000,
+      "category": "Papan Bunga",
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2207,
+      "name": "Papan Bunga Akrilik Pink",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789028262332-n6netti.png",
+      "additionalImages": [],
+      "description": "Papan bunga akrilik Jumbo Pink untuk menemani seminarmu",
+      "price": 120000,
+      "discountPrice": 80000,
+      "category": "Papan Bunga",
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2208,
+      "name": "Papan Akrilik Jumbo Hijau #PK01",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789028405026-5b4no2e.png",
+      "additionalImages": [],
+      "description": "Papan Bunga Akrilik Jumbo Hijau #PK01 sangat cocok untuk menemani seminarmu ditambah lagi foto bareng doi atau sahabat sejatimu",
+      "price": 120000,
+      "discountPrice": 80000,
+      "category": "Papan Bunga",
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
+    },
+    {
+      "id": 2205,
+      "name": "Papan Akrilik Jumbo Merah",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1789027139864-9y7fcut.png",
+      "additionalImages": [],
+      "description": "Papan bunga akrilik Jumbo merah untuk menemani seminarmu",
+      "price": 120000,
+      "discountPrice": 80000,
+      "category": "Papan Bunga",
+      "priceThresholds": [],
+      "time": "",
+      "rating": 5,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     }
   ],
   "Jasa & Layanan": [
@@ -1482,21 +1566,23 @@
       "category": "Jasa & Layanan",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 3,
-          "price": 22500
+          "price": 22500,
+          "minQuantity": 3
         },
         {
-          "minQuantity": 5,
-          "price": 20000
+          "price": 20000,
+          "minQuantity": 5
         }
       ],
       "time": "1-3 hari",
       "rating": 4.9,
       "bestseller": true,
+      "laminationOptions": [],
+      "models": [],
       "unit": "design",
       "is_available": true,
       "seoTitle": "Jasa Desain ID Card, Lanyard, Banner & Merchandise",
@@ -1513,12 +1599,14 @@
       "category": "Jasa & Layanan",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 25000
+          "price": 25000,
+          "minQuantity": 1
         }
       ],
       "time": "24 jam",
       "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
       "unit": "order",
       "is_available": true,
       "seoTitle": "Layanan Cetak Express Kilat 24 Jam",
@@ -1535,12 +1623,14 @@
       "category": "Jasa & Layanan",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 0
+          "price": 0,
+          "minQuantity": 1
         }
       ],
       "time": "Sesuai jadwal",
       "rating": 4.5,
+      "laminationOptions": [],
+      "models": [],
       "unit": "order",
       "is_available": true,
       "isCustomizable": true,
@@ -1560,32 +1650,34 @@
       "category": "Apparel",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 1000
+          "price": 1000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 3000,
-          "price": 950
+          "price": 950,
+          "minQuantity": 3000
         },
         {
-          "minQuantity": 5000,
-          "price": 800
+          "price": 800,
+          "minQuantity": 5000
         },
         {
-          "minQuantity": 7000,
-          "price": 750
+          "price": 750,
+          "minQuantity": 7000
         },
         {
-          "minQuantity": 9000,
-          "price": 700
+          "price": 700,
+          "minQuantity": 9000
         },
         {
-          "minQuantity": 20001,
-          "price": 520
+          "price": 520,
+          "minQuantity": 20001
         }
       ],
       "time": "3-5 hari",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Gelang Tiket Kertas Lisse Tahan Air Konser & Event",
@@ -1604,24 +1696,26 @@
       "category": "Apparel",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 3500
+          "price": 3500,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 2001,
-          "price": 3000
+          "price": 3000,
+          "minQuantity": 2001
         },
         {
-          "minQuantity": 5001,
-          "price": 2500
+          "price": 2500,
+          "minQuantity": 5001
         },
         {
-          "minQuantity": 10001,
-          "price": 2000
+          "price": 2000,
+          "minQuantity": 10001
         }
       ],
       "time": "7-25 hari",
       "rating": 4.9,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Cetak Gelang Tiket Kain Lanyard Tissue + Pengunci",
@@ -1641,24 +1735,26 @@
       "category": "Apparel",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 75000
+          "price": 75000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 4,
-          "price": 70000
+          "price": 70000,
+          "minQuantity": 4
         },
         {
-          "minQuantity": 25,
-          "price": 65000
+          "price": 65000,
+          "minQuantity": 25
         },
         {
-          "minQuantity": 100,
-          "price": 60000
+          "price": 60000,
+          "minQuantity": 100
         }
       ],
       "time": "5-7 hari",
       "rating": 4.7,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Jasa Sablon Kaos Custom DTF Satuan & Lusinan",
@@ -1675,28 +1771,47 @@
       "category": "Apparel",
       "priceThresholds": [
         {
-          "minQuantity": 1,
-          "price": 120000
+          "price": 120000,
+          "minQuantity": 1
         },
         {
-          "minQuantity": 51,
-          "price": 115000
+          "price": 115000,
+          "minQuantity": 51
         },
         {
-          "minQuantity": 100,
-          "price": 110000
+          "price": 110000,
+          "minQuantity": 100
         },
         {
-          "minQuantity": 300,
-          "price": 105000
+          "price": 105000,
+          "minQuantity": 300
         }
       ],
       "time": "2-4 Minggu",
       "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
       "unit": "pcs",
       "is_available": true,
       "seoTitle": "Konveksi Baju PDH / Kemeja Korsa Organisasi & Kampus",
       "imageAlt": "Pembuatan Baju Kemeja PDH Korsa Himpunan Mahasiswa dan Komunitas di Lampung"
+    },
+    {
+      "id": 2214,
+      "name": "Baju Polo Bahan Pique",
+      "image": "https://tflscbrycpmlfgvgwely.supabase.co/storage/v1/object/public/products/products/1790340172579-n8gv2hs.png",
+      "additionalImages": [],
+      "description": "Baju Polo Bahan Piqe\nsudah termsuk jasa sablon 3 titik, untuk bordir ada penambahan biaya 15k",
+      "price": 85000,
+      "discountPrice": null,
+      "category": "Apparel",
+      "priceThresholds": [],
+      "time": "5-7 hari",
+      "rating": 4.8,
+      "laminationOptions": [],
+      "models": [],
+      "unit": "pcs",
+      "is_available": true
     }
   ]
 }

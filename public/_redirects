@@ -12,6 +12,7 @@
 /llms-full.txt      /llms-full.txt           200
 /robots.txt         /robots.txt              200
 /sitemap.xml        /sitemap.xml             200
+/products.json      /products.json           200
 
 # SPA Fallback for dynamic client-side routes
 /*                  /index.html              200

@@ -12,7 +12,7 @@ import { BetaBannerCarousel, BannerSlide } from "@/components/beta/BetaBannerCar
 import { BetaSeoFaqSection } from "@/components/beta/BetaSeoFaqSection";
 import { WhatsAppFloatingButton } from "@/components/common/WhatsAppFloatingButton";
 import type { Product, CartItem } from "@/types/product";
-import { fetchProductsFromSupabase } from "@/services/products";
+import { getInitialCatalogSync, loadCatalogWithSWR } from "@/services/products";
 import { findProductBySlug, generateProductSlug } from "@/utils/product";
 import {
   SITE_ORIGIN,
@@ -35,9 +35,11 @@ export const StorefrontBeta: React.FC = () => {
   const { slug } = useParams();
   const navigate = useNavigate();
 
-  // State
-  const [productsData, setProductsData] = useState<Record<string, Product[]>>({});
-  const [isLoading, setIsLoading] = useState(true);
+  // State (seeded synchronously from <head> prefetch or SWR cache to prevent skeleton flashes)
+  const [productsData, setProductsData] = useState<Record<string, Product[]>>(
+    () => getInitialCatalogSync() || {}
+  );
+  const [isLoading, setIsLoading] = useState<boolean>(() => !getInitialCatalogSync());
   const [activeCategory, setActiveCategory] = useState<string>("Semua");
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
@@ -82,38 +84,18 @@ export const StorefrontBeta: React.FC = () => {
     }
   }, [cartItems]);
 
-  // Load products
+  // Load & revalidate products via lock-free SWR (consumes <head> prefetch + updates from live Supabase)
   useEffect(() => {
-    let isMounted = true;
-    const load = async () => {
-      setIsLoading(true);
-      try {
-        const data = await fetchProductsFromSupabase();
-        if (isMounted && data && Object.keys(data).length > 0) {
-          setProductsData(data);
-          setIsLoading(false);
-          return;
-        }
-      } catch (err) {
-        console.warn("Supabase fetch failed, falling back to local products.json", err);
+    const cancel = loadCatalogWithSWR(
+      (freshCatalog) => {
+        setProductsData(freshCatalog);
+        setIsLoading(false);
+      },
+      () => {
+        setIsLoading(false);
       }
-
-      try {
-        const res = await fetch("/products.json");
-        const json = await res.json();
-        if (isMounted) {
-          setProductsData(json);
-        }
-      } catch (fallbackErr) {
-        console.error("Failed to load products fallback", fallbackErr);
-      } finally {
-        if (isMounted) setIsLoading(false);
-      }
-    };
-    load();
-    return () => {
-      isMounted = false;
-    };
+    );
+    return cancel;
   }, []);
 
   // Handle URL slug parameter (e.g. /product/:slug)
@@ -352,8 +334,11 @@ export const StorefrontBeta: React.FC = () => {
                 {activeCategory === "Semua" ? "Semua Produk" : activeCategory}
               </h2>
               <p className="text-xs text-[#71717A] mt-0.5">
-                Menampilkan {filteredProducts.length} produk
-                {searchTerm && ` untuk kata kunci "${searchTerm}"`}
+                {isActuallyLoading
+                  ? "Memuat katalog produk..."
+                  : `Menampilkan ${filteredProducts.length} produk${
+                      searchTerm ? ` untuk kata kunci "${searchTerm}"` : ""
+                    }`}
               </p>
             </div>
           </div>

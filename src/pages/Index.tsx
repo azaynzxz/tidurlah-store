@@ -21,7 +21,7 @@ import { Helmet } from 'react-helmet-async';
 // Import extracted modules
 import type { Product, CartItem, OrderData } from "@/types/product";
 import { validPromoCodes, promotedProducts, caseVariants, idCardWithCaseIds, stikerWithLaminationIds, JASA_DESAIN_PRICE, categories, PRODUCT_VERSION } from "@/constants";
-import { fetchProductsFromSupabase } from "@/services/products";
+import { getInitialCatalogSync, loadCatalogWithSWR } from "@/services/products";
 import { findProductBySlug, generateProductUrl, calculateBannerPrice, getApplicablePrice, calculateSavings } from "@/utils/product";
 import { addToCart, removeFromCart, deleteFromCart, calculateTotal, calculateTotalSavings, calculateTotalDiscount, handlePromoCodeChange, addBannerToCart, FlyingBubble, triggerFlyingAnimation } from "@/utils/cart";
 import { ModelSelector } from "@/components/product/ModelSelector";
@@ -52,8 +52,11 @@ const Index = () => {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [invoiceNumber, setInvoiceNumber] = useState("");
   const [showOrderSuccess, setShowOrderSuccess] = useState(false);
-  const [products, setProducts] = useState<any>({});
-  const [filteredProducts, setFilteredProducts] = useState<any>({});
+  const [products, setProducts] = useState<any>(() => getInitialCatalogSync() || {});
+  const [filteredProducts, setFilteredProducts] = useState<any>(() => {
+    const init = getInitialCatalogSync();
+    return init ? JSON.parse(JSON.stringify(init)) : {};
+  });
   const [searchTerm, setSearchTerm] = useState("");
   const [activeCategory, setActiveCategory] = useState("");
   const [promoCodeError, setPromoCodeError] = useState("");
@@ -63,7 +66,7 @@ const Index = () => {
   const [bannerWidthInput, setBannerWidthInput] = useState<string | null>(null);
   const [bannerHeightInput, setBannerHeightInput] = useState<string | null>(null);
   const [whatsAppUrl, setWhatsAppUrl] = useState("");
-  const [isProductsLoading, setIsProductsLoading] = useState(true);
+  const [isProductsLoading, setIsProductsLoading] = useState(() => !getInitialCatalogSync());
 
   // Form state
   const [customerName, setCustomerName] = useState("");
@@ -124,43 +127,18 @@ const Index = () => {
     setInvoiceNumber(generateInvoiceNumber());
   }, []);
 
-  // Load products — try Supabase first, fall back to products.json
+  // Load & revalidate products via lock-free SWR
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        // Try Supabase first
-        const sbData = await fetchProductsFromSupabase();
-        if (sbData && Object.keys(sbData).length > 0) {
-          setProducts(sbData);
-          setFilteredProducts(JSON.parse(JSON.stringify(sbData)));
-          setTimeout(() => setIsProductsLoading(false), 150);
-          return;
-        }
-      } catch (err) {
-        console.warn('[Index] Supabase products failed, falling back to JSON:', err);
-      }
-
-      // Fallback to static JSON
-      try {
-        const response = await fetch(`/products.json?v=${PRODUCT_VERSION}`);
-        const data = await response.json();
-
-        const productsCopy = JSON.parse(JSON.stringify(data));
-        const filteredProductsCopy = JSON.parse(JSON.stringify(data));
-
+    return loadCatalogWithSWR(
+      (freshData) => {
+        const productsCopy = JSON.parse(JSON.stringify(freshData));
+        const filteredProductsCopy = JSON.parse(JSON.stringify(freshData));
         setProducts(productsCopy);
         setFilteredProducts(filteredProductsCopy);
-
-        setTimeout(() => {
-          setIsProductsLoading(false);
-        }, 150);
-      } catch (error) {
-        console.error("Failed to fetch products:", error);
-        toast.error("Gagal memuat produk. Silakan coba lagi nanti.");
         setIsProductsLoading(false);
-      }
-    };
-    fetchProducts();
+      },
+      () => setIsProductsLoading(false)
+    );
   }, []);
 
 

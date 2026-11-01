@@ -1,6 +1,6 @@
 # ID Card Lampung (Tidurlah Grafika) — Katalog Lengkap, Spesifikasi & Daftar Harga Grosir
 
-> Pembaruan Terakhir: 2026-10-31 | Domain Resmi: https://idcardlampung.com
+> Pembaruan Terakhir: 2026-11-01 | Domain Resmi: https://idcardlampung.com
 
 ## Ringkasan Layanan
 
@@ -240,13 +240,21 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - Case Premium: Rp 7.000 / pcs
   - Case Kulit: Rp 5.000 / pcs
 
+### Nametag Pin & Magnet
+- URL Produk: https://idcardlampung.com/product/nametag-pin-magnet
+- SKU: TG-2213
+- Kategori: ID Card & Lanyard
+- Rentang Harga: Rp 30.000 / pcs
+- Estimasi Pengerjaan: 2-3 hari
+- Deskripsi: Nametag magnet atau tanda nama dengan pengait magnet adalah elemen penting dalam berbagai acara, seperti tempat kerja berfungsi sebagai alat identifikasi, yang mempermudah orang lain untuk mengenal dan menyapa dengan benar
+
 ## Kategori: Media Promosi
 
 ### Banner Indoor/Outdoor (Cetak Banner & Spanduk Custom Outdoor/Indoor per Meter)
 - URL Produk: https://idcardlampung.com/product/banner-indooroutdoor
 - SKU: TG-11
 - Kategori: Media Promosi
-- Rentang Harga: Rp 16.000 s/d Rp 18.000 / m²
+- Rentang Harga: Rp 16.000 s/d Rp 20.000 / m²
 - Estimasi Pengerjaan: 3-5 hari
 - Deskripsi: Jasa cetak banner dan spanduk flexi ukuran bebas per meter persegi untuk media promosi toko, backdrop panggung, spanduk kegiatan kampus, dan pengumuman instansi. Warna cerah tahan cuaca panas dan hujan, melayani area Bandar Lampung (Sukarame, Rajabasa, Kedaton, Tanjung Karang), Way Hui, hingga pengiriman ke Kota Metro dan Natar.
 - Tabel Harga Grosir per Kuantitas:
@@ -285,7 +293,7 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
 - URL Produk: https://idcardlampung.com/product/poster-a3
 - SKU: TG-14
 - Kategori: Media Promosi
-- Rentang Harga: Rp 18.000 s/d Rp 25.000 / pcs
+- Rentang Harga: Rp 12.000 s/d Rp 25.000 / pcs
 - Estimasi Pengerjaan: 1-2 hari
 - Deskripsi: Cetak poster ukuran A3 pada kertas art carton/art paper tebal dengan resolusi tinggi dan warna akurat. Cocok untuk poster edukasi sekolah, promosi menu kafe, dekorasi dinding, serta publikasi event kampus di Bandar Lampung, Rajabasa, Sukarame, dan Way Hui.
 - Tabel Harga Grosir per Kuantitas:
@@ -293,6 +301,18 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - Pesan 4 - 24 pcs: Rp 22.000 / pcs
   - Pesan 25 - 99 pcs: Rp 20.000 / pcs
   - Pesan >= 100 pcs: Rp 18.000 / pcs
+
+### Poster dan Brosur Leaflet A4
+- URL Produk: https://idcardlampung.com/product/poster-dan-brosur-leaflet-a4
+- SKU: TG-2203
+- Kategori: Media Promosi
+- Rentang Harga: Rp 4.000 s/d Rp 7.000 / pcs
+- Estimasi Pengerjaan: 2-3 hari
+- Deskripsi: Leaflet A4 adalah media promosi cetak yang sangat berguna untuk media edukasi, media promosi, dan media penyampaikan informasi penting kepada masyarakat seperti progja KKN. Leaflet biasanya hanya terdiri dari satu lembar kertas berbahan artpaper yang dilipat menjadi dua atau tiga bagian tanpa dijilid
+- Tabel Harga Grosir per Kuantitas:
+  - Pesan 1 - 10 pcs: Rp 7.000 / pcs
+  - Pesan 11 - 39 pcs: Rp 6.000 / pcs
+  - Pesan >= 40 pcs: Rp 4.000 / pcs
 
 ## Kategori: Merchandise
 
@@ -345,6 +365,15 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - Pesan 4 - 24 pcs: Rp 7.000 / pcs
   - Pesan 25 - 99 pcs: Rp 6.000 / pcs
   - Pesan >= 100 pcs: Rp 5.000 / pcs
+
+### Pin Kait Akrilik
+- URL Produk: https://idcardlampung.com/product/pin-kait-akrilik
+- SKU: TG-2212
+- Kategori: Merchandise
+- Rentang Harga: Rp 8.000 / pcs
+- Estimasi Pengerjaan: 2-3 hari
+- Deskripsi: Pin Custom Akrilik Panitia
+Kehadirannya menjadi atribut yang dapat memperkuat kebanggaan, percaya diri, serta rasa memiliki dalam berbagai kegiatan internal panitia
 
 ### Ganci 3 cm (Cetak Gantungan Kunci (Ganci) Bulat 3 cm Murah)
 - URL Produk: https://idcardlampung.com/product/ganci-3-cm
@@ -416,11 +445,11 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - Pesan 25 - 99 pcs: Rp 22.000 / pcs
   - Pesan >= 100 pcs: Rp 19.000 / pcs
 
-### Tumbler Custom (Cetak Tumbler Custom Botol Minum Souvenir Kantor & Event)
-- URL Produk: https://idcardlampung.com/product/tumbler-custom
+### Tumbler Plastik Custom (Insert Paper) (Cetak Tumbler Custom Botol Minum Souvenir Kantor & Event)
+- URL Produk: https://idcardlampung.com/product/tumbler-plastik-custom-insert-paper
 - SKU: TG-21
 - Kategori: Merchandise
-- Rentang Harga: Rp 20.000 s/d Rp 28.000 / pcs
+- Rentang Harga: Rp 20.000 s/d Rp 33.000 / pcs
 - Estimasi Pengerjaan: 3-5 hari
 - Deskripsi: Cetak tumbler botol minum travel custom desain penuh mengelilingi botol, ringan dibawa dan tahan suhu panas maupun dingin. Banyak dipesan untuk seminar kit instansi, hadiah pelanggan, dan souvenir KKN di Bandar Lampung, Sukarame, Rajabasa, serta Lampung Selatan.
 - Tabel Harga Grosir per Kuantitas:
@@ -463,103 +492,100 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - 10 mm: Rp 200.000 / pcs
   - 20 mm: Rp 285.000 / pcs
 
+### Plakat Kayu Premium Gold
+- URL Produk: https://idcardlampung.com/product/plakat-kayu-premium-gold
+- SKU: TG-2201
+- Kategori: Merchandise
+- Rentang Harga: Rp 115.000 s/d Rp 125.000 / pcs
+- Estimasi Pengerjaan: 3-5
+- Deskripsi: Plakat kayu premium gold apresiasi pembicara untuk acara resmi. Identitas instansi, logo acara,  serta keterangan nama pembicara ditampilkan secara jelas sehingga plakat terasa lebih personal dan relevan dengan momentum pemberian.  Satu Paket souvenir ini sudah include Plakat kayu dan box
+
+### Tumbler Non Led
+- URL Produk: https://idcardlampung.com/product/tumbler-non-led
+- SKU: TG-2204
+- Kategori: Merchandise
+- Rentang Harga: Rp 69.000 s/d Rp 75.000 / pcs
+- Estimasi Pengerjaan: 2-5 hari
+- Deskripsi: TUMBLER STAINLESS NONLED 
+Bisa custom promosi perusahaan, promosi event, serta untuk pekerja kantoran
+Spesifikasi Tumbler
+Bahan : Termos Stainless Steel 500ml
+Ukuran : Diameter 6.5cm, Tinggi 22cm
+sudah termasuk cetakan UV full warna dan grafirserta sudah dapat box
+
+### Plastik Klip
+- URL Produk: https://idcardlampung.com/product/plastik-klip
+- SKU: TG-2215
+- Kategori: Merchandise
+- Rentang Harga: Rp 25.000 / pak
+- Estimasi Pengerjaan: Stock Ready
+- Deskripsi: Plastik packing ganci dan pin
+
+### Tas Spunbond/Totebag
+- URL Produk: https://idcardlampung.com/product/tas-spunbondtotebag
+- SKU: TG-2216
+- Kategori: Merchandise
+- Rentang Harga: Rp 9.000 s/d Rp 11.000 / pcs
+- Estimasi Pengerjaan: 1-2 hari
+- Deskripsi: Sudah termasuk sablon custom full warna
+
 ## Kategori: Papan Bunga
 
-### Papan Bunga Kecil - Pink Purple Gradient #PKK1 (Papan Bunga Akrilik Meja Mini Pink Purple #PKK1)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-kecil-pink-purple-gradient-pkk1
-- SKU: TG-1001
+### Papan Akrilik Jumbo Biru #PK02
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-biru-pk02
+- SKU: TG-2209
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 60.000 s/d Rp 65.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Papan bunga akrilik meja ukuran kecil kode #PKK1 bertema gradasi pink-ungu dengan hiasan bunga artificial dan kupu-kupu cantik. Hadiah kekinian awet dipajang untuk ucapan selamat sidang skripsi, wisuda, ulang tahun, dan grand opening toko di Bandar Lampung, Rajabasa, Sukarame, Kedaton, serta Kota Metro.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 65.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 63.000 / pcs
-  - Pesan >= 5 pcs: Rp 60.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: 
 
-### Papan Bunga Kecil - Bunga Matahari Mini #PKK3 (Papan Bunga Akrilik Mini Bunga Matahari & Anggrek #PKK3)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-kecil-bunga-matahari-mini-pkk3
-- SKU: TG-1002
+### Papan Akrilik Jumbo Hitam Cembung Mirror A1
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-hitam-cembung-mirror-a1
+- SKU: TG-2210
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 60.000 s/d Rp 65.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik meja kode #PKK3 berhias rangkaian bunga matahari mini dan anggrek putih ceria, custom nama dan foto. Cocok untuk kado wisuda kampus Unila, ITERA, UIN Raden Intan, Malahayati, maupun ucapan selamat pembukaan usaha di Bandar Lampung dan Metro.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 65.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 63.000 / pcs
-  - Pesan >= 5 pcs: Rp 60.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan Akrlik Cembung Mirror A1 Warna Hitam
 
-### Papan Bunga Kecil - Pink Gold Tropical #PKK5 (Papan Bunga Akrilik Mini Pink Gold Tropical #PKK5)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-kecil-pink-gold-tropical-pkk5
-- SKU: TG-1003
+### Papan Akrilik Jumbo Pink Cembung Mirror A2
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-pink-cembung-mirror-a2
+- SKU: TG-2211
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 60.000 s/d Rp 65.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Papan bunga akrilik meja kode #PKK5 bernuansa pink gold tropical elegan dengan teks ucapan custom sesuai pesanan. Pilihan kado estetik pengganti karangan bunga konvensional untuk area Bandar Lampung, Tanjung Karang, Teluk Betung, Natar, dan sekitarnya.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 65.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 63.000 / pcs
-  - Pesan >= 5 pcs: Rp 60.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan Akrlik Cembung Mirror A2 Warna Pink
 
-### Papan Bunga - Plakat Bunga Anggrek Biru #PKB2 (Plakat Papan Bunga Akrilik Anggrek Biru Moonlight #PKB2)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-plakat-bunga-anggrek-biru-pkb2
-- SKU: TG-1004
+### Papan Akrilik Jumbo Biru #PK01
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-biru-pk01
+- SKU: TG-2206
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 65.000 s/d Rp 70.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik eksklusif kode #PKB2 dengan rangkaian anggrek biru moonlight mewah dan dudukan stabil. Sangat cocok untuk hadiah kelulusan, promosi jabatan, peresmian kantor, dan apresiasi relasi bisnis di Bandar Lampung maupun Kota Metro.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 70.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 68.000 / pcs
-  - Pesan >= 5 pcs: Rp 65.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan bunga akrilik Jumbo biru untuk menemani seminarmu
 
-### Papan Bunga - Plakat Bulat Anggrek Putih #PKB1 (Plakat Papan Bunga Akrilik Bulat Anggrek Putih #PKB1)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-plakat-bulat-anggrek-putih-pkb1
-- SKU: TG-1005
+### Papan Bunga Akrilik Pink
+- URL Produk: https://idcardlampung.com/product/papan-bunga-akrilik-pink
+- SKU: TG-2207
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 65.000 s/d Rp 70.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik bentuk bulat kode #PKB1 berpadu hiasan anggrek putih bersih yang anggun. Cocok untuk hadiah pernikahan, pertunangan, wisuda, maupun ucapan pembukaan klinik/kafe di Bandar Lampung, Kedaton, Kemiling, dan Pesawaran.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 70.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 68.000 / pcs
-  - Pesan >= 5 pcs: Rp 65.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan bunga akrilik Jumbo Pink untuk menemani seminarmu
 
-### Papan Bunga - Pink Mawar Love #PKK6 (Plakat Papan Bunga Akrilik Pink Mawar Love #PKK6)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-pink-mawar-love-pkk6
-- SKU: TG-1006
+### Papan Akrilik Jumbo Hijau #PK01
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-hijau-pk01
+- SKU: TG-2208
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 65.000 s/d Rp 70.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik kode #PKK6 berwarna pink lembut dengan aksen bunga mawar dan ornamen hati di tepi. Favorit untuk kado sidang kompre, wisuda, ulang tahun, dan anniversary dengan pengerjaan cepat 1-2 hari di Bandar Lampung, Way Hui, dan Kota Metro.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 70.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 68.000 / pcs
-  - Pesan >= 5 pcs: Rp 65.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan Bunga Akrilik Jumbo Hijau #PK01 sangat cocok untuk menemani seminarmu ditambah lagi foto bareng doi atau sahabat sejatimu
 
-### Papan Bunga - Hitam Emas Mewah #PKK7 (Plakat Papan Bunga Akrilik Hitam Emas Mewah #PKK7)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-hitam-emas-mewah-pkk7
-- SKU: TG-1007
+### Papan Akrilik Jumbo Merah
+- URL Produk: https://idcardlampung.com/product/papan-akrilik-jumbo-merah
+- SKU: TG-2205
 - Kategori: Papan Bunga
-- Rentang Harga: Rp 65.000 s/d Rp 70.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik kode #PKK7 dengan perpaduan warna hitam dan emas monokromatik yang maskulin serta berkelas. Pilihan tepat untuk ucapan pelantikan pejabat, promosi pimpinan, grand opening bisnis, dan wisuda di Bandar Lampung, Tanjung Karang, serta Pringsewu.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 70.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 68.000 / pcs
-  - Pesan >= 5 pcs: Rp 65.000 / pcs
-
-### Papan Bunga - Biru Muda Mawar #PKK4 (Plakat Papan Bunga Akrilik Biru Muda Mawar #PKK4)
-- URL Produk: https://idcardlampung.com/product/papan-bunga-biru-muda-mawar-pkk4
-- SKU: TG-1008
-- Kategori: Papan Bunga
-- Rentang Harga: Rp 65.000 s/d Rp 70.000 / pcs
-- Estimasi Pengerjaan: 1-2 hari
-- Deskripsi: Plakat papan bunga akrilik kode #PKK4 bernuansa pastel biru muda sejuk dengan dekorasi mawar di sekeliling tepi akrilik. Cocok untuk hadiah sempro, sidang akhir, wisuda sekolah/universitas, dan ucapan selamat di Bandar Lampung, Rajabasa, Sukarame, hingga Natar.
-- Tabel Harga Grosir per Kuantitas:
-  - Pesan 1 - 2 pcs: Rp 70.000 / pcs
-  - Pesan 3 - 4 pcs: Rp 68.000 / pcs
-  - Pesan >= 5 pcs: Rp 65.000 / pcs
+- Rentang Harga: Rp 80.000 s/d Rp 120.000 / pcs
+- Estimasi Pengerjaan: 1-3 hari
+- Deskripsi: Papan bunga akrilik Jumbo merah untuk menemani seminarmu
 
 ## Kategori: Jasa & Layanan
 
@@ -630,6 +656,15 @@ ID Card Lampung (Tidurlah Grafika) menyediakan layanan cetak cepat dan presisi u
   - Pesan 51 - 99 pcs: Rp 115.000 / pcs
   - Pesan 100 - 299 pcs: Rp 110.000 / pcs
   - Pesan >= 300 pcs: Rp 105.000 / pcs
+
+### Baju Polo Bahan Pique
+- URL Produk: https://idcardlampung.com/product/baju-polo-bahan-pique
+- SKU: TG-2214
+- Kategori: Apparel
+- Rentang Harga: Rp 85.000 / pcs
+- Estimasi Pengerjaan: 5-7 hari
+- Deskripsi: Baju Polo Bahan Piqe
+sudah termsuk jasa sablon 3 titik, untuk bordir ada penambahan biaya 15k
 
 ---
 
