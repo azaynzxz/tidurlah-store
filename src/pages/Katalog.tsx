@@ -1,11 +1,20 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
-import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
-import ChatBot from "@/components/ChatBot";
-import { AnimatedElement } from "@/components/animations/AnimatedElement";
-import { Image as ImageIcon, Share2, Check } from "lucide-react";
+import { Image as ImageIcon, Share2, Check, ArrowUpRight, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import SEO from "@/components/common/SEO";
+import PublicHeader from "@/components/common/PublicHeader";
+import { BetaFooter } from "@/components/beta/BetaFooter";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+} from "@/components/ui/dialog";
+import { SITE_ORIGIN } from "@/utils/productSeo";
 
 interface GalleryImage {
   id: number;
@@ -15,325 +24,368 @@ interface GalleryImage {
   description?: string;
 }
 
-const Katalog = () => {
+export default function Katalog() {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [selectedImage, setSelectedImage] = useState<number | null>(null);
+  const [selectedImageId, setSelectedImageId] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
   const [linkCopied, setLinkCopied] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const galleryRef = useRef<HTMLDivElement>(null);
 
-  // Load images from JSON file
+  // Fetch images from katalog.json
   useEffect(() => {
+    let isMounted = true;
     const fetchImages = async () => {
       try {
-        const response = await fetch('/katalog.json');
+        const response = await fetch("/katalog.json");
         const data = await response.json();
-        setGalleryImages(data.images || []);
-        setIsLoading(false);
+        if (isMounted) {
+          setGalleryImages(data.images || []);
+          setIsLoading(false);
+        }
       } catch (error) {
-        console.error("Failed to fetch katalog images:", error);
-        toast.error("Gagal memuat katalog. Silakan coba lagi nanti.");
-        setIsLoading(false);
+        console.error("Gagal memuat katalog:", error);
+        toast.error("Gagal memuat katalog gambar. Silakan coba lagi.");
+        if (isMounted) setIsLoading(false);
       }
     };
     fetchImages();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const categories = ["All", ...Array.from(new Set(galleryImages.map(img => img.category)))];
-  const filteredImages = selectedCategory === "All"
-    ? galleryImages
-    : galleryImages.filter(img => img.category === selectedCategory);
+  const categories = useMemo(
+    () => ["All", ...Array.from(new Set(galleryImages.map((img) => img.category)))],
+    [galleryImages]
+  );
 
-  // Handle URL parameter for deep linking
+  const filteredImages =
+    selectedCategory === "All"
+      ? galleryImages
+      : galleryImages.filter((img) => img.category === selectedCategory);
+
+  // Synchronize URL search params with state
   useEffect(() => {
-    const imageId = searchParams.get('image');
-    const categoryParam = searchParams.get('category');
+    const imageParam = searchParams.get("image");
+    const categoryParam = searchParams.get("category");
 
-    // Set category from URL if present
     if (categoryParam && categories.includes(categoryParam)) {
       setSelectedCategory(categoryParam);
     }
 
-    // Open image modal if image ID is in URL
-    if (imageId) {
-      const id = parseInt(imageId, 10);
-      const image = galleryImages.find(img => img.id === id);
-      if (image) {
-        setSelectedImage(id);
-        // Also set category if not already set from URL
-        if (!categoryParam) {
-          setSelectedCategory(image.category);
-        }
+    if (imageParam && galleryImages.length > 0) {
+      const id = parseInt(imageParam, 10);
+      const exists = galleryImages.some((img) => img.id === id);
+      if (exists) {
+        setSelectedImageId(id);
       }
     }
-  }, [searchParams, categories]);
+  }, [searchParams, galleryImages, categories]);
 
-  // Update URL when image is selected
-  const handleImageClick = (imageId: number) => {
-    setSelectedImage(imageId);
-    const image = galleryImages.find(img => img.id === imageId);
-    if (image) {
-      setSearchParams({ image: imageId.toString(), category: image.category });
+  const handleImageClick = (id: number) => {
+    setSelectedImageId(id);
+    const img = galleryImages.find((item) => item.id === id);
+    if (img) {
+      setSearchParams({ image: id.toString(), category: img.category });
     }
   };
 
-  // Handle closing modal and clearing URL
-  const handleCloseModal = () => {
-    setSelectedImage(null);
-    setSearchParams({});
-  };
-
-  // Generate shareable link
-  const generateShareLink = (imageId: number) => {
-    const baseUrl = window.location.origin;
-    return `${baseUrl}/katalog?image=${imageId}`;
-  };
-
-  // Share functionality
-  const handleShare = async (imageId: number, e?: React.MouseEvent) => {
-    if (e) {
-      e.stopPropagation();
+  const handleCloseDialog = (open: boolean) => {
+    if (!open) {
+      setSelectedImageId(null);
+      if (selectedCategory !== "All") {
+        setSearchParams({ category: selectedCategory });
+      } else {
+        setSearchParams({});
+      }
     }
+  };
 
-    const shareUrl = generateShareLink(imageId);
-    const image = galleryImages.find(img => img.id === imageId);
+  const handleCategorySelect = (cat: string) => {
+    setSelectedCategory(cat);
+    if (cat === "All") {
+      setSearchParams({});
+    } else {
+      setSearchParams({ category: cat });
+    }
+  };
+
+  const handleShare = async (id: number, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const shareUrl = `${SITE_ORIGIN}/katalog?image=${id}`;
+    const img = galleryImages.find((item) => item.id === id);
 
     if (navigator.share) {
       try {
         await navigator.share({
-          title: image?.title || 'Katalog Desain',
-          text: `Lihat desain ${image?.title} di TIDURLAH STORE`,
+          title: img?.title || "Katalog Desain Tidurlah Grafika",
+          text: `Inspirasi desain: ${img?.title} di Tidurlah Store`,
           url: shareUrl,
         });
-      } catch (err) {
-        // User cancelled or error
-        console.log('Share cancelled');
+      } catch {
+        // User dismissed share dialog
       }
     } else {
-      // Fallback: copy to clipboard
-      navigator.clipboard.writeText(shareUrl);
-      setLinkCopied(true);
-      toast.success("Link berhasil disalin!");
-      setTimeout(() => setLinkCopied(false), 2000);
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        setLinkCopied(true);
+        toast.success("Link desain berhasil disalin ke clipboard!");
+        setTimeout(() => setLinkCopied(false), 2000);
+      } catch {
+        toast.error("Gagal menyalin link.");
+      }
     }
   };
 
+  const activeImage = galleryImages.find((img) => img.id === selectedImageId);
+  const pageUrl = `${SITE_ORIGIN}/katalog`;
+
+  const jsonLdGallery = {
+    "@context": "https://schema.org",
+    "@type": "CollectionPage",
+    name: "Katalog Desain & Portofolio Karya - Tidurlah Grafika",
+    description: "Koleksi portofolio desain kartu identitas PVC, lanyard sublimasi, plakat akrilik, dan merchandise kustom.",
+    url: pageUrl,
+    hasPart: filteredImages.slice(0, 12).map((img) => ({
+      "@type": "ImageObject",
+      name: img.title,
+      contentUrl: `${SITE_ORIGIN}${img.src}`,
+      caption: img.category,
+    })),
+  };
+
   return (
-    <div className="min-h-screen relative overflow-hidden bg-background flex flex-col page-transition">
-      {/* Universal Header */}
-      <Header
-        cartItemsCount={0}
-        onCartClick={() => window.location.href = '/'}
-        onSearch={() => { }}
-        showSearch={false}
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/10 selection:text-primary">
+      <SEO
+        title="Katalog Desain & Portofolio Karya Cetak"
+        description="Jelajahi inspirasi portofolio desain ID Card, tali lanyard sublimasi, stiker, plakat akrilik, dan merchandise resmi karya Tidurlah Grafika."
+        keywords="katalog desain id card, contoh lanyard lampung, portofolio percetakan, desain plakat akrilik bandar lampung"
+        url={pageUrl}
+        jsonLd={jsonLdGallery}
       />
 
-      {/* Main Content */}
-      <div className="flex-1 py-8 px-2 flex flex-col">
-        {/* Animated gradient background */}
-        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-background via-primary/5 to-secondary/10" />
-        <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_50%_120%,rgba(120,119,198,0.1),transparent_50%)]" />
+      {/* Shared Clean Navigation Header */}
+      <PublicHeader sectionName="Katalog" sectionHref="/katalog" />
 
-        {/* Header */}
-        <AnimatedElement direction="up" delay={200} duration={300}>
-          <header className="text-center mb-8">
-            <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 tracking-tight">
-              Katalog Desain
-            </h1>
-            <p className="text-muted-foreground text-sm md:text-base max-w-2xl mx-auto">
-              Lihat koleksi desain kami yang telah dibuat untuk berbagai kebutuhan
-            </p>
-          </header>
-        </AnimatedElement>
-
-        {/* Category Filter */}
-        <AnimatedElement direction="up" delay={300} duration={300}>
-          <div className="container max-w-7xl mx-auto mb-6">
-            <div className="flex flex-wrap justify-center gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => {
-                    setSelectedCategory(category);
-                    // Update URL when category changes (but keep image if selected)
-                    const imageId = searchParams.get('image');
-                    if (imageId) {
-                      if (category === "All") {
-                        setSearchParams({ image: imageId });
-                      } else {
-                        setSearchParams({ image: imageId, category });
-                      }
-                    } else {
-                      if (category === "All") {
-                        setSearchParams({});
-                      } else {
-                        setSearchParams({ category });
-                      }
-                    }
-                  }}
-                  className={`px-4 py-2 rounded-full text-sm font-medium transition-all duration-200 ${selectedCategory === category
-                    ? "bg-[#FF5E01] text-white shadow-md"
-                    : "bg-white/60 backdrop-blur-sm text-foreground/80 border border-border/50 hover:bg-white/80"
-                    }`}
-                >
-                  {category}
-                </button>
-              ))}
-            </div>
+      {/* Main Content Area */}
+      <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full space-y-8">
+        
+        {/* Header & Description */}
+        <div className="space-y-3 text-center sm:text-left">
+          <div className="flex items-center justify-center sm:justify-start gap-2">
+            <Badge variant="outline" className="text-xs font-mono font-medium">
+              Galeri Portofolio
+            </Badge>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground">
+              {isLoading ? "Memuat..." : `${filteredImages.length} Desain`}
+            </span>
           </div>
-        </AnimatedElement>
 
-        {/* Gallery Grid - Pinterest Style Masonry */}
-        <AnimatedElement direction="up" delay={400} duration={300}>
-          <div className="container max-w-7xl mx-auto flex-1 pb-8 flex flex-col min-h-[400px]">
-            {isLoading ? (
-              <div className="text-center py-12">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#FF5E01] mx-auto mb-4"></div>
-                <p className="text-muted-foreground">Memuat katalog...</p>
-              </div>
-            ) : (
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-foreground">
+            Katalog Desain & Karya Produksi
+          </h1>
+
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Kumpulan referensi dan hasil cetak ID Card PVC, tali lanyard sublimasi, banner, serta merchandise kustom yang telah kami selesaikan untuk berbagai instansi dan komunitas.
+          </p>
+        </div>
+
+        {/* Category Filters Bar */}
+        <div className="flex flex-wrap items-center gap-1.5 pb-2 border-b border-border">
+          {categories.map((cat) => {
+            const isSelected = selectedCategory === cat;
+            return (
+              <Button
+                key={cat}
+                type="button"
+                variant={isSelected ? "default" : "outline"}
+                size="sm"
+                onClick={() => handleCategorySelect(cat)}
+                className="h-8 text-xs rounded-md transition-colors"
+              >
+                {cat}
+              </Button>
+            );
+          })}
+        </div>
+
+        {/* Masonry Grid */}
+        {isLoading ? (
+          <div className="columns-2 sm:columns-3 lg:columns-4 gap-4 space-y-4">
+            {Array.from({ length: 8 }).map((_, i) => (
               <div
-                ref={galleryRef}
-                className="columns-2 md:columns-3 lg:columns-4"
-                style={{
-                  columnFill: 'balance',
-                  columnGap: '1rem'
-                }}
-              >
-                {filteredImages.map((image) => (
-                  <div
-                    key={image.id}
-                    className="group relative cursor-pointer overflow-hidden rounded-lg shadow-sm hover:shadow-lg transition-all duration-300 mb-3 lg:mb-4 break-inside-avoid"
-                    onClick={() => handleImageClick(image.id)}
-                  >
-                    {/* Image Container - Natural Aspect Ratio */}
-                    <div className="relative w-full bg-gray-100">
-                      <img
-                        src={image.src}
-                        alt={image.title}
-                        className="w-full h-auto object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          // Show placeholder if image doesn't exist
-                          const target = e.target as HTMLImageElement;
-                          const placeholderUrl = `https://placehold.co/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
-                          if (!target.src.includes('placehold.co')) {
-                            target.src = placeholderUrl;
-                          }
-                        }}
-                        onLoad={(e) => {
-                          // Ensure image maintains aspect ratio
-                          const target = e.target as HTMLImageElement;
-                          target.style.height = 'auto';
-                        }}
-                      />
-                      {/* Overlay on hover */}
-                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex items-center justify-center pointer-events-none">
-                        <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center gap-2">
-                          <ImageIcon className="h-8 w-8 text-white" />
-                        </div>
-                      </div>
-                      {/* Share button */}
-                      <button
-                        onClick={(e) => handleShare(image.id, e)}
-                        className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm hover:bg-background p-2 rounded-full transition-all opacity-0 group-hover:opacity-100 z-10"
-                        title="Bagikan desain"
-                      >
-                        <Share2 className="h-4 w-4 text-[#FF5E01]" />
-                      </button>
-                    </div>
-                    {/* Title */}
-                    <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/60 to-transparent p-2">
-                      <p className="text-white text-xs font-medium truncate">{image.title}</p>
-                      <p className="text-white/70 text-xxs">{image.category}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Empty State */}
-            {!isLoading && filteredImages.length === 0 && (
-              <div className="text-center py-12 flex-1 flex items-center justify-center">
-                <p className="text-muted-foreground">Tidak ada desain ditemukan untuk kategori ini.</p>
-              </div>
-            )}
-            {/* Spacer to push footer down when content is short */}
-            <div className="flex-1 min-h-[300px]"></div>
+                key={i}
+                className="rounded-lg border border-border bg-muted/40 animate-pulse break-inside-avoid"
+                style={{ height: `${180 + (i % 3) * 60}px` }}
+              />
+            ))}
           </div>
-        </AnimatedElement>
-      </div>
+        ) : filteredImages.length > 0 ? (
+          <div
+            className="columns-2 sm:columns-3 lg:columns-4 gap-4"
+            style={{ columnFill: "balance" }}
+          >
+            {filteredImages.map((image) => (
+              <div
+                key={image.id}
+                onClick={() => handleImageClick(image.id)}
+                className="group relative mb-4 break-inside-avoid rounded-lg border border-border bg-card overflow-hidden cursor-pointer hover:border-foreground/40 transition-all duration-200"
+              >
+                {/* Image View */}
+                <div className="relative w-full bg-muted/20">
+                  <img
+                    src={image.src}
+                    alt={image.title}
+                    loading="lazy"
+                    className="w-full h-auto object-cover group-hover:scale-102 transition-transform duration-300"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      if (!target.src.includes("web-preview.jpg")) {
+                        target.src = "/product-image/web-preview.jpg";
+                      }
+                    }}
+                  />
+                  {/* Share button overlay */}
+                  <button
+                    type="button"
+                    onClick={(e) => handleShare(image.id, e)}
+                    className="absolute top-2 right-2 p-1.5 rounded-md bg-background/90 text-foreground border border-border/60 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-background"
+                    title="Bagikan tautan desain"
+                  >
+                    <Share2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
 
-      {/* Image Modal */}
-      {selectedImage && (
-        <div
-          className="fixed inset-0 bg-black/80 z-[99999] flex items-center justify-center p-4"
-          onClick={handleCloseModal}
-        >
-          <div className="relative max-w-4xl w-full max-h-[90vh]" onClick={(e) => e.stopPropagation()}>
-            <div className="absolute -top-12 right-0 flex items-center gap-2">
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleShare(selectedImage, e);
-                }}
-                className="bg-white/90 hover:bg-white text-[#FF5E01] px-4 py-2 rounded-lg flex items-center gap-2 transition-colors text-sm font-medium"
-                title="Bagikan link desain"
-              >
-                {linkCopied ? (
-                  <>
-                    <Check className="h-4 w-4" />
-                    Tersalin!
-                  </>
-                ) : (
-                  <>
-                    <Share2 className="h-4 w-4" />
-                    Bagikan
-                  </>
-                )}
-              </button>
-              <button
-                onClick={handleCloseModal}
-                className="bg-white/90 hover:bg-white text-gray-700 transition-colors text-2xl font-bold w-10 h-10 rounded-full flex items-center justify-center"
-                title="Tutup"
-              >
-                ×
-              </button>
+                {/* Caption Bar */}
+                <div className="p-3 space-y-1">
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="font-semibold text-xs text-foreground truncate group-hover:underline">
+                      {image.title}
+                    </h3>
+                    <Badge variant="secondary" className="text-[10px] px-1.5 py-0 shrink-0 font-normal">
+                      {image.category}
+                    </Badge>
+                  </div>
+                  {image.description && (
+                    <p className="text-[11px] text-muted-foreground line-clamp-1">
+                      {image.description}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          /* Clean Empty State */
+          <div className="rounded-lg border border-border bg-card p-12 text-center space-y-3">
+            <div className="mx-auto w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+              <ImageIcon className="w-5 h-5" />
             </div>
-            <img
-              src={galleryImages.find(img => img.id === selectedImage)?.src || ""}
-              alt={galleryImages.find(img => img.id === selectedImage)?.title || ""}
-              className="w-full h-auto max-h-[90vh] object-contain rounded-lg"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                const image = galleryImages.find(img => img.id === selectedImage);
-                if (image) {
-                  const placeholderUrl = `https://placehold.co/600x800/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
-                  target.src = placeholderUrl;
-                }
-              }}
-            />
-            <div className="mt-4 text-center">
-              <h3 className="text-white text-xl font-bold">
-                {galleryImages.find(img => img.id === selectedImage)?.title}
+            <div className="space-y-1">
+              <h3 className="text-sm font-semibold text-foreground">
+                Tidak Ada Desain Ditemukan
               </h3>
-              <p className="text-white/70 text-sm">
-                {galleryImages.find(img => img.id === selectedImage)?.category}
+              <p className="text-xs text-muted-foreground">
+                Tidak ada portofolio yang cocok dengan kategori &quot;{selectedCategory}&quot;.
               </p>
             </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleCategorySelect("All")}
+              className="gap-1.5 text-xs"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Tampilkan Semua Desain</span>
+            </Button>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Footer */}
-      <Footer />
+      </main>
 
-      {/* Chat Bot */}
-      <ChatBot />
+      {/* Detail Dialog Modal (Shadcn Dialog) */}
+      <Dialog
+        open={selectedImageId !== null}
+        onOpenChange={handleCloseDialog}
+      >
+        <DialogContent className="max-w-3xl p-5 space-y-4">
+          {activeImage && (
+            <>
+              <DialogHeader className="space-y-1">
+                <div className="flex items-center gap-2">
+                  <Badge variant="secondary" className="text-xs">
+                    {activeImage.category}
+                  </Badge>
+                  <span className="text-xs text-muted-foreground font-mono">
+                    ID: #{activeImage.id}
+                  </span>
+                </div>
+                <DialogTitle className="text-lg font-bold text-foreground">
+                  {activeImage.title}
+                </DialogTitle>
+                <DialogDescription className="text-xs text-muted-foreground">
+                  {activeImage.description || "Inspirasi portofolio desain dari Tidurlah Grafika."}
+                </DialogDescription>
+              </DialogHeader>
+
+              {/* Full Image Preview */}
+              <div className="rounded-lg border border-border bg-muted/20 overflow-hidden flex items-center justify-center p-2 max-h-[60vh]">
+                <img
+                  src={activeImage.src}
+                  alt={activeImage.title}
+                  className="max-h-[55vh] w-auto object-contain rounded"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    if (!target.src.includes("web-preview.jpg")) {
+                      target.src = "/product-image/web-preview.jpg";
+                    }
+                  }}
+                />
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 border-t border-border">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleShare(activeImage.id)}
+                  className="w-full sm:w-auto text-xs gap-1.5"
+                >
+                  {linkCopied ? (
+                    <>
+                      <Check className="w-3.5 h-3.5 text-foreground" />
+                      <span>Link Tersalin!</span>
+                    </>
+                  ) : (
+                    <>
+                      <Share2 className="w-3.5 h-3.5" />
+                      <span>Bagikan Tautan</span>
+                    </>
+                  )}
+                </Button>
+
+                <a
+                  href={`https://wa.me/6285172157808?text=Halo%20Tidurlah%20Grafika,%20saya%20tertarik%20dengan%20desain%20${encodeURIComponent(
+                    activeImage.title
+                  )}%20(Kategori:%20${encodeURIComponent(activeImage.category)})`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 rounded-md bg-foreground px-4 py-2 text-xs font-medium text-background hover:bg-foreground/90 transition-colors"
+                >
+                  <span>Pesan Desain Ini via WhatsApp</span>
+                  <ArrowUpRight className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Standard Minimalist Footer */}
+      <BetaFooter />
     </div>
   );
-};
-
-export default Katalog;
-
+}

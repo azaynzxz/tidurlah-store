@@ -1,15 +1,31 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import SEO from "@/components/common/SEO";
-import { Briefcase, MapPin, Clock, GraduationCap, CheckCircle, XCircle, Share2, ArrowRight, Mail, ExternalLink } from "lucide-react";
-import Header from "@/components/common/Header";
-import Footer from "@/components/common/Footer";
-import ApplyButton from "@/components/ApplyButton";
-import ApplicationRequirements from "@/components/ApplicationRequirements";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import {
+  Briefcase,
+  MapPin,
+  Clock,
+  GraduationCap,
+  CheckCircle2,
+  XCircle,
+  Share2,
+  ArrowRight,
+  Search,
+  RotateCcw,
+  Sparkles,
+  Users,
+  Compass,
+} from "lucide-react";
 import { toast } from "sonner";
-import { StaggeredContainer } from "@/components/animations/AnimatedElement";
+import SEO from "@/components/common/SEO";
+import PublicHeader from "@/components/common/PublicHeader";
+import { BetaFooter } from "@/components/beta/BetaFooter";
+import { BlogSpecTable, BlogCallout, BlogSpecItem } from "@/components/blog";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import ApplyButton from "@/components/ApplyButton";
+import { SITE_ORIGIN } from "@/utils/productSeo";
 
-// Job data structure
 interface Job {
   id: string;
   title: string;
@@ -28,662 +44,621 @@ const jobs: Job[] = [
   {
     id: "desainer-grafis",
     title: "Desainer Grafis",
-    location: "Remote\n(Work from Home)",
-    workHours: "8 jam/hari\n(09.00 - 17.00)",
+    location: "Remote (Work from Home)",
+    workHours: "8 jam/hari (09.00 - 17.00 WIB)",
     education: "SMA/SMK Sederajat",
     workType: "Remote",
-    description: "Posisi ini bertanggung jawab untuk semua kebutuhan desain grafis Tidurlah Store, khususnya desain layout cetak dan print media untuk ID Card, Merchandise, dan produk cetak lainnya. Posisi Remote (Work from Home) - dapat bekerja dari mana saja.",
+    description: "Posisi ini bertanggung jawab untuk seluruh kebutuhan layout desain cetak dan print media di Tidurlah Store, khususnya ID Card PVC, Lanyard Sublimasi, Plakat Akrilik, dan Merchandise. Posisi bekerja secara remote dari rumah.",
     responsibilities: [
-      "Membuat desain ID Card dan Merchandise (Ganci, Gelas Mug, Tumbler, Banner dll.)",
-      "Menyiapkan dan mengedit file desain dari klien agar siap cetak",
-      "Memasukkan desain ke dalam mockup untuk approval",
-      "Berkolaborasi dengan tim admin untuk memahami kebutuhan klien"
+      "Membuat layout desain ID Card PVC dan merchandise custom (gantungan kunci akrilik, mug sublimasi, tumbler, banner promosi).",
+      "Menyiapkan, memeriksa resolusi, dan menyelaraskan file desain dari pelanggan agar siap masuk antrean cetak mesin.",
+      "Membuat mockup visual 2D/3D produk untuk persetujuan (ACC) pelanggan sebelum proses produksi.",
+      "Berkolaborasi aktif dengan tim admin dan operator mesin untuk memastikan presisi warna dan margin potong."
     ],
     qualifications: [
-      "Portofolio yang menunjukkan kemampuan layout design yang kuat (wajib dilampirkan)",
-      "Memahami color theory untuk keperluan printing",
-      "Mahir menggunakan CorelDRAW, Canva, dan/atau Photoshop",
-      "Kreatif, komunikatif, dan dapat bekerja sesuai deadline",
-      "Memiliki laptop/PC pribadi dan koneksi internet yang stabil",
-      "Dapat bekerja secara mandiri dan disiplin dalam mengelola waktu kerja remote"
+      "Portofolio desain yang menunjukkan keahlian layout design kuat dan rapi (wajib dilampirkan).",
+      "Memahami color theory untuk kebutuhan cetak digital dan konversi warna RGB ke CMYK.",
+      "Mahir mengoperasikan software grafis seperti CorelDRAW, Adobe Illustrator, Canva, atau Photoshop.",
+      "Disiplin, teliti, komunikatif, dan terbiasa bekerja sesuai target tenggat waktu (deadline).",
+      "Memiliki perangkat laptop/PC kerja pribadi dan koneksi internet yang stabil untuk koordinasi remote."
     ],
     isAvailable: true
   },
   {
     id: "admin-toko",
-    title: "Admin Toko",
-    location: "Lampung",
-    workHours: "8 jam/hari\n(09.00 - 17.00)",
+    title: "Admin Toko & Layanan Pelanggan",
+    location: "Bandar Lampung (Workshop Belwis)",
+    workHours: "8 jam/hari (09.00 - 17.00 WIB)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
-    description: "Anda akan menjadi wajah dan suara dari Tidurlah Store. Posisi ini bertanggung jawab mengelola pesanan, komunikasi dengan pelanggan, dan administrasi umum.",
+    description: "Posisi ini bertanggung jawab mengelola komunikasi pelanggan melalui WhatsApp dan media sosial, menginput data pesanan, menyusun invoice resmi, dan berkoordinasi dengan tim produksi.",
     responsibilities: [
-      "Menerima dan membalas chat/DM/email dari pelanggan dengan ramah dan cepat",
-      "Mencatat dan merekap data pesanan harian",
-      "Berkoordinasi dengan tim produksi mengenai antrian pesanan",
-      "Mengelola stok barang dan bahan baku"
+      "Merespons pesan konsultasi, DM, dan chat pemesanan pelanggan dengan ramah, cepat, dan solutif.",
+      "Mencatat serta merekapitulasi data pesanan harian ke dalam sistem database toko.",
+      "Berkoordinasi dengan divisi produksi terkait jadwal antrean pesanan reguler dan express.",
+      "Melakukan pengecekan ketersediaan bahan baku (PVC, pita lanyard, casing, dan packaging)."
     ],
     qualifications: [
-      "Teliti, terorganisir, dan rapi dalam administrasi",
-      "Dapat berkomunikasi dengan baik dan sopan",
-      "Biasa menggunakan WhatsApp Business, Instagram, dan Spreadsheet (Google Sheets/Excel)",
-      "Jujur dan bertanggung jawab",
-      "Berdomisili di Lampung"
+      "Teliti, terorganisir, dan memiliki kemampuan administrasi dokumen yang rapi.",
+      "Keterampilan komunikasi interpersonal yang santun dan profesional.",
+      "Terbiasa menggunakan WhatsApp Business, Instagram, serta aplikasi spreadsheet (Google Sheets / Excel).",
+      "Jujur, bertanggung jawab, dan bersedia bekerja secara langsung (on-site) di workshop Bandar Lampung."
     ],
     isAvailable: false
   },
   {
     id: "bagian-produksi",
-    title: "Bagian Produksi",
-    location: "Lampung",
-    workHours: "8 jam/hari\n(09.00 - 17.00)",
+    title: "Operator Mesin & Bagian Produksi",
+    location: "Bandar Lampung (Workshop Belwis)",
+    workHours: "8 jam/hari (09.00 - 17.00 WIB)",
     education: "SMA/SMK Sederajat",
     workType: "Full-time",
-    description: "Posisi ini adalah jantung dari bisnis kami. Anda bertanggung jawab untuk mencetak, memotong, dan mengemas semua pesanan ID card dan merchandise sesuai standar kualitas.",
+    description: "Posisi inti di lini produksi yang bertanggung jawab mengoperasikan mesin cetak digital, mesin heat-press sublimasi, mesin pemotong kartu plong, serta pengemasan produk dengan standar quality control ketat.",
     responsibilities: [
-      "Mengoperasikan mesin cetak, press, dan mesin potong (akan ada training)",
-      "Melakukan quality control (pengecekan kualitas) pada setiap produk",
-      "Mengemas (packing) pesanan dengan rapi dan aman",
-      "Memastikan area kerja selalu bersih dan terawat"
+      "Mengoperasikan mesin cetak kartu PVC, mesin press lanyard, dan mesin die-cut potong plong (disediakan pelatihan kerja).",
+      "Melakukan inspeksi quality control menyeluruh pada setiap produk sebelum masuk ke tahap pengemasan.",
+      "Mengemas (packing) pesanan pelanggan secara rapi, aman, dan menyertakan kartu garansi resmi.",
+      "Menjaga kebersihan dan perawatan berkala seluruh peralatan mesin di area workshop."
     ],
     qualifications: [
-      "Sangat teliti dan memperhatikan detail",
-      "Mau belajar mengoperasikan mesin",
-      "Dapat bekerja dengan target dan gesit",
-      "Rajin, jujur, dan memiliki fisik yang sehat",
-      "Berdomisili di Lampung"
+      "Sangat teliti, gesit, dan memiliki perhatian tinggi terhadap detail kerapian fisik produk.",
+      "Memiliki kemauan belajar yang kuat untuk menguasai operasional mesin percetakan digital.",
+      "Dapat bekerja sama dalam tim dan terbiasa dengan ritme kerja berorientasi target waktu.",
+      "Fisik sehat, jujur, rajin, dan berdomisili di wilayah Bandar Lampung atau sekitarnya."
     ],
     isAvailable: false
   },
   {
     id: "reseller",
-    title: "Reseller",
-    location: "Fleksibel\nRemote/Anywhere",
-    workHours: "Fleksibel\n(tidak terikat waktu)",
-    education: "SMA/SMK Sederajat",
-    workType: "Komisi & Insentif",
-    description: "Jadilah mitra bisnis kami dan dapatkan penghasilan tambahan dengan menjual produk-produk Tidurlah Grafika. Cocok untuk mahasiswa, ibu rumah tangga, atau siapa saja yang ingin mendapat penghasilan fleksibel.",
+    title: "Program Kemitraan Reseller & Afiliasi",
+    location: "Fleksibel (Remote / Seluruh Indonesia)",
+    workHours: "Fleksibel (Tanpa Ikatan Jam Kerja)",
+    education: "Terbuka untuk Semua Jenjang",
+    workType: "Kemitraan Komisi",
+    description: "Raih penghasilan tambahan tanpa modal awal dengan menjadi mitra resmi penjualan ID Card, Lanyard, dan merchandise custom Tidurlah Grafika. Sangat cocok bagi mahasiswa, panitia organisasi, freelancer, maupun pelaku usaha kreatif.",
     responsibilities: [
-      "Mempromosikan produk Tidurlah Grafika melalui media sosial atau jaringan pribadi",
-      "Menghubungkan calon pelanggan dengan tim kami",
-      "Membantu proses komunikasi antara pelanggan dan tim produksi",
-      "Memberikan informasi produk yang akurat kepada calon pelanggan"
+      "Mempromosikan portofolio dan katalog produk cetak Tidurlah Grafika kepada relasi kampus, komunitas, sekolah, atau instansi.",
+      "Menjembatani komunikasi kebutuhan spesifikasi pesanan antara calon pelanggan dan tim admin kami.",
+      "Membantu pengumpulan file data mentah nama dan foto peserta dari pelanggan.",
+      "Memberikan informasi spesifikasi dan estimasi harga grosir yang akurat sesuai panduan katalog."
     ],
     qualifications: [
-      "Memiliki smartphone dan akses internet",
-      "Aktif di media sosial (Instagram, WhatsApp, TikTok, Facebook, dll)",
-      "Komunikatif dan senang berinteraksi dengan orang lain",
-      "Jujur dan dapat dipercaya",
-      "Tidak diperlukan modal awal atau stok barang",
-      "Terbuka untuk semua usia dan latar belakang"
+      "Memiliki smartphone dan akses internet aktif.",
+      "Aktif di media sosial (WhatsApp, Instagram, TikTok, LinkedIn, dll.) atau memiliki jaringan komunitas luas.",
+      "Komunikatif, ramah, dan memiliki motivasi wirausaha yang tinggi.",
+      "Tidak memerlukan modal awal maupun kewajiban stok fisik barang di rumah."
     ],
     benefits: [
-      "Komisi menarik: Dapatkan 10-15% komisi dari setiap transaksi yang berhasil",
-      "Harga khusus reseller: Akses harga lebih murah untuk dijual kembali dengan margin keuntungan Anda sendiri",
-      "Bonus penjualan: Bonus tambahan untuk target penjualan bulanan (mencapai 10 transaksi/bulan)",
-      "Gratis materi promosi: Kami sediakan desain promosi digital untuk media sosial Anda",
-      "Sistem pembayaran fleksibel: Transfer langsung setelah transaksi selesai",
-      "Tanpa target minimum: Tidak ada kewajiban penjualan, bekerja sesuai kemampuan Anda",
-      "Pelatihan gratis: Training produk knowledge dan teknik penjualan"
+      "Komisi Menarik: Peroleh komisi 10% – 15% dari setiap nilai transaksi pesanan yang berhasil diselesaikan.",
+      "Akses Harga Reseller: Dapatkan harga pokok khusus untuk dijual kembali dengan margin keuntungan Anda sendiri.",
+      "Bonus Target Bulanan: Reward insentif tambahan untuk pencapaian kuantitas pesanan tertentu setiap bulan.",
+      "Materi Promosi Gratis: Disediakan materi desain konten promosi digital siap posting untuk media sosial Anda.",
+      "Pencairan Cepat: Sistem transfer komisi langsung setelah transaksi pesanan selesai dan diverifikasi.",
+      "Tanpa Target Minimum: Bebas berjualan kapan saja sesuai kapasitas dan waktu luang Anda."
     ],
     isAvailable: true
   }
 ];
 
-const Loker = () => {
+export default function Loker() {
   const navigate = useNavigate();
   const { jobSlug } = useParams();
   const [searchQuery, setSearchQuery] = useState("");
-  const [locationFilter, setLocationFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
 
-  // Filter jobs based on search query and location
-  const filteredJobs = jobs.filter(job => {
-    const matchesSearch = searchQuery === "" ||
+  const filteredJobs = jobs.filter((job) => {
+    const matchesSearch =
+      searchQuery === "" ||
       job.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       job.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      job.responsibilities.some(resp => resp.toLowerCase().includes(searchQuery.toLowerCase())) ||
-      job.qualifications.some(qual => qual.toLowerCase().includes(searchQuery.toLowerCase()));
+      job.location.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      job.workType.toLowerCase().includes(searchQuery.toLowerCase());
 
-    const matchesLocation = locationFilter === "" ||
-      job.location.toLowerCase().includes(locationFilter.toLowerCase());
+    const matchesStatus =
+      statusFilter === "all" ||
+      (statusFilter === "available" && job.isAvailable) ||
+      (statusFilter === "closed" && !job.isAvailable);
 
-    return matchesSearch && matchesLocation;
+    return matchesSearch && matchesStatus;
   });
 
-  // Handle individual job view
+  // Render Job Detail View if slug is in URL
   if (jobSlug) {
-    const job = jobs.find(j => j.id === jobSlug);
+    const job = jobs.find((j) => j.id === jobSlug);
     if (!job) {
-      navigate('/loker');
+      navigate("/loker", { replace: true });
       return null;
     }
-    return <JobDetailPage job={job} />;
+    return <JobDetailView job={job} />;
   }
 
+  const pageUrl = `${SITE_ORIGIN}/loker`;
+  const availableCount = jobs.filter((j) => j.isAvailable).length;
+
   return (
-    <div className="min-h-screen bg-background flex flex-col page-transition">
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/10 selection:text-primary">
       <SEO
-        title="Lowongan Kerja & Karir"
-        description="Bergabunglah dengan tim Tidurlah Grafika. Temukan peluang karir dan lowongan kerja terbaru di Bandar Lampung."
-        keywords="loker lampung, lowongan kerja bandar lampung, karir tidurlah grafika, loker percetakan"
+        title="Karir & Lowongan Kerja - Bergabung Bersama Tim Percetakan"
+        description="Temukan peluang karir dan kemitraan di Tidurlah Grafika. Posisi Desainer Grafis Remote, Operator Produksi, Admin Toko, dan Program Reseller di Bandar Lampung."
+        keywords="loker lampung, lowongan kerja percetakan lampung, karir desainer grafis remote, lowongan kerja bandar lampung, reseller merchandise"
+        url={pageUrl}
       />
-      <Header />
 
-      {/* Hero Section */}
-      <div className="relative bg-background overflow-hidden hero-section">
-        <div className="container mx-auto max-w-7xl px-4 py-8 lg:py-12 h-full flex items-center">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-            {/* Left Side - Text Content */}
-            <div className="space-y-8">
-              <div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6">
-                  Punya <span className="text-[#FF5E01]">Bakat?</span><br />
-                  Temui <span className="text-[#FF5E01]">Peluang!</span>
-                </h1>
-                <p className="text-lg md:text-xl text-gray-600 leading-relaxed">
-                  Kami adalah layanan cetak ID card dan merchandise kreatif terkemuka di Lampung. Seiring dengan perkembangan kami, kami mencari individu yang bersemangat, berbakat, dan teliti untuk bergabung dengan tim kami.
-                </p>
+      {/* Shared Clean Navigation Header */}
+      <PublicHeader sectionName="Karir" sectionHref="/loker" />
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full space-y-10 sm:space-y-12">
+        
+        {/* Editorial Hero Header */}
+        <div className="space-y-3">
+          <div className="flex items-center gap-2">
+            <Badge variant="outline" className="text-xs font-mono font-medium">
+              Peluang Karir & Kemitraan
+            </Badge>
+            <span className="text-xs text-muted-foreground">•</span>
+            <span className="text-xs text-muted-foreground font-mono">
+              {availableCount} Posisi Terbuka
+            </span>
+          </div>
+
+          <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-foreground leading-tight">
+            Karir di Tidurlah Grafika
+          </h1>
+
+          <p className="text-sm sm:text-base text-muted-foreground max-w-2xl leading-relaxed">
+            Bergabunglah bersama tim kreatif kami dalam membangun standar percetakan digital modern yang efisien dan berkualitas tinggi di Lampung. Kami mencari individu yang teliti, bersemangat, dan berorientasi pada kepuasan pelanggan.
+          </p>
+        </div>
+
+        {/* Culture Highlights */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-muted text-foreground">
+                <Compass className="w-4 h-4" />
               </div>
-
-              {/* Search Bar */}
-              <div className="bg-background rounded-2xl shadow-lg p-6 border border-gray-200">
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <div className="flex-1">
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Judul pekerjaan atau kata kunci"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF5E01] focus:border-transparent outline-none"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-                        <svg className="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                        </svg>
-                      </div>
-                      <input
-                        type="text"
-                        placeholder="Semua Lokasi"
-                        value={locationFilter}
-                        onChange={(e) => setLocationFilter(e.target.value)}
-                        className="w-full pl-12 pr-4 py-4 border border-gray-300 rounded-xl focus:ring-2 focus:ring-[#FF5E01] focus:border-transparent outline-none"
-                      />
-                    </div>
-                  </div>
-                  <button className="bg-[#FF5E01] text-white px-8 py-4 rounded-xl font-semibold hover:bg-[#e54d00] transition-colors whitespace-nowrap">
-                    Cari
-                  </button>
-                </div>
-              </div>
-
+              <h3 className="font-semibold text-xs sm:text-sm text-foreground">
+                Fleksibilitas Kerja
+              </h3>
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Pilihan kerja remote (Work from Home) untuk tim kreatif dan kemitraan mandiri tanpa keterikatan jam kerja kaku.
+            </p>
+          </div>
 
-            {/* Right Side - Image Placeholder - Hidden on Mobile */}
-            <div className="relative hidden lg:block">
-              <div className="relative w-full h-64 sm:h-80 lg:h-96 xl:h-[500px]">
-                {/* Background Circle */}
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 lg:w-96 lg:h-96 xl:w-[500px] xl:h-[500px] bg-gradient-to-br from-orange-100 to-pink-100 rounded-full opacity-80"></div>
-
-                {/* Image Placeholder */}
-                <div className="relative z-10 w-full h-full flex items-center justify-center">
-                  <div className="bg-background rounded-2xl shadow-2xl p-8 max-w-sm w-full mx-4">
-                    <div className="text-center">
-                      <div className="w-24 h-24 bg-gradient-to-br from-[#FF5E01] to-orange-400 rounded-full mx-auto mb-4 flex items-center justify-center">
-                        <Briefcase className="h-12 w-12 text-white" />
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2">Bergabung dengan Tim</h3>
-                      <p className="text-gray-600 text-sm">Temukan peluang karir terbaik di Tidurlah Store</p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Floating Elements */}
-                <div className="absolute top-4 right-4 bg-yellow-100 rounded-lg p-3 shadow-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="w-6 h-6 bg-yellow-400 rounded-full flex items-center justify-center">
-                      <span className="text-xs font-bold text-white">1</span>
-                    </div>
-                    <span className="text-xs font-medium text-gray-700">Job Alert</span>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-4 left-4 bg-background rounded-lg p-3 shadow-lg">
-                  <div className="flex items-center gap-2">
-                    <div className="flex -space-x-2">
-                      <div className="w-6 h-6 bg-blue-400 rounded-full border-2 border-white"></div>
-                      <div className="w-6 h-6 bg-green-400 rounded-full border-2 border-white"></div>
-                      <div className="w-6 h-6 bg-purple-400 rounded-full border-2 border-white"></div>
-                    </div>
-                    <div className="text-xs">
-                      <p className="font-medium text-gray-700">Giliran Kamu</p>
-                      <p className="text-gray-500">mendapat kerja</p>
-                    </div>
-                  </div>
-                </div>
+          <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-muted text-foreground">
+                <Sparkles className="w-4 h-4" />
               </div>
+              <h3 className="font-semibold text-xs sm:text-sm text-foreground">
+                Pengembangan Skill
+              </h3>
             </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Pelatihan teknis pengoperasian mesin cetak digital offset, teknik sublimasi modern, dan manajemen layout pra-cetak.
+            </p>
+          </div>
+
+          <div className="rounded-lg border border-border bg-card p-4 space-y-2">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-md bg-muted text-foreground">
+                <Users className="w-4 h-4" />
+              </div>
+              <h3 className="font-semibold text-xs sm:text-sm text-foreground">
+                Budaya Terbuka
+              </h3>
+            </div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Komunikasi langsung, suasana kerja suportif, dan apresiasi nyata terhadap kontribusi inovasi setiap anggota tim.
+            </p>
           </div>
         </div>
-      </div>
 
-      <div className="flex-1">
-        <div className="container mx-auto max-w-7xl px-4 pt-4 pb-16">
-          {/* Section Header for Job Listings */}
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">
-              Pekerjaan yang tersedia
-            </h2>
-            <div className="relative w-48 h-1 mx-auto rounded-full overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-orange-400 via-pink-500 to-orange-400 animate-gradient-x"></div>
-            </div>
+        {/* Search & Filter Toolbar */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-4 border-t border-border">
+          <div className="relative flex-1 max-w-sm">
+            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Cari posisi pekerjaan atau keahlian..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="pl-9 h-9 text-xs bg-card"
+            />
           </div>
 
-          {/* Job Cards Grid - 3 Columns */}
-          <StaggeredContainer
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16"
-            staggerDelay={50}
-          >
-            {filteredJobs.map((job) => (
+          <div className="flex items-center gap-1.5">
+            <Button
+              type="button"
+              variant={statusFilter === "all" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("all")}
+              className="h-9 text-xs"
+            >
+              Semua Posisi
+            </Button>
+            <Button
+              type="button"
+              variant={statusFilter === "available" ? "default" : "outline"}
+              size="sm"
+              onClick={() => setStatusFilter("available")}
+              className="h-9 text-xs"
+            >
+              Membuka Lamaran ({availableCount})
+            </Button>
+          </div>
+        </div>
+
+        {/* Job Listings Grid */}
+        <div className="space-y-4">
+          {filteredJobs.length > 0 ? (
+            filteredJobs.map((job) => (
               <div
                 key={job.id}
-                className="bg-background rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group cursor-pointer border border-gray-100"
                 onClick={() => {
-                  // Scroll to top immediately before navigation
-                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+                  window.scrollTo({ top: 0, behavior: "instant" });
                   navigate(`/loker/${job.id}`);
                 }}
+                className="rounded-lg border border-border bg-card p-5 sm:p-6 hover:border-foreground/30 transition-all cursor-pointer space-y-3 group"
               >
-                {/* Job Card Header */}
-                <div className="p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        {job.isAvailable ? (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                            <CheckCircle className="h-3 w-3" />
-                            Tersedia
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                            <XCircle className="h-3 w-3" />
-                            Ditutup
-                          </span>
-                        )}
-                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-[#FF5E01]/10 text-[#FF5E01]">
-                          {job.workType}
-                        </span>
-                      </div>
-                      <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-[#FF5E01] transition-colors">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                      <h2 className="text-base sm:text-lg font-bold text-foreground group-hover:underline">
                         {job.title}
-                      </h3>
-                      <div className="flex items-center gap-4 text-sm text-gray-600 mb-3">
-                        <div className="flex items-center gap-1 relative group/location">
-                          <MapPin className="h-4 w-4 flex-shrink-0" />
-                          <span className="cursor-help">{job.location.split('\n')[0]}</span>
-                          {job.location.includes('\n') ? (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                              {job.location}
-                            </div>
-                          ) : job.location === "Lampung" && (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 z-30 whitespace-pre-line min-w-max pointer-events-none">
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                              Bersedia full-time{'\n'}di ruko
-                            </div>
-                          )}
-                        </div>
-                        <div className="flex items-center gap-1 relative group/hours">
-                          <Clock className="h-4 w-4 flex-shrink-0" />
-                          <span className="cursor-help">{job.workHours.split('\n')[0]}</span>
-                          {job.workHours.includes('\n') && (
-                            <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/hours:opacity-100 group-hover/hours:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                              {job.workHours}
-                            </div>
-                          )}
-                        </div>
-                      </div>
+                      </h2>
+                      {job.isAvailable ? (
+                        <Badge variant="default" className="text-[11px] gap-1 font-normal">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Membuka Lamaran</span>
+                        </Badge>
+                      ) : (
+                        <Badge variant="outline" className="text-[11px] gap-1 font-normal text-muted-foreground">
+                          <XCircle className="w-3 h-3" />
+                          <span>Posisi Terisi</span>
+                        </Badge>
+                      )}
                     </div>
                   </div>
 
-                  <p className="text-gray-600 text-sm leading-relaxed mb-4 line-clamp-3">
-                    {job.description}
-                  </p>
-
-                  {/* Quick Info */}
-                  <div className="space-y-2 mb-6">
-                    <div className="flex items-center gap-2 text-sm">
-                      <GraduationCap className="h-4 w-4 text-[#FF5E01]" />
-                      <span className="text-gray-600">{job.education}</span>
-                    </div>
-                  </div>
-
-                  {/* Action Button */}
-                  <div className="flex items-center justify-between">
-                    <span className="text-sm text-gray-500">Klik untuk detail</span>
-                    <ArrowRight className="h-5 w-5 text-[#FF5E01] group-hover:translate-x-1 transition-transform" />
+                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                    <span className="font-medium text-foreground">{job.workType}</span>
+                    <span>•</span>
+                    <span>{job.location}</span>
                   </div>
                 </div>
-              </div>
-            ))}
-          </StaggeredContainer>
 
-          {/* No Results Message */}
-          {filteredJobs.length === 0 && (
-            <div className="text-center py-12 mb-16">
-              <div className="bg-gray-50 rounded-2xl p-8 max-w-md mx-auto">
-                <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <svg className="h-8 w-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
-                <h3 className="text-xl font-bold text-gray-900 mb-2">Tidak ada lowongan ditemukan</h3>
-                <p className="text-gray-600 mb-4">
-                  Coba gunakan kata kunci lain atau filter lokasi yang berbeda
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed line-clamp-2">
+                  {job.description}
                 </p>
-                <button
-                  onClick={() => {
-                    setSearchQuery("");
-                    setLocationFilter("");
-                  }}
-                  className="bg-[#FF5E01] text-white px-6 py-2 rounded-lg font-medium hover:bg-[#e54d00] transition-colors"
-                >
-                  Reset Filter
-                </button>
+
+                <div className="flex items-center justify-between pt-2 border-t border-border/60 text-xs">
+                  <div className="flex items-center gap-4 text-muted-foreground">
+                    <span className="flex items-center gap-1.5">
+                      <Clock className="w-3.5 h-3.5 text-foreground" />
+                      <span>{job.workHours}</span>
+                    </span>
+                    <span className="hidden sm:flex items-center gap-1.5">
+                      <GraduationCap className="w-3.5 h-3.5 text-foreground" />
+                      <span>{job.education}</span>
+                    </span>
+                  </div>
+
+                  <span className="inline-flex items-center gap-1 font-medium text-foreground group-hover:underline">
+                    <span>Lihat Rincian & Syarat</span>
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                  </span>
+                </div>
               </div>
+            ))
+          ) : (
+            <div className="rounded-lg border border-border bg-card p-12 text-center space-y-3">
+              <div className="mx-auto w-10 h-10 rounded-full bg-muted flex items-center justify-center text-muted-foreground">
+                <Briefcase className="w-5 h-5" />
+              </div>
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-foreground">
+                  Tidak Ada Lowongan yang Cocok
+                </h3>
+                <p className="text-xs text-muted-foreground">
+                  Coba gunakan kata kunci pencarian yang berbeda atau reset filter status.
+                </p>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setSearchQuery("");
+                  setStatusFilter("all");
+                }}
+                className="gap-1.5 text-xs"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Filter</span>
+              </Button>
             </div>
           )}
-
-          {/* Lokasi Workshop & Kantor Produksi */}
-          <div className="bg-white rounded-2xl p-6 sm:p-8 border border-gray-100 shadow-sm mb-12">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-5 space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1 bg-[#FF5E01]/10 text-[#FF5E01] rounded-full text-xs font-semibold">
-                  <MapPin className="w-3.5 h-3.5" />
-                  <span>Studio & Workshop Produksi</span>
-                </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-gray-900 tracking-tight">
-                  Lokasi Kantor & Workshop
-                </h3>
-                <p className="text-sm text-gray-600 leading-relaxed">
-                  Perumahan Pemda (Belwis), Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365.
-                </p>
-
-                <div className="space-y-2.5 text-xs sm:text-sm text-gray-600 pt-2 border-t border-gray-100">
-                  <div className="flex items-center gap-2.5">
-                    <Clock className="w-4 h-4 text-[#FF5E01] shrink-0" />
-                    <span>Senin – Sabtu: 08.00 – 17.30 WIB</span>
-                  </div>
-                  <div className="flex items-center gap-2.5">
-                    <Mail className="w-4 h-4 text-[#FF5E01] shrink-0" />
-                    <a href="mailto:hrd@idcardlampung.com" className="hover:text-[#FF5E01] transition-colors">
-                      hrd@idcardlampung.com
-                    </a>
-                  </div>
-                </div>
-
-                <div className="pt-2">
-                  <a
-                    href="https://maps.app.goo.gl/XVJYoKbzU5FRwVuJA"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2.5 rounded-lg bg-gray-900 text-white hover:bg-[#FF5E01] text-xs sm:text-sm font-medium transition-colors"
-                  >
-                    <span>Petunjuk Arah Google Maps</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
-                  </a>
-                </div>
-              </div>
-
-              <div className="lg:col-span-7">
-                <div className="relative w-full h-64 sm:h-72 rounded-xl overflow-hidden border border-gray-200 bg-gray-100 shadow-inner">
-                  <iframe
-                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248.27629567866182!2d105.31613618779917!3d-5.35258469048837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e0!3m2!1sen!2sid!4v1791358860628!5m2!1sen!2sid"
-                    width="100%"
-                    height="100%"
-                    style={{ border: 0 }}
-                    allowFullScreen
-                    loading="lazy"
-                    referrerPolicy="strict-origin-when-cross-origin"
-                    title="Peta Lokasi Percetakan ID Card Lampung Belwis"
-                    className="w-full h-full"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Call to Action */}
-          <div className="bg-gradient-to-r from-[#FF5E01] to-[#e54d00] rounded-2xl p-8 text-center text-white">
-            <h2 className="text-3xl font-bold mb-4">Tertarik Bergabung dengan Kami?</h2>
-            <p className="text-lg mb-8 opacity-90 max-w-2xl mx-auto">
-              Kirim lamaran Anda melalui email atau hubungi kami untuk informasi lebih lanjut
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="mailto:hrd@idcardlampung.com"
-                className="bg-background text-[#FF5E01] px-8 py-3 rounded-lg font-medium hover:bg-gray-100 transition-colors"
-              >
-                Kirim Email
-              </a>
-              <a
-                href="https://wa.me/6285172157808"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="bg-[#25D366] text-white px-8 py-3 rounded-lg font-medium hover:bg-[#25D366]/90 transition-colors"
-              >
-                WhatsApp
-              </a>
-            </div>
-          </div>
         </div>
-      </div>
 
-      <Footer />
+        {/* General Career CTA */}
+        <BlogCallout variant="info" title="Punya Pertanyaan Seputar Karir?">
+          <div className="space-y-2">
+            <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              Jika posisi yang Anda cari belum tersedia saat ini, Anda tetap dapat mengirimkan CV dan resume umum Anda ke database talenta kami di <strong>hrd@idcardlampung.com</strong>.
+            </p>
+          </div>
+        </BlogCallout>
+
+      </main>
+
+      {/* Standard Minimalist Footer */}
+      <BetaFooter />
     </div>
   );
-};
+}
 
-// Job Detail Page Component
-const JobDetailPage = ({ job }: { job: Job }) => {
+// Job Detail Component
+function JobDetailView({ job }: { job: Job }) {
   const navigate = useNavigate();
 
-  const handleShare = () => {
-    const shareUrl = `${window.location.origin}/loker/${job.id}`;
-
+  const handleShare = async () => {
+    const shareUrl = `${SITE_ORIGIN}/loker/${job.id}`;
     if (navigator.share) {
-      navigator.share({
-        title: `Lowongan Kerja: ${job.title} - Tidurlah Store`,
-        text: `Lihat lowongan kerja ${job.title} di Tidurlah Store`,
-        url: shareUrl,
-      });
+      try {
+        await navigator.share({
+          title: `Lowongan Kerja: ${job.title} - Tidurlah Grafika`,
+          text: `Peluang karir ${job.title} di Tidurlah Store`,
+          url: shareUrl,
+        });
+      } catch {
+        // Dismissed
+      }
     } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!");
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        toast.success("Tautan lowongan berhasil disalin!");
+      } catch {
+        toast.error("Gagal menyalin link.");
+      }
     }
   };
 
+  const jobSpecs: BlogSpecItem[] = [
+    {
+      property: "Lokasi Kerja",
+      specification: job.location,
+      note: job.workType === "Remote" ? "Dapat bekerja dari mana saja (WFH)" : "Penempatan kerja on-site di workshop"
+    },
+    {
+      property: "Jam Kerja",
+      specification: job.workHours,
+      note: "Pola kerja teratur dengan koordinasi harian"
+    },
+    {
+      property: "Pendidikan Minimum",
+      specification: job.education,
+      note: "Keahlian praktis dan portofolio lebih diutamakan"
+    },
+    {
+      property: "Tipe Kontrak",
+      specification: job.workType,
+      note: "Evaluasi kinerja berkala"
+    },
+    {
+      property: "Status Lowongan",
+      specification: job.isAvailable ? "Membuka Lamaran Aktif" : "Posisi Telah Terisi",
+      note: job.isAvailable ? "Segera kirimkan berkas lamaran Anda" : "Penerimaan lamaran sedang ditutup"
+    }
+  ];
+
+  const pageUrl = `${SITE_ORIGIN}/loker/${job.id}`;
+
+  const jsonLdJob = {
+    "@context": "https://schema.org",
+    "@type": "JobPosting",
+    title: job.title,
+    description: job.description,
+    datePosted: "2024-01-01",
+    employmentType: job.workType === "Remote" ? "FULL_TIME" : "FULL_TIME",
+    hiringOrganization: {
+      "@type": "Organization",
+      name: "Tidurlah Grafika",
+      sameAs: SITE_ORIGIN,
+      logo: `${SITE_ORIGIN}/Logo id card lampung 1x1 transparan.png`,
+    },
+    jobLocation: {
+      "@type": "Place",
+      address: {
+        "@type": "PostalAddress",
+        addressLocality: "Bandar Lampung",
+        addressRegion: "Lampung",
+        addressCountry: "ID",
+      },
+    },
+  };
+
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col page-transition">
-      <Header />
+    <div className="min-h-screen bg-background text-foreground flex flex-col font-sans selection:bg-primary/10 selection:text-primary">
+      <SEO
+        title={`${job.title} - Karir & Lowongan Kerja`}
+        description={job.description}
+        keywords={`loker ${job.title.toLowerCase()}, lowongan kerja ${job.title.toLowerCase()} lampung`}
+        url={pageUrl}
+        jsonLd={jsonLdJob}
+      />
 
-      <div className="flex-1">
-        <div className="container mx-auto max-w-4xl px-4 py-4 md:py-8">
-          {/* Breadcrumb - Compact on Mobile */}
-          <nav className="mb-4 md:mb-6">
-            <span className="text-gray-500 text-xs md:text-sm">
-              <button onClick={() => {
-                // Scroll to top immediately before navigation
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                navigate('/');
-              }} className="hover:text-[#FF5E01]">Home</button> /
-              <button onClick={() => {
-                // Scroll to top immediately before navigation
-                window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
-                navigate('/loker');
-              }} className="hover:text-[#FF5E01] ml-1"> Loker</button> /
-              <span className="text-gray-700 ml-1">{job.title}</span>
-            </span>
-          </nav>
+      {/* Shared Clean Navigation Header */}
+      <PublicHeader sectionName="Karir" sectionHref="/loker" />
 
-          {/* Job Detail Card - Compact Design */}
-          <div className="bg-background rounded-xl md:rounded-2xl shadow-lg overflow-hidden">
-            {/* Job Header - Compact */}
-            <div className="bg-gradient-to-r from-[#FF5E01] to-[#e54d00] p-4 md:p-6 lg:p-8 text-white">
-              <div className="flex items-start justify-between mb-3 md:mb-4">
-                <div className="flex-1">
-                  <div className="flex items-center gap-2 mb-3">
-                    {job.isAvailable ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                        <CheckCircle className="h-3 w-3" />
-                        Tersedia
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
-                        <XCircle className="h-3 w-3" />
-                        Ditutup
-                      </span>
-                    )}
-                    <span className="px-2 py-1 rounded-full text-xs font-medium bg-white/20 text-white">
-                      {job.workType}
-                    </span>
-                  </div>
-                  <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-3">{job.title}</h1>
-                  <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-sm md:text-base">
-                    <div className="flex items-center gap-1 relative group/location">
-                      <MapPin className="h-4 w-4 flex-shrink-0" />
-                      <span className="cursor-help">{job.location.split('\n')[0]}</span>
-                      {job.location.includes('\n') ? (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                          {job.location}
-                        </div>
-                      ) : job.location === "Lampung" && (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/location:opacity-100 group-hover/location:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 z-30 whitespace-pre-line min-w-max pointer-events-none">
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                          Bersedia full-time{'\n'}di ruko
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-1 relative group/hours">
-                      <Clock className="h-4 w-4 flex-shrink-0" />
-                      <span className="cursor-help">{job.workHours.split('\n')[0]}</span>
-                      {job.workHours.includes('\n') && (
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 opacity-0 invisible group-hover/hours:opacity-100 group-hover/hours:visible transition-opacity duration-200 bg-gray-900 text-white text-xs rounded py-1 px-2 whitespace-pre-line z-30 min-w-max pointer-events-none">
-                          <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-gray-900"></div>
-                          {job.workHours}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-                <button
-                  onClick={handleShare}
-                  className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/20 hover:bg-white/30 transition-colors text-sm"
-                >
-                  <Share2 className="h-4 w-4" />
-                  <span className="hidden sm:inline">Bagikan</span>
-                </button>
+      {/* Main Detail Container */}
+      <main className="flex-1 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 w-full space-y-8">
+        
+        {/* Breadcrumb Navigation */}
+        <nav className="flex items-center gap-2 text-xs text-muted-foreground">
+          <Link to="/loker" className="hover:text-foreground transition-colors">
+            Karir
+          </Link>
+          <span>/</span>
+          <span className="text-foreground font-medium truncate max-w-[200px] sm:max-w-md">
+            {job.title}
+          </span>
+        </nav>
+
+        {/* Position Header Card */}
+        <div className="rounded-lg border border-border bg-card p-6 sm:p-8 space-y-4">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                {job.isAvailable ? (
+                  <Badge variant="default" className="text-xs gap-1 font-normal">
+                    <CheckCircle2 className="w-3.5 h-3.5" />
+                    <span>Membuka Lamaran</span>
+                  </Badge>
+                ) : (
+                  <Badge variant="outline" className="text-xs gap-1 font-normal text-muted-foreground">
+                    <XCircle className="w-3.5 h-3.5" />
+                    <span>Posisi Terisi</span>
+                  </Badge>
+                )}
+                <Badge variant="secondary" className="text-xs font-normal">
+                  {job.workType}
+                </Badge>
+              </div>
+
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+                {job.title}
+              </h1>
+
+              <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                <span className="flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span>{job.location}</span>
+                </span>
+                <span>•</span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" />
+                  <span>{job.workHours}</span>
+                </span>
               </div>
             </div>
 
-            {/* Job Content - Compact Spacing */}
-            <div className="p-4 md:p-6 lg:p-8 space-y-4 md:space-y-6">
-              {/* Description */}
-              <div>
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3">Deskripsi Pekerjaan</h2>
-                <p className="text-sm md:text-base text-gray-700 leading-relaxed">{job.description}</p>
-              </div>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleShare}
+              className="gap-1.5 text-xs shrink-0 self-start"
+            >
+              <Share2 className="w-3.5 h-3.5" />
+              <span>Bagikan Posisi</span>
+            </Button>
+          </div>
 
-              {/* Education & Work Type - Compact Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div className="flex items-start gap-2 md:gap-3">
-                  <GraduationCap className="h-5 w-5 md:h-6 md:w-6 text-[#FF5E01] mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">Pendidikan Minimum</h3>
-                    <p className="text-xs md:text-sm text-gray-700">{job.education}</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-2 md:gap-3">
-                  <Briefcase className="h-5 w-5 md:h-6 md:w-6 text-[#FF5E01] mt-1 flex-shrink-0" />
-                  <div>
-                    <h3 className="text-sm md:text-base font-semibold text-gray-900 mb-1">Jenis Kerja</h3>
-                    <p className="text-xs md:text-sm text-gray-700">{job.workType}</p>
-                  </div>
-                </div>
-              </div>
+          <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed pt-2 border-t border-border/60">
+            {job.description}
+          </p>
+        </div>
 
-              {/* Responsibilities - Compact */}
-              <div>
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3">Tanggung Jawab</h2>
-                <ul className="space-y-2 md:space-y-3">
-                  {job.responsibilities.map((responsibility, index) => (
-                    <li key={index} className="flex items-start gap-2 md:gap-3">
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#FF5E01] rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-xs md:text-sm text-gray-700 leading-relaxed">{responsibility}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        {/* Position Specifications Table */}
+        <section className="space-y-3">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+            Spesifikasi & Ketentuan Kerja
+          </h2>
+          <BlogSpecTable
+            caption={`Tabel 1: Rincian spesifikasi posisi ${job.title}`}
+            headers={["Parameter", "Keterangan Posisi", "Catatan"]}
+            items={jobSpecs}
+          />
+        </section>
 
-              {/* Qualifications - Compact */}
-              <div>
-                <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3">Kualifikasi</h2>
-                <ul className="space-y-2 md:space-y-3">
-                  {job.qualifications.map((qualification, index) => (
-                    <li key={index} className="flex items-start gap-2 md:gap-3">
-                      <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-[#FF5E01] rounded-full mt-2 flex-shrink-0" />
-                      <span className="text-xs md:text-sm text-gray-700 leading-relaxed">{qualification}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+        {/* Responsibilities */}
+        <section className="space-y-3 pt-2 border-t border-border">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+            Tanggung Jawab Utama
+          </h2>
+          <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            {job.responsibilities.map((resp, idx) => (
+              <li key={idx} className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-foreground shrink-0 mt-2" />
+                <span>{resp}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-              {/* Benefits (for Reseller) - Compact */}
-              {job.benefits && (
-                <div>
-                  <h2 className="text-lg md:text-xl font-bold text-gray-900 mb-2 md:mb-3">Benefit & Keuntungan</h2>
-                  <ul className="space-y-2 md:space-y-3">
-                    {job.benefits.map((benefit, index) => (
-                      <li key={index} className="flex items-start gap-2 md:gap-3">
-                        <div className="w-1.5 h-1.5 md:w-2 md:h-2 bg-green-500 rounded-full mt-2 flex-shrink-0" />
-                        <span className="text-xs md:text-sm text-gray-700 leading-relaxed">{benefit}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
+        {/* Qualifications */}
+        <section className="space-y-3 pt-2 border-t border-border">
+          <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+            Kualifikasi yang Dicari
+          </h2>
+          <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+            {job.qualifications.map((qual, idx) => (
+              <li key={idx} className="flex items-start gap-2.5">
+                <div className="w-1.5 h-1.5 rounded-full bg-foreground shrink-0 mt-2" />
+                <span>{qual}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
 
-              {/* Application Requirements */}
-              <ApplicationRequirements jobId={job.id} />
+        {/* Benefits (for Reseller / Partnerships) */}
+        {job.benefits && job.benefits.length > 0 && (
+          <section className="space-y-3 pt-2 border-t border-border">
+            <h2 className="text-lg sm:text-xl font-bold tracking-tight text-foreground">
+              Benefit & Keuntungan Kemitraan
+            </h2>
+            <ul className="space-y-2 text-xs sm:text-sm text-muted-foreground leading-relaxed">
+              {job.benefits.map((benefit, idx) => (
+                <li key={idx} className="flex items-start gap-2.5">
+                  <div className="w-1.5 h-1.5 rounded-full bg-foreground shrink-0 mt-2" />
+                  <span>{benefit}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
 
-              {/* Action Buttons - Compact */}
-              <div className="pt-4 md:pt-6 border-t border-gray-200">
-                <ApplyButton
-                  posisi={job.title}
-                  isAvailable={job.isAvailable}
-                  onShare={handleShare}
-                />
-              </div>
-            </div>
+        {/* Requirements Notice Callout */}
+        <BlogCallout variant="info" title="Dokumen Berkas yang Diperlukan:">
+          <ul className="list-disc pl-5 space-y-1 text-xs text-muted-foreground leading-relaxed mt-1">
+            <li><strong>CV / Resume Lengkap:</strong> Memuat riwayat pendidikan, kontak aktif, dan pengalaman kerja.</li>
+            {job.id === "desainer-grafis" && (
+              <li>
+                <strong>Portofolio Desain (Wajib):</strong> Lampirkan tautan Google Drive / Behance / PDF karya layout cetak (ID card, lanyard, banner).
+              </li>
+            )}
+            <li>Pastikan nomor WhatsApp dan email yang Anda cantumkan aktif untuk proses interview.</li>
+          </ul>
+        </BlogCallout>
+
+        {/* Application Action Section */}
+        <div className="rounded-lg border border-border bg-card p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="space-y-1 text-center sm:text-left">
+            <h3 className="font-bold text-sm sm:text-base text-foreground">
+              Tertarik Melamar Posisi {job.title}?
+            </h3>
+            <p className="text-xs text-muted-foreground">
+              {job.isAvailable
+                ? "Kirimkan lamaran Anda secara online atau langsung melalui tombol di samping."
+                : "Lowongan ini sedang ditutup saat ini. Anda dapat mengirimkan CV umum via email."}
+            </p>
+          </div>
+
+          <div className="shrink-0 w-full sm:w-auto flex justify-center">
+            <ApplyButton
+              posisi={job.title}
+              isAvailable={job.isAvailable}
+              onShare={handleShare}
+            />
           </div>
         </div>
-      </div>
 
-      <Footer />
+      </main>
+
+      {/* Standard Minimalist Footer */}
+      <BetaFooter />
     </div>
   );
-};
-
-export default Loker;
+}
