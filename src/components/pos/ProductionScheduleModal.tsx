@@ -11,7 +11,7 @@ import type { OrderHistoryItem } from "@/utils/api";
 import {
   fetchTasksByDate, bulkInsertTasks, clearTasksForDate,
   toggleTaskComplete, deleteTask as deleteTaskApi,
-  type ProductionTask, type ProductionTaskInsert
+  type ProductionTaskInsert
 } from "@/services/productionTasks";
 
 // ============================================================
@@ -120,6 +120,29 @@ export function ProductionScheduleModal({
   // ──────────────────────────────────────────
   // Load tasks from Supabase when date changes
   // ──────────────────────────────────────────
+  const autoPopulateFromOrders = useCallback(() => {
+    const pendingOrders = orders.filter(
+      (o) => o.orderStatus === "pending" || o.orderStatus === "partial"
+    );
+
+    const autoTasks: LocalTask[] = pendingOrders.map((order, idx) => ({
+      id: `temp-${Date.now()}-${idx}`,
+      order_id: order.orderId,
+      title: `${order.customerName || "Tanpa Nama"} — ${order.itemsSummary || `${order.itemCount || 0} item`}`,
+      description: "",
+      priority: 0,
+      is_completed: false,
+      sort_order: idx,
+      deadline: order.deadline || null,
+      customer_name: order.customerName || "",
+      items_summary: order.itemsSummary || "",
+      cabang: order.cabang || null,
+      isNew: true,
+    }));
+
+    setTasks(autoTasks);
+  }, [orders]);
+
   const loadTasks = useCallback(async (date: string) => {
     setIsLoading(true);
     const result = await fetchTasksByDate(date);
@@ -141,33 +164,10 @@ export function ProductionScheduleModal({
       );
     } else {
       // Auto-populate from pending/partial orders
-      autoPopulateFromOrders(date);
+      autoPopulateFromOrders();
     }
     setIsLoading(false);
-  }, [orders]);
-
-  const autoPopulateFromOrders = (date: string) => {
-    const pendingOrders = orders.filter(
-      (o) => o.orderStatus === "pending" || o.orderStatus === "partial"
-    );
-
-    const autoTasks: LocalTask[] = pendingOrders.map((order, idx) => ({
-      id: `temp-${Date.now()}-${idx}`,
-      order_id: order.orderId,
-      title: `${order.customerName || "Tanpa Nama"} — ${order.itemsSummary || `${order.itemCount || 0} item`}`,
-      description: "",
-      priority: 0,
-      is_completed: false,
-      sort_order: idx,
-      deadline: order.deadline || null,
-      customer_name: order.customerName || "",
-      items_summary: order.itemsSummary || "",
-      cabang: order.cabang || null,
-      isNew: true,
-    }));
-
-    setTasks(autoTasks);
-  };
+  }, [autoPopulateFromOrders]);
 
   useEffect(() => {
     if (isOpen) {
@@ -265,17 +265,17 @@ export function ProductionScheduleModal({
 
       const tasksToInsert: ProductionTaskInsert[] = tasks.map((t, idx) => ({
         schedule_date: selectedDate,
-        order_id: t.order_id || undefined,
+        order_id: t.order_id ?? null,
         title: t.title,
         description: t.description,
         priority: t.priority,
         is_completed: t.is_completed,
         sort_order: idx,
         created_by: cashierName,
-        deadline: t.deadline || undefined,
+        deadline: t.deadline ?? null,
         customer_name: t.customer_name,
         items_summary: t.items_summary,
-        cabang: t.cabang || cabang || undefined,
+        cabang: t.cabang || cabang || null,
       }));
 
       const result = await bulkInsertTasks(tasksToInsert);

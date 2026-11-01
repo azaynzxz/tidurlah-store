@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { LayoutDashboard, ShoppingCart, Users, FileText, Package, Tag, LogOut, ArrowLeft, AlertTriangle, Receipt } from "lucide-react";
+import { LayoutDashboard, ShoppingCart, Users, FileText, Package, Tag, LogOut, ArrowLeft, Receipt } from "lucide-react";
 import { DashboardTab } from "@/components/admin/DashboardTab";
 import { OrderHistory } from "@/components/pos/OrderHistory";
 import { CustomersTab } from "@/components/admin/CustomersTab";

@@ -158,7 +158,7 @@ const CompletionPopup = ({ onClose }: { onClose: () => void }) => {
         <div className="animate-bounce mb-4">
           <CheckCircle className="h-16 w-16 sm:h-20 sm:w-20 text-green-500 mx-auto" />
         </div>
-        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Terima Kasih! 🎉</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">Terima kasih atas partisipasi Anda!</h2>
         <p className="text-sm sm:text-base text-muted-foreground mb-6 leading-relaxed">
           Survei Anda telah berhasil disimpan. Masukan Anda sangat berharga untuk kami!
         </p>

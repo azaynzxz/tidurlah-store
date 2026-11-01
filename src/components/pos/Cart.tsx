@@ -3,13 +3,12 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
-import { Check, ChevronDown, ChevronUp, FileText, Calendar, Clock, Trash2, ShoppingCart, Truck, Palette, Zap, Search, User, Building2, Phone, Loader2 } from "lucide-react";
+import { Check, ChevronDown, ChevronUp, Calendar, Trash2, ShoppingCart, Truck, Palette, Zap, Search, User, Building2, Phone, Loader2 } from "lucide-react";
 import { CartItem } from "./CartItem";
 import { toast } from "sonner";
 import { DeliveryInfoDialog } from "./DeliveryInfoDialog";
 import { TimePicker } from "@/components/ui/TimePicker";
-import newOrderSound from "@/components/new-order.mp3";
+const newOrderSound = "/audio/new-order.mp3";
 import { fetchCustomersData, normalizeIndonesianPhone, formatPhoneNumber, type CustomerSummary } from "@/services/customers";
 
 // Cache customer database in-memory to prevent redundant queries during POS session
@@ -103,12 +102,12 @@ export function Cart({
   onClearAll,
   onProcessOrder,
   onUpdateOptionsById,
-  onPrintOrder,
-  onExportPDF,
+  onPrintOrder: _onPrintOrder,
+  onExportPDF: _onExportPDF,
   onAddDesignService,
   onAddExpressService,
   onAddOngkir,
-  isBluetoothSupported,
+  isBluetoothSupported: _isBluetoothSupported,
   isMobile,
   onClose,
   defaultCabang
@@ -122,8 +121,6 @@ export function Cart({
     cabang: ''
   });
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isPrinting, setIsPrinting] = useState(false);
-  const [isExportingPDF, setIsExportingPDF] = useState(false);
   const [isDesignServiceSelected, setIsDesignServiceSelected] = useState(false);
   const [isDeliverySelected, setIsDeliverySelected] = useState(false);
   const [isExpressSelected, setIsExpressSelected] = useState(false);
@@ -905,8 +902,6 @@ export function Cart({
                     disabled={
                       items.length === 0 ||
                       isProcessing ||
-                      isPrinting ||
-                      isExportingPDF ||
                       !customerDetails.name.trim() ||
                       !customerDetails.phone.trim() ||
                       !customerDetails.deadline ||

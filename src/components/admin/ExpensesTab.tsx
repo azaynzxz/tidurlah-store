@@ -33,7 +33,6 @@ import {
   Search,
   Calendar,
   CreditCard,
-  ShoppingBag,
   Trash2,
   Edit,
   RefreshCw,
@@ -42,15 +41,12 @@ import {
   Layers,
   Store,
   FileSpreadsheet,
-  AlertTriangle,
   Copy,
   Check,
   Database as DatabaseIcon,
   Users,
   UserPlus,
   Send,
-  CheckCircle2,
-  AlertCircle,
   Wallet,
 } from 'lucide-react';
 import { toast } from 'sonner';

@@ -8,9 +8,9 @@ interface AnimatedElementProps {
   className?: string;
 }
 
-export const AnimatedElement = ({ 
-  children, 
-  delay = 0, 
+export const AnimatedElement = ({
+  children,
+  delay = 0,
   duration = 300,
   direction = 'up',
   className = ''
@@ -22,7 +22,7 @@ export const AnimatedElement = ({
   useEffect(() => {
     // Set initial state immediately to prevent flash
     setIsInitialized(true);
-    
+
     const observer = new IntersectionObserver(
       ([entry]) => {
         if (entry.isIntersecting) {
@@ -91,13 +91,13 @@ interface StaggeredContainerProps {
   className?: string;
 }
 
-export const StaggeredContainer = ({ 
-  children, 
+export const StaggeredContainer = ({
+  children,
   staggerDelay = 50,
   className = ''
 }: StaggeredContainerProps) => {
   const childrenArray = Array.isArray(children) ? children : [children];
-  
+
   return (
     <div className={className}>
       {childrenArray.map((child, index) => (
@@ -111,43 +111,4 @@ export const StaggeredContainer = ({
       ))}
     </div>
   );
-};
-
-// Loading skeleton component
-export const ProductSkeleton = () => {
-  return (
-    <div className="border rounded-lg overflow-hidden shadow-sm flex flex-col h-full">
-      <div className="relative pt-[100%] skeleton"></div>
-      <div className="p-3 space-y-2">
-        <div className="h-4 skeleton rounded w-3/4"></div>
-        <div className="h-3 skeleton rounded w-1/2"></div>
-        <div className="h-6 skeleton rounded w-1/3"></div>
-      </div>
-    </div>
-  );
-};
-
-// Loading state component
-interface LoadingStateProps {
-  isLoading: boolean;
-  children: React.ReactNode;
-  skeletonCount?: number;
-}
-
-export const LoadingState = ({ 
-  isLoading, 
-  children, 
-  skeletonCount = 8 
-}: LoadingStateProps) => {
-  if (isLoading) {
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 lg:gap-4">
-        {Array.from({ length: skeletonCount }).map((_, index) => (
-          <ProductSkeleton key={index} />
-        ))}
-      </div>
-    );
-  }
-
-  return <>{children}</>;
 };

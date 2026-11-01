@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from "react";
-import { useNavigate } from "react-router-dom";
 import { ChevronRight, ChevronLeft } from "lucide-react";
 import { POSHeader } from "./POSHeader";
 import { CategoryTabs } from "./CategoryTabs";
@@ -96,7 +95,6 @@ interface CartItem {
 }
 
 export function POSDashboard() {
-  const navigate = useNavigate();
   const { profile } = useAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -107,7 +105,6 @@ export function POSDashboard() {
   const [showOrderHistory, setShowOrderHistory] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [showReceipt, setShowReceipt] = useState(false);
-  const [isGeneratingReceipt, setIsGeneratingReceipt] = useState(false);
   const [logoTidurlah, setLogoTidurlah] = useState<string>("");
   const [logoUnila, setLogoUnila] = useState<string>("");
   const [logoBelwis, setLogoBelwis] = useState<string>("");
@@ -127,18 +124,18 @@ export function POSDashboard() {
 
   // Inspiring quotes in Indonesian
   const morningQuotes = [
-    "Setiap pagi adalah awal yang baru. Semangat bekerja! ",
-    "Senyum adalah awal dari kesuksesan. Mulai hari dengan senyuman! ",
-    "Hari ini penuh dengan peluang baru. Manfaatkan dengan baik! ",
-    "Kebahagiaan dimulai dari diri sendiri. Tetap semangat! ",
-    "Kerja keras hari ini adalah investasi masa depan! "
+    "Setiap pagi adalah awal yang baru. Semangat bekerja!",
+    "Senyum adalah awal dari kesuksesan. Mulai hari dengan senyuman!",
+    "Hari ini penuh dengan peluang baru. Manfaatkan dengan baik!",
+    "Kebahagiaan dimulai dari diri sendiri. Tetap semangat!",
+    "Kerja keras hari ini adalah investasi masa depan!"
   ];
 
   const lunchQuotes = [
-    "Jaga kesehatan dengan makan teratur. Selamat makan siang! ️",
-    "Istirahat sejenak untuk mengisi energi kembali. Bon Appétit! ",
-    "Tubuh yang sehat adalah awal dari produktivitas. Nikmati istirahatmu! ",
-    "Waktu istirahat adalah hak kamu. Gunakan dengan baik! "
+    "Jaga kesehatan dengan makan teratur. Selamat makan siang!",
+    "Istirahat sejenak untuk mengisi energi kembali. Bon Appétit!",
+    "Tubuh yang sehat adalah awal dari produktivitas. Nikmati istirahatmu!",
+    "Waktu istirahat adalah hak kamu. Gunakan dengan baik!"
   ];
 
   // Play sound helper
@@ -188,12 +185,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">️ Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
+            <p className="font-bold text-base">Selamat Pagi{cashierName ? `, ${cashierName}` : ''}!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
-              <p> Sudah senyum hari ini?</p>
-              <p> Bagaimana kondisi kesehatan dan stress level kamu?</p>
-              <p> Apa rencana kamu hari ini?</p>
+              <p>Sudah senyum hari ini?</p>
+              <p>Bagaimana kondisi kesehatan dan stress level kamu?</p>
+              <p>Apa rencana kamu hari ini?</p>
             </div>
           </div>
         );
@@ -216,12 +213,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base">️ Waktu Istirahat Makan Siang!</p>
+            <p className="font-bold text-base">Waktu Istirahat Makan Siang!</p>
             <p className="text-sm">{randomQuote}</p>
             <div className="text-xs space-y-1 mt-2 border-t pt-2">
-              <p> Siapkan makan siangmu</p>
-              <p> Ambil istirahat sejenak</p>
-              <p> Jaga kesehatan dan energimu</p>
+              <p>Siapkan makan siangmu</p>
+              <p>Ambil istirahat sejenak</p>
+              <p>Jaga kesehatan dan energimu</p>
             </div>
           </div>
         );
@@ -243,12 +240,12 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base"> Cek Pesanan Sore Hari</p>
+            <p className="font-bold text-base">Cek Pesanan Sore Hari</p>
             <div className="text-sm space-y-1 mt-2">
-              <p> Periksa pesanan yang masuk hari ini</p>
-              <p> Siapkan untuk penutupan</p>
-              <p> Pastikan semua tercatat dengan baik</p>
-              <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan! </p>
+              <p>Periksa pesanan yang masuk hari ini</p>
+              <p>Siapkan untuk penutupan</p>
+              <p>Pastikan semua tercatat dengan baik</p>
+              <p className="mt-2 text-xs opacity-80">Tinggal 2 jam lagi menuju penutupan!</p>
             </div>
           </div>
         );
@@ -270,15 +267,15 @@ export function POSDashboard() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
               </svg>
             </button>
-            <p className="font-bold text-base"> Waktu Penutupan Toko!</p>
+            <p className="font-bold text-base">Waktu Penutupan Toko!</p>
             <div className="text-sm space-y-1 mt-2">
-              <p> Siapkan barang-barang kamu</p>
-              <p> Pastikan semua sudah tersimpan dengan aman</p>
-              <p> Bersiaplah untuk pulang</p>
+              <p>Siapkan barang-barang kamu</p>
+              <p>Pastikan semua sudah tersimpan dengan aman</p>
+              <p>Bersiaplah untuk pulang</p>
             </div>
             <div className="text-sm font-semibold mt-3 pt-2 border-t text-center">
-              <p> Selamat beristirahat!</p>
-              <p> Sampai jumpa besok!</p>
+              <p>Selamat beristirahat!</p>
+              <p>Sampai jumpa besok!</p>
             </div>
           </div>
         );
@@ -493,63 +490,6 @@ export function POSDashboard() {
     }
 
     return options;
-  };
-
-  // Enhanced add to cart with options
-  const handleAddToCartWithOptions = (product: Product, quantity: number, options?: any) => {
-    setCartItems(prevItems => {
-      // For dimensional products, only merge if dimensions match; otherwise add new line
-      if (isBanner(product)) {
-        const indexWithSameDims = prevItems.findIndex(item =>
-          item.product.id === product.id &&
-          item.options?.width === options?.width &&
-          item.options?.height === options?.height
-        );
-        if (indexWithSameDims !== -1) {
-          const updated = [...prevItems];
-          const existing = updated[indexWithSameDims];
-          updated[indexWithSameDims] = { ...existing, quantity: existing.quantity + quantity };
-          return updated;
-        }
-        return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
-      }
-
-      // Non-dimensional: merge by product id and matching options
-      const existingItemIndex = prevItems.findIndex(item => {
-        if (item.product.id !== product.id) return false;
-        const opts1 = item.options || {};
-        const opts2 = options || {};
-        return opts1.modelCode === opts2.modelCode &&
-          opts1.caseVariant === opts2.caseVariant &&
-          opts1.laminationVariant === opts2.laminationVariant;
-      });
-
-      if (existingItemIndex !== -1) {
-        const updated = [...prevItems];
-        const existing = updated[existingItemIndex];
-        updated[existingItemIndex] = { ...existing, quantity: existing.quantity + quantity };
-        return updated;
-      }
-      return [...prevItems, { cartItemId: `${product.id}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`, product, quantity, options }];
-    });
-
-    // Show toast notification
-    toast.success(`${product.name} ditambahkan ke keranjang`);
-
-    // Add visual feedback
-    setSelectedProducts(prev => new Set([...prev, product.id]));
-    setTimeout(() => {
-      setSelectedProducts(prev => {
-        const newSet = new Set(prev);
-        newSet.delete(product.id);
-        return newSet;
-      });
-    }, 300);
-  };
-
-  // Add product to cart (legacy handler for backward compatibility)
-  const handleAddToCart = (product: Product) => {
-    handleAddToCartWithOptions(product, 1);
   };
 
   // Update cart item quantity (by cart item id)
@@ -878,7 +818,7 @@ export function POSDashboard() {
       const bwCanvas = convertToBlackAndWhite(canvas);
 
       // Convert canvas to blob
-      const blob = await new Promise<Blob>((resolve) => {
+      await new Promise<Blob>((resolve) => {
         bwCanvas.toBlob((blob) => {
           if (blob) resolve(blob);
         }, 'image/png');
@@ -1262,11 +1202,6 @@ export function POSDashboard() {
   const handleCashierNameChange = (name: string) => {
     setCashierName(name);
     localStorage.setItem('posCashierName', name);
-  };
-
-  // Handle back navigation to cashier page
-  const handleBackToCashier = () => {
-    navigate('/cashier');
   };
 
   if (loading) {

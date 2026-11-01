@@ -117,7 +117,7 @@ export const blogPost: BlogPostData = {
       </div>
 
       <div class="bg-green-50 border border-green-200 p-6 rounded-lg">
-        <h3 class="text-xl font-bold text-green-800 mb-3">💡 Tips Penting:</h3>
+        <h3 class="text-xl font-bold text-green-800 mb-3">Tips Penting:</h3>
         <ul class="list-disc list-inside space-y-2 text-gray-700">
           <li>Pastikan link desain Anda sudah dibuka aksesnya (public) agar admin bisa melihatnya</li>
           <li>Manfaatkan promo kode untuk mendapatkan diskon tambahan</li>

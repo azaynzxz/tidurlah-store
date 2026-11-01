@@ -1,21 +1,9 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, Newspaper, Menu, X, Home, FileText, Shield, RotateCcw, MapPin, Briefcase, Image } from "lucide-react";
 import MusicPlayer from "@/components/MusicPlayer";
 import SearchBar from "@/components/SearchBar";
-import { useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
 import { useDialog } from "@/contexts/DialogContext";
-import { usePromoBanner } from "@/contexts/PromoBannerContext";
-
-// Helper hook to safely use promo banner context
-const usePromoBannerSafe = () => {
-  try {
-    return usePromoBanner();
-  } catch {
-    return { isBannerVisible: false };
-  }
-};
 
 interface HeaderProps {
   cartItemsCount?: number;
@@ -32,28 +20,13 @@ const Header = ({
 }: HeaderProps) => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { isHalloweenMode, toggleHalloweenMode } = useHalloweenTheme();
   const { isDialogOpen } = useDialog();
-  const { isBannerVisible } = usePromoBannerSafe();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const [startY, setStartY] = useState(0);
   const [currentY, setCurrentY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [desktopDropdownOpen, setDesktopDropdownOpen] = useState(false);
-  const [bannerHeight, setBannerHeight] = useState('0px');
-
-  // Get banner height from CSS variable
-  useEffect(() => {
-    const updateBannerHeight = () => {
-      const height = getComputedStyle(document.documentElement).getPropertyValue('--promo-banner-height').trim();
-      setBannerHeight(height || '0px');
-    };
-
-    updateBannerHeight();
-    const interval = setInterval(updateBannerHeight, 100);
-    return () => clearInterval(interval);
-  }, []);
 
   useEffect(() => {
     document.body.style.overflow = mobileOpen ? 'hidden' : '';
@@ -173,11 +146,10 @@ const Header = ({
     setCurrentY(0);
   };
 
-
   return (
     <div
-      className={`bg-background shadow-sm p-3 lg:p-4 sticky z-[99999] w-full halloween-decorations overflow-visible ${isDialogOpen ? 'hidden' : ''}`}
-      style={{ marginTop: 0, top: bannerHeight, marginBottom: 0, display: 'block' }}
+      className={`bg-background shadow-sm p-3 lg:p-4 sticky z-[99999] w-full overflow-visible ${isDialogOpen ? 'hidden' : ''}`}
+      style={{ marginTop: 0, top: 0, marginBottom: 0, display: 'block' }}
     >
       <div className="flex justify-between items-center relative z-10">
         {/* Mobile Logo */}
@@ -193,7 +165,6 @@ const Header = ({
           src="/product-image/Tidurlah Logo Horizontal.png"
           alt="TIDURLAH STORE"
           className="h-8 lg:h-10 object-contain cursor-pointer hidden lg:block"
-          style={isHalloweenMode ? { filter: 'brightness(0) invert(1)' } : {}}
           onClick={() => navigateWithScrollToTop('/')}
         />
 
@@ -213,7 +184,6 @@ const Header = ({
 
         <div className="flex items-center space-x-2 lg:space-x-4">
           <MusicPlayer />
-
 
           <button
             onClick={() => navigateWithScrollToTop('/blog')}
@@ -289,7 +259,6 @@ const Header = ({
                   <RotateCcw className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                   Return Policy
                 </button>
-
                 <button
                   className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
                   onClick={() => handleDesktopMenuClick('/katalog')}
@@ -305,14 +274,6 @@ const Header = ({
                 >
                   <MapPin className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110" />
                   Hello Page
-                </button>
-                <button
-                  className="w-full text-left px-4 py-2 text-sm font-medium text-foreground hover:bg-orange-50 flex items-center transition-all duration-200 hover:translate-x-1"
-                  onClick={toggleHalloweenMode}
-                  style={{ animationDelay: '450ms' }}
-                >
-                  <span className="h-4 w-4 mr-3 transition-transform duration-200 group-hover:scale-110">🎃</span>
-                  Halloween Mode {isHalloweenMode ? '(ON)' : '(OFF)'}
                 </button>
               </div>
             )}
@@ -469,7 +430,6 @@ const Header = ({
                   <span className="text-center">Return</span>
                 </button>
 
-
                 <button
                   className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
                     }`}
@@ -492,18 +452,6 @@ const Header = ({
                 >
                   <MapPin className="h-6 w-6 mb-1 text-[#FF5E01]" />
                   <span className="text-center">Hello</span>
-                </button>
-
-                <button
-                  className={`flex flex-col items-center justify-center px-3 py-3 rounded-lg hover:bg-gray-50 text-xs font-medium transition-all duration-300 transform ${isClosing ? 'translate-x-0 opacity-100' : 'translate-x-0 opacity-100'
-                    }`}
-                  onClick={() => { handleCloseMenu(); toggleHalloweenMode(); }}
-                  style={{
-                    animation: isClosing ? 'none' : 'slideInFromBottom 0.2s cubic-bezier(0.34, 1.56, 0.64, 1) 0.05s both'
-                  }}
-                >
-                  <span className="text-2xl mb-1">🎃</span>
-                  <span className="text-center">Halloween {isHalloweenMode ? 'ON' : 'OFF'}</span>
                 </button>
               </div>
 

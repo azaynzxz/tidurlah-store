@@ -98,19 +98,19 @@ export async function fetchPublicSupabaseRest<T>(
 
 export const supabase = supabaseUrl && supabaseAnonKey
   ? createClient<Database>(supabaseUrl, supabaseAnonKey, {
-      auth: {
-        autoRefreshToken: true,
-        persistSession: true,
-        detectSessionInUrl: true,
-        // Bypasses navigator.locks by using a no-op lock function to prevent timeout errors
-        lock: async (_name, _acquireTimeout, fn) => {
-          return await fn();
-        },
+    auth: {
+      autoRefreshToken: true,
+      persistSession: true,
+      detectSessionInUrl: true,
+      // Bypasses navigator.locks by using a no-op lock function to prevent timeout errors
+      lock: async (_name, _acquireTimeout, fn) => {
+        return await fn();
       },
-      global: {
-        fetch: fetchWithTimeout,
-      },
-    })
+    },
+    global: {
+      fetch: fetchWithTimeout,
+    },
+  })
   : null;
 
 /**

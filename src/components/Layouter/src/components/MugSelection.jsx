@@ -5,7 +5,7 @@ import { generateLayoutMug } from '../utils/pdfGenerator'
 import ProgressBar from './ProgressBar'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
-import processCompleteSound from '@/components/process-complete.mp3'
+import processCompleteSound from '@/assets/audio/process-complete.mp3'
 import './FileSelection.css'
 
 function MugSelection({ onBack }) {

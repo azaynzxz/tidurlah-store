@@ -1,5 +1,5 @@
 import { BlogPostData } from "../index";
-import { Check, Gift, Crown, Shield, Trophy, Receipt, Megaphone, CheckCircle2, Banknote } from "lucide-react";
+import { Gift, Crown, Shield, Trophy, Receipt, Megaphone, CheckCircle2, Banknote } from "lucide-react";
 const EasterPromoContent = () => {
   return (
     <div className="space-y-12 py-8 max-w-5xl mx-auto font-sans">

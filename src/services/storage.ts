@@ -34,26 +34,3 @@ export function getPublicUrl(bucket: string, path: string): string | null {
   const { data } = supabase.storage.from(bucket).getPublicUrl(path);
   return data.publicUrl;
 }
-
-/**
- * Get a signed/temporary URL for a file in a private bucket.
- * @param expiresIn seconds (default 3600 = 1 hour)
- */
-export async function getSignedUrl(
-  bucket: string,
-  path: string,
-  expiresIn = 3600
-): Promise<string | null> {
-  if (!supabase || !isSupabaseConfigured()) return null;
-
-  const { data, error } = await supabase.storage
-    .from(bucket)
-    .createSignedUrl(path, expiresIn);
-
-  if (error) {
-    console.error(`[Storage] Signed URL failed (${bucket}/${path}):`, error);
-    return null;
-  }
-
-  return data.signedUrl;
-}

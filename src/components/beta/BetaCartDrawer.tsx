@@ -24,7 +24,7 @@ export const BetaCartDrawer: React.FC<BetaCartDrawerProps> = ({
   onClose,
   cartItems,
   setCartItems,
-  products,
+  products: _products,
   onOrderSuccess,
 }) => {
   // Prefill local user info when drawer opens

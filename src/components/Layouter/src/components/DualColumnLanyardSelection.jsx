@@ -7,7 +7,7 @@ import LanyardRectangularCropper from './LanyardRectangularCropper'
 import { Button } from '@/components/ui/button'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog'
 import { getDualLanyardMaxRows } from '../utils/constants'
-import processCompleteSound from '@/components/process-complete.mp3'
+import processCompleteSound from '@/assets/audio/process-complete.mp3'
 import './FileSelection.css'
 import './ImageCropper.css'
 

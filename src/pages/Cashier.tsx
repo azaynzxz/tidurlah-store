@@ -1,6 +1,4 @@
-import React from 'react';
 import { POSDashboard } from '@/components/pos/POSDashboard';
-import { toast } from 'sonner';
 
 const Cashier = () => {
   return (

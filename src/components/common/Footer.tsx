@@ -1,18 +1,12 @@
-import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ExternalLink } from "lucide-react";
-import { useHalloweenTheme } from "@/contexts/HalloweenThemeContext";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
+
+const BELWIS_MAP_URL =
+  "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248.27629567866182!2d105.31613618779917!3d-5.35258469048837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e0!3m2!1sen!2sid!4v1791358860628!5m2!1sen!2sid";
 
 const Footer = () => {
   const navigate = useNavigate();
-  const { isHalloweenMode } = useHalloweenTheme();
-  const [selectedLocation, setSelectedLocation] = useState<'belwis'>('belwis');
-
-  // Map URLs for different locations
-  const mapUrls = {
-    belwis: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d248.27629567866182!2d105.31613618779917!3d-5.35258469048837!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e40dbe8e9453b63%3A0xb5127739986bb77f!2sID%20Card%20Lampung!5e0!3m2!1sen!2sid!4v1791358860628!5m2!1sen!2sid"
-  };
 
   // Navigation helper with scroll to top - optimized for mobile
   const navigateWithScrollToTop = (path: string) => {
@@ -41,7 +35,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className={`w-full halloween-decorations flex-shrink-0 ${isHalloweenMode ? 'bg-gray-900' : ''}`} style={{ backgroundColor: isHalloweenMode ? '#0f172a' : '#121939' }}>
+    <footer className="w-full flex-shrink-0" style={{ backgroundColor: '#121939' }}>
       {/* Main Footer Content */}
       <div className="w-full px-4 md:px-6 lg:px-8 py-12">
         <div className="max-w-7xl mx-auto">
@@ -70,7 +64,6 @@ const Footer = () => {
                   <li><button onClick={() => navigateWithScrollToTop('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
-                  <li><button onClick={() => navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Twibbon HUT 3 th ID Card Lampung</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
                   <li><button onClick={() => navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>
@@ -92,7 +85,6 @@ const Footer = () => {
                         <li><button onClick={() => navigateWithScrollToTop('/loker/reseller')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Reseller</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/sponsorship')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Sponsorship</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/hello')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Contact</button></li>
-                        <li><button onClick={() => navigateWithScrollToTop('/twibbon-hut-3-id-card-lampung')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Twibbon HUT 3 th ID Card Lampung</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/panduan-desain')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Panduan Desain</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/kebijakan-privasi')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Privacy Policy</button></li>
                         <li><button onClick={() => navigateWithScrollToTop('/blog/syarat-ketentuan-pengembalian')} className="text-gray-300 hover:text-[#FF5E01] transition-colors">Return Policy</button></li>
@@ -181,8 +173,7 @@ const Footer = () => {
               <div className="relative">
                 <div className="w-full h-56 bg-gray-200 rounded-lg overflow-hidden border border-gray-700">
                   <iframe
-                    key={selectedLocation}
-                    src={mapUrls[selectedLocation]}
+                    src={BELWIS_MAP_URL}
                     width="100%"
                     height="100%"
                     style={{ border: 0 }}

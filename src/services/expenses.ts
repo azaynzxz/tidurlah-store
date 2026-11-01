@@ -301,18 +301,6 @@ export async function fetchExpenseSummary(
 }
 
 /**
- * Fetch daily expenses map for the dashboard chart.
- */
-export async function fetchDailyExpenses(
-  month: number,
-  year: number
-): Promise<Record<number, number>> {
-  const result = await fetchExpenseSummary(month, year);
-  if (!result.success) return {};
-  return result.summary.dailyExpenses;
-}
-
-/**
  * Insert new expense record into Supabase.
  */
 export async function createExpense(
@@ -456,12 +444,7 @@ export interface EmployeeInput {
 
 const LOCAL_STORAGE_EMPLOYEES_KEY = 'tidurlah_payroll_employees';
 
-export const DEFAULT_EMPLOYEES: EmployeeItem[] = [
-  { id: 'emp-1', name: 'Stevan', role: 'Staff Operasional / Admin', base_salary: 3000000, payment_method: 'Transfer Bank', is_active: true },
-  { id: 'emp-2', name: 'Windy', role: 'Kasir & Front Office', base_salary: 2500000, payment_method: 'Transfer Bank', is_active: true },
-  { id: 'emp-3', name: 'Zayn', role: 'Supervisor Percetakan', base_salary: 3500000, payment_method: 'Transfer Bank', is_active: true },
-  { id: 'emp-4', name: 'Freelance Desain', role: 'Desainer Grafis', base_salary: 1500000, payment_method: 'Transfer Bank', is_active: true },
-];
+const DEFAULT_EMPLOYEES: EmployeeItem[] = [];
 
 function getLocalEmployees(): EmployeeItem[] {
   try {

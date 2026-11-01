@@ -88,14 +88,3 @@ export function addLocalOrder(order: LocalOrder): void {
     console.error('[localOrders] Failed to save local order:', err);
   }
 }
-
-/**
- * Clear all local order history.
- */
-export function clearLocalOrders(): void {
-  try {
-    localStorage.removeItem(LOCAL_ORDERS_KEY);
-  } catch (err) {
-    console.error('[localOrders] Failed to clear local orders:', err);
-  }
-}

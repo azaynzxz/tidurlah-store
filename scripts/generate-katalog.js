@@ -127,12 +127,12 @@ function scanDirectory(dir, category = null, basePath = '') {
 }
 
 function generateKatalog() {
-  console.log('🖼️  Generating katalog.json...\n');
+  console.log('[INFO] Generating katalog.json...\n');
   
   // Check if directory exists
   if (!fs.existsSync(KATALOG_DIR)) {
-    console.error(`❌ Directory not found: ${KATALOG_DIR}`);
-    console.log('💡 Creating directory structure...');
+    console.error(`[ERROR] Directory not found: ${KATALOG_DIR}`);
+    console.log('[INFO] Creating directory structure...');
     fs.mkdirSync(KATALOG_DIR, { recursive: true });
     
     // Create category folders
@@ -141,9 +141,9 @@ function generateKatalog() {
       fs.mkdirSync(categoryDir, { recursive: true });
     });
     
-    console.log('✅ Directory structure created with category folders:');
+    console.log('[OK] Directory structure created with category folders:');
     EXPECTED_CATEGORIES.forEach(cat => console.log(`   - ${cat}/`));
-    console.log('\n💡 Add your images to the category folders and run the script again.\n');
+    console.log('\n[INFO] Add your images to the category folders and run the script again.\n');
     return;
   }
   
@@ -151,15 +151,15 @@ function generateKatalog() {
   const images = scanDirectory(KATALOG_DIR);
   
   if (images.length === 0) {
-    console.log('⚠️  No images found in katalog directory.');
-    console.log(`📁 Directory: ${KATALOG_DIR}`);
-    console.log('💡 Supported formats:', IMAGE_EXTENSIONS.join(', '));
-    console.log('\n📂 Expected folder structure:');
+    console.log('[WARN] No images found in katalog directory.');
+    console.log(`[INFO] Directory: ${KATALOG_DIR}`);
+    console.log('[INFO] Supported formats:', IMAGE_EXTENSIONS.join(', '));
+    console.log('\n[INFO] Expected folder structure:');
     EXPECTED_CATEGORIES.forEach(cat => {
       console.log(`   katalog/${cat}/`);
       console.log(`      └── your-images.webp`);
     });
-    console.log('\n💡 Tip: Organize images in category folders:');
+    console.log('\n[INFO] Tip: Organize images in category folders:');
     console.log('   - katalog/ID Card/design-1.webp');
     console.log('   - katalog/Lanyard/sample-1.webp');
     console.log('   - katalog/Banner/promo-1.webp');
@@ -190,7 +190,7 @@ function generateKatalog() {
   fs.writeFileSync(OUTPUT_FILE, JSON.stringify(katalogData, null, 2), 'utf8');
   
   // Display results
-  console.log(`✅ Generated katalog.json with ${images.length} images:\n`);
+  console.log(`[OK] Generated katalog.json with ${images.length} images:\n`);
   
   // Show by category
   EXPECTED_CATEGORIES.forEach(category => {
@@ -205,15 +205,15 @@ function generateKatalog() {
     }
   });
   
-  console.log(`\n📄 Output file: ${OUTPUT_FILE}`);
-  console.log('✨ Done! Your katalog page will automatically load these images.\n');
+  console.log(`\n[INFO] Output file: ${OUTPUT_FILE}`);
+  console.log('[DONE] Your katalog page will automatically load these images.\n');
 }
 
 // Run the script
 try {
   generateKatalog();
 } catch (error) {
-  console.error('❌ Error:', error.message);
+  console.error('[ERROR] Error:', error.message);
   process.exit(1);
 }
 

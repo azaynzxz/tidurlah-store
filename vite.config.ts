@@ -45,7 +45,7 @@ function tidurlahCatalogPrefetchPlugin(
         });
       }
 
-      const inlineBootstrap = `(function(){if(window.__TIDURLAH_PREFETCH__)return;var p=window.location.pathname||"/";var isStore=p==="/"||p.indexOf("/product/")===0||p.indexOf("/beta")===0||p.indexOf("/classic")===0||p==="/old";if(!isStore)return;var fj=function(u,h,t){var c=typeof AbortController!=="undefined"?new AbortController():null;var id=c?setTimeout(function(){c.abort();},t):null;return fetch(u,{method:"GET",headers:h||{},signal:c?c.signal:undefined}).then(function(r){var ct=r.headers.get("content-type")||"";return r.ok&&ct.indexOf("json")!==-1?r.json():null;}).catch(function(){return null;}).then(function(d){if(id)clearTimeout(id);return d;});};var su=${JSON.stringify(
+      const inlineBootstrap = `(function(){if(window.__TIDURLAH_PREFETCH__)return;var p=window.location.pathname||"/";var isStore=p==="/"||p==="/beta"||p.indexOf("/product/")===0||p.indexOf("/beta/product/")===0;if(!isStore)return;var fj=function(u,h,t){var c=typeof AbortController!=="undefined"?new AbortController():null;var id=c?setTimeout(function(){c.abort();},t):null;return fetch(u,{method:"GET",headers:h||{},signal:c?c.signal:undefined}).then(function(r){var ct=r.headers.get("content-type")||"";return r.ok&&ct.indexOf("json")!==-1?r.json():null;}).catch(function(){return null;}).then(function(d){if(id)clearTimeout(id);return d;});};var su=${JSON.stringify(
         supabaseUrl || ""
       )};var sk=${JSON.stringify(
         supabaseAnonKey || ""

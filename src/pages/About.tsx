@@ -1,12 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import { AnimatedElement } from "@/components/animations/AnimatedElement";
 import { ArrowUpRight, MapPin, Star, ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react';
-import idCardLampungData from "./idcard_lampung_json.json";
-import { PRODUCT_VERSION } from "@/constants";
+import companyData from "@/data/companyProfile.json";
+import { getInitialCatalogSync, loadCatalogWithSWR } from "@/services/products";
+import { generateProductSlug } from "@/utils/product";
+import type { Product } from "@/types/product";
 
 interface ProductItem {
   id: number;
@@ -20,44 +22,35 @@ interface ProductItem {
   bestseller?: boolean;
 }
 
+function extractFeaturedProducts(catalog: Record<string, Product[]> | null): ProductItem[] {
+  if (!catalog || typeof catalog !== 'object') return [];
+  const allItems: ProductItem[] = [];
+  Object.keys(catalog).forEach((cat) => {
+    const arr = Array.isArray(catalog[cat]) ? catalog[cat] : [];
+    arr.forEach((p) => {
+      allItems.push({ ...p, category: p.category || cat });
+    });
+  });
+  const topFeatured = allItems.filter((p) => p.bestseller || (p.rating && p.rating >= 4.7)).slice(0, 10);
+  return topFeatured.length > 0 ? topFeatured : allItems.slice(0, 10);
+}
+
 const About = () => {
-  const { about } = idCardLampungData;
+  const { companyProfile: about } = companyData;
   const navigate = useNavigate();
-  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>([]);
-  const [activeCategoryFilter, setActiveCategoryFilter] = useState<string>("All");
+  const [featuredProducts, setFeaturedProducts] = useState<ProductItem[]>(() =>
+    extractFeaturedProducts(getInitialCatalogSync())
+  );
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const res = await fetch(`/products.json?v=${PRODUCT_VERSION}`);
-        const data = await res.json();
-        
-        const allItems: ProductItem[] = [];
-        if (data && typeof data === 'object') {
-          Object.keys(data).forEach((cat) => {
-            const arr = Array.isArray(data[cat]) ? data[cat] : [];
-            arr.forEach((p: any) => {
-              p.category = p.category || cat;
-              allItems.push(p);
-            });
-          });
-        }
-        
-        // Pick bestsellers or top featured products
-        const topFeatured = allItems.filter(p => p.bestseller || (p.rating && p.rating >= 4.7)).slice(0, 10);
-        setFeaturedProducts(topFeatured.length > 0 ? topFeatured : allItems.slice(0, 10));
-      } catch (err) {
-        console.error("Failed to load products for about page carousel:", err);
-      }
-    };
-    fetchProducts();
+    const cancel = loadCatalogWithSWR((freshCatalog) => {
+      setFeaturedProducts(extractFeaturedProducts(freshCatalog));
+    });
+    return cancel;
   }, []);
 
   const handleProductClick = (product: ProductItem) => {
-    try {
-      localStorage.setItem('openProductId', String(product.id));
-    } catch {}
-    navigate('/');
+    navigate(`/product/${generateProductSlug(product.name)}`);
   };
 
   const scrollCarousel = (direction: 'left' | 'right') => {

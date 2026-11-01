@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { useChatBot } from "@/hooks/useChatBot";
 import { ChatBubble } from "@/components/chatbot/ChatBubble";
-import { ChatHeader } from "@/components/chatbot/ChatHeader";
 import { ChatMessagesList } from "@/components/chatbot/ChatMessagesList";
 import { ChatInput } from "@/components/chatbot/ChatInput";
 
@@ -21,7 +20,6 @@ const ChatBot = () => {
     handleInputChange,
     handleSendMessage,
     handleSuggestionClick,
-    handleKeyPress,
   } = useChatBot(isOpen);
 
   return (

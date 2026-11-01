@@ -1,5 +1,3 @@
-# Create a .gitignore file to exclude unnecessary files
-cat > .gitignore << EOF
 # Node modules
 node_modules/
 
@@ -19,24 +17,20 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Editor directories
+# Editor and tooling directories
 .idea/
 .vscode/
+.playwright-mcp/
 *.swp
 *.swo
-EOF
 
-# Google Apps Script files (sensitive)
 # Archive
 archive/
 
-# Temporary binaries and spreadsheets
+# Temporary binaries, archives, and spreadsheets
 *.xlsx
 *.exe
 *.tar.gz
-.agents/*.zip
-logo-idcard-lampung.jpg
-logo_nono.jpeg
-src/pages/Untitled-1.txt
-scripts/test-supabase.ts
-scripts/test-anon.ts
+*.zip
+
+*.tsbuildinfo

@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -36,8 +36,6 @@ import {
   Clock,
   RotateCcw,
   MoreVertical,
-  ChevronDown,
-  ChevronUp,
   Package
 } from "lucide-react";
 import { toast } from "sonner";
@@ -239,7 +237,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
 
   const PAGE_SIZE = 50;
 
-  const refreshFromAPI = async (forceChannel?: string, forceSearch?: string) => {
+  const refreshFromAPI = useCallback(async (forceChannel?: string, forceSearch?: string) => {
     setIsLoading(true);
     setLoadError("");
     try {
@@ -266,7 +264,7 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [channelFilter, search]);
 
   const loadMoreOrders = async () => {
     if (isLoadingMore || orders.length >= totalOrders) return;
@@ -305,18 +303,19 @@ export function OrderHistory({ onBack, cashierName, cabang }: OrderHistoryProps)
       refreshFromAPI(channelFilter, search);
     }, 350);
     return () => clearTimeout(handler);
-  }, [search, channelFilter]);
+  }, [search, channelFilter, refreshFromAPI]);
 
   useEffect(() => {
     if (channelFilter === 'trash') {
-      refreshFromAPI('trash');
+      refreshFromAPI('trash', '');
     } else {
       const cached = localStorage.getItem('orderHistory_cache');
       if (cached) {
         try { setOrders(JSON.parse(cached)); } catch { /* ignore */ }
       }
-      refreshFromAPI(channelFilter);
+      refreshFromAPI(channelFilter, '');
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [channelFilter]);
 
   // Compute status counts for filter badges

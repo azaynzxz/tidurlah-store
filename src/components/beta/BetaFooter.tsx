@@ -14,8 +14,6 @@ export const BetaFooter: React.FC<BetaFooterProps> = ({ variant = "default" }) =
           <div className="flex items-center gap-4">
             <a href="/" className="hover:text-[#18181B] transition-colors">Katalog</a>
             <span>•</span>
-            <a href="/classic" className="hover:text-[#18181B] transition-colors">Versi Klasik</a>
-            <span>•</span>
             <a href="/loker" className="hover:text-[#18181B] transition-colors">Lowongan Kerja</a>
           </div>
         </div>

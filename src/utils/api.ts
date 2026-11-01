@@ -1,9 +1,8 @@
-import type { OrderData, CartItem, CaseVariant } from '@/types/product';
-import { JASA_DESAIN_PRICE, POS_GOOGLE_SHEETS_URL, LOKER_GOOGLE_SHEETS_URL, WHATSAPP_NUMBER } from '@/constants';
+import type { OrderData } from '@/types/product';
+import { JASA_DESAIN_PRICE, JASA_EXPRESS_PRICE, LOKER_GOOGLE_SHEETS_URL } from '@/constants';
 import { isSupabaseConfigured } from '@/lib/supabase';
 import { createOrder, fetchOrders, editOrder } from '@/services/orders';
 import { submitApplicationToSupabase } from '@/services/applications';
-import { getTrafficSource, trackPurchase } from '@/utils/tracking';
 
 // POS Order Data interface
 export interface POSOrderData {
@@ -62,18 +61,18 @@ export const submitWebsiteOrder = async (orderData: OrderData) => {
         area: item.area || '',
       })),
       ...(orderData.requestJasaDesain ? [{
-        productId: 2001,
+        productId: 200,
         name: 'Jasa Desain',
         quantity: 1,
         price: JASA_DESAIN_PRICE,
         subtotal: JASA_DESAIN_PRICE,
       }] : []),
       ...(orderData.isExpressPrint ? [{
-        productId: 2003,
+        productId: 2001,
         name: 'Cetak Express',
         quantity: 1,
-        price: JASA_DESAIN_PRICE,
-        subtotal: JASA_DESAIN_PRICE,
+        price: JASA_EXPRESS_PRICE,
+        subtotal: JASA_EXPRESS_PRICE,
       }] : []),
     ];
 
@@ -118,117 +117,6 @@ export const submitWebsiteOrder = async (orderData: OrderData) => {
   } catch (error: unknown) {
     console.error('Error submitting website order:', error);
     throw new Error(`Failed to submit order to database: ${error instanceof Error ? error.message : String(error)}`);
-  }
-};
-
-/** @deprecated Use submitWebsiteOrder instead */
-export const submitToGoogleSheet = submitWebsiteOrder;
-
-// WhatsApp redirection function
-export const handleWhatsAppRedirect = async (
-  orderData: OrderData,
-  cartItems: CartItem[],
-  promoCode: string,
-  promoDiscount: number,
-  JASA_DESAIN_PRICE: number,
-  isExpressPrint: boolean,
-  requestJasaDesain: boolean,
-  customerName: string,
-  phoneNumber: string,
-  instansi: string,
-  address: string,
-  isShipping: boolean,
-  designNote: string,
-  setIsSubmitting: React.Dispatch<React.SetStateAction<boolean>>,
-  setWhatsAppUrl: React.Dispatch<React.SetStateAction<string>>,
-  setShowOrderSuccess: React.Dispatch<React.SetStateAction<boolean>>,
-  calculateTotal: (cartItems: CartItem[], promoCode: string) => number,
-  calculateTotalSavings: (cartItems: CartItem[]) => number,
-  caseVariants: CaseVariant[]
-) => {
-  // Prevent multiple submissions
-  if (orderData.cartItems.length === 0) {
-    throw new Error("Keranjang masih kosong");
-  }
-
-  if (!customerName || !phoneNumber) {
-    throw new Error("Mohon isi nama dan nomor telepon kamu.");
-  }
-
-  if (isShipping && !address) {
-    throw new Error("Mohon isi alamat pengiriman kamu.");
-  }
-
-  try {
-    setIsSubmitting(true);
-
-    // Prepare order data
-    const fullOrderData: OrderData = {
-      ...orderData,
-      total: calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)
-    };
-
-    // Save to Google Sheet
-    await submitToGoogleSheet(fullOrderData);
-
-    // Prepare WhatsApp message
-    const productList = cartItems.map(item => {
-      let itemInfo = `- ${item.name} (${item.quantity}×) — Rp ${item.appliedPrice.toLocaleString('id-ID')}`;
-      if (item.width && item.height) {
-        const area = (item.width * item.height).toFixed(2);
-        itemInfo += `\n  Ukuran: ${item.width}m × ${item.height}m (${area} m²)`;
-      }
-      if (item.modelCode) {
-        itemInfo += `\n  Kode: ${item.modelCode}`;
-      }
-      if (item.caseVariant) {
-        const caseName = caseVariants.find(c => c.code === item.caseVariant)?.name || item.caseVariant;
-        itemInfo += `\n  Casing: ${caseName}`;
-      }
-      if (item.laminationVariant) {
-        itemInfo += `\n  Laminasi: ${item.laminationVariant}`;
-      }
-      return itemInfo;
-    }).join('\n');
-
-    const totalSavings = calculateTotalSavings(cartItems);
-    const savingsMessage = totalSavings > 0 ?
-      `\nKamu hemat: Rp ${totalSavings.toLocaleString('id-ID')}` : '';
-    const promoMessage = promoDiscount > 0 ?
-      `\nKode Promo: ${promoCode} (${promoDiscount}% discount)` : '';
-    const jasaDesainMessage = requestJasaDesain ? `\nJasa Desain: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
-    const expressPrintMessage = isExpressPrint ? `\nCetak Express: Rp ${JASA_DESAIN_PRICE.toLocaleString('id-ID')}` : '';
-    const designNoteMessage = designNote ? `\nNote/Link Desain: ${designNote}` : '';
-    const deadlineMessage = orderData.deadline ? `\nDeadline: ${orderData.deadline}` : '';
-
-    const trafficSource = getTrafficSource();
-
-    const message = `Informasi Order:
-Nama: ${customerName}
-Instansi/Alias: ${instansi || '-'}
-Telp: ${phoneNumber}${promoMessage}${designNoteMessage}${deadlineMessage}
-Sumber: ${trafficSource.rawText}
-${isShipping ? `Alamat: ${address}` : 'Ambil di tempat: Ya (tidak perlu dikirim)'}
-
-Detail Order:
-${productList}${jasaDesainMessage}${expressPrintMessage}
-
-Total: Rp ${(calculateTotal(cartItems, promoCode) + (requestJasaDesain ? JASA_DESAIN_PRICE : 0) + (isExpressPrint ? JASA_DESAIN_PRICE : 0)).toLocaleString('id-ID')}${savingsMessage}`;
-
-    const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`;
-
-    // Fire standard GA4 purchase and checkout_wa conversion events
-    trackPurchase(fullOrderData, trafficSource.rawText);
-
-    // Store the WhatsApp URL in state and show success dialog
-    setWhatsAppUrl(whatsappUrl);
-    setIsSubmitting(false);
-    setShowOrderSuccess(true);
-
-    return { success: true, whatsappUrl };
-  } catch (error) {
-    setIsSubmitting(false);
-    throw error;
   }
 };
 
@@ -286,7 +174,7 @@ export const submitPOSOrder = async (posOrderData: POSOrderData) => {
         downPayment: posOrderData.downPayment || 0,
         remainingBalance: posOrderData.remainingBalance ?? posOrderData.total,
         deadline: posOrderData.deadline || '',
-        cabang: (posOrderData as any).cabang || '',
+        cabang: posOrderData.cabang || '',
       });
       supabaseInvoice = posOrderData.receiptId;
     } else {
@@ -338,7 +226,7 @@ export const submitPOSOrder = async (posOrderData: POSOrderData) => {
   }
 };
 
-// Fetch order history from Google Sheets
+// Fetch order history from Supabase
 export interface OrderHistoryItem {
   orderId: string;
   timestamp: string;
@@ -476,6 +364,22 @@ export const submitJobApplication = async (
 
     startProgress();
 
+    // Mirror application to Supabase when available (non-blocking)
+    try {
+      await submitApplicationToSupabase({
+        fullName: applicationData.nama,
+        email: applicationData.email,
+        phone: applicationData.nomor,
+        position: applicationData.posisi,
+        infoSource: applicationData.source,
+        address: applicationData.alamat,
+        cv: applicationData.cv || undefined,
+        portfolio: applicationData.portfolio || undefined,
+      });
+    } catch (e) {
+      console.warn('[JobApplication] Supabase mirror skipped:', e);
+    }
+
     // Convert files to base64
     const fileToBase64 = (file: File): Promise<string> => {
       return new Promise((resolve, reject) => {
@@ -483,7 +387,6 @@ export const submitJobApplication = async (
         reader.readAsDataURL(file);
         reader.onload = () => {
           const result = reader.result as string;
-          // Extract base64 part
           const base64 = result.split(',')[1];
           resolve(base64);
         };
@@ -551,7 +454,6 @@ export const submitJobApplication = async (
     // Wait slightly to show 100% completion in UI
     await new Promise(resolve => setTimeout(resolve, 600));
 
-    // For no-cors mode, we just assume success if no error was thrown
     return { success: true };
   } catch (error: unknown) {
     console.error('Error submitting job application:', error);
@@ -565,26 +467,3 @@ export const submitJobApplication = async (
     throw new Error(`Gagal mengirim lamaran: ${fetchMsg || 'Terjadi kesalahan tidak diketahui'}`);
   }
 };
-
-// Replace the plain JSON cache pattern with a TTL-aware wrapper:
-const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes
-
-function readCache<T>(key: string): T | null {
-  try {
-    const raw = localStorage.getItem(key);
-    if (!raw) return null;
-    const { data, ts } = JSON.parse(raw);
-    if (Date.now() - ts > CACHE_TTL_MS) {
-      localStorage.removeItem(key);
-      return null;
-    }
-    return data as T;
-  } catch { return null; }
-}
-
-function writeCache(key: string, data: unknown) {
-  try {
-    localStorage.setItem(key, JSON.stringify({ data, ts: Date.now() }));
-  } catch { /* quota exceeded — ignore */ }
-}
-

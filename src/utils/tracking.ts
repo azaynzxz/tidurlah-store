@@ -4,7 +4,7 @@
  * Safe for SSR and client-side SPA environments.
  */
 
-import type { CartItem, OrderData, Product } from '@/types/product';
+import type { OrderData, Product } from '@/types/product';
 
 declare global {
   interface Window {
@@ -34,7 +34,7 @@ export const pushToDataLayer = (data: Record<string, any>) => {
 /**
  * Dispatch directly to gtag if available for immediate GA4 real-time processing
  */
-export const sendGtagEvent = (eventName: string, params: Record<string, any> = {}) => {
+const sendGtagEvent = (eventName: string, params: Record<string, any> = {}) => {
   if (typeof window !== 'undefined' && typeof window.gtag === 'function') {
     window.gtag('event', eventName, params);
   }

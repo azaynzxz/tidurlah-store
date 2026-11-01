@@ -18,7 +18,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
 import {
   Users,
@@ -30,23 +29,17 @@ import {
   Download,
   Copy,
   Check,
-  ExternalLink,
   Eye,
   Pencil,
   FileSpreadsheet,
   ArrowUpDown,
-  Building,
-  Calendar,
   X,
   ChevronLeft,
   ChevronRight,
   MessageCircle,
   HelpCircle,
-  Clock,
-  MapPin,
   Receipt,
   Send,
-  Sparkles,
   MoreVertical,
   Loader2,
 } from 'lucide-react';
@@ -60,7 +53,6 @@ import {
   formatCurrencyIDR,
   formatDateTime,
   formatRelativeTime,
-  formatPhoneNumber,
   normalizeIndonesianPhone,
   WHATSAPP_TEMPLATES,
   type CustomerSummary,
@@ -97,7 +89,6 @@ function getInitials(name: string): string {
 
 export function CustomersTab() {
   const [customers, setCustomers] = useState<CustomerSummary[]>([]);
-  const [totalOrdersCount, setTotalOrdersCount] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [phoneFilter, setPhoneFilter] = useState<'all' | 'with-phone' | 'without-phone'>('all');
@@ -150,7 +141,6 @@ export function CustomersTab() {
       const result = await fetchCustomersData();
       if (result.success) {
         setCustomers(result.customers);
-        setTotalOrdersCount(result.totalOrders);
       } else {
         toast.error('Gagal memuat data pelanggan: ' + (result.error || 'Kesalahan tidak diketahui'));
       }

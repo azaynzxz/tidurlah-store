@@ -614,19 +614,8 @@ export interface Database {
 
 // Convenience type aliases
 export type Profile = Database['public']['Tables']['profiles']['Row'];
-export type Product = Database['public']['Tables']['products']['Row'];
-export type PromoCode = Database['public']['Tables']['promo_codes']['Row'];
-export type Order = Database['public']['Tables']['orders']['Row'];
-export type OrderItem = Database['public']['Tables']['order_items']['Row'];
-export type OrderDelivery = Database['public']['Tables']['order_deliveries']['Row'];
-export type JobApplication = Database['public']['Tables']['job_applications']['Row'];
-export type SurveyResponse = Database['public']['Tables']['survey_responses']['Row'];
-export type ProductionTask = Database['public']['Tables']['production_tasks']['Row'];
 
 // Insert types
 export type OrderInsert = Database['public']['Tables']['orders']['Insert'];
 export type OrderItemInsert = Database['public']['Tables']['order_items']['Insert'];
 export type OrderDeliveryInsert = Database['public']['Tables']['order_deliveries']['Insert'];
-export type ProductInsert = Database['public']['Tables']['products']['Insert'];
-export type JobApplicationInsert = Database['public']['Tables']['job_applications']['Insert'];
-export type ProductionTaskInsert = Database['public']['Tables']['production_tasks']['Insert'];

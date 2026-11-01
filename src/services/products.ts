@@ -320,13 +320,13 @@ export function loadCatalogWithSWR(
   // if live Supabase takes longer than 250ms (it already had a head-start in <head>)
   const graceTimer = !hasInitialSyncData
     ? setTimeout(async () => {
-        if (cancelled || hasLiveResolved) return;
-        const staticData = await staticPromise;
-        if (!cancelled && !hasLiveResolved && staticData) {
-          deliveredFallback = true;
-          onUpdate(staticData, 'static');
-        }
-      }, 250)
+      if (cancelled || hasLiveResolved) return;
+      const staticData = await staticPromise;
+      if (!cancelled && !hasLiveResolved && staticData) {
+        deliveredFallback = true;
+        onUpdate(staticData, 'static');
+      }
+    }, 250)
     : null;
 
   livePromise
@@ -381,7 +381,7 @@ if (typeof window !== 'undefined' && window.__TIDURLAH_PREFETCH__) {
         memoryCatalogSource = 'static';
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 
   window.__TIDURLAH_PREFETCH__.supabaseRows
     .then((rows) => {
@@ -394,7 +394,7 @@ if (typeof window !== 'undefined' && window.__TIDURLAH_PREFETCH__) {
         }
       }
     })
-    .catch(() => {});
+    .catch(() => { });
 }
 
 /**

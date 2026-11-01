@@ -5,8 +5,6 @@ import {
   Loader2,
   TrendingUp,
   TrendingDown,
-  ShoppingCart,
-  Users,
   Package,
   RefreshCw,
   ArrowUpRight,
@@ -51,7 +49,6 @@ export function DashboardTab() {
   const [monthExpensesTotal, setMonthExpensesTotal] = useState<number>(0);
   const [topProducts, setTopProducts] = useState<ProductRanking[]>([]);
   const [statusCounts, setStatusCounts] = useState<Record<string, number>>({});
-  const [uniqueCustomers, setUniqueCustomers] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -89,14 +86,11 @@ export function DashboardTab() {
       // Compute status counts & unique customers from all orders
       if (ordersResult.success && ordersResult.orders) {
         const counts: Record<string, number> = { pending: 0, partial: 0, done: 0 };
-        const customers = new Set<string>();
         ordersResult.orders.forEach((o: OrderHistoryItem) => {
           const s = (o.orderStatus || '').toLowerCase();
           if (counts[s] !== undefined) counts[s]++;
-          if (o.customerName) customers.add(o.customerName.toLowerCase());
         });
         setStatusCounts(counts);
-        setUniqueCustomers(customers.size);
       }
     } catch {
       setError("Gagal memuat data dashboard");

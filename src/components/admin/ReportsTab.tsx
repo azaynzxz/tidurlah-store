@@ -8,7 +8,6 @@ import {
   FileText,
   TrendingUp,
   TrendingDown,
-  ShoppingCart,
   RefreshCw,
   Calendar,
   Wallet,
@@ -20,7 +19,6 @@ import {
 import { fetchMonthlyReport, type MonthlyReportData } from "@/utils/adminApi";
 import {
   fetchExpenseSummary,
-  formatIDR,
   type MonthlyExpenseSummary,
   type ExpenseItem,
 } from "@/services/expenses";

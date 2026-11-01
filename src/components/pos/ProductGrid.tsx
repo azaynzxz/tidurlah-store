@@ -1,3 +1,4 @@
+import { Package } from "lucide-react";
 import { ProductCard } from "./ProductCard";
 
 interface Product {
@@ -53,7 +54,7 @@ export function ProductGrid({ products, onAddToCart, selectedProducts, isCartVis
       {/* Empty State */}
       {products.length === 0 && (
         <div className="flex flex-col items-center justify-center h-64 text-gray-500 px-4">
-          <div className="text-4xl md:text-6xl mb-4">📦</div>
+          <Package className="w-12 h-12 md:w-16 md:h-16 mb-4 text-gray-400" />
           <p className="text-base md:text-lg font-medium">Tidak ada produk ditemukan</p>
           <p className="text-xs md:text-sm text-center">Coba ubah kategori atau kata kunci pencarian</p>
         </div>

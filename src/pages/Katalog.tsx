@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router-dom";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
 import ChatBot from "@/components/ChatBot";
-import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
+import { AnimatedElement } from "@/components/animations/AnimatedElement";
 import { Image as ImageIcon, Share2, Check } from "lucide-react";
 import { toast } from "sonner";
 
@@ -19,7 +19,6 @@ const Katalog = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedImage, setSelectedImage] = useState<number | null>(null);
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [imageHeights, setImageHeights] = useState<Record<number, number>>({});
   const [linkCopied, setLinkCopied] = useState(false);
   const [galleryImages, setGalleryImages] = useState<GalleryImage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -120,32 +119,6 @@ const Katalog = () => {
       setTimeout(() => setLinkCopied(false), 2000);
     }
   };
-
-  // Measure images and calculate heights for masonry layout
-  useEffect(() => {
-    const measureImages = () => {
-      const heights: Record<number, number> = {};
-      filteredImages.forEach((image) => {
-        const img = new window.Image();
-        img.onload = () => {
-          const aspectRatio = img.height / img.width;
-          // Calculate height based on column width (approximately 250px on mobile, 300px on desktop)
-          const columnWidth = window.innerWidth < 768 ? 150 : window.innerWidth < 1024 ? 200 : 250;
-          const calculatedHeight = columnWidth * aspectRatio;
-          heights[image.id] = calculatedHeight;
-          setImageHeights((prev) => ({ ...prev, ...heights }));
-        };
-        img.src = image.src;
-        // Fallback to placeholder if main image fails
-        img.onerror = () => {
-          const placeholderUrl = `https://placehold.co/300x400/FF5E01/FFFFFF?text=${encodeURIComponent(image.title)}`;
-          img.src = placeholderUrl;
-        };
-      });
-    };
-
-    measureImages();
-  }, [filteredImages]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-background flex flex-col page-transition">

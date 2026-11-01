@@ -56,51 +56,6 @@ export async function fetchTasksByDate(
 }
 
 /**
- * Insert or update a single task.
- * If the task has an `id`, it updates; otherwise it inserts.
- */
-export async function upsertTask(
-  task: Partial<ProductionTask> & { schedule_date: string; title: string }
-): Promise<{ success: boolean; task?: ProductionTask; error?: string }> {
-  if (!supabase || !isSupabaseConfigured()) {
-    return { success: false, error: 'Supabase not configured' };
-  }
-
-  try {
-    if (task.id) {
-      // Update existing
-      const { id, created_at, updated_at, ...updateData } = task;
-      const { data, error } = await supabase
-        .from('production_tasks')
-        .update(updateData)
-        .eq('id', id)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return { success: true, task: data as unknown as ProductionTask };
-    } else {
-      // Insert new
-      const { id, created_at, updated_at, ...insertData } = task as any;
-      const { data, error } = await supabase
-        .from('production_tasks')
-        .insert(insertData)
-        .select()
-        .single();
-
-      if (error) throw error;
-      return { success: true, task: data as unknown as ProductionTask };
-    }
-  } catch (err) {
-    console.error('[ProductionTasks] Upsert failed:', err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : String(err),
-    };
-  }
-}
-
-/**
  * Batch insert multiple tasks at once (e.g. from order selection).
  */
 export async function bulkInsertTasks(
@@ -179,39 +134,6 @@ export async function toggleTaskComplete(
     return { success: true };
   } catch (err) {
     console.error('[ProductionTasks] Toggle complete failed:', err);
-    return {
-      success: false,
-      error: err instanceof Error ? err.message : String(err),
-    };
-  }
-}
-
-/**
- * Batch update sort_order for reordering.
- */
-export async function updateTaskOrder(
-  taskOrders: { id: string; sort_order: number }[]
-): Promise<{ success: boolean; error?: string }> {
-  if (!supabase || !isSupabaseConfigured()) {
-    return { success: false, error: 'Supabase not configured' };
-  }
-
-  try {
-    // Update each task's sort_order individually (Supabase doesn't support bulk update with different values)
-    const updates = taskOrders.map(({ id, sort_order }) =>
-      supabase!
-        .from('production_tasks')
-        .update({ sort_order })
-        .eq('id', id)
-    );
-
-    const results = await Promise.all(updates);
-    const failed = results.find(r => r.error);
-    if (failed?.error) throw failed.error;
-
-    return { success: true };
-  } catch (err) {
-    console.error('[ProductionTasks] Update order failed:', err);
     return {
       success: false,
       error: err instanceof Error ? err.message : String(err),

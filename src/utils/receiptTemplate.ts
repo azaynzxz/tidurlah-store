@@ -113,7 +113,7 @@ export interface ReceiptData {
 // Shared helper to generate items detail HTML table
 function generateItemsDetailHTML(items: ReceiptData['items']): string {
   return items.map((item) => {
-    const additionalInfo = [];
+    const additionalInfo: string[] = [];
     if (item.width && item.height) {
       additionalInfo.push(`${item.width}m x ${item.height}m`);
     }
@@ -360,7 +360,7 @@ export function generateBelwisReceiptHTML(data: ReceiptData, logoBase64?: string
 /**
  * Generate receipt HTML for Cabang Unila (Unila Design: no address, no Tidurlah logo, custom socials)
  */
-export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string, surveyQRBase64?: string, showQRIS?: boolean, qrisBase64?: string): string {
+export function generateUnilaReceiptHTML(data: ReceiptData, logoBase64?: string, _surveyQRBase64?: string, showQRIS?: boolean, qrisBase64?: string): string {
   let topLogo = logoBase64;
   if (!topLogo || topLogo.includes('Tidurlah%20Logo') || topLogo.includes('Tidurlah Logo')) {
     topLogo = '/logo_nono.jpeg';

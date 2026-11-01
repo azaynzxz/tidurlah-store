@@ -336,9 +336,8 @@ export const StorefrontBeta: React.FC = () => {
               <p className="text-xs text-[#71717A] mt-0.5">
                 {isActuallyLoading
                   ? "Memuat katalog produk..."
-                  : `Menampilkan ${filteredProducts.length} produk${
-                      searchTerm ? ` untuk kata kunci "${searchTerm}"` : ""
-                    }`}
+                  : `Menampilkan ${filteredProducts.length} produk${searchTerm ? ` untuk kata kunci "${searchTerm}"` : ""
+                  }`}
               </p>
             </div>
           </div>

@@ -1,6 +1,5 @@
 import { supabase, isSupabaseConfigured } from '@/lib/supabase';
 import type { OrderInsert, OrderItemInsert, OrderDeliveryInsert, Database } from '@/types/supabase';
-import type { Json } from '@/types/supabase';
 
 // ============================================================
 // Orders Service — Supabase CRUD with Google Sheets fallback

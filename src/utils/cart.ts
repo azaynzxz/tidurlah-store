@@ -1,6 +1,6 @@
 import type { Product, CartItem, PromoCodeType } from '@/types/product';
 import { getApplicablePrice, calculateSavings, calculateBannerPrice } from './product';
-import { validPromoCodes, idCardWithCaseIds, stikerWithLaminationIds, caseVariants } from '@/constants';
+import { validPromoCodes, idCardWithCaseIds, stikerWithLaminationIds } from '@/constants';
 import { validatePromoCode as validatePromoCodeSupabase } from '@/services/products';
 import { toast } from 'sonner';
 
@@ -21,70 +21,6 @@ function getPromoInfo(code: string): PromoCodeType | undefined {
   return validPromoCodes[code as keyof typeof validPromoCodes];
 }
 
-export interface FlyingBubble {
-  id: string;
-  startX: number;
-  startY: number;
-  endX: number;
-  endY: number;
-}
-
-/**
- * Trigger flying animation bubble effect when item is added to cart
- * 
- * ⚠️ IMPORTANT: This function requires setFlyingBubbles to be passed from the component.
- * If not provided, animation will be skipped (no error thrown).
- * 
- * @param sourceElement - Element where animation starts (product card/button)
- * @param setFlyingBubbles - State setter for flying bubbles (optional)
- * @returns Created bubble data if setFlyingBubbles is provided, undefined otherwise
- */
-export const triggerFlyingAnimation = (
-  sourceElement?: HTMLElement,
-  setFlyingBubbles?: React.Dispatch<React.SetStateAction<FlyingBubble[]>>
-) => {
-  // Skip animation if setter is not provided
-  if (!setFlyingBubbles) {
-    return;
-  }
-
-  // Always start from center for consistency across devices
-  const startX = window.innerWidth / 2;
-  const startY = window.innerHeight / 2;
-
-  // Get cart icon position
-  const cartIcon = document.querySelector('[data-cart-icon]') || document.querySelector('.relative button');
-  let endX = window.innerWidth - 100; // Default position
-  let endY = 80;
-
-  if (cartIcon) {
-    const cartRect = cartIcon.getBoundingClientRect();
-    endX = cartRect.left + cartRect.width / 2;
-    endY = cartRect.top + cartRect.height / 2;
-  }
-
-  // Create bubble
-  const bubbleId = Date.now().toString();
-  const newBubble: FlyingBubble = { id: bubbleId, startX, startY, endX, endY };
-
-  setFlyingBubbles(prev => [...prev, newBubble]);
-
-  // Trigger cart bounce effect
-  if (cartIcon) {
-    cartIcon.classList.add('cart-bounce');
-    setTimeout(() => {
-      cartIcon.classList.remove('cart-bounce');
-    }, 600);
-  }
-
-  // Remove bubble after animation completes
-  setTimeout(() => {
-    setFlyingBubbles(prev => prev.filter(bubble => bubble.id !== bubbleId));
-  }, 1200);
-
-  return newBubble;
-};
-
 // Add to cart function
 export const addToCart = (
   product: Product,
@@ -96,7 +32,7 @@ export const addToCart = (
   setShowAngryCase: React.Dispatch<React.SetStateAction<boolean>>,
   setShowAngryLamination: React.Dispatch<React.SetStateAction<boolean>>,
   setShowAngryQuantity: React.Dispatch<React.SetStateAction<boolean>>,
-  sourceElement?: HTMLElement,
+  _sourceElement?: HTMLElement,
   quantity: number = 1
 ): boolean => {
   // Validate quantity first
@@ -204,13 +140,10 @@ export const addToCart = (
     );
     setTimeout(() => {
       toast.success('Berhasil ditambahkan!', {
-        description: `${product.name} (+${quantity} total ${newQuantity}×)`,
+        description: `${product.name} (+${quantity} total ${newQuantity}x)`,
         duration: 3000
       });
     }, 1200);
-
-    // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
-    // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
   } else {
     const newItem: CartItem = {
       ...product,
@@ -224,15 +157,12 @@ export const addToCart = (
     setCartItems([...cartItems, newItem]);
     setTimeout(() => {
       toast.success('Berhasil ditambahkan!', {
-        description: `${product.name} (${quantity}×)`,
+        description: `${product.name} (${quantity}x)`,
         duration: 3000
       });
     }, 1200);
-
-    // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
-    // Animation cannot be triggered here as addToCart doesn't have access to setFlyingBubbles
   }
-  
+
   return true;
 };
 
@@ -253,104 +183,38 @@ export const addBannerToCart = (
     quantity: 1,
     savings: product.price - calculatedPrice > 0 ? product.price - calculatedPrice : 0,
     isDimensionalProduct: true,
-    dimensionText: `${width}m × ${height}m`,
-    area: (width * height).toFixed(2) + ' m²'
+    dimensionText: `${width}m x ${height}m`,
+    area: (width * height).toFixed(2) + ' m2'
   };
 
   setCartItems([...cartItems, newItem]);
 
-  // Show success notification after bubble animation
   setTimeout(() => {
     toast.success('Berhasil ditambahkan!', {
-      description: `${product.name} (${width}m × ${height}m)`,
+      description: `${product.name} (${width}m x ${height}m)`,
       duration: 3000
     });
   }, 1200);
 
-  // Note: Flying animation is handled in the component (Index.tsx) via setFlyingBubbles
-  // Animation cannot be triggered here as addBannerToCart doesn't have access to setFlyingBubbles
-  
   return true;
-};
-
-// Remove from cart function
-export const removeFromCart = (
-  id: number,
-  cartItems: CartItem[],
-  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>,
-  products: any
-) => {
-  const existingItem = cartItems.find(item => item.id === id);
-
-  if (existingItem && existingItem.quantity > 1) {
-    const newQuantity = existingItem.quantity - 1;
-    const product = Object.values(products).flat().find((p: any) => p.id === id);
-    const newPrice = getApplicablePrice(product, newQuantity, existingItem.modelCode);
-
-    setCartItems(
-      cartItems.map(item =>
-        item.id === id
-          ? {
-            ...item,
-            quantity: newQuantity,
-            appliedPrice: newPrice,
-            savings: calculateSavings(product, newQuantity, existingItem.modelCode)
-          }
-          : item
-      )
-    );
-
-    // Show notification for decreasing quantity
-    toast.info(`Jumlah ${existingItem.name} dikurangi (${newQuantity}×)`);
-  } else {
-    setCartItems(cartItems.filter(item => item.id !== id));
-
-    // Show notification for removing product
-    if (existingItem) {
-      toast.info(`${existingItem.name} dihapus dari keranjang`);
-    }
-  }
-};
-
-// Delete item completely from cart
-export const deleteFromCart = (
-  id: number,
-  cartItems: CartItem[],
-  setCartItems: React.Dispatch<React.SetStateAction<CartItem[]>>
-) => {
-  const itemToDelete = cartItems.find(item => item.id === id);
-
-  setCartItems(cartItems.filter(item => item.id !== id));
-
-  // Show notification for deleting product
-  if (itemToDelete) {
-    toast.info(`${itemToDelete.name} dihapus dari keranjang`);
-  }
 };
 
 /**
  * Calculate total cart price with promo code applied
- * 
+ *
  * PRICING LOGIC FLOW:
  * 1. Start with item.appliedPrice (includes threshold discounts, excludes promos)
  * 2. If promo code applies:
  *    - Override Price Promos: Replace price entirely with flat override price
  *    - Percentage Promos: Apply discount to threshold price
- * 
- * ⚠️ IMPORTANT NOTES:
- * - Override prices completely ignore quantity thresholds
+ *
+ * IMPORTANT NOTES:
+ * - Override prices ignore quantity thresholds
  * - Percentage discounts are applied AFTER threshold prices
  * - item.appliedPrice is calculated in addToCart() using getApplicablePrice()
- * 
- * @param cartItems - Array of cart items with appliedPrice already set
- * @param promoCode - Active promo code (empty string if none)
- * @returns Total price after all discounts
- * 
- * @see pricing-documentation.md for detailed pricing flow explanation
  */
 export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
   return cartItems.reduce((total, item) => {
-    // Start with threshold-adjusted price (from getApplicablePrice)
     let itemPrice = item.appliedPrice * item.quantity;
 
     if (promoCode && getPromoInfo(promoCode)) {
@@ -359,56 +223,15 @@ export const calculateTotal = (cartItems: CartItem[], promoCode: string) => {
       const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
       if (productMatches && quantityMatches) {
-        // TYPE 1: Override Price Promos (e.g., HUT3TH)
-        // These set a flat price per unit, completely ignoring thresholds
-        // ⚠️ GAP: Override prices ignore quantity - 1 item or 100 items get same unit price
         if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
           itemPrice = promoInfo.overridePrices[item.id] * item.quantity;
-        }
-        // TYPE 2: Percentage Discount Promos
-        // Applied to threshold price, not base price
-        // ⚠️ GAP: Discount is on threshold price, not original base price
-        else {
+        } else {
           itemPrice = itemPrice * (1 - promoInfo.discount / 100);
         }
       }
     }
     return total + itemPrice;
   }, 0);
-};
-
-/**
- * Get effective price per unit for display purposes
- * 
- * This function returns the actual price per unit that will be charged,
- * considering both threshold prices and active promo codes.
- * 
- * USE CASE: Display correct price in cart/checkout when promo is active
- * 
- * ⚠️ GAP: Currently cart items show item.appliedPrice which doesn't reflect promos.
- * Use this function to show correct price in UI.
- * 
- * @param item - Cart item with appliedPrice set
- * @param promoCode - Active promo code
- * @returns Effective price per unit after promo application
- */
-export const getEffectivePrice = (item: CartItem, promoCode: string): number => {
-  if (promoCode && getPromoInfo(promoCode)) {
-    const promoInfo = getPromoInfo(promoCode)!;
-    const productMatches = promoInfo.productIds === null || promoInfo.productIds.includes(item.id);
-    const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
-
-    if (productMatches && quantityMatches) {
-      // Override prices: flat price per unit
-      if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
-        return promoInfo.overridePrices[item.id];
-      }
-      // Percentage discount: applied to threshold price
-      return item.appliedPrice * (1 - promoInfo.discount / 100);
-    }
-  }
-  // No promo or promo doesn't apply: return threshold-adjusted price
-  return item.appliedPrice;
 };
 
 // Calculate total savings
@@ -420,20 +243,10 @@ export const calculateTotalSavings = (cartItems: CartItem[]) => {
 
 /**
  * Calculate total discount amount from promo code
- * 
+ *
  * DISCOUNT CALCULATION:
- * - Override Promos: Discount = (threshold price - override price) × quantity
- * - Percentage Promos: Discount = threshold price × quantity × (discount %)
- * 
- * ⚠️ IMPORTANT NOTES:
- * - Discount is calculated from threshold price, NOT base price
- * - For override promos, discount shown might be less than actual savings
- *   Example: Base Rp 25,000, Threshold Rp 20,000, Override Rp 15,000
- *   Discount shown: Rp 5,000 (but actual savings from base is Rp 10,000)
- * 
- * @param cartItems - Array of cart items
- * @param promoCode - Active promo code
- * @returns Total discount amount in Rupiah
+ * - Override Promos: Discount = (threshold price - override price) * quantity
+ * - Percentage Promos: Discount = threshold price * quantity * (discount %)
  */
 export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string) => {
   if (!promoCode || !getPromoInfo(promoCode)) return 0;
@@ -444,17 +257,11 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
     const quantityMatches = !promoInfo.minQuantity || item.quantity >= promoInfo.minQuantity;
 
     if (productMatches && quantityMatches) {
-      // Override Price Discount
-      // Compares threshold price vs override price
-      // ⚠️ GAP: Doesn't compare to base price, only threshold price
       if (promoInfo.overridePrices && promoInfo.overridePrices[item.id] !== undefined) {
-        const originalPrice = item.appliedPrice * item.quantity; // Threshold price
+        const originalPrice = item.appliedPrice * item.quantity;
         const overridePrice = promoInfo.overridePrices[item.id] * item.quantity;
         return discount + (originalPrice - overridePrice);
-      }
-      // Percentage Discount
-      // Applied to threshold price
-      else {
+      } else {
         return discount + (item.appliedPrice * item.quantity * (promoInfo.discount / 100));
       }
     }
@@ -464,25 +271,17 @@ export const calculateTotalDiscount = (cartItems: CartItem[], promoCode: string)
 
 /**
  * Validate and apply promo code to cart
- * 
+ *
  * VALIDATION FLOW:
  * 1. Try Supabase validation first (populates module-level cache with TTL)
  * 2. If promo code exists (Supabase or hardcoded):
  *    a. Check product eligibility — verify at least one matching product in cart
  *    b. Check minimum quantity requirement
  *    c. Apply promo if all checks pass
- * 
- * ⚠️ LIMITATIONS:
+ *
+ * LIMITATIONS:
  * - Only ONE promo code can be active at a time
  * - Promos validated via Supabase are cached for 5 minutes
- * 
- * @param code - Promo code string (empty string clears promo)
- * @param cartItems - Current cart items
- * @param setPromoCode - State setter for promo code
- * @param setPromoCodeError - State setter for error message
- * @param setPromoDiscount - State setter for discount percentage (for display)
- * 
- * @see validPromoCodes in constants/index.ts for promo definitions
  */
 export const handlePromoCodeChange = async (
   code: string,
@@ -520,8 +319,6 @@ export const handlePromoCodeChange = async (
 
   const promo = getPromoInfo(code);
   if (promo) {
-    // VALIDATION STEP 1: Check product eligibility
-    // If promo targets specific products, verify at least one is in cart
     if (promo.productIds && Array.isArray(promo.productIds)) {
       const matchingCartItem = cartItems.find(item => promo.productIds!.includes(item.id));
       if (!matchingCartItem) {
@@ -529,7 +326,6 @@ export const handlePromoCodeChange = async (
         setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
         return;
       }
-      // VALIDATION STEP 2: Check minimum quantity requirement
       if (promo.minQuantity && matchingCartItem.quantity < promo.minQuantity) {
         setPromoDiscount(0);
         setPromoCodeError(`Kode promo memerlukan minimal ${promo.minQuantity} pcs pada produk yang dipilih.`);
@@ -537,8 +333,6 @@ export const handlePromoCodeChange = async (
       }
     }
 
-    // VALIDATION STEP 3: Verify promo applies to at least one item
-    // (For promos that apply to all products or passed above checks)
     const appliesToAny = cartItems.some(item => {
       const productMatches = promo.productIds === null || promo.productIds.includes(item.id);
       const quantityMatches = !promo.minQuantity || item.quantity >= promo.minQuantity;
@@ -546,27 +340,18 @@ export const handlePromoCodeChange = async (
     });
 
     if (appliesToAny) {
-      // Promo is valid - apply it
-      setPromoDiscount(promo.discount); // For display (0% for override price promos)
-
-      // Custom success messages for specific promos
-      if (code === "HUT3TH") {
-        // HUT3TH uses override prices, not percentage discount
-        toast.success("Promo HUT 3 Tahun ID Card Lampung berhasil dipakai!");
-      } else {
-        // Standard percentage discount promos
+      setPromoDiscount(promo.discount);
+      if (promo.discount > 0) {
         toast.success(`Promo code ${code} applied! ${promo.discount}% discount`);
+      } else {
+        toast.success(`Kode promo ${code} berhasil diterapkan!`);
       }
     } else {
-      // Promo doesn't apply to any items in cart
       setPromoDiscount(0);
       setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
     }
   } else {
-    // Invalid promo code
     setPromoDiscount(0);
     setPromoCodeError("Kode promo tidak berlaku untuk produk di keranjang.");
   }
 };
-
-

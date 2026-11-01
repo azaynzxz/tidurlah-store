@@ -7,7 +7,7 @@ import Footer from "@/components/common/Footer";
 import ApplyButton from "@/components/ApplyButton";
 import ApplicationRequirements from "@/components/ApplicationRequirements";
 import { toast } from "sonner";
-import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
+import { StaggeredContainer } from "@/components/animations/AnimatedElement";
 
 // Job data structure
 interface Job {
@@ -159,21 +159,6 @@ const Loker = () => {
     }
     return <JobDetailPage job={job} />;
   }
-
-  const handleJobShare = (job: Job) => {
-    const shareUrl = `${window.location.origin}/loker/${job.id}`;
-
-    if (navigator.share) {
-      navigator.share({
-        title: `Lowongan Kerja: ${job.title} - Tidurlah Store`,
-        text: `Lihat lowongan kerja ${job.title} di Tidurlah Store`,
-        url: shareUrl,
-      });
-    } else {
-      navigator.clipboard.writeText(shareUrl);
-      toast.success("Link lowongan kerja disalin!");
-    }
-  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col page-transition">

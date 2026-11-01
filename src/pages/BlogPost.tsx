@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ShoppingBag, Star, User, Calendar, Tag, Clock, Eye } from "lucide-react";
+import { User, Calendar, Tag, Clock, Eye } from "lucide-react";
 import { getBlogPostBySlug, BlogPostData } from "@/content/blog";
 import BlogContent from "@/components/blog/BlogContent";
 import BlogLayout from "@/components/blog/BlogLayout";

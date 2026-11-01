@@ -22,7 +22,6 @@ interface UseChatBotReturn {
   handleInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   handleSendMessage: () => void;
   handleSuggestionClick: (keyword: string) => void;
-  handleKeyPress: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
@@ -410,10 +409,6 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
       if (response) {
         // Special case for "chat with admin" - show WhatsApp button with collected info
         if (keyword === "chat with admin") {
-          const message = userInstansi && userInstansi.toLowerCase() !== 'tidak ada' && userInstansi.trim() !== ''
-            ? `Halo Mincard, saya ${userName} dari ${userInstansi} ingin bertanya terkait produk idcardlampung.com`
-            : `Halo Mincard, saya ${userName} ingin bertanya terkait produk idcardlampung.com`;
-          
           setMessages([
             ...messagesWithoutTyping,
             { 
@@ -466,13 +461,6 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
     }, 1500);
   };
 
-  // Handle Enter key press
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
-      handleSendMessage();
-    }
-  };
-
   return {
     messages,
     inputText,
@@ -482,6 +470,5 @@ export const useChatBot = (isOpen: boolean): UseChatBotReturn => {
     handleInputChange,
     handleSendMessage,
     handleSuggestionClick,
-    handleKeyPress,
   };
 };

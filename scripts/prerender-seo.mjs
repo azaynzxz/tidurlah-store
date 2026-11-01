@@ -271,44 +271,44 @@ function buildProductSchema(product, slug) {
     offers:
       lowPrice !== highPrice
         ? {
-            "@type": "AggregateOffer",
-            url: canonicalUrl,
-            priceCurrency: "IDR",
-            lowPrice,
-            highPrice,
-            offerCount,
-            availability:
-              product.is_available === false
-                ? "https://schema.org/OutOfStock"
-                : "https://schema.org/InStock",
-            seller: {
-              "@type": "Organization",
-              name: "ID Card Lampung (Tidurlah Grafika)",
-            },
-          }
-        : {
-            "@type": "Offer",
-            url: canonicalUrl,
-            priceCurrency: "IDR",
-            price: lowPrice,
-            availability:
-              product.is_available === false
-                ? "https://schema.org/OutOfStock"
-                : "https://schema.org/InStock",
-            seller: {
-              "@type": "Organization",
-              name: "ID Card Lampung (Tidurlah Grafika)",
-            },
-          },
-    ...(product.rating
-      ? {
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: String(product.rating),
-            bestRating: "5",
-            reviewCount: String(((product.id * 17) % 60) + 24),
+          "@type": "AggregateOffer",
+          url: canonicalUrl,
+          priceCurrency: "IDR",
+          lowPrice,
+          highPrice,
+          offerCount,
+          availability:
+            product.is_available === false
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "ID Card Lampung (Tidurlah Grafika)",
           },
         }
+        : {
+          "@type": "Offer",
+          url: canonicalUrl,
+          priceCurrency: "IDR",
+          price: lowPrice,
+          availability:
+            product.is_available === false
+              ? "https://schema.org/OutOfStock"
+              : "https://schema.org/InStock",
+          seller: {
+            "@type": "Organization",
+            name: "ID Card Lampung (Tidurlah Grafika)",
+          },
+        },
+    ...(product.rating
+      ? {
+        aggregateRating: {
+          "@type": "AggregateRating",
+          ratingValue: String(product.rating),
+          bestRating: "5",
+          reviewCount: String(((product.id * 17) % 60) + 24),
+        },
+      }
       : {}),
   };
 }
@@ -485,10 +485,9 @@ function generateLlmsFullTxt(productsData) {
       lines.push(`- SKU: TG-${p.id}`);
       lines.push(`- Kategori: ${category}`);
       lines.push(
-        `- Rentang Harga: ${
-          lowPrice === highPrice
-            ? `${formatIdr(lowPrice)} / ${p.unit || "pcs"}`
-            : `${formatIdr(lowPrice)} s/d ${formatIdr(highPrice)} / ${p.unit || "pcs"}`
+        `- Rentang Harga: ${lowPrice === highPrice
+          ? `${formatIdr(lowPrice)} / ${p.unit || "pcs"}`
+          : `${formatIdr(lowPrice)} s/d ${formatIdr(highPrice)} / ${p.unit || "pcs"}`
         }`
       );
       lines.push(`- Estimasi Pengerjaan: ${p.time || "1-3 hari"}`);
@@ -661,18 +660,18 @@ function buildProductFallbackHtml(product, slug) {
   const thresholdsRows =
     Array.isArray(product.priceThresholds) && product.priceThresholds.length > 0
       ? `<h2>Tabel Harga Grosir ${escapeHtml(product.name)}</h2><ul>` +
-        product.priceThresholds
-          .map((t, i) => {
-            const next = product.priceThresholds[i + 1];
-            const range = next
-              ? `${t.minQuantity} - ${next.minQuantity - 1} ${product.unit || "pcs"}`
-              : `Minimal ${t.minQuantity} ${product.unit || "pcs"}`;
-            return `<li>${escapeHtml(range)}: ${escapeHtml(formatIdr(t.price))} / ${escapeHtml(
-              product.unit || "pcs"
-            )}</li>`;
-          })
-          .join("") +
-        `</ul>`
+      product.priceThresholds
+        .map((t, i) => {
+          const next = product.priceThresholds[i + 1];
+          const range = next
+            ? `${t.minQuantity} - ${next.minQuantity - 1} ${product.unit || "pcs"}`
+            : `Minimal ${t.minQuantity} ${product.unit || "pcs"}`;
+          return `<li>${escapeHtml(range)}: ${escapeHtml(formatIdr(t.price))} / ${escapeHtml(
+            product.unit || "pcs"
+          )}</li>`;
+        })
+        .join("") +
+      `</ul>`
       : "";
 
   return `<main style="max-width:960px;margin:0 auto;padding:24px 16px;font-family:system-ui,-apple-system,sans-serif;color:#18181B;">
@@ -681,19 +680,19 @@ function buildProductFallbackHtml(product, slug) {
     </nav>
     <article>
       <h1 style="font-size:22px;font-weight:700;margin:0 0 8px;">${escapeHtml(
-        product.seoTitle ? `${product.name} — ${product.seoTitle}` : product.name
-      )}</h1>
+    product.seoTitle ? `${product.name} — ${product.seoTitle}` : product.name
+  )}</h1>
       <p style="font-size:14px;color:#E8590C;font-weight:600;margin:0 0 12px;">Harga: ${escapeHtml(
-        priceSummary
-      )} | Estimasi Produksi: ${escapeHtml(product.time || "1-3 hari")}</p>
+    priceSummary
+  )} | Estimasi Produksi: ${escapeHtml(product.time || "1-3 hari")}</p>
       <img src="${escapeHtml(imgUrl)}" alt="${escapeHtml(
     product.imageAlt || product.name
   )}" width="480" height="480" style="max-width:320px;height:auto;border-radius:12px;border:1px solid #E7E5E4;margin-bottom:16px;" />
       <p style="font-size:14px;line-height:1.6;color:#3F3F46;">${escapeHtml(product.description)}</p>
       ${thresholdsRows}
       <p style="font-size:13px;color:#52525B;margin-top:16px;">Pesan langsung melalui katalog interaktif <a href="/product/${escapeHtml(
-        slug
-      )}">ID Card Lampung</a> atau konsultasi desain gratis via <a href="https://wa.me/6285172157808">WhatsApp +62 851-7215-7808</a>. Melayani Bandar Lampung (Tanjung Karang, Kedaton, Rajabasa, Sukarame), Way Hui, Kota Metro, Natar, Pringsewu, dan sekitarnya.</p>
+    slug
+  )}">ID Card Lampung</a> atau konsultasi desain gratis via <a href="https://wa.me/6285172157808">WhatsApp +62 851-7215-7808</a>. Melayani Bandar Lampung (Tanjung Karang, Kedaton, Rajabasa, Sukarame), Way Hui, Kota Metro, Natar, Pringsewu, dan sekitarnya.</p>
     </article>
   </main>`;
 }

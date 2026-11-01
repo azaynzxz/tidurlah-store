@@ -369,10 +369,10 @@ export function CartItem({ item, onUpdateQuantityById, onRemoveById, onUpdateOpt
               </div>
             )}
             {item.options.caseVariant && (
-              <div>Casing: {caseVariants.find(c => c.code === item.options.caseVariant)?.name || item.options.caseVariant}</div>
+              <div>Casing: {caseVariants.find(c => c.code === item.options?.caseVariant)?.name || item.options.caseVariant}</div>
             )}
             {item.options.laminationVariant && (
-              <div>Laminasi: {laminationOptions.find(l => l.code === item.options.laminationVariant)?.name || item.options.laminationVariant}</div>
+              <div>Laminasi: {laminationOptions.find(l => l.code === item.options?.laminationVariant)?.name || item.options.laminationVariant}</div>
             )}
           </div>
         )}

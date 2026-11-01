@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Check, X, AlertTriangle } from "lucide-react";
 
 const SponsorshipFormComponent = () => {
   const [formData, setFormData] = useState({
@@ -110,19 +111,19 @@ ${formData.name}`
           <h3 className="text-xl font-bold text-gray-900 mb-4">Manfaat untuk Anda</h3>
           <ul className="space-y-3 text-gray-700">
             <li className="flex items-start">
-              <span className="text-green-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-green-600 mr-2 mt-1 shrink-0" />
               <span><strong>Brand Visibility:</strong> Meningkatkan visibilitas merek Anda di kalangan target audience</span>
             </li>
             <li className="flex items-start">
-              <span className="text-green-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-green-600 mr-2 mt-1 shrink-0" />
               <span><strong>Community Engagement:</strong> Membangun hubungan positif dengan komunitas</span>
             </li>
             <li className="flex items-start">
-              <span className="text-green-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-green-600 mr-2 mt-1 shrink-0" />
               <span><strong>CSR Value:</strong> Mendukung kegiatan positif sebagai bentuk tanggung jawab sosial</span>
             </li>
             <li className="flex items-start">
-              <span className="text-green-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-green-600 mr-2 mt-1 shrink-0" />
               <span><strong>Cost Effective:</strong> Mendapatkan produk berkualitas dengan nilai tambah promosi</span>
             </li>
           </ul>
@@ -133,19 +134,19 @@ ${formData.name}`
           <h3 className="text-xl font-bold text-gray-900 mb-4">Manfaat untuk Kami</h3>
           <ul className="space-y-3 text-gray-700">
             <li className="flex items-start">
-              <span className="text-orange-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-orange-600 mr-2 mt-1 shrink-0" />
               <span><strong>Brand Awareness:</strong> Memperluas jangkauan merek ID Card Lampung</span>
             </li>
             <li className="flex items-start">
-              <span className="text-orange-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-orange-600 mr-2 mt-1 shrink-0" />
               <span><strong>Market Reach:</strong> Menjangkau segmentasi pasar yang lebih luas</span>
             </li>
             <li className="flex items-start">
-              <span className="text-orange-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-orange-600 mr-2 mt-1 shrink-0" />
               <span><strong>Partnership:</strong> Membangun jaringan kerjasama yang berkelanjutan</span>
             </li>
             <li className="flex items-start">
-              <span className="text-orange-600 mr-2">✓</span>
+              <Check className="w-4 h-4 text-orange-600 mr-2 mt-1 shrink-0" />
               <span><strong>Community Impact:</strong> Berkontribusi pada pengembangan komunitas lokal</span>
             </li>
           </ul>
@@ -155,7 +156,7 @@ ${formData.name}`
       {/* Do's and Don'ts */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-green-50 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-green-800 mb-4">✓ Yang Perlu Dilakukan</h3>
+          <h3 className="text-xl font-bold text-green-800 mb-4 flex items-center gap-2"><Check className="w-5 h-5" /> Yang Perlu Dilakukan</h3>
           <ul className="space-y-2 text-gray-700">
             <li>• Ajukan permohonan minimal 2 minggu sebelum acara</li>
             <li>• Sertakan proposal acara yang jelas dan terstruktur</li>
@@ -167,7 +168,7 @@ ${formData.name}`
         </div>
 
         <div className="bg-red-50 rounded-lg p-6">
-          <h3 className="text-xl font-bold text-red-800 mb-4">✗ Yang Harus Dihindari</h3>
+          <h3 className="text-xl font-bold text-red-800 mb-4 flex items-center gap-2"><X className="w-5 h-5" /> Yang Harus Dihindari</h3>
           <ul className="space-y-2 text-gray-700">
             <li>• Mengajukan permohonan mendadak (kurang dari 1 minggu)</li>
             <li>• Proposal yang tidak jelas atau tidak lengkap</li>
@@ -181,7 +182,7 @@ ${formData.name}`
 
       {/* Disclaimers */}
       <div className="bg-yellow-50 rounded-lg p-6">
-        <h3 className="text-xl font-bold text-yellow-800 mb-4">⚠️ Disclaimer & Syarat Ketentuan</h3>
+        <h3 className="text-xl font-bold text-yellow-800 mb-4 flex items-center gap-2"><AlertTriangle className="w-5 h-5" /> Disclaimer & Syarat Ketentuan</h3>
         <div className="space-y-3 text-gray-700">
           <p><strong>Proses Review:</strong> Setiap permohonan sponsorship akan melalui proses review yang mempertimbangkan kesesuaian acara, target audience, dan nilai eksposur yang ditawarkan.</p>
           <p><strong>Kriteria Approval:</strong> Keputusan approval bergantung pada kualitas proposal, relevansi acara dengan brand kami, dan ketersediaan budget sponsorship.</p>

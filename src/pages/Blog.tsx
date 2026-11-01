@@ -1,9 +1,9 @@
 import { useState, useEffect } from "react";
-import { Calendar, User, Tag, Clock, Eye, ArrowRight, MapPin, Instagram } from "lucide-react";
+import { Calendar, User, Clock, ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BlogLayout from "@/components/blog/BlogLayout";
 import { getAllBlogPosts, BlogPostData, getTopCategories, getBlogPostsByCategory } from "@/content/blog";
-import { AnimatedElement, StaggeredContainer } from "@/components/animations/AnimatedElement";
+import { StaggeredContainer } from "@/components/animations/AnimatedElement";
 
 // Extend Window interface for Instagram
 declare global {
