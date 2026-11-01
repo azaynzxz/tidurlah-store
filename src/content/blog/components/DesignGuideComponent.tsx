@@ -1,256 +1,276 @@
-import { useState } from "react";
+import { BlogSpecTable, BlogSpecItem } from "@/components/blog";
 
-const DesignGuideComponent = () => {
-  const [activeSection, setActiveSection] = useState<'main' | 'idcard-lanyard' | 'mug-tumbler'>('main');
-  const [modalImage, setModalImage] = useState<string | null>(null);
+export default function DesignGuideComponent() {
+  const idCardSpecs: BlogSpecItem[] = [
+    {
+      property: "Ukuran Jadi Kartu",
+      specification: "54 mm × 86 mm",
+      note: "Standar ISO 7810 ID-1 (setara KTP / kartu ATM)"
+    },
+    {
+      property: "Ukuran Desain (Bleed)",
+      specification: "56 mm × 88 mm",
+      note: "Tambahkan bleed 1–2 mm per sisi untuk mencegah garis putih saat die-cut"
+    },
+    {
+      property: "Batas Aman (Safe Zone)",
+      specification: "48 mm × 80 mm",
+      note: "Jarak teks & barcode minimal 3 mm dari tepi garis potong jadi"
+    },
+    {
+      property: "Ketebalan Bahan",
+      specification: "0.76 mm – 0.8 mm",
+      note: "PVC solid standar perbankan / instansi kedap air"
+    },
+    {
+      property: "Resolusi Gambar",
+      specification: "300 DPI (Skala 1:1)",
+      note: "Foto wajah & QR code tidak buram atau pecah"
+    },
+    {
+      property: "Mode Warna",
+      specification: "CMYK",
+      note: "Hindari RGB agar warna hasil cetak konsisten dengan monitor"
+    }
+  ];
 
-  const showSection = (section: 'main' | 'idcard-lanyard' | 'mug-tumbler') => {
-    setActiveSection(section);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
+  const lanyardSpecs: BlogSpecItem[] = [
+    {
+      property: "Panjang Pola Cetak",
+      specification: "90 cm total",
+      note: "Panjang keliling (sekitar 45 cm saat terpasang mengalung di leher)"
+    },
+    {
+      property: "Pilihan Lebar Pita",
+      specification: "2.0 cm atau 2.5 cm",
+      note: "2.0 cm standar populer kepanitiaan; 2.5 cm premium eksekutif"
+    },
+    {
+      property: "Batas Aman Desain",
+      specification: "Minimal 2 mm dari tepi",
+      note: "Beri jarak aman atas & bawah pita agar tidak terpotong jahitan"
+    },
+    {
+      property: "Area Lipatan & Stopper",
+      specification: "5 cm ujung bawah",
+      note: "Hindari logo utama di 5 cm terbawah karena tertutup kaitan besi / stopper"
+    },
+    {
+      property: "Metode & Bahan",
+      specification: "Sublimasi Full Color",
+      note: "Bahan polyester tissue halus, 2 sisi bolak-balik, tahan cuci"
+    }
+  ];
 
-  const openImageModal = (imageSrc: string) => {
-    setModalImage(imageSrc);
-  };
+  const mugSpecs: BlogSpecItem[] = [
+    {
+      property: "Area Cetak Maksimal",
+      specification: "20 cm × 8.5 cm",
+      note: "Format melingkar horizontal pada bodi mug keramik 11 oz"
+    },
+    {
+      property: "Jarak Aman Handle",
+      specification: "Minimal 2 – 2.5 cm",
+      note: "Margin kosong di sisi kiri dan kanan pangkal gagang mug"
+    },
+    {
+      property: "Resolusi File",
+      specification: "Minimal 300 DPI",
+      note: "Format TIFF, PDF, atau PNG transparan untuk ketajaman foto"
+    }
+  ];
 
-  const closeModal = () => {
-    setModalImage(null);
-  };
+  const tumblerSpecs: BlogSpecItem[] = [
+    {
+      property: "Grafir Laser Logam",
+      specification: "Vektor 1 Warna (Hitam-Putih)",
+      note: "File wajib berupa AI, EPS, CDR, atau PDF kurva tanpa efek gradasi"
+    },
+    {
+      property: "Print UV Flatbed",
+      specification: "Full Color (CMYK + White Ink)",
+      note: "Area cetak satu sisi 4 cm × 12 cm atau keliling sesuai tipe tumbler"
+    },
+    {
+      property: "Resolusi File UV",
+      specification: "Minimal 300 DPI",
+      note: "Format PNG transparan resolusi tinggi atau PDF vector"
+    }
+  ];
+
+  const prePressChecklist: BlogSpecItem[] = [
+    {
+      property: "Format File Disukai",
+      specification: "PDF (Press Quality), AI, CDR, TIFF, PNG",
+      note: "Hindari file kompresi rendah dari media sosial / screenshot"
+    },
+    {
+      property: "Font / Typography",
+      specification: "Convert to Curves / Outlines",
+      note: "Wajib di-convert agar huruf tidak hilang / bergeser saat diproses"
+    },
+    {
+      property: "Profil Warna",
+      specification: "CMYK 8-Bit",
+      note: "Warna digital RGB akan otomatis dikonversi ke palet CMYK mesin cetak"
+    },
+    {
+      property: "Safe Zone & Bleed",
+      specification: "Toleransi 1–2 mm bleed, 3 mm safe zone",
+      note: "Mencegah teks penting terpotong pisau plong atau mesin heat-press"
+    }
+  ];
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-foreground mb-4">Panduan Desain</h1>
-        <div className="space-y-4">
-          <p className="text-foreground leading-relaxed">Selamat datang di halaman Panduan Desain! Di sini, kami menyediakan panduan lengkap untuk mendesain produk ID Card, Lanyard, Mug, dan Tumbler.</p>
-          <p className="text-foreground leading-relaxed">Panduan ini bertujuan untuk menyesuaikan ukuran desain dengan hasil cetak produk yang diinginkan. Dengan mengikuti panduan desain kami, Anda akan memahami berbagai elemen penting seperti ukuran, format, tata letak, warna, dan tipografi yang ideal untuk setiap produk.</p>
-        </div>
+    <div className="space-y-10 text-foreground">
+      <div className="space-y-3">
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Halaman ini berisi spesifikasi teknis ukuran, format file, batas aman (safe zone), dan toleransi potong (bleed) untuk cetak ID Card PVC, tali lanyard, mug keramik, dan tumbler custom di Tidurlah Grafika.
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Mengikuti panduan ini memastikan file desain Anda tidak terpotong pada bagian teks penting, tidak buram saat dicetak, dan warnanya tetap akurat sesuai standar mesin produksi.
+        </p>
       </div>
 
-      {/* Main Navigation Sections */}
-      {activeSection === 'main' && (
-        <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* ID Card & Lanyard Section */}
-            <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/product-image/lanyard-icon.webp" 
-                  alt="ID Card dan Lanyard Icon" 
-                  className="w-12 h-12 object-contain mr-4"
-                />
-                <h2 className="text-xl font-bold text-foreground">Panduan Desain ID Card dan Lanyard</h2>
-              </div>
-              <p className="text-foreground mb-4">Tips dan panduan untuk menciptakan desain ID Card dan Lanyard yang profesional dengan spesifikasi yang tepat.</p>
-              <button 
-                onClick={() => showSection('idcard-lanyard')}
-                className="w-full bg-[#FF5E01] text-white rounded-lg py-2 px-4 font-medium hover:bg-[#e54d00] transition-colors"
-              >
-                Selengkapnya
-              </button>
-            </div>
+      {/* ID Card Guide */}
+      <section id="panduan-id-card" className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground scroll-mt-20">
+          1. Panduan Ukuran & Spesifikasi ID Card PVC
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          ID card standar dicetak menggunakan bahan PVC solid setara kartu ATM / KTP dengan ketebalan standar 0.76 mm hingga 0.8 mm.
+        </p>
 
-            {/* Mug & Tumbler Section */}
-            <div className="border border-gray-200 rounded-lg p-6 hover:shadow-lg transition-shadow duration-300">
-              <div className="flex items-center mb-4">
-                <img 
-                  src="/product-image/mug-icon.webp" 
-                  alt="Mug dan Tumbler Icon" 
-                  className="w-12 h-12 object-contain mr-4"
-                />
-                <h2 className="text-xl font-bold text-foreground">Panduan Desain Mug & Tumbler</h2>
-              </div>
-              <p className="text-foreground mb-4">Panduan lengkap untuk mendesain Mug dan Tumbler dengan layout dan batas aman yang optimal.</p>
-              <button 
-                onClick={() => showSection('mug-tumbler')}
-                className="w-full bg-[#FF5E01] text-white rounded-lg py-2 px-4 font-medium hover:bg-[#e54d00] transition-colors"
-              >
-                Selengkapnya
-              </button>
-            </div>
-          </div>
+        <BlogSpecTable
+          caption="Tabel 1: Spesifikasi teknis ukuran dan resolusi cetak ID Card PVC"
+          headers={["Parameter Teknis", "Ukuran / Standar", "Catatan Produksi"]}
+          items={idCardSpecs}
+        />
 
-          {/* Quote Section */}
-          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg p-6 text-center">
-            <blockquote className="text-xl font-semibold text-foreground italic">
-              "Not everyone knows design, but everything is designed."
-            </blockquote>
-          </div>
-        </>
-      )}
+        <figure className="my-6">
+          <img
+            src="/product-image/panduan-id-card.webp"
+            alt="Diagram Panduan Ukuran Desain ID Card 54 x 86 mm"
+            className="w-full max-w-2xl mx-auto rounded-lg border border-border object-contain bg-muted/20"
+            loading="lazy"
+          />
+          <figcaption className="text-center text-xs text-muted-foreground mt-2">
+            Gambar 1: Diagram batas bleed, ukuran jadi, dan safe zone ID Card PVC.
+          </figcaption>
+        </figure>
+      </section>
 
-      {/* ID Card & Lanyard Detail Section */}
-      {activeSection === 'idcard-lanyard' && (
-        <div className="border-t-4 border-[#FF5E01] pt-8">
-          <button 
-            onClick={() => showSection('main')}
-            className="mb-6 text-[#FF5E01] hover:text-[#e54d00] flex items-center font-medium"
-          >
-            ← Kembali ke Menu Utama
-          </button>
-          
-          <h2 className="text-3xl font-bold text-foreground mb-4">Panduan Desain ID Card dan Lanyard</h2>
-          <div className="space-y-4 mb-8">
-            <p className="text-foreground leading-relaxed font-semibold">Tips dan Inspirasi untuk Menciptakan Desain Profesional</p>
-            <p className="text-foreground leading-relaxed">Selamat datang di Panduan Desain ID Card dan Lanyard dari ID Card Lampung. Di halaman ini, kami akan memberikan panduan untuk membantu Anda menciptakan desain ID Card dan lanyard yang sesuai dengan standar cetak ID Card dan Lanyard kami.</p>
-            <p className="text-foreground leading-relaxed">Apakah Anda mendesain untuk perusahaan, acara, atau organisasi, panduan ini akan memastikan desain Anda sesuai dan memenuhi kebutuhan Anda.</p>
-          </div>
+      {/* Lanyard Guide */}
+      <section id="panduan-lanyard" className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground scroll-mt-20">
+          2. Panduan Ukuran & Pola Tali Lanyard
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Tali lanyard diproduksi dengan metode cetak sublimasi full color 2 sisi (bolak-balik) pada bahan polyester tissue lembut yang tahan air dan tidak luntur.
+        </p>
 
-          {/* Product Guides */}
-          <div className="space-y-8 mb-8">
-            {/* ID Card Guide */}
-            <div className="bg-background border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-foreground mb-2">Panduan Desain ID Card</h3>
-              <p className="text-foreground mb-4">Ukuran: 56 mm x 86 mm</p>
-              <div className="text-center">
-                <div 
-                  className="cursor-pointer group"
-                  onClick={() => openImageModal('/product-image/panduan-id-card.webp')}
-                >
-                  <img 
-                    src="/product-image/panduan-id-card.webp" 
-                    alt="Panduan desain ID Card dengan spesifikasi lengkap" 
-                    className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
-                    style={{maxHeight: '600px'}}
-                  />
-                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain ID Card</p>
-                </div>
-              </div>
-            </div>
+        <BlogSpecTable
+          caption="Tabel 2: Spesifikasi ukuran dan pola layout tali lanyard sublimasi"
+          headers={["Parameter Pola", "Ukuran / Dimensi", "Catatan Pengerjaan"]}
+          items={lanyardSpecs}
+        />
 
-            {/* Lanyard Guide */}
-            <div className="bg-background border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-foreground mb-2">Panduan Desain Lanyard</h3>
-              <p className="text-foreground mb-4">Ukuran: 90 cm x 2,25 cm</p>
-              <div className="text-center">
-                <div 
-                  className="cursor-pointer group"
-                  onClick={() => openImageModal('/product-image/panduan-lanyard.webp')}
-                >
-                  <img 
-                    src="/product-image/panduan-lanyard.webp" 
-                    alt="Panduan desain Lanyard dengan spesifikasi lengkap" 
-                    className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
-                    style={{maxHeight: '600px'}}
-                  />
-                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Lanyard</p>
-                </div>
-              </div>
-            </div>
-          </div>
+        <figure className="my-6">
+          <img
+            src="/product-image/panduan-lanyard.webp"
+            alt="Diagram Panduan Ukuran dan Layout Desain Tali Lanyard"
+            className="w-full max-w-2xl mx-auto rounded-lg border border-border object-contain bg-muted/20"
+            loading="lazy"
+          />
+          <figcaption className="text-center text-xs text-muted-foreground mt-2">
+            Gambar 2: Diagram layout cetak lanyard sublimasi 90 cm.
+          </figcaption>
+        </figure>
 
-          {/* Examples Section */}
-          <div className="bg-gray-50 rounded-lg p-6">
-            <h3 className="text-xl font-bold text-foreground mb-4">Lihat Contoh Berikut</h3>
-            <div className="flex justify-center">
-              <div 
-                className="cursor-pointer group"
-                onClick={() => openImageModal('/product-image/contoh-lanyard.webp')}
-              >
-                <img 
-                  src="/product-image/contoh-lanyard.webp" 
-                  alt="Contoh desain lanyard profesional" 
-                  className="max-w-full h-auto object-contain rounded-lg shadow-md group-hover:scale-105 transition-transform duration-300"
-                  style={{maxHeight: '400px'}}
-                />
-                <p className="text-foreground text-sm text-center mt-3 italic hover:text-[#FF5E01]">Klik untuk memperbesar contoh desain lanyard</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        <figure className="my-6">
+          <img
+            src="/product-image/contoh-lanyard.webp"
+            alt="Contoh Hasil Produksi Tali Lanyard Sublimasi Berkualitas"
+            className="w-full max-w-xl mx-auto rounded-lg border border-border object-contain bg-muted/20"
+            loading="lazy"
+          />
+          <figcaption className="text-center text-xs text-muted-foreground mt-2">
+            Gambar 3: Contoh hasil cetak lanyard sublimasi dengan aksesoris kait dan stopper.
+          </figcaption>
+        </figure>
+      </section>
 
-      {/* Mug & Tumbler Detail Section */}
-      {activeSection === 'mug-tumbler' && (
-        <div className="border-t-4 border-[#FF5E01] pt-8">
-          <button 
-            onClick={() => showSection('main')}
-            className="mb-6 text-[#FF5E01] hover:text-[#e54d00] flex items-center font-medium"
-          >
-            ← Kembali ke Menu Utama
-          </button>
-          
-          <h2 className="text-3xl font-bold text-foreground mb-4">Panduan Desain Mug & Tumbler</h2>
-          <p className="text-foreground leading-relaxed mb-8">Panduan desain ini ditujukan untuk memastikan desain Mug dan Tumbler Anda sesuai dengan ukuran dan spesifikasi cetak kami. Pastikan Anda mengikuti layout dan batas aman agar hasil cetak optimal.</p>
+      {/* Mug Guide */}
+      <section id="panduan-mug" className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground scroll-mt-20">
+          3. Panduan Ukuran Cetak Mug Keramik
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Mug keramik standar 11 oz menggunakan lapisan coating sublimasi khusus. Desain dicetak melingkar pada bodi mug.
+        </p>
 
-          {/* Product Guides */}
-          <div className="space-y-8">
-            {/* Mug Guide */}
-            <div className="bg-background border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">Panduan Desain Mug</h3>
-              <div className="text-center">
-                <div 
-                  className="cursor-pointer group"
-                  onClick={() => openImageModal('/product-image/panduan-cetak-mug.webp')}
-                >
-                  <img 
-                    src="/product-image/panduan-cetak-mug.webp" 
-                    alt="Panduan desain mug dengan spesifikasi lengkap" 
-                    className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
-                    style={{maxHeight: '600px'}}
-                  />
-                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Mug</p>
-                </div>
-              </div>
-            </div>
+        <BlogSpecTable
+          caption="Tabel 3: Dimensi area cetak mug keramik custom"
+          headers={["Parameter Cetak", "Ukuran / Resolusi", "Catatan Mesin Press"]}
+          items={mugSpecs}
+        />
 
-            {/* Tumbler Guide */}
-            <div className="bg-background border border-gray-200 rounded-lg p-6">
-              <h3 className="text-xl font-bold text-foreground mb-4">Panduan Desain Tumbler</h3>
-              <div className="text-center">
-                <div 
-                  className="cursor-pointer group"
-                  onClick={() => openImageModal('/product-image/panduan-cetak-tumbler.webp')}
-                >
-                  <img 
-                    src="/product-image/panduan-cetak-tumbler.webp" 
-                    alt="Panduan desain tumbler dengan spesifikasi lengkap" 
-                    className="w-full h-auto object-contain rounded-lg shadow-md mb-3 group-hover:scale-105 transition-transform duration-300"
-                    style={{maxHeight: '600px'}}
-                  />
-                  <p className="text-sm text-foreground italic hover:text-[#FF5E01]">Klik untuk memperbesar panduan desain Tumbler</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+        <figure className="my-6">
+          <img
+            src="/product-image/panduan-cetak-mug.webp"
+            alt="Panduan Area Cetak Mug Keramik Standar 20 x 8.5 cm"
+            className="w-full max-w-xl mx-auto rounded-lg border border-border object-contain bg-muted/20"
+            loading="lazy"
+          />
+          <figcaption className="text-center text-xs text-muted-foreground mt-2">
+            Gambar 4: Area cetak melingkar pada mug keramik standar.
+          </figcaption>
+        </figure>
+      </section>
 
-      {/* Image Modal */}
-      {modalImage && (
-        <div 
-          className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4"
-          style={{ zIndex: 9999 }}
-          onClick={closeModal}
-        >
-          <div className="relative max-w-7xl max-h-full">
-            <button
-              onClick={closeModal}
-              className="absolute -top-4 -right-4 bg-background rounded-full p-2 shadow-lg hover:bg-gray-100"
-              style={{ zIndex: 10000 }}
-            >
-              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-              </svg>
-            </button>
-            <img 
-              src={modalImage}
-              alt="Panduan desain diperbesar"
-              className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            />
-          </div>
-        </div>
-      )}
+      {/* Tumbler Guide */}
+      <section id="panduan-tumbler" className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground scroll-mt-20">
+          4. Panduan Ukuran & Format Cetak Tumbler
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Untuk tumbler stainless steel (seperti tipe Niagara, Sakura, atau Travel Cup), metode cetak tersedia dalam bentuk grafir laser permanen (satu warna logam) atau print UV flatbed (full color).
+        </p>
+
+        <BlogSpecTable
+          caption="Tabel 4: Spesifikasi metode pengerjaan tumbler stainless custom"
+          headers={["Metode Cetak", "Format File", "Ketentuan Desain"]}
+          items={tumblerSpecs}
+        />
+
+        <figure className="my-6">
+          <img
+            src="/product-image/panduan-cetak-tumbler.webp"
+            alt="Panduan Area Cetak dan Grafir Tumbler Custom"
+            className="w-full max-w-xl mx-auto rounded-lg border border-border object-contain bg-muted/20"
+            loading="lazy"
+          />
+          <figcaption className="text-center text-xs text-muted-foreground mt-2">
+            Gambar 5: Area cetak tumbler custom.
+          </figcaption>
+        </figure>
+      </section>
+
+      {/* File Format Standards */}
+      <section id="standar-format-file" className="space-y-4 pt-4 border-t border-border">
+        <h2 className="text-2xl font-bold tracking-tight text-foreground scroll-mt-20">
+          5. Standar Format File & Checklist Sebelum Kirim
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Sebelum mengirimkan file ke tim produksi, pastikan file Anda telah memenuhi standar pra-cetak (pre-press) berikut:
+        </p>
+
+        <BlogSpecTable
+          caption="Tabel 5: Checklist verifikasi file pra-cetak"
+          headers={["Item Verifikasi", "Spesifikasi Wajib", "Tujuan / Dampak"]}
+          items={prePressChecklist}
+        />
+      </section>
     </div>
   );
-};
-
-export default DesignGuideComponent;
-
-
-
-
-
-
-
+}

@@ -1,116 +1,123 @@
+import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import { BlogPostData } from "../index";
+import { BlogSpecTable, BlogCallout, BlogSpecItem } from "@/components/blog";
+
+function PrivacyPolicyContent() {
+  const dataCategories: BlogSpecItem[] = [
+    {
+      property: "Identitas & Kontak",
+      specification: "Nama pemesan, institusi, alamat email, dan nomor WhatsApp aktif",
+      note: "Digunakan untuk konfirmasi pesanan, bukti invoice, dan status produksi"
+    },
+    {
+      property: "Alamat Pengiriman",
+      specification: "Alamat fisik lengkap atau pilihan pengambilan mandiri (workshop pickup)",
+      note: "Diteruskan ke kurir logistik (JNE, J&T, SiCepat) untuk keperluan pengiriman"
+    },
+    {
+      property: "File & Data Personalisasi",
+      specification: "Desain kartu, foto individu, nomor induk (NISN/NIP), dan QR Code",
+      note: "Hanya diakses operator mesin cetak saat proses produksi berlangsung"
+    },
+    {
+      property: "Riwayat Transaksi",
+      specification: "Daftar produk, jumlah pcs, tanggal pesanan, dan bukti transfer pembayaran",
+      note: "Disimpan secara aman untuk keperluan pembukuan dan verifikasi klaim garansi"
+    }
+  ];
+
+  const sections = [
+    {
+      id: "keamanan-info",
+      title: "Keamanan & Batas Penyimpanan File Desain",
+      content: (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          File desain cetak Anda disimpan di penyimpanan terenkripsi dengan pembatasan hak akses ketat. File mentah dapat dihapus secara permanen dari server penyimpanan kami atas permintaan tertulis pelanggan setelah barang selesai diterima dan tidak ada klaim retur.
+        </p>
+      )
+    },
+    {
+      id: "berbagi-info",
+      title: "Perlindungan & Larangan Penjualan Data",
+      content: (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Kami berkomitmen tidak pernah menjual, menyewakan, atau menyebarluaskan data pribadi atau database foto/nama pelanggan kepada pihak ketiga mana pun di luar kebutuhan pengiriman ekspedisi logistik atau instruksi resmi kewajiban hukum.
+        </p>
+      )
+    },
+    {
+      id: "hak-pelanggan",
+      title: "Hak Pelanggan atas Akses & Penghapusan Data",
+      content: (
+        <p className="text-xs text-muted-foreground leading-relaxed">
+          Anda berhak memperbarui data kontak yang tersimpan di sistem kami, meminta penghapusan database file desain pasca produksi, atau menolak penerimaan pesan promosi berkala kapan saja.
+        </p>
+      )
+    }
+  ];
+
+  return (
+    <div className="space-y-6 text-foreground font-sans">
+      <div className="space-y-2">
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Tidurlah Grafika (ID Card Lampung) berkomitmen penuh menjaga kerahasiaan dan keamanan data pribadi serta file dokumen identitas pelanggan yang dipercayakan kepada kami.
+        </p>
+      </div>
+
+      {/* Data Category Table */}
+      <section className="space-y-3 pt-2">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          Kategori Informasi yang Kami Kelola
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Rincian jenis data yang dikumpulkan selama proses transaksi dan tujuannya:
+        </p>
+
+        <BlogSpecTable
+          caption="Tabel 1: Matriks jenis data dan tujuan penggunaan di Tidurlah Grafika"
+          headers={["Kategori Data", "Rincian Informasi", "Tujuan Operasional"]}
+          items={dataCategories}
+        />
+      </section>
+
+      {/* Policy Details Accordion */}
+      <section className="space-y-3 pt-4 border-t border-border">
+        <h2 className="text-lg font-semibold tracking-tight text-foreground">
+          Ketentuan Perlindungan & Hak Pelanggan
+        </h2>
+        <Accordion type="single" collapsible className="w-full">
+          {sections.map((item) => (
+            <AccordionItem key={item.id} value={item.id}>
+              <AccordionTrigger className="text-left text-sm font-medium hover:no-underline hover:text-primary">
+                {item.title}
+              </AccordionTrigger>
+              <AccordionContent>
+                {item.content}
+              </AccordionContent>
+            </AccordionItem>
+          ))}
+        </Accordion>
+      </section>
+
+      <BlogCallout variant="info" title="Permintaan Penghapusan File Desain:">
+        Setelah pesanan Anda selesai diterima dengan baik, Anda dapat mengajukan permohonan penghapusan arsip file desain kartu dan spreadsheet data melalui email resmi support kami di support@idcardlampung.com.
+      </BlogCallout>
+    </div>
+  );
+}
 
 export const blogPost: BlogPostData = {
   id: 16,
   slug: "kebijakan-privasi",
-  title: "Komitmen Kami terhadap Privasi Anda",
-  subtitle: "Kebijakan privasi lengkap tentang bagaimana Tidurlah Grafika melindungi dan mengelola informasi pribadi pelanggan",
+  title: "Kebijakan Privasi & Perlindungan Data",
+  subtitle: "Komitmen perlindungan data pribadi dan kerahasiaan file desain pelanggan Tidurlah Grafika",
   author: "Tidurlah Grafika",
   date: "2024-01-30",
   tags: ["Kebijakan", "Privasi", "Keamanan", "Informasi", "Perlindungan"],
-  readTime: "8 menit",
+  readTime: "4 menit",
   views: 450,
-  image: "/blog-thumbnail/1_result.webp",
+  image: "/blog-thumbnail/2_result.webp",
   category: "special",
-  content: `
-    <div class="space-y-6">
-      <p class="text-gray-700 leading-relaxed">Di ID Card Lampung (bagian dari Tidurlah Grafika), kami menghargai privasi Anda dan berkomitmen untuk melindungi informasi pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda saat Anda menggunakan layanan kami atau mengunjungi situs web kami. Kami ingin Anda merasa aman dan percaya bahwa informasi pribadi Anda diperlakukan dengan hati-hati dan bertanggung jawab.</p>
-
-      <div class="space-y-4">
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Informasi yang Kami Kumpulkan</summary>
-          <div class="mt-4 space-y-4">
-            <div>
-              <h4 class="font-semibold text-gray-900 mb-2">Kami dapat mengumpulkan informasi pribadi dari Anda saat Anda memesan ID Card, termasuk:</h4>
-              <ul class="list-disc list-inside space-y-1 text-gray-700">
-                <li>Nama</li>
-                <li>Alamat email</li>
-                <li>Nomor telepon</li>
-                <li>Alamat pengiriman</li>
-                <li>Data pribadi yang tertera di ID Card</li>
-              </ul>
-            </div>
-            
-            <div>
-              <h4 class="font-semibold text-gray-900 mb-2">Kami juga mengumpulkan informasi tentang penggunaan Anda terhadap situs web kami, termasuk:</h4>
-              <ul class="list-disc list-inside space-y-1 text-gray-700">
-                <li>Halaman yang Anda kunjungi</li>
-                <li>Produk yang Anda lihat</li>
-                <li>Waktu Anda menggunakan situs web kami</li>
-              </ul>
-            </div>
-          </div>
-        </details>
-
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Cara Kami Menggunakan Informasi Anda</summary>
-          <div class="mt-4">
-            <p class="text-gray-700 mb-3">Kami menggunakan informasi Anda untuk:</p>
-            <ul class="list-disc list-inside space-y-1 text-gray-700">
-              <li>Memproses pesanan Anda</li>
-              <li>Menawarkan layanan dan dukungan kepada Anda</li>
-              <li>Meningkatkan pengalaman Anda di situs web kami</li>
-              <li>Mengirimkan informasi tentang produk dan layanan kami</li>
-              <li>Menyediakan iklan yang relevan dan informasi promosi, dengan persetujuan Anda</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Berbagi Informasi Anda</summary>
-          <div class="mt-4">
-            <p class="text-gray-700 mb-3">Kami tidak akan membagikan informasi pribadi Anda dengan pihak ketiga tanpa izin Anda, kecuali:</p>
-            <ul class="list-disc list-inside space-y-1 text-gray-700">
-              <li>Kami diwajibkan oleh hukum untuk melakukannya</li>
-              <li>Kami bekerja sama dengan perusahaan lain untuk menyediakan produk atau layanan kepada Anda, seperti penyedia jasa pengiriman</li>
-              <li>Kami menggunakan penyedia layanan pihak ketiga untuk membantu kami menjalankan bisnis kami, seperti penyedia hosting atau layanan analitik</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Keamanan Informasi Anda</summary>
-          <div class="mt-4">
-            <p class="text-gray-700 mb-3">Kami mengambil langkah-langkah untuk melindungi keamanan informasi Anda, termasuk:</p>
-            <ul class="list-disc list-inside space-y-1 text-gray-700">
-              <li>Menggunakan enkripsi untuk melindungi informasi saat Anda mengirimkannya melalui internet</li>
-              <li>Menyimpan informasi Anda di drive yang aman dengan akses ketat</li>
-              <li>Melakukan audit keamanan berkala dan prosedur tanggap insiden</li>
-              <li>Membatasi akses ke informasi Anda hanya kepada karyawan dan pihak ketiga yang memerlukan akses untuk tujuan operasional</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Hak Anda</summary>
-          <div class="mt-4">
-            <p class="text-gray-700 mb-3">Anda memiliki hak untuk:</p>
-            <ul class="list-disc list-inside space-y-1 text-gray-700">
-              <li>Mengakses informasi pribadi Anda yang kami miliki</li>
-              <li>Mengoreksi informasi pribadi Anda yang tidak akurat atau sudah usang</li>
-              <li>Menghapus informasi pribadi Anda, kecuali jika kami memiliki kewajiban hukum untuk menyimpannya</li>
-              <li>Meminta portabilitas data Anda</li>
-              <li>Menolak pemrosesan data Anda untuk tujuan tertentu</li>
-              <li>Menarik kembali persetujuan Anda kapan saja tanpa mempengaruhi legalitas pemrosesan berdasarkan persetujuan sebelum penarikannya</li>
-            </ul>
-          </div>
-        </details>
-
-        <details class="bg-gray-50 p-4 rounded-lg">
-          <summary class="font-semibold text-gray-900 cursor-pointer hover:text-[#FF5E01]">Perubahan Kebijakan Privasi</summary>
-          <div class="mt-4">
-            <p class="text-gray-700">Kami dapat mengubah kebijakan privasi ini dari waktu ke waktu. Setiap perubahan akan diposting di situs web kami dan, jika perubahan tersebut signifikan, kami akan memberikan pemberitahuan lebih lanjut, seperti melalui email atau pemberitahuan langsung di situs web kami.</p>
-          </div>
-        </details>
-      </div>
-    </div>
-  `,
+  content: PrivacyPolicyContent,
   relatedProducts: []
 };
-
-
-
-
-
-
-

@@ -88,6 +88,63 @@ const REAL_BLOG_SLUGS = [
   "easter-2026",
 ];
 
+const BLOG_POSTS_METADATA = [
+  {
+    slug: "pengalaman-cetak-perdana-sma-ar-raihan-bandar-lampung",
+    title: "Studi Kasus: Pengalaman Cetak Perdana SMA Ar Raihan Bandar Lampung - Tidurlah Store",
+    description: "Bagaimana SMA Ar Raihan Bandar Lampung mempercayakan kebutuhan ID card siswa dan tali lanyard berkualitas tanpa kendala.",
+    image: "/blog-thumbnail/sma-ar-raihan.png",
+  },
+  {
+    slug: "lanyard-cepat-kusam-4-cara-mudah-merawatnya",
+    title: "Lanyard Cepat Kusam? 4 Cara Mudah Merawatnya - Tidurlah Store",
+    description: "Tips merawat tali lanyard sublimasi agar tidak cepat kusam, warna tetap cerah, dan awet digunakan bertahun-tahun.",
+    image: "/blog-thumbnail/lanyard-care-tips.png",
+  },
+  {
+    slug: "tutorial-cara-order",
+    title: "Tutorial Cara Order Online Cepat & Mudah - Tidurlah Store",
+    description: "Langkah mudah melakukan pemesanan cetak ID card, lanyard, dan merchandise promosi dari rumah atau kantor.",
+    image: "/blog-thumbnail/tutorial-cara-order.png",
+  },
+  {
+    slug: "panduan-desain",
+    title: "Panduan Menyiapkan File Desain Siap Cetak - Tidurlah Store",
+    description: "Standar ukuran dimensi, resolusi 300 DPI, mode warna CMYK, dan margin aman cetak untuk hasil produksi maksimal.",
+    image: "/blog-thumbnail/design-guide.png",
+  },
+  {
+    slug: "faq-pertanyaan-umum",
+    title: "FAQ Pertanyaan Umum Cetak ID Card & Merchandise - Tidurlah Store",
+    description: "Jawaban lengkap atas pertanyaan mengenai minimal order, estimasi pengerjaan kilat, pengiriman, dan garansi.",
+    image: "/blog-thumbnail/faq.png",
+  },
+  {
+    slug: "sponsorship",
+    title: "Proposal Kerjasama Sponsorship Event Kampus & Komunitas - Tidurlah Store",
+    description: "Program dukungan sponsor merchandise dan cetak ID card untuk event kepanitiaan mahasiswa dan komunitas di Lampung.",
+    image: "/blog-thumbnail/sponsorship.png",
+  },
+  {
+    slug: "kebijakan-privasi",
+    title: "Kebijakan Privasi - Tidurlah Store",
+    description: "Kebijakan perlindungan data pelanggan dan privasi file desain cetak di Tidurlah Grafika (ID Card Lampung).",
+    image: "/product-image/web-preview.jpg",
+  },
+  {
+    slug: "syarat-ketentuan-pengembalian",
+    title: "Syarat & Ketentuan Pengembalian serta Garansi - Tidurlah Store",
+    description: "Ketentuan garansi retur cetak ulang 100% jika terjadi cacat produksi atau ketidaksesuaian spesifikasi pesanan.",
+    image: "/product-image/web-preview.jpg",
+  },
+  {
+    slug: "easter-2026",
+    title: "Promo Spesial Sponsorship Event & Kampus - Tidurlah Store",
+    description: "Paket Silver, Gold, dan Platinum dukungan cetak event kampus dengan bonus merchandise eksklusif.",
+    image: "/blog-thumbnail/easter-promo.png",
+  },
+];
+
 /**
  * Extract PRODUCT_SEO_MAP from src/utils/productSeo.ts so there is only ONE source of truth.
  */
@@ -839,8 +896,59 @@ function prerenderDistRoutes(productsData) {
     fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
   }
 
+  // 4. Pre-render individual verified blog routes (/blog/<slug>/index.html)
+  let prerenderedBlogs = 0;
+  for (const bp of BLOG_POSTS_METADATA) {
+    const canonicalUrl = `${SITE_ORIGIN}/blog/${bp.slug}`;
+    const head = buildHeadBlock({
+      title: bp.title,
+      description: bp.description,
+      canonicalUrl,
+      imageUrl: toAbsoluteAssetUrl(bp.image),
+      ogType: "article",
+      schemas: [
+        {
+          "@context": "https://schema.org",
+          "@type": "Article",
+          headline: bp.title,
+          description: bp.description,
+          image: [toAbsoluteAssetUrl(bp.image)],
+          author: {
+            "@type": "Organization",
+            name: "Tidurlah Grafika",
+            url: SITE_ORIGIN,
+          },
+          publisher: {
+            "@type": "Organization",
+            name: "ID Card Lampung",
+            url: SITE_ORIGIN,
+            logo: {
+              "@type": "ImageObject",
+              url: `${SITE_ORIGIN}/Logo id card lampung 1x1 transparan.png`,
+            },
+          },
+          mainEntityOfPage: {
+            "@type": "WebPage",
+            "@id": canonicalUrl,
+          },
+        },
+      ],
+    });
+    const html = injectIntoTemplate(
+      baseTemplate,
+      head,
+      `<article style="max-width:860px;margin:0 auto;padding:32px 16px;"><h1>${escapeHtml(
+        bp.title
+      )}</h1><p>${escapeHtml(bp.description)}</p><p><a href="/blog">Kembali ke Indeks Blog ID Card Lampung</a></p></article>`
+    );
+    const dir = path.join(DIST_DIR, "blog", bp.slug);
+    fs.mkdirSync(dir, { recursive: true });
+    fs.writeFileSync(path.join(dir, "index.html"), html, "utf-8");
+    prerenderedBlogs++;
+  }
+
   console.log(
-    `[SEO] Pre-rendered dist/index.html, ${prerenderedProducts} product routes (dist/product/<slug>/index.html), and ${secondaryRoutes.length} secondary routes.`
+    `[SEO] Pre-rendered dist/index.html, ${prerenderedProducts} product routes, ${prerenderedBlogs} blog routes, and ${secondaryRoutes.length} secondary routes.`
   );
 }
 

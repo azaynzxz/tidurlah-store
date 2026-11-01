@@ -320,7 +320,7 @@ This project is proprietary software for **Tidurlah Grafika**. All rights reserv
 
 ## 📞 Contact
 
-- **Website**: [tidurlah.com](https://tidurlah.com)
+- **Website**: [idcardlampung.com](https://idcardlampung.com)
 - **WhatsApp**: [085172157808](https://wa.me/6285172157808)
 - **Instagram**: [@tidurlah_grafika](https://instagram.com/tidurlah_grafika)
 - **Location**: Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365

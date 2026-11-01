@@ -1,4 +1,116 @@
 import { BlogPostData } from "../index";
+import { BlogSpecTable, BlogSteps, BlogCallout, BlogSpecItem, BlogStepItem } from "@/components/blog";
+
+function LanyardCareTipsContent() {
+  const comparisonSpecs: BlogSpecItem[] = [
+    {
+      property: "Penyerapan Tinta",
+      specification: "Meresap langsung ke dalam serat kain melalui transfer sublimasi",
+      note: "Menempel di lapisan luar kain menggunakan pasta sablon rubber"
+    },
+    {
+      property: "Ketahanan Cuci",
+      specification: "Sangat tinggi, warna tahan air dan tidak luntur/retak",
+      note: "Rentan retak jika disikat kasar atau terkena panas setrika"
+    },
+    {
+      property: "Kenyamanan Bahan",
+      specification: "Bahan polyester tissue lembut, nyaman & tidak gatal di leher",
+      note: "Bahan polyester standar berserat, agak kaku"
+    },
+    {
+      property: "Perawatan Cuci",
+      specification: "Bebas kucek lembut, aman deterjen cair",
+      note: "Wajib cuci pelan, jangan disikat atau disetrika langsung"
+    }
+  ];
+
+  const washSteps: BlogStepItem[] = [
+    {
+      title: "Rendam dengan Deterjen Cair Lembut",
+      description: "Gunakan air hangat suam-suam kuku dan sedikit deterjen cair (hindari deterjen bubuk yang mengandung butiran keras). Rendam tali selama 10–15 menit untuk melarutkan noda debu dan minyak kulit.",
+      tip: "Lepaskan kartu ID card dan casing plastik sebelum merendam tali."
+    },
+    {
+      title: "Kucek Lembut Menggunakan Tangan",
+      description: "Kucek perlahan pada bagian tali yang paling sering terkena keringat leher. Hindari penggunaan sikat baju yang kasar karena dapat merusak serat kain halus dan jahitan stopper.",
+      tip: "Jika ada noda membandel, gunakan sabun bayi lembut dan gosok perlahan dengan jari."
+    },
+    {
+      title: "Bilas Bersih & Keringkan di Tempat Teduh",
+      description: "Bilas dengan air mengalir hingga tidak ada sisa busa deterjen. Keringkan dengan cara diangin-anginkan di tempat teduh. Hindari menjemur di bawah terik matahari langsung agar saturasi warna cetak tetap cerah bertahun-tahun.",
+    }
+  ];
+
+  return (
+    <div className="space-y-8 text-foreground font-sans">
+      <div className="space-y-3">
+        <p className="text-base text-muted-foreground leading-relaxed">
+          Tali lanyard dan ID Card PVC merupakan representasi citra profesional Anda, organisasi kampus, atau institusi tempat Anda bernaung. Namun seiring waktu pemakaian harian, debu, keringat, dan minyak alami tubuh dapat membuat tali lanyard terlihat kusam jika tidak dirawat dengan benar.
+        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Dengan teknik perawatan yang tepat, lanyard dan kartu PVC buatan Tidurlah Grafika dapat bertahan bertahun-tahun tetap bersih, cerah, dan tidak mudah patah.
+        </p>
+      </div>
+
+      {/* Comparison Section */}
+      <section className="space-y-3 pt-2">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          1. Kenali Jenis Cetak Lanyard: Sublimasi vs Sablon
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Metode produksi tali lanyard menentukan cara pembersihan yang aman bagi bahan dan tinta:
+        </p>
+
+        <BlogSpecTable
+          caption="Tabel 1: Perbedaan karakteristik dan ketahanan lanyard printing sublimasi vs sablon manual"
+          headers={["Karakteristik", "Lanyard Printing Sublimasi (Tissue)", "Lanyard Sablon (Polyester)"]}
+          items={comparisonSpecs}
+        />
+      </section>
+
+      {/* Wash Steps */}
+      <section className="space-y-3 pt-2">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          2. Panduan Langkah Mencuci Tali Lanyard
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Ikuti tiga langkah mudah berikut agar serat tali tetap lembut dan pengait logam tidak berkarat:
+        </p>
+
+        <BlogSteps steps={washSteps} />
+      </section>
+
+      {/* PVC ID Card Care */}
+      <section className="space-y-3 pt-2">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          3. Cara Menjaga Kebersihan Kartu ID Card PVC
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Bahan PVC solid setara kartu ATM kami dilapisi pelindung laminasi anti-gores, namun tetap membutuhkan penanganan yang tepat:
+        </p>
+
+        <BlogCallout variant="warning" title="Perhatian Perawatan Kartu PVC:">
+          <ul className="list-disc pl-5 space-y-1.5 text-xs text-muted-foreground leading-relaxed mt-1">
+            <li>Gunakan kain lap kacamata (mikrofiber halus) yang sedikit dibasahi air untuk menyeka debu dan noda sidik jari.</li>
+            <li><strong>Hindari alkohol, aseton, atau thinner:</strong> Cairan kimia keras dapat melarutkan lapisan laminasi dan memudarkan tinta barcode / QR code.</li>
+            <li>Gunakan card holder / casing pelindung transparan untuk mencegah goresan fisik akibat gesekan kunci atau koin.</li>
+          </ul>
+        </BlogCallout>
+      </section>
+
+      {/* Storage Tips */}
+      <section className="space-y-3 pt-2">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          4. Simpan dengan Cara Digantung
+        </h2>
+        <p className="text-sm text-muted-foreground leading-relaxed">
+          Ketika selesai digunakan di kantor atau kampus, gantungkan lanyard pada hanger khusus atau gantungan dinding. Jangan membiasakan melipat tali dan menyelipkannya ke dalam kantung saku belakang celana, karena tekanan saat duduk dapat mematahkan kartu PVC atau merusak per pegas pada kait stopper.
+        </p>
+      </section>
+    </div>
+  );
+}
 
 export const blogPost: BlogPostData = {
   id: 12,
@@ -12,47 +124,6 @@ export const blogPost: BlogPostData = {
   views: 750,
   image: "/blog-thumbnail/12_result.webp",
   category: "tutorials",
-  content: `
-    <div class="space-y-6">
-      <p class="text-gray-700 leading-relaxed">Anda baru saja membuat tali id card custom Lampung yang keren di Tidurlah Grafika. Selamat! Tapi sayangnya, banyak yang membiarkan lanyard dan ID card mereka menjadi kusam, kotor, atau bahkan rusak setelah beberapa lama dipakai.</p>
-
-      <p class="text-gray-700 leading-relaxed">Padahal, dengan sedikit perawatan, Anda bisa membuatnya awet bertahun-tahun, lho. Ini tidak hanya menghemat uang, tapi juga menjaga citra profesional Anda tetap bersih. Yuk, ikuti 4 tips mudah ini!</p>
-
-      <div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">1. Kenali Jenis Lanyard Anda: Printing vs Sablon</h3>
-        <p class="text-gray-700 leading-relaxed mb-3">Tahukah Anda, cara mencuci lanyard berbeda tergantung teknik cetaknya? Ini adalah kelebihan lanyard printing vs sablon dalam hal perawatan.</p>
-        <ul class="list-disc list-inside space-y-2 text-gray-700">
-          <li><strong>Lanyard Printing (Bahan Tissue/Satin):</strong> Tinta pada lanyard ini meresap ke dalam serat kain. Perawatannya lebih mudah dan lebih tahan cuci. Anda bisa menguceknya dengan lembut tanpa takut desain akan retak.</li>
-          <li><strong>Lanyard Sablon (Polyester):</strong> Tinta pada sablon tali lanyard menempel di permukaan kain. Perawatannya harus lebih hati-hati karena rentan retak atau terkelupas jika disikat terlalu keras atau disetrika langsung.</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">2. Cara Mencuci yang Benar</h3>
-        <ul class="list-disc list-inside space-y-2 text-gray-700">
-          <li><strong>Rendam:</strong> Gunakan air hangat dan sedikit deterjen cair (bukan bubuk). Rendam selama 10-15 menit.</li>
-          <li><strong>Kucek Lembut:</strong> Gunakan tangan untuk mengucek bagian yang kotor. Hindari sikat! Sikat dapat merusak serat kain dan desain.</li>
-          <li><strong>Bilas & Keringkan:</strong> Bilas hingga tidak ada sisa sabun. Keringkan dengan cara diangin-anginkan. Jangan menjemur di bawah matahari langsung agar warna tidak pudar.</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">3. Jaga Kebersihan ID Card PVC</h3>
-        <p class="text-gray-700 leading-relaxed mb-3">Kartu id card pvc tebal Anda memang kuat, tapi tidak kebal noda.</p>
-        <ul class="list-disc list-inside space-y-2 text-gray-700">
-          <li>Gunakan kain mikrofiber (seperti kain kacamata) yang sedikit lembap.</li>
-          <li>Usap perlahan untuk menghilangkan debu dan sidik jari.</li>
-          <li>Jangan gunakan alkohol atau thinner, karena bisa merusak lapisan pelindung dan hasil cetak kartu.</li>
-        </ul>
-      </div>
-
-      <div>
-        <h3 class="text-xl font-bold text-gray-900 mb-3">4. Simpan dengan Baik</h3>
-        <p class="text-gray-700 leading-relaxed">Kebiasaan sepele ini punya dampak besar. Saat tidak digunakan, gantung lanyard Anda. Jangan melipatnya dan menaruh di saku atau di dasar tas, karena bisa membuat kartu ID Card bengkok dan pengaitnya rusak.</p>
-
-        <p class="text-gray-700 leading-relaxed mt-4">Dengan merawatnya, Anda menunjukkan bahwa Anda peduli pada detail. Butuh koleksi lanyard atau ID card baru dengan kualitas yang sudah terjamin? Anda tahu harus mencari kami di mana.</p>
-      </div>
-    </div>
-  `,
+  content: LanyardCareTipsContent,
   relatedProducts: ["ID Card & Lanyard"]
 };

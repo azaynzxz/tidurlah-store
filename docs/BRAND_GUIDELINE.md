@@ -22,7 +22,7 @@ While ID Card Lampung focuses on ID card products, Tidurlah Grafika is for merch
 - **Tagline**: "Cetak apa aja, Tidurlah Grafika!"
 - **Primary Focus**: Merchandise & Custom Printing Services
 - **Brand Color**:rgb(1, 132, 255) (Blue)
-- **Website**: https://tidurlah.com
+- **Website**: https://idcardlampung.com
 
 ### Contact Information
 - **Address**: Perumahan Pemda (Belwis, Way Hui, Kec. Jati Agung, Kabupaten Lampung Selatan, Lampung 35365
@@ -113,7 +113,7 @@ ID Card Lampung specializes exclusively in ID card products and related services
 3. **Layanan Cepat**: Pengerjaan efisien dengan hasil berkualitas
 4. **Harga Terjangkau**: Menyediakan layanan berkualitas dengan harga kompetitif
 5. **Pelayanan Pelanggan**: Komitmen terhadap kepuasan pelanggan
-6. **Teknologi Modern**: Pesan cepat kapan saja melalui website e-commerce tidurlah.com - fitur yang tidak dimiliki oleh semua jasa printing, memungkinkan pelanggan untuk memesan 24/7 dengan mudah dan praktis
+6. **Teknologi Modern**: Pesan cepat kapan saja melalui website e-commerce idcardlampung.com - fitur yang tidak dimiliki oleh semua jasa printing, memungkinkan pelanggan untuk memesan 24/7 dengan mudah dan praktis
 
 ### Key Messages
 - "Karena kami menawarkan bahan terbaik, desain kreatif, dan layanan cepat"

@@ -511,7 +511,7 @@ export function ReportsTab() {
         doc.setTextColor(slate400[0], slate400[1], slate400[2]);
         doc.setFontSize(6.8);
         doc.setFont('helvetica', 'normal');
-        doc.text('Tidurlah Grafika — Laporan Resmi Pembukuan Bisnis (tidurlah.com)', margin, ph - 8);
+        doc.text('Tidurlah Grafika — Laporan Resmi Pembukuan Bisnis (idcardlampung.com)', margin, ph - 8);
         doc.text(`Halaman ${p} dari ${totalPages}`, pw - margin, ph - 8, { align: 'right' });
       }
 
@@ -624,25 +624,22 @@ export function ReportsTab() {
 
             {/* Laba Bersih */}
             <Card
-              className={`border ${
-                netProfit >= 0
+              className={`border ${netProfit >= 0
                   ? 'border-emerald-200 bg-gradient-to-br from-emerald-50/60 to-white'
                   : 'border-rose-200 bg-gradient-to-br from-rose-50/60 to-white'
-              }`}
+                }`}
             >
               <CardContent className="p-4">
                 <div className="flex items-center justify-between mb-1">
                   <span
-                    className={`text-xs font-medium ${
-                      netProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'
-                    }`}
+                    className={`text-xs font-medium ${netProfit >= 0 ? 'text-emerald-700' : 'text-rose-700'
+                      }`}
                   >
                     Laba Bersih
                   </span>
                   <div
-                    className={`w-6 h-6 rounded-full flex items-center justify-center ${
-                      netProfit >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
-                    }`}
+                    className={`w-6 h-6 rounded-full flex items-center justify-center ${netProfit >= 0 ? 'bg-emerald-100 text-emerald-700' : 'bg-rose-100 text-rose-700'
+                      }`}
                   >
                     <Wallet className="w-3.5 h-3.5" />
                   </div>

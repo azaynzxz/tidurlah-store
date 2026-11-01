@@ -1,254 +1,137 @@
-import { useState, useEffect } from "react";
-import { Calendar, User, Clock, ArrowRight } from "lucide-react";
-import { useNavigate } from "react-router-dom";
-import BlogLayout from "@/components/blog/BlogLayout";
-import { getAllBlogPosts, BlogPostData, getTopCategories, getBlogPostsByCategory } from "@/content/blog";
-import { StaggeredContainer } from "@/components/animations/AnimatedElement";
+import { useState, useMemo } from "react";
+import { X } from "lucide-react";
+import EruditeBlogLayout from "@/components/blog/EruditeBlogLayout";
+import BlogSidebar from "@/components/blog/BlogSidebar";
+import EruditeBlogCard from "@/components/blog/EruditeBlogCard";
+import SEO from "@/components/common/SEO";
+import { getAllBlogPosts } from "@/content/blog";
 
-// Extend Window interface for Instagram
-declare global {
-  interface Window {
-    instgrm?: {
-      Embeds: {
-        process: () => void;
-      };
-    };
-  }
-}
+export default function Blog() {
+  const [selectedCategory, setSelectedCategory] = useState<string>("");
+  const [selectedTag, setSelectedTag] = useState<string>("");
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
-const Blog = () => {
-  const navigate = useNavigate();
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const [searchQuery, setSearchQuery] = useState("");
-  const [filteredPosts, setFilteredPosts] = useState<BlogPostData[]>([]);
-
-  // Get all blog posts from the content index
-  const allPosts = getAllBlogPosts();
-  
-  // Get top 3 categories with most posts
-  const topCategories = getTopCategories(3);
-  
-  // Get featured post (most recent)
-  const featuredPost = allPosts.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())[0];
-
-  // Load Instagram script
-  useEffect(() => {
-    const loadInstagramScript = () => {
-      if (window.instgrm) {
-        window.instgrm.Embeds.process();
-      } else {
-        const script = document.createElement('script');
-        script.async = true;
-        script.src = "//www.instagram.com/embed.js";
-        script.onload = () => {
-          if (window.instgrm) {
-            window.instgrm.Embeds.process();
-          }
-        };
-        document.body.appendChild(script);
-      }
-    };
-    
-    loadInstagramScript();
+  const allPosts = useMemo(() => {
+    return getAllBlogPosts().sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
   }, []);
 
-  // Filter posts based on category and search
-  useEffect(() => {
-    let filtered = allPosts;
+  const filteredPosts = useMemo(() => {
+    let result = allPosts;
 
     if (selectedCategory) {
-      filtered = getBlogPostsByCategory(selectedCategory);
+      result = result.filter((post) => post.category === selectedCategory);
     }
 
-    if (searchQuery) {
-      const searchLower = searchQuery.toLowerCase();
-      filtered = filtered.filter(post => 
-        post.title.toLowerCase().includes(searchLower) ||
-        post.subtitle.toLowerCase().includes(searchLower) ||
-        post.tags.some(tag => tag.toLowerCase().includes(searchLower))
+    if (selectedTag) {
+      result = result.filter((post) => post.tags?.includes(selectedTag));
+    }
+
+    if (searchQuery.trim()) {
+      const q = searchQuery.toLowerCase().trim();
+      result = result.filter(
+        (post) =>
+          post.title.toLowerCase().includes(q) ||
+          post.subtitle.toLowerCase().includes(q) ||
+          post.tags?.some((t) => t.toLowerCase().includes(q))
       );
     }
-    
-    setFilteredPosts(filtered);
-  }, [allPosts, selectedCategory, searchQuery]);
 
-  const handleSearch = (term: string) => {
-    setSearchQuery(term);
+    return result;
+  }, [allPosts, selectedCategory, selectedTag, searchQuery]);
+
+  const hasFilter = Boolean(selectedCategory || selectedTag || searchQuery);
+
+  const resetFilters = () => {
+    setSelectedCategory("");
+    setSelectedTag("");
+    setSearchQuery("");
   };
 
-  const formatDate = (dateString: string) => {
-    const options: Intl.DateTimeFormatOptions = { 
-      year: 'numeric', 
-      month: 'long', 
-      day: 'numeric' 
-    };
-    return new Date(dateString).toLocaleDateString('id-ID', options);
-  };
-
-  const getCategoryDisplayName = (category: string) => {
-    const categoryMap: Record<string, string> = {
-      'case-studies': 'Studi Kasus',
-      'tutorials': 'Tutorial',
-      'special': 'Khusus'
-    };
-    return categoryMap[category] || category;
-  };
+  const breadcrumbs = [{ label: "Blog", href: "/blog" }];
 
   return (
-    <BlogLayout 
-      onSearch={handleSearch}
-      showSearch={true}
-    >
-      <div>
-        {/* Main Content */}
-        <div className="container mx-auto max-w-7xl px-2 py-8">
-          {/* Hero Section - Featured Post */}
-          {featuredPost && (
-            <div className="mb-16">
-              <div className="bg-background rounded-2xl shadow-lg overflow-hidden group cursor-pointer" onClick={() => navigate(`/blog/${featuredPost.slug}`)}>
-                <div className="md:flex">
-                  <div className="md:w-1/2">
-                    <div className="relative h-64 md:h-full">
-                      <img
-                        src={featuredPost.image}
-                        alt={featuredPost.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        loading="lazy"
-                      />
-                      <div className="absolute top-4 left-4">
-                        <span className="bg-[#FF5E01] text-white px-3 py-1 rounded-full text-xs font-medium">
-                          {getCategoryDisplayName(featuredPost.category)}
-                        </span>
-                      </div>
-          </div>
-        </div>
-                  <div className="md:w-1/2 p-8">
-                  <h1 className="text-3xl md:text-4xl font-bold text-foreground mb-4 group-hover:text-[#FF5E01] transition-colors font-inter">
-                      {featuredPost.title}
-              </h1>
-                  <p className="text-lg text-foreground mb-6 leading-relaxed font-lato">
-                      {featuredPost.subtitle}
-                    </p>
-                    <div className="flex items-center justify-between text-sm text-muted-foreground mb-6">
-                      <div className="flex items-center">
-                        <User className="h-4 w-4 mr-2" />
-                        <span>{featuredPost.author}</span>
-                      </div>
-                      <div className="flex items-center">
-                        <Calendar className="h-4 w-4 mr-2" />
-                        <span>{formatDate(featuredPost.date)}</span>
-                      </div>
-                    </div>
-                    <div className="flex items-center text-[#FF5E01] font-medium group-hover:text-[#FF5E01]/80 transition-colors">
-                      <span>Baca selengkapnya</span>
-                      <ArrowRight className="h-4 w-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
-                </div>
-            </div>
-                  </div>
-                )}
+    <>
+      <SEO
+        title="Blog & Panduan Percetakan - Tidurlah Store"
+        description="Dokumentasi teknis, studi kasus sekolah & kampus, serta panduan spesifikasi cetak ID card, tali lanyard, dan merchandise oleh Tidurlah Grafika."
+        url="https://idcardlampung.com/blog"
+        keywords="blog percetakan lampung, tutorial cetak id card, panduan desain lanyard, studi kasus percetakan"
+      />
 
-          {/* Category Tabs */}
-          <div className="mb-12">
-            <div className="flex flex-wrap justify-center gap-2">
+      <EruditeBlogLayout
+        breadcrumbs={breadcrumbs}
+        sidebar={
+          <BlogSidebar
+            selectedCategory={selectedCategory}
+            onSelectCategory={setSelectedCategory}
+            searchQuery={searchQuery}
+            onSearchChange={setSearchQuery}
+            selectedTag={selectedTag}
+            onSelectTag={setSelectedTag}
+          />
+        }
+      >
+        <div className="space-y-6">
+          {/* Page Title & Intro */}
+          <div className="space-y-2">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">
+              Blog & Panduan Cetak
+            </h1>
+            <p className="text-sm text-muted-foreground leading-relaxed">
+              Dokumentasi teknis, standar ukuran desain, studi kasus klien, dan tips seputar cetak ID card, lanyard sublimasi, dan merchandise promosi.
+            </p>
+          </div>
+
+          {/* Filter Status Bar */}
+          {hasFilter && (
+            <div className="flex items-center justify-between rounded-md border border-border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+              <span>
+                Menampilkan <strong>{filteredPosts.length}</strong> artikel
+                {selectedCategory && <span> kategori <strong>{selectedCategory}</strong></span>}
+                {selectedTag && <span> tag <strong>#{selectedTag}</strong></span>}
+                {searchQuery && <span> kata kunci <strong>"{searchQuery}"</strong></span>}
+              </span>
               <button
-                onClick={() => setSelectedCategory("")}
-                className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
-                  selectedCategory === "" 
-                    ? "bg-[#FF5E01] text-white" 
-                    : "bg-muted text-foreground hover:bg-gray-200"
-                }`}
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center gap-1 font-medium text-foreground hover:underline"
               >
-                Semua
+                <X className="w-3 h-3" />
+                <span>Reset</span>
               </button>
-              {topCategories.map((category) => (
-                <button
-                  key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`px-6 py-3 rounded-full text-sm font-medium transition-colors ${
-                    selectedCategory === category 
-                      ? "bg-[#FF5E01] text-white" 
-                      : "bg-muted text-foreground hover:bg-gray-200"
-                  }`}
-                >
-                  {getCategoryDisplayName(category)}
-                </button>
+            </div>
+          )}
+
+          <div className="border-b border-border" />
+
+          {/* Articles Stream */}
+          {filteredPosts.length === 0 ? (
+            <div className="rounded-lg border border-dashed border-border p-8 text-center">
+              <p className="text-sm font-medium text-foreground mb-1">
+                Tidak ada artikel yang cocok
+              </p>
+              <p className="text-xs text-muted-foreground mb-4">
+                Coba gunakan kata kunci pencarian yang lain atau bersihkan filter.
+              </p>
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center rounded-md bg-foreground px-3 py-1.5 text-xs font-medium text-background hover:bg-foreground/90 transition-colors"
+              >
+                Lihat Semua Artikel
+              </button>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {filteredPosts.map((post) => (
+                <EruditeBlogCard key={post.slug} post={post} />
               ))}
             </div>
-          </div>
-
-                {/* Blog Posts Grid */}
-                <StaggeredContainer 
-                  className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-                  staggerDelay={50}
-                >
-                  {filteredPosts.map((post) => (
-                    <article 
-                      key={post.id}
-                      className="bg-background rounded-xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden cursor-pointer group"
-                      onClick={() => navigate(`/blog/${post.slug}`)}
-                    >
-                <div className="relative h-48 overflow-hidden">
-                        <img 
-                          src={post.image} 
-                          alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                        />
-                  <div className="absolute top-3 left-3">
-                    <span className="bg-[#FF5E01] text-white px-2 py-1 rounded-full text-xs font-medium">
-                      {getCategoryDisplayName(post.category)}
-                    </span>
-                      </div>
-                        </div>
-
-                <div className="p-6">
-                    <h3 className="text-lg font-semibold text-foreground mb-2 line-clamp-2 group-hover:text-[#FF5E01] transition-colors font-inter">
-                          {post.title}
-                  </h3>
-
-                    <p className="text-sm text-foreground mb-4 line-clamp-2 font-lato">
-                          {post.subtitle}
-                        </p>
-
-                  <div className="flex items-center justify-between text-xs text-muted-foreground">
-                    <div className="flex items-center">
-                      <Calendar className="h-3 w-3 mr-1" />
-                      <span>{formatDate(post.date)}</span>
-                          </div>
-                    <div className="flex items-center">
-                      <Clock className="h-3 w-3 mr-1" />
-                            <span>{post.readTime}</span>
-                          </div>
-                        </div>
-                      </div>
-                    </article>
-                  ))}
-                </StaggeredContainer>
-
-          {/* No Results */}
-          {filteredPosts.length === 0 && (
-            <div className="text-center py-12">
-              <h3 className="text-xl font-bold text-foreground mb-2">Tidak ada artikel ditemukan</h3>
-                  <p className="text-foreground mb-4">
-                Coba gunakan kata kunci lain atau pilih kategori yang berbeda
-                  </p>
-                    <button
-                onClick={() => {
-                  setSearchQuery("");
-                  setSelectedCategory("");
-                }}
-                className="bg-[#FF5E01] text-white rounded-lg py-2 px-6 font-medium hover:bg-[#FF5E01]/90 transition-colors"
-              >
-                Reset Filter
-                    </button>
-                  </div>
           )}
-              </div>
-            </div>
-    </BlogLayout>
+        </div>
+      </EruditeBlogLayout>
+    </>
   );
-};
-
-export default Blog; 
+}
